@@ -1,0 +1,19 @@
+<div class="container">
+    <div class="row marketing">
+        <div class="col-xs-6  col-xs-offset-2" ng-hide="createMode">
+            <h2>{{'YOUR_BUSINESSES' | translate}} {{user.businesses.length}}</h2>
+            <ul>
+                <li ng-repeat="(businessId, business) in businesses">
+                    <a href="#/business/{{businessId}}"> {{business.name}}</a>
+                </li>
+            </ul>
+            <a href="#/business/new"> {{'ADD_NEW_BUSINESS' | translate}}</a>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p>With ♥ from <a href="https://twitter.com/Swiip">@Swiip</a></p>
+    </div>
+</div>

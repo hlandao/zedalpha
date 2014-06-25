@@ -1,0 +1,46 @@
+<div class="container" ng-show-auth="logout,error">
+    <div class="row marketing">
+        <div class="col-xs-6  col-xs-offset-2" ng-hide="createMode">
+            <h2>Login</h2>
+            <form role="form">
+                <div class="form-group">
+                    <label>{{'EMAIL_ADDRESS' | translate}}</label>
+                    <input type="email" class="form-control" placeholder="Enter email" ng-model="email">
+                </div>
+                <div class="form-group">
+                    <label>{{'PASSWORD' | translate}}</label>
+                    <input type="password" class="form-control" placeholder="Password" ng-model="pass">
+                </div>
+                <button type="submit" class="btn btn-default" ng-click="login()">Login</button>
+            </form>
+            <p class="alert-warning"> {{err}} </p>
+            <a href="#" ng-click="createMode = true"> {{'DONE_HAVE_ACCOUNT_LABEL' | translate}}</a>
+        </div>
+        <div class="col-xs-6 col-xs-offset-2" ng-show="createMode">
+            <h2>{{'REGISTER_ACCOUNT_LABEL' | translate}}</h2>
+            <form role="form">
+                <div class="form-group">
+                    <label>{{ 'EMAIL_ADDRESS' | translate}}</label>
+                    <input type="email" class="form-control" placeholder="Enter email" ng-model="email">
+                </div>
+                <div class="form-group">
+                    <label>{{'PASSWORD' | translate}}</label>
+                    <input type="password" class="form-control" placeholder="Password" ng-model="pass">
+                </div>
+                <div class="form-group">
+                    <label>{{'CONFIRM_PASSWORD' | translate}}</label>
+                    <input type="password" class="form-control" placeholder="Password" ng-model="confirm">
+                </div>
+
+                <button type="submit" class="btn btn-default" ng-click="createAccount()">{{ 'Register' | translate}}</button>
+            </form>
+            <p class="alert-warning"> {{err}} </p>
+            <a href="#" ng-click="createMode = false"> {{'ALREADY_REGISTERED_LABEL' | translate}}</a>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p>With ♥ from <a href="https://twitter.com/Swiip">@Swiip</a></p>
+    </div>
+</div>
