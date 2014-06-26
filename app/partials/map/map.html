@@ -1,8 +1,6 @@
 <div id="map">
     <div id="map-controls">
         <h3> Map Controls </h3>
-        <p ng-show="err"> {{err}}</p>
-        <p ng-show="msg"> {{msg}} </p>
 
         <div class="row">
             <div class="col-lg-6">
@@ -27,4 +25,7 @@
     <div id="map-container" style="border:5px solid black;width:700px;height:550px;overflow: scroll;">
         <canvas id="canvas" width="700" height="550"></canvas>
     </div>
+    <p ng-show="err" class="text-danger"> {{err}}</p>
+    <p ng-show="msg" class="text-success"> {{msg}} </p>
+
 </div>
