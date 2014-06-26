@@ -19,7 +19,21 @@
                 </form>
 
             </div>
-            <div class="col-lg-6"></div>
+            <div class="col-lg-6" style="height: 50px;">
+                <div ng-show="selectedShape">
+                    <h4>Selected Seat : {{selectedShape.seatNumber}}</h4>
+                    <form class="form-inline" role="form">
+                        <div class="form-group">
+                            <label> Seat Number </label>
+                            <input type="text" class="form-control input-sm"  ng-model="selectedShape.newSeatNumber" style="width:50px;">
+                        </div>
+                        <button class="btn btn-default" ng-click="updateShape(selectedShape)">Update</button>
+                        <button class="btn btn-default" ng-click="removeShape(selectedShape)">Remove</button>
+
+                    </form>
+
+                </div>
+            </div>
         </div>
     </div>
     <div id="map-container" style="border:5px solid black;width:700px;height:550px;overflow: scroll;">

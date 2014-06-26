@@ -15,7 +15,7 @@ fabric.SeatShape = fabric.util.createClass(fabric.Group, {
 
     setSeatNumber : function(seatNumber){
         var text = this._objects[1];
-        text.setText(""+text);
+        text.setText(""+seatNumber);
         this.set('seatNumber', seatNumber);
     },
 
@@ -112,7 +112,7 @@ zedAlphaDirectives
             restrict: 'E',
             templateUrl : 'partials/map/map.html',
             link: function(scope, elem, attrs) {
-                var mapRef, map, businessId,canvas;
+                var mapRef, map, businessId,canvas, objModified;
 
                 canvas = new fabric.Canvas('canvas', {backgroundColor: 'rgb(240,240,240)'});
 //                var rect = new fabric.Rect({
@@ -172,19 +172,41 @@ zedAlphaDirectives
 //
 //
                 canvas.on('mouse:up', function(){
-                    console.log('mouse up');
-                    scope.saveMap();
+                    if(objModified)
+                        scope.saveMap();
                 });
-//
-//                canvas.on("object:modified", function(modEvtData) {
-//                    // modified fires after object has been rotated
-//                    var modifiedObj = modEvtData.target;
-//                    if (modifiedObj.angle && snapAfterRotate) {
-//                        modifiedObj.setAngle(lastClosestAngle).setCoords();
-//                        snapAfterRotate = false;
-//                        canvas.renderAll();
-//                    }
-//                })
+
+                canvas.on('object:modified', function(e){
+                    objModified = true;
+                });
+
+                canvas.on('object:selected', function(e){
+                    console.log('e',e);
+                        scope.$apply(function(){
+                           scope.selectedShape = e.target;
+                        });
+                });
+
+                canvas.on('selection:cleared', function(e){
+//                    scope.$apply(function(){
+//                        scope.selectedShape = null;
+//                    });
+                });
+
+
+
+                scope.updateShape = function(shape){
+                    shape.setSeatNumber(shape.newSeatNumber);
+                    canvas.renderAll();
+                    scope.selectedShape = null;
+                    scope.saveMap();
+                };
+
+                scope.removeShape = function(shape){
+                    canvas.remove(shape);
+                    scope.selectedShape = null;
+                    scope.saveMap();
+                };
 
                 scope.addSeat = function(newSeat){
                     if(!newSeat.seatNumber && newSeat.seatNumber !== 0){
@@ -197,10 +219,11 @@ zedAlphaDirectives
                     canvas.renderAll();
                     newSeat = {seatNumber : ++newSeat.seatNumber};
                     scope.saveMap();
-                }
+                };
 
                 scope.saveMap = function(){
                     console.log('scope.saveMap');
+                    objModified = false;
                     var json = canvas.toJSON([]);
                     mapRef.set(json, function(error){
                         scope.$apply(function(){
