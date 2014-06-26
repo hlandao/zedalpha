@@ -50,7 +50,7 @@ var seatRectFactory = function(seatNumber, seatConfig){
     var shapeDefault = {
         fill: '#777',
         stroke: "black",
-        strokeWidth: 3,
+        strokeWidth: 2,
         width: 50,
         height: 50
     };
@@ -74,7 +74,7 @@ var seatCircleFactory = function(seatNumber, seatConfig){
     var shapeDefault = {
         fill: '#777',
         stroke: "black",
-        strokeWidth: 3,
+        strokeWidth: 2,
         radius : 25
     };
     var textDefault = {
@@ -174,6 +174,7 @@ zedAlphaDirectives
                 canvas.on('mouse:up', function(){
                     if(objModified)
                         scope.saveMap();
+
                 });
 
                 canvas.on('object:modified', function(e){
@@ -188,9 +189,9 @@ zedAlphaDirectives
                 });
 
                 canvas.on('selection:cleared', function(e){
-//                    scope.$apply(function(){
-//                        scope.selectedShape = null;
-//                    });
+                    scope.$apply(function(){
+                        scope.selectedShape = null;
+                    });
                 });
 
 
