@@ -1,136 +1,216 @@
 var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directives', []);
 
-var SeatShape = fabric.util.createClass(fabric.Group, {
-    type: 'seat',
-    initialize : function(options){
-        this.callSuper('initialize', options);
-        var text = this._objects[1];
-        text.centeredRotation = true;
-        text.centeredScaling = true;
-        text.setLeft(0-(text.width/2));
-        text.setTop(0-(text.height/2));
-        this.set('seatNumber', options.seatNumber || '');
+//fabric.SeatShape = fabric.util.createClass(fabric.Group, {
+//    type: 'seatShape',
+//    initialize : function(objects, options){
+//        this.callSuper('initialize', objects, options);
+//        var text = this._objects[1];
+//        text.centeredRotation = true;
+//        text.centeredScaling = true;
+//        text.setLeft(0-(text.width/2));
+//        text.setTop(0-(text.height/2));
+//        this.set('seatNumber', options.seatNumber || '');
+//
+//    },
+//
+//    setSeatNumber : function(seatNumber){
+//        var text = this._objects[1];
+//        text.setText(""+text);
+//        this.set('seatNumber', seatNumber);
+//    },
+//
+//
+//    toObject: function() {
+//        return fabric.util.object.extend(this.callSuper('toObject'), {
+//            seatNumber: this.get('seatNumber')
+//        });
+//    },
+//
+//    transform : function(ctx, fromLeft){
+//        this.callSuper('transform', ctx, fromLeft);
+//        var text = this._objects[1];
+//        text.setAngle(-this.angle);
+//    }
+//});
 
-    },
-
-    setSeatNumber : function(seatNumber){
-        var text = this._objects[1];
-        text.setText(""+text);
-        this.set('seatNumber', seatNumber);
-    },
-
-
-    toObject: function() {
-        return fabric.util.object.extend(this.callSuper('toObject'), {
-            seatNumber: this.get('seatNumber')
-        });
-    },
-
-    transform : function(ctx, fromLeft){
-        this.callSuper('transform', ctx, fromLeft);
-        var text = this._objects[1];
-        text.setAngle(-this.angle);
-    }
-});
-
-var seatRectFactory = function(seatNumber, seatConfig){
-    var shapeDefault = {
-        fill: '#777',
-        stroke: "black",
-        strokeWidth: 3,
-        width: 50,
-        height: 50
-    };
-    var textDefault = {
-        fontSize: 25,
-        fill: "white"
-    };
-
-    var groupDefault = {
-        top: 100,
-        left: 100
-    };
-
-    var text = new fabric.Text("" + seatNumber, $.extend(textDefault, seatConfig.textOptions));
-    var rect = new fabric.Rect($.extend(shapeDefault, seatConfig.shapeOptions));
-
-    return new SeatShape([ rect, text ], $.extend(groupDefault, seatConfig.groupOptions, {seatNumber : seatNumber}));
-};
-
-var seatCircleFactory = function(seatNumber, seatConfig){
-    var shapeDefault = {
-        fill: '#777',
-        stroke: "black",
-        strokeWidth: 3,
-        radius : 50
-    };
-    var textDefault = {
-        fontSize: 25,
-        fill: "white"
-    };
-
-    var groupDefault = {
-        top: 100,
-        left: 100
-    };
-
-    var text = new fabric.Text("" + seatNumber, $.extend(textDefault, seatConfig.textOptions));
-    var circle = new fabric.Circle($.extend(shapeDefault, seatConfig.shapeOptions));
-
-    return new SeatShape([ circle, text ], $.extend(groupDefault, seatConfig.groupOptions, {seatNumber : seatNumber}));
-};
+/*
+* Synchronous loaded object
+*/
+//fabric.SeatShape.fromObject = function (object, callback) {
+//    var _enlivenedObjects;
+//    fabric.util.enlivenObjects(object.objects, function (enlivenedObjects) {
+//        delete object.objects;
+//        _enlivenedObjects = enlivenedObjects;
+//    });
+//    return new fabric.SeatShape(_enlivenedObjects, object);
+//};
 
 
-var seatShapeFactory = function(seatNumber, seatConfig){
-    if(seatConfig.shape === 'circle'){
-        return seatCircleFactory(seatNumber, seatConfig);
-    }else{
-        return seatRectFactory(seatNumber, seatConfig);
-    }
-}
+//var seatRectFactory = function(seatNumber, seatConfig){
+//    var shapeDefault = {
+//        fill: '#777',
+//        stroke: "black",
+//        strokeWidth: 3,
+//        width: 50,
+//        height: 50
+//    };
+//    var textDefault = {
+//        fontSize: 25,
+//        fill: "white"
+//    };
+//
+//    var groupDefault = {
+//        top: 100,
+//        left: 100
+//    };
+//
+//    var text = new fabric.Text("" + seatNumber, $.extend(textDefault, seatConfig.textOptions));
+//    var rect = new fabric.Rect($.extend(shapeDefault, seatConfig.shapeOptions));
+//
+//    return new fabric.SeatShape([ rect, text ], $.extend(groupDefault, seatConfig.groupOptions, {seatNumber : seatNumber}));
+//};
+//
+//var seatCircleFactory = function(seatNumber, seatConfig){
+//    var shapeDefault = {
+//        fill: '#777',
+//        stroke: "black",
+//        strokeWidth: 3,
+//        radius : 25
+//    };
+//    var textDefault = {
+//        fontSize: 25,
+//        fill: "white"
+//    };
+//
+//    var groupDefault = {
+//        top: 100,
+//        left: 100
+//    };
+//
+//    var text = new fabric.Text("" + seatNumber, $.extend(textDefault, seatConfig.textOptions));
+//    var circle = new fabric.Circle($.extend(shapeDefault, seatConfig.shapeOptions));
+//
+//    return new fabric.SeatShape([ circle, text ], $.extend(groupDefault, seatConfig.groupOptions, {seatNumber : seatNumber}));
+//};
+//
+//
+//var seatShapeFactory = function(seatNumber, seatConfig){
+//    if(seatConfig.shape === 'circle'){
+//        return seatCircleFactory(seatNumber, seatConfig);
+//    }else{
+//        return seatRectFactory(seatNumber, seatConfig);
+//    }
+//}
+
 
 
 
 
 zedAlphaDirectives
-    .directive('map', function() {
+    .directive('map', function(firebaseRef, UserHolder, $timeout) {
         return {
             restrict: 'E',
             templateUrl : 'partials/map/map.html',
             link: function(scope, elem, attrs) {
+                var mapRef, map, businessId,canvas;
 
+                var canvas = new fabric.Canvas('canvas', {backgroundColor: 'rgb(240,240,240)'});
+                var rect = new fabric.Rect({
+                    width: 100,
+                    height: 100,
+                    top: 100,
+                    left: 100,
+                    fill: 'rgba(255,200,0,0.5)'
+                });
+                canvas.add(rect);
+                canvas.calcOffset();
+                canvas.renderAll();
+
+
+//                attrs.$observe('businessId', function(val){
+//                    UserHolder.ready().then(function(){
+//                        if(UserHolder.auth){
+//                            businessId = val;
+//                            mapRef = firebaseRef('users/' +UserHolder.auth.uid + '/businesses/'+businessId+'/map');
+//                            mapRef.once('value', function(snapshot){
+//                                map = snapshot.val();
+//                                console.log('map',map);
+//                                renderMap(map);
+//                            });
+//
+//                        }
+//                    })
+//
+//                });
+//
+//                var renderMap = function(map){
+//                    if(map){
+//                        console.log(map);
+////                        console.log(JSON.parse(map));
+////                        canvas.loadFromJSON(JSON.stringify(map), canvas.renderAll.bind(canvas));
+//                    }
+//
+//                };
+//
                 scope.seatConfigs = {
                     'Chair' : {
+                        name : 'chair',
                         drawingDefaults : {
                             shape : 'circle',
-                            circleOptions : {radius : 50},
+                            circleOptions : {radius : 25},
                             textOptions : {fontSize: 25},
                             groupOptions : {}
                         }
                     },
                     'Table' :  {
+                        name : 'table',
                         drawingDefaults : {
                             shape : 'rect'
                         }
                     }
                 };
+//
+//
+////                canvas.on('object:modified', scope.saveMap);
+//
+//                canvas.on("object:modified", function(modEvtData) {
+//                    // modified fires after object has been rotated
+//                    var modifiedObj = modEvtData.target;
+//                    if (modifiedObj.angle && snapAfterRotate) {
+//                        modifiedObj.setAngle(lastClosestAngle).setCoords();
+//                        snapAfterRotate = false;
+//                        canvas.renderAll();
+//                    }
+//                })
 
-
-                var canvas = new fabric.Canvas('canvas', {
-                    backgroundColor: 'rgb(230,230,230)'
-                });
-
-
-                scope.addSeat = function(newSeat){
-                    if(!newSeat.seatNumber && newSeat.seatNumber !== 0){
-                        scope.err = "Please enter seat number";
-                    }else if(!newSeat.seatConfig){
-                        scope.err = "Please select seat type";
-                    }
-                    var shape = seatShapeFactory(newSeat.seatNumber, newSeat.seatConfig.drawingDefaults);
-                    canvas.add(shape);
-                    newSeat = {seatNumber : ++newSeat.seatNumber};
-                }
+//                scope.addSeat = function(newSeat){
+//                    if(!newSeat.seatNumber && newSeat.seatNumber !== 0){
+//                        scope.err = "Please enter seat number";
+//                    }else if(!newSeat.seatConfig.drawingDefaults){
+//                        scope.err = "Please select seat type";
+//                    }
+//                    var shape = seatShapeFactory(newSeat.seatNumber, newSeat.seatConfig.drawingDefaults);
+//                    canvas.add(shape);
+//                    canvas.renderAll();
+//                    newSeat = {seatNumber : ++newSeat.seatNumber};
+//                    scope.saveMap();
+//                }
+//
+//                scope.saveMap = function(){
+//                    console.log('scope.saveMap');
+//                    var json = canvas.toJSON([]);
+//                    mapRef.set(json, function(error){
+//                        if(error){
+//                            scope.err = "Error occurred while saving map.";
+//                        }else{
+//                            scope.msg = "Map saved!";
+//                            $timeout(function(){
+//                                scope.msg = "";
+//                            }, 3000);
+//                        }
+//
+//                    });
+//                }
             }
         };
     });

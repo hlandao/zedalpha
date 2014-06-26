@@ -2,17 +2,24 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory('UserHolder', ['$rootScope', function($rootScope){
+    .factory('UserHolder', ['$rootScope', '$q', function($rootScope, $q){
+        var initting = $q.defer();
+
         $rootScope.$on('$firebaseSimpleLogin:login', function(e, user){
             console.log(user);
             _userHolder.auth = user;
+            initting.resolve(_userHolder);
         });
         $rootScope.$on('$firebaseSimpleLogin:logout', function(){
             _userHolder.auth = null;
+            initting.resolve(_userHolder);
         });
 
         var _userHolder = {
-            auth : null
+            auth : null,
+            ready : function(){
+                return initting.promise
+            }
         };
 
         return _userHolder;

@@ -7,8 +7,8 @@ zedAlphaControllers
     .controller('BusinessCtrl', function($scope, firebaseRef, $firebase, Business,$location, $routeParams, User){
         // check if ID is available
         if($routeParams.businessId){
+            $scope.businessId = $routeParams.businessId;
             $scope.business = User.$userProfile().$child('businesses').$child($routeParams.businessId);
-            console.log('$scope.business',$scope.business);
         }
         // get business meta data
         var businessMetaDataRef = firebaseRef('businessMetaData');
@@ -25,11 +25,5 @@ zedAlphaControllers
         };
     })
     .controller('BusinessMapEditorCtrl', function($scope, $routeParams, User){
-        // check if ID is available
-        if($routeParams.businessId){
-            $scope.map = User.$userProfile().$child('businesses').$child($routeParams.businessId).$child('map');
-            console.log('$scope.map',$scope.map);
-
-        }
 
     });
