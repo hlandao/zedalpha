@@ -6,7 +6,6 @@ zedAlphaServices
         var initting = $q.defer();
 
         $rootScope.$on('$firebaseSimpleLogin:login', function(e, user){
-            console.log(user);
             _userHolder.auth = user;
             initting.resolve(_userHolder);
         });

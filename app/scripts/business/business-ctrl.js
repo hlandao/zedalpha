@@ -4,15 +4,18 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('BusinessCtrl', function($scope, firebaseRef, $firebase, Business,$location, $routeParams, User){
+    .controller('BusinessCtrl', function($scope, firebaseRef, $firebase, Business,BusinessMetaData, $location, $routeParams, User, $timeout){
+
+        // get business meta data
+        $scope.businessMetaData = BusinessMetaData;
         // check if ID is available
         if($routeParams.businessId){
-            $scope.businessId = $routeParams.businessId;
-            $scope.business = User.$userProfile().$child('businesses').$child($routeParams.businessId);
+            Business.getBusinessWithId($routeParams.businessId).then(function($business){
+                $scope.business = $business;
+                $scope.businessId = $routeParams.businessId;
+            });
+
         }
-        // get business meta data
-        var businessMetaDataRef = firebaseRef('businessMetaData');
-        $scope.businessMetaData = $firebase(businessMetaDataRef);
 
 
 

@@ -32,6 +32,13 @@ angular.module('zedalpha.routes', [])
             controller: 'BusinessCtrl'
         });
 
+        $routeProvider.when('/business/:businessId/shifts', {
+            authRequired: true,
+            templateUrl: 'partials/business/shifts-business.html',
+            controller: 'BusinessCtrl'
+        });
+
+
         $routeProvider.when('/business/:businessId', {
             authRequired: true,
             templateUrl: 'partials/business/show-business.html',

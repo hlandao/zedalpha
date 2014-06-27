@@ -15,7 +15,9 @@
     "firebase-simple-login": "latest",
     "angular-route": "~1.2.18",
     "angular-translate": "~2.2.0",
-    "fabric": "~1.4.7"
+    "fabric": "~1.4.7",
+    "angular-bootstrap": "~0.11.0",
+    "moment": "~2.7.0"
   },
   "devDependencies": {
     "angular-mocks": "1.2.x"
