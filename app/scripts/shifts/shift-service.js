@@ -24,12 +24,14 @@ zedAlphaServices
     .factory('ShiftsWeek', function(ShiftDay, BasicShiftDay, $q){
         function ShiftsWeek(weekNumber){
             this.days = [];
-            if(angular.isNumber(weekNumber)){
-                var dateMoment = moment().weekYear(weekNumber).day(0);
-                while(dateMoment.day() < 7){
+            if(weekNumber != 'basic'){
+                var dateMoment = moment().week(weekNumber).day(0);
+                for(var i = 0; i < 7; ++i){
                     this.days.push(new ShiftDay(dateMoment));
+                    console.log(dateMoment.day());
                     dateMoment.add('days',1);
                 }
+
             }else{
                 for(var i = 0; i < 7; ++i){
                     this.days.push(new BasicShiftDay(i));
@@ -40,6 +42,7 @@ zedAlphaServices
         }
 
         ShiftsWeek.prototype.saveAllDays = function(){
+            console.log('saveAllDays');
             var day,
                 promises = [];
 
@@ -53,20 +56,23 @@ zedAlphaServices
 
         return ShiftsWeek;
     })
-    .factory('ShiftDay', function(Shifts, Shift, ShiftsNames, BusinessHolder){
-        function ShiftDay(date, active, shiftData){
+    .factory('ShiftDay', function(Shifts, Shift, ShiftsNames, $q){
+        function ShiftDay(date, shiftData){
+            var self = this;
             if(shiftData){
                 angular.extend(this, shiftData);
                 return this;
             }
             if(date){
                 this.date = date ? new Date(date) : new Date();
-                this.dayOfWeek = moment(this.date).dayOfWeek();
                 this.dayOfYear = moment(this.date).dayOfYear();
                 this.shifts = Shifts.shiftsWithDayOfYear(this.dayOfYear);
-                if(!this.shifts.$value){
-                    this.generateDefaultShifts();
-                }
+                var ref = this.shifts.$getRef();
+                ref.once('value', function(snapshot){
+                    if(!snapshot.val()){
+                        self.generateDefaultShifts();
+                    }
+                });
                 return this;
             }
             throw new Error('Please provide a valid date');
@@ -75,6 +81,10 @@ zedAlphaServices
 
         ShiftDay.prototype.save = function(){
             var defer = $q.defer();
+            if(!this.shifts){
+                defer.reject();
+                return defer.promise;
+            }
             var self = this;
             this.shifts.$on('value', function(){
                 self.shifts.$off('value');
@@ -87,8 +97,11 @@ zedAlphaServices
 
 
         ShiftDay.prototype.generateDefaultShifts = function(){
+            this.shifts.date = this.date;
+            this.shifts.active = true;
+            this.shifts.setByUser = false;
             for(var i in ShiftsNames){
-                this.shifts[i] = Shift.defaultShiftForShiftIndex(i, null, true, false);
+                this.shifts[i] = Shift.defaultShiftForShiftIndex(i, null, true);
             }
         }
 
@@ -107,11 +120,9 @@ zedAlphaServices
                 var dayOfWeek = dayOfWeek;
                 this.date = new Date(moment().day(dayOfWeek));
                 this.shifts = Shifts.basicShifts(dayOfWeek);
-                console.log('this.shifts',this.shifts);
 
-                this.shifts.$getRef().on('value', function(snapshot){
+                this.shifts.$getRef().once('value', function(snapshot){
                     if(!snapshot.val()){
-                        console.log('here');
                         self.generateDefaultShifts();
                     }
                 });
@@ -138,10 +149,12 @@ zedAlphaServices
 
         BasicShiftDay.prototype.generateDefaultShifts = function(){
 
+            this.shifts.date = this.date;
+            this.shifts.active = true;
+            this.shifts.basic = true;
+            this.shifts.setByUser = false;
+
             for(var i in ShiftsNames){
-                this.shifts.date = this.date;
-                this.shifts.active = true;
-                this.shifts.basic = true;
                 this.shifts[i] = Shift.defaultShiftForShiftIndex(i, null, true);
             }
         }

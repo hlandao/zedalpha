@@ -1,6 +1,8 @@
 $icon-font-path: "../bower_components/bootstrap-sass-official/vendor/assets/fonts/bootstrap/";
 
 @import '../bower_components/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap';
+@import './vendor/bootstrap-colorpicker.css';
+
 
 .browsehappy {
     margin: 0.2em 0;
@@ -89,6 +91,10 @@ body {
     }
 }
 
-.tab-pane{
-  padding:10px;
-}
+@import "import/admin";
+@import "import/navigation";
+
+
+
+
+

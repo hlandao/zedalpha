@@ -1,0 +1,12 @@
+<div class="container-fluid" id="events-container">
+    <div class="row navbar">
+        <div class="col-xs-12 col-md-12 container" id="navigation-container" ng-include="'/partials/events/navigation.html'">
+        </div>
+    </div>
+    <div class="row content">
+        <div class="col-xs-6 col-md-4 container" id="events-list-container" ui-view="events-list">
+        </div>
+        <div class="col-xs-6 col-md-8 container" id="map-container" ui-view="map">
+        </div>
+    </div>
+</div>

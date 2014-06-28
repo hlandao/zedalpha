@@ -38,6 +38,19 @@ angular.module('zedalpha.routes', [])
             controller: 'BusinessCtrl'
         });
 
+        $routeProvider.when('/business/:businessId/eventsStatuses', {
+            authRequired: true,
+            templateUrl: 'partials/business/events-statuses-business.html',
+            controller: 'EventsStatusesCtrl'
+        });
+
+        $routeProvider.when('/business/:businessId/events', {
+            authRequired: true,
+            templateUrl: 'partials/events/events.html',
+//            controller: 'EventsCtrl'
+        });
+
+
 
         $routeProvider.when('/business/:businessId', {
             authRequired: true,

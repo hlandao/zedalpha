@@ -7,7 +7,10 @@
     <div class="row">
         <div class="col-sm-4 col-sx-6 day" ng-repeat="day in week.days">
             <div class="panel panel-default">
-                <div class="panel-heading"><input type="checkbox" ng-model="day.shifts.active"> {{day.shifts.date | date : 'EEEE dd/MM/yyyy'}}</div>
+                <div class="panel-heading"><input type="checkbox" ng-model="day.shifts.active">
+                    <span ng-show="!day.shifts.basic"> {{day.shifts.date | date : 'EEEE dd/MM/yyyy'}} </span>
+                    <span ng-show="day.shifts.basic"> {{day.shifts.date | date : 'EEEE'}} </span>
+                </div>
                 <div class="panel-body">
                     <div class="row shift" ng-repeat="(k,shift) in ShiftsNames">
                         <div class="col-xs-12">

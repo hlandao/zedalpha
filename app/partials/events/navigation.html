@@ -1,0 +1,42 @@
+<div class="container-full navigation-wrapper">
+    <div class="row row-flex row-flex-wrap">
+        <div class="col-xs-12 col-md-1 bar-name-container">
+            <img src="images/{{imageName}}" class="img-responsive">
+        </div>
+        <div class="col-xs-12 col-md-2 text-center custom-date-picker">
+            <a ng-click="open($event)" datepicker-popup="{{format}}" ng-model="DateTimeHolder.currentDate"
+               is-open="opened" show-button-bar="false" show-weeks="false" day-header-format="'E'" ng-required="true">
+                <!--<span my-current-time="'HH:mm'" class="h1"></span>-->
+                <span class="h1">{{nowDateDataFormated()}}</span>
+            </a>
+
+        </div>
+        <div class="col-xs-12 col-md-7 row nav-circles-container">
+            <ul class="list-inline">
+                <li>
+                    <span class="circle-green">{{allOrdersCount}}</span>
+                    <span class="title">{{'NAVIGATION_CIRCLE_ALL_ORDERS_TEXT_1'|translate}}<br>{{'NAVIGATION_CIRCLE_ALL_ORDERS_TEXT_2'|translate}}</span>
+                </li>
+                <li>
+                    <span class="circle-red">{{peopleLeftCount}}</span>
+                    <span class="title">{{'NAVIGATION_CIRCLE_LEFT_PEOPLE_TEXT_1'|translate}}<br>{{'NAVIGATION_CIRCLE_LEFT_PEOPLE_TEXT_2'|translate}}</span>
+                </li>
+                <li>
+                    <span class="circle-blue">{{allPeopleCount}}</span>
+                    <span class="title">{{'NAVIGATION_CIRCLE_ALL_PEOPLE_TEXT_1'|translate}}<br>{{'NAVIGATION_CIRCLE_ALL_PEOPLE_TEXT_2'|translate}}</span>
+                </li>
+                <li>
+                    <span class="circle-yellow">{{walkingGuestsCount}}</span>
+                    <span class="title">{{'NAVIGATION_CIRCLE_WALKING_LEFT_TEXT_1'|translate}}</span><!-- <br>{{'NAVIGATION_CIRCLE_WALKING_LEFT_TEXT_2'|translate}}</span> -->
+                </li>
+            </ul>
+        </div>
+        <div class="col-xs-4 col-md-2 settings-container">
+            <button class="btn lang-en" ng-click="setLocale('en')"></button>
+            <button class="btn lang-he" ng-click="setLocale('he')"></button>
+            <button class="btn hollow-button sign-out-button" ng-click="logout()">{{'NAVIGATION_SIGN_OUT_BUTTON_TEXT'
+                |translate}}
+            </button>
+        </div>
+    </div>
+</div>
