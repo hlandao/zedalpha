@@ -1,0 +1,10 @@
+<div class="row" id="shift-selector-row" ng-controller="ShiftSelectorCtrl">
+    <div class="col-xs-12">
+        <select ng-model="ShiftsDayHolder.selected" ng-options="shift.name for shift in ShiftsDayHolder.current.shifts">
+        </select>
+        <select ng-model="hour" ng-options="shiftHour.value as shiftHour.label for shiftHour in shiftHours()" ng-change="hourChanged()">
+        </select>
+        <select ng-model="minute" ng-options="shiftMinute as shiftMinute for shiftMinute in shiftMinutes()"  ng-change="minuteChanged()">
+        </select>
+    </div>
+</div>

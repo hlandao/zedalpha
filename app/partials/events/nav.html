@@ -1,0 +1,62 @@
+<div class="container-fluid" id="events-navigation">
+    <div class="row">
+        <div class="col-xs-12 col-md-2" id="logo-col">
+            <h2> {{business.name||'Logo'}} </h2>
+        </div>
+        <div class="col-xs-12 col-md-2" id="date-col">
+                <input type="text" class="form-control datepicker-input" ng-click="openDatePicker($event)" datepicker-popup="dd/MM/yyyy" ng-model="DateHolder.current"  is-open="datePickerOpened"/>
+                <hl-timepicker ng-model="DateHolder.current" ></hl-timepicker>
+
+        </div>
+        <div class="col-xs-12 col-md-6" id="summary-col">
+            <div class="row">
+                <div class="col-xs-12 col-md-3 circle-container">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="circle circle-green">1
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="title"> Total Orders </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-3 circle-container">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="circle circle-red">1</div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="title"> Total Orders </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-3 circle-container">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="circle circle-blue">1</div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="title"> Total Orders </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-3 circle-container">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="circle circle-yellow">1</div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="title"> Total Orders </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-md-2" id="menu-col">
+            menu-container
+        </div>
+    </div>
+</div>

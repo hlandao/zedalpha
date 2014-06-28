@@ -2,10 +2,8 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 
 
 zedAlphaDirectives
-    .constant('hlTimepickerConfig',{
-        step : 900
-    })
-    .controller('HlTimePickerCtrl', function hlTimePickerController($scope){
+
+    .controller('HlTimePickerCtrl', function hlTimePickerController($scope, DateHelpers){
         var ngModel;
         var dateMoment;
 
@@ -22,30 +20,14 @@ zedAlphaDirectives
             });
 
             $scope.onChange = function(){
-                var splittedTime = splitHour($scope.timeInHours);
+                var splittedTime = DateHelpers.hourAndMinutesArrFromString($scope.timeInHours);
                 if(!splittedTime) return;
                 var newdateMoment = moment(ngModel.$modelValue).hour(splittedTime.hour).minute(splittedTime.minute);
                 ngModel.$setViewValue(new Date(newdateMoment.format("YYYY-MM-DD HH:mm:ss")));
             }
         }
-
-        var splitHour = function (hourStr) {
-            if (!hourStr || !~hourStr.indexOf(':')) {
-                return null;
-            }
-            var arr = hourStr.split(':');
-            if (arr.length) {
-                return {
-                    hour: arr[0],
-                    minute: arr[1]
-                };
-            } else {
-                return null;
-            }
-        }
-
     })
-    .directive('hlTimepicker', ['$timeout','hlTimepickerConfig', function ($timeout, hlTimepickerConfig) {
+    .directive('hlTimepicker', ['$timeout', function ($timeout) {
 
         return {
             restrict: 'E',

@@ -2,8 +2,8 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-   .factory('loginService', ['$rootScope', '$firebaseSimpleLogin', 'firebaseRef', 'profileCreator', '$timeout', 'UserHolder',
-      function($rootScope, $firebaseSimpleLogin, firebaseRef, profileCreator, $timeout, UserHolder) {
+   .factory('loginService', ['$rootScope', '$firebaseSimpleLogin', 'firebaseRef', 'profileCreator', '$timeout',
+      function($rootScope, $firebaseSimpleLogin, firebaseRef, profileCreator, $timeout) {
          var auth = null;
          return {
             init: function() {

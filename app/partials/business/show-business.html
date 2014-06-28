@@ -3,10 +3,10 @@
         <div class="col-xs-12">
             <h2> {{business.name}}</h2>
 
-            <a href="#/business/{{business.$id}}/map"> Edit Map </a>
-            <a href="#/business/{{business.$id}}/shifts"> Edit Shifts </a>
-            <a href="#/business/{{business.$id}}/eventsStatuses"> Edit Events Statuses </a>
-            <a href="#/business/{{business.$id}}/events"> Events Mangamnet </a>
+            <a ui-sref="dashboard.business.map({businessId : business.$id})"> Edit Map </a>
+            <a ui-sref="dashboard.business.shifts({businessId : business.$id})"> Edit Shifts </a>
+            <a ui-sref="dashboard.business.eventsStatuses({businessId : business.$id})"> Edit Events Statuses </a>
+            <a ui-sref="dashboard.events.show({businessId : business.$id})"> Events Mangamnet </a>
 
 
         </div>

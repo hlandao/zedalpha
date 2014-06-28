@@ -15,15 +15,15 @@
                     <div class="row shift" ng-repeat="(k,shift) in ShiftsNames">
                         <div class="col-xs-12">
                             <div class="row">
-                                <div class="col-xs-4 shiftlabel"><input type="checkbox" ng-model="day.shifts[k].active"> {{shift.name}}</div>
+                                <div class="col-xs-4 shiftlabel"><input type="checkbox" ng-model="day.shifts.shifts[k].active"> {{shift.name}}</div>
                                 <div class="col-xs-4">
                                     <label>Start Time</label>
-                                    <hl-timepicker ng-model="day.shifts[k].startTime" disabled="!day.active || !day.shifts[k].active"></hl-timepicker>
+                                    <hl-timepicker ng-model="day.shifts.shifts[k].startTime" disabled="!day.active || !day.shifts.shifts[k].active"></hl-timepicker>
                                     <!--<input type="time" step="900" placeholder="HH:MM" ng-model="day.shifts[k].startTimeHour()">-->
                                 </div>
                                 <div class="col-xs-4">
                                     <label>End Time</label>
-                                    <hl-timepicker ng-model="day.shifts[k].endTime" disabled="!day.active || !day.shifts[k].active"></hl-timepicker>
+                                    <hl-timepicker ng-model="day.shifts.shifts[k].endTime" disabled="!day.active || !day.shifts.shifts[k].active"></hl-timepicker>
 
                                     <!--<input type="time" step="900" placeholder="HH:MM">-->
                                 </div>
@@ -31,7 +31,7 @@
                             <div class="row">
                                 <div class="col-xs-4 col-xs-offset-8">
                                     <label>Default Time</label>
-                                    <hl-timepicker ng-model="day.shifts[k].defaultTime" disabled="!day.active || !day.shifts[k].active"></hl-timepicker>
+                                    <hl-timepicker ng-model="day.shifts.shifts[k].defaultTime" disabled="!day.active || !day.shifts.shifts[k].active"></hl-timepicker>
 
                                     <!--<input type="time" step="900" placeholder="HH:MM">-->
                                 </div>

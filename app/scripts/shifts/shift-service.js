@@ -28,7 +28,6 @@ zedAlphaServices
                 var dateMoment = moment().week(weekNumber).day(0);
                 for(var i = 0; i < 7; ++i){
                     this.days.push(new ShiftDay(dateMoment));
-                    console.log(dateMoment.day());
                     dateMoment.add('days',1);
                 }
 
@@ -100,20 +99,41 @@ zedAlphaServices
             this.shifts.date = this.date;
             this.shifts.active = true;
             this.shifts.setByUser = false;
+            this.shifts.shifts = [];
             for(var i in ShiftsNames){
-                this.shifts[i] = Shift.defaultShiftForShiftIndex(i, null, true);
+                this.shifts.shifts[i] = Shift.defaultShiftForShiftIndex(i, null, true);
             }
         }
 
 
         return ShiftDay;
     })
-    .factory('BasicShiftDay', function($rootScope, Shifts, ShiftDay, Shift, ShiftsNames, BusinessHolder,$q, $timeout){
-        function BasicShiftDay(dayOfWeek, data){
+    .factory('BasicShiftDay', function($rootScope, Shifts, ShiftDay, Shift, ShiftsNames, BusinessHolder,$q, FullDateFormat){
+        function BasicShiftDay(dayOfWeek, data,date){
             var self = this;
 
             if(data){
                 angular.extend(this, data);
+                if(date){
+                    var oldStartTimeMoment = moment(this.startTime);
+                    var oldEndTimeMoment = moment(this.endTime);
+                    var oldDefaultTimeMoment = moment(this.defaultTime);
+
+                    var newStartTimeMoment = moment(date);
+                    var newEndTimeMoment = moment(date);
+                    var newDefaultTimeMoment = moment(date);
+
+
+                    newStartTimeMoment.hour(oldStartTimeMoment.hour()).minute(oldStartTimeMoment.minute());
+                    newEndTimeMoment.hour(oldEndTimeMoment.hour()).minute(oldEndTimeMoment.minute());
+                    newDefaultTimeMoment.hour(oldDefaultTimeMoment.hour()).minute(oldDefaultTimeMoment.minute());
+
+
+                    this.startTime = newStartTimeMoment.format(FullDateFormat);
+                    this.endTime = newEndTimeMoment.format(FullDateFormat);
+                    this.defaulttime = newDefaultTimeMoment.format(FullDateFormat);
+                }
+
                 return this;
             }
             if(angular.isNumber(dayOfWeek) && dayOfWeek <= 6){
@@ -153,9 +173,9 @@ zedAlphaServices
             this.shifts.active = true;
             this.shifts.basic = true;
             this.shifts.setByUser = false;
-
+            this.shifts.shifts = [];
             for(var i in ShiftsNames){
-                this.shifts[i] = Shift.defaultShiftForShiftIndex(i, null, true);
+                this.shifts.shifts[i] = Shift.defaultShiftForShiftIndex(i, null, true);
             }
         }
 

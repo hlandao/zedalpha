@@ -1,7 +1,6 @@
 $icon-font-path: "../bower_components/bootstrap-sass-official/vendor/assets/fonts/bootstrap/";
 
 @import '../bower_components/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap';
-@import './vendor/bootstrap-colorpicker.css';
 
 
 .browsehappy {
@@ -91,8 +90,14 @@ body {
     }
 }
 
+*{
+  box-sizing: border-box;
+}
 @import "import/admin";
-@import "import/navigation";
+@import "import/events/events";
+@import "import/events/navigation";
+@import "import/events/events-list";
+
 
 
 

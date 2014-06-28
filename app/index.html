@@ -21,16 +21,12 @@
     <!--<script src="bower_components/modernizr/modernizr.js"></script>-->
     <!-- endbuild -->
   </head>
-  <body>
+  <body ng-controller="BodyCtrl" ng-class="{'events-managment' : isEventsManagementViews}">
     <!--[if lt IE 10]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <div ng-include="'/partials/nav.html'"></div>
-    <div ng-view></div>
-    <div ng-include="'/partials/footer.html'"></div>
-
-
+    <div ui-view></div>
 
     <!-- build:js scripts/vendor.js -->
     <!-- bower:js -->
@@ -70,14 +66,14 @@
     <script src="scripts/user/module.routeSecurity.js"></script>
     <script src="scripts/user/module.waitForAuth.js"></script>
     <script src="scripts/user/login-service.js"></script>
-    <!-- DASHBOARD -->
-    <script src="scripts/dashboard/dashboard-ctrl.js"></script>
     <!-- Business -->
+    <script src="scripts/business/businesses-ctrl.js"></script>
     <script src="scripts/business/business-service.js"></script>
     <script src="scripts/business/business-ctrl.js"></script>
-    <!-- map -->
-    <script src="scripts/map/map-directive.js"></script>
-    <!-- events statuses -->
+    <script src="scripts/business/business-nav-ctrl.js"></script>
+    <!-- Map -->
+    <script src="scripts/map/map-editor-directive.js"></script>
+    <!-- Events statuses -->
     <script src="scripts/events-statuses/events-statuses-ctrl.js"></script>
     <!-- shifts -->
     <script src="scripts/shifts/shift-ctrl.js"></script>
@@ -85,6 +81,12 @@
     <script src="scripts/shifts/shift-service.js"></script>
     <script src="scripts/shifts/shifts-service.js"></script>
     <script src="scripts/shifts/shifts-editor.js"></script>
+    <!-- Events -->
+    <script src="scripts/events/events-date-holder-service.js"></script>
+    <script src="scripts/events/events-navigation-ctrl.js"></script>
+    <script src="scripts/events/shifts/shifts-day-holder-service.js"></script>
+    <script src="scripts/events/shifts/shift-selector-ctrl.js"></script>
+
     <!-- GENERAL -->
     <script src="scripts/directives/html-directives.js"></script>
     <script src="scripts/directives/timepicker-directive.js"></script>
@@ -92,7 +94,10 @@
     <script src="scripts/translations.js"></script>
     <script src="scripts/firebase-service.js"></script>
     <script src="scripts/routes.js"></script>
+    <script src="scripts/body-ctrl.js"></script>
     <script src="scripts/general/alert-factory.js"></script>
+    <script src="scripts/general/datetime-helpers.js"></script>
+
 
 
     <!-- inject:partials -->

@@ -9,7 +9,7 @@ var zedAlphaConfigModule = zedAlphaConfigModule || angular.module('zedalpha.conf
     .constant('version', '0.6')
 
     // where to redirect users if they need to authenticate (see module.routeSecurity)
-    .constant('loginRedirectPath', '/login')
+    .constant('loginRedirectPath', '/')
 
     // your Firebase URL goes here
     .constant('FBURL', 'https://zed2alpha.firebaseio.com')

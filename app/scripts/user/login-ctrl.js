@@ -23,7 +23,7 @@ zedAlphaControllers
                 $scope.err = err? err + '' : null;
                 if( !err ) {
                     cb && cb(user);
-                    $location.path('/dashboard');
+//                    $location.path('/dashboard');
                 }
             });
         }
@@ -40,7 +40,7 @@ zedAlphaControllers
                     // must be logged in before I can write to my profile
                     $scope.login(function() {
                         loginService.createProfile(user.uid, user.email);
-                        $location.path('/dashboard');
+//                        $location.path('/dashboard');
                     });
                 }
             });

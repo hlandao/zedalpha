@@ -2,39 +2,39 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory('UserHolder', ['$rootScope', '$q', function($rootScope, $q){
+    .factory('UserHolder', ['$rootScope', '$q','$firebase','firebaseRef','$log', function($rootScope, $q,$firebase,firebaseRef,$log){
         var initting = $q.defer();
-
+        var initialized = false;
         $rootScope.$on('$firebaseSimpleLogin:login', function(e, user){
+            $log.debug('[UserHolder] : user is logged in');
+
+            _userHolder.userProfileRef =  firebaseRef('users/' + user.uid);
+            _userHolder.$userProfile =  $firebase(_userHolder.userProfileRef);
             _userHolder.auth = user;
-            initting.resolve(_userHolder);
+
+
+            if(!initialized){
+                initialized = true;
+                initting.resolve(_userHolder);
+            }
+
         });
         $rootScope.$on('$firebaseSimpleLogin:logout', function(){
+            $log.debug('[UserHolder] : user is logged out');
             _userHolder.auth = null;
-            initting.resolve(_userHolder);
+            _userHolder.userProfileRef = null;
+            _userHolder.$userProfile = null;
+            if(!initialized){
+                initialized = true;
+                initting.resolve(_userHolder);
+            }
         });
 
         var _userHolder = {
-            auth : null,
-            ready : function(){
+            promise : function(){
                 return initting.promise
             }
         };
 
         return _userHolder;
-    }])
-    .factory('User',['$rootScope', 'UserHolder', 'firebaseRef', '$firebase', function($rootScope, UserHolder, firebaseRef, $firebase){
-
-        var _$userProfile;
-        var _userProfileRef;
-        var $userProfile = function(){
-            if(_$userProfile) return _$userProfile;
-            _userProfileRef = _userProfileRef || firebaseRef('users/' + UserHolder.auth.uid);
-            return $firebase(_userProfileRef);
-        }
-
-        return {
-            $userProfile : $userProfile
-        }
     }]);
-

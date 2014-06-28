@@ -1,16 +1,17 @@
 (function(angular) {
    angular.module('routeSecurity', [])
-      .run(['$injector', '$location', '$rootScope', 'loginRedirectPath', function($injector, $location, $rootScope, loginRedirectPath) {
-         if( $injector.has('$route') ) {
-            new RouteSecurityManager($location, $rootScope, $injector.get('$route'), loginRedirectPath);
+      .run(['$injector', '$location', '$rootScope', 'loginRedirectPath','$urlRouter', function($injector, $location, $rootScope, loginRedirectPath, $urlRouter) {
+         if( $injector.has('$state') ) {
+            new RouteSecurityManager($location, $rootScope, $injector.get('$state'), loginRedirectPath, $urlRouter);
          }
       }]);
 
-   function RouteSecurityManager($location, $rootScope, $route, path) {
-      this._route = $route;
+   function RouteSecurityManager($location, $rootScope, $state, loginPath, $urlRouter) {
+      this._state = $state;
+      this._urlRouter = $urlRouter;
       this._location = $location;
       this._rootScope = $rootScope;
-      this._loginPath = path;
+      this._loginPath = loginPath;
       this._redirectTo = null;
       this._authenticated = !!($rootScope.auth && $rootScope.auth.user);
       this._init();
@@ -23,8 +24,9 @@
 
          // Set up a handler for all future route changes, so we can check
          // if authentication is required.
-         self._rootScope.$on("$routeChangeStart", function(e, next) {
-            self._authRequiredRedirect(next, self._loginPath);
+         self._rootScope.$on("stateChangeStart", function(event, toState, toParams, fromState, fromParams) {
+             console.log('stateChangeStart', event, toState, toParams, fromState, fromParams);
+            self._authRequiredRedirect(event, toState, toParams, fromState, fromParams, self._loginPath);
          });
 
          self._rootScope.$on('$firebaseSimpleLogin:login', angular.bind(this, this._login));
@@ -34,8 +36,8 @@
 
       _checkCurrent: function() {
          // Check if the current page requires authentication.
-         if (this._route.current) {
-            this._authRequiredRedirect(this._route.current, this._loginPath);
+         if (this._state.current) {
+            this._authRequiredRedirect(null, this._state.current, null,null,null, this._loginPath);
          }
       },
 
@@ -46,8 +48,8 @@
             this._redirectTo = null;
          }
          else if( this._location.path() === this._loginPath ) {
-            this._location.replace();
-            this._location.path('/');
+//            this._location.replace();
+            this._location.path('/dashboard');
          }
       },
 
@@ -70,18 +72,21 @@
 
       // A function to check whether the current path requires authentication,
       // and if so, whether a redirect to a login page is needed.
-      _authRequiredRedirect: function(route, path) {
-         if (route.authRequired && !this._authenticated){
-            if (route.pathTo === undefined) {
+      _authRequiredRedirect: function(e, toState, toParams, fromState, fromParams, _loginPath) {
+          if(e) e.prevnetDefault();
+         if (toState.authRequired && !this._authenticated){
+            if (toState.pathTo === undefined) {
                this._redirectTo = this._location.path();
             } else {
-               this._redirectTo = route.pathTo === path ? "/" : route.pathTo;
+               this._redirectTo = toState.pathTo === _loginPath ? "/" : route.pathTo;
             }
-            this._redirect(path);
+            return this._redirect(_loginPath);
          }
          else if( this._authenticated && this._location.path() === this._loginPath ) {
-            this._redirect('/');
+            return this._redirect('/dashboard');
          }
+          return this._urlRouter.sync();
+
       }
    };
 })(angular);

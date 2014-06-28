@@ -110,31 +110,20 @@ zedAlphaDirectives
     .directive('map', function(firebaseRef, UserHolder, $timeout) {
         return {
             restrict: 'E',
-            templateUrl : 'partials/map/map.html',
+            templateUrl : 'partials/map/map-editor.html',
             link: function(scope, elem, attrs) {
                 var mapRef, map, businessId,canvas, objModified;
 
                 canvas = new fabric.Canvas('canvas', {backgroundColor: 'rgb(240,240,240)'});
-//                var rect = new fabric.Rect({
-//                    width: 100,
-//                    height: 100,
-//                    top: 100,
-//                    left: 100,
-//                    fill: 'rgba(255,200,0,0.5)'
-//                });
-//                canvas.add(rect);
-//                canvas.calcOffset();
-//                canvas.renderAll();
 
 
                 attrs.$observe('businessId', function(val){
-                    UserHolder.ready().then(function(){
+                    UserHolder.promise().then(function(){
                         if(UserHolder.auth){
                             businessId = val;
                             mapRef = firebaseRef('users/' +UserHolder.auth.uid + '/businesses/'+businessId+'/map');
                             mapRef.once('value', function(snapshot){
                                 map = snapshot.val();
-                                console.log('map',map);
                                 renderMap(map);
                             });
 
@@ -189,7 +178,7 @@ zedAlphaDirectives
                 });
 
                 canvas.on('selection:cleared', function(e){
-                    scope.$apply(function(){
+                    $timeout(function(){
                         scope.selectedShape = null;
                     });
                 });

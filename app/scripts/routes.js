@@ -4,64 +4,140 @@ angular.module('zedalpha.routes', [])
 
     // configure views; the authRequired parameter is used for specifying pages
     // which should only be available while logged in
-    .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
-        $locationProvider.html5Mode(false);
+    .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+
+        var userHolderResolver = function(UserHolder){
+            return UserHolder.promise();
+        };
+
+        var businessResolver = function(UserHolder, BusinessHolder, $stateParams, $q){
+            var defer = $q.defer();
+            return UserHolder.promise().then(function(){
+                return BusinessHolder.init($stateParams.businessId).then(function(){
+                    defer.resolve();
+                });
+            });
+            return defer.promise;
+        };
 
 
-        $routeProvider.when('/home', {
-            templateUrl: 'partials/home/home.html',
-            controller: 'LoginCtrl'
-        });
 
-        $routeProvider.when('/dashboard', {
+        $stateProvider
+            .state('home',{
+                url : '/',
+                views : {
+                    "" : {
+                        templateUrl: 'partials/home/home.html',
+                        controller: 'LoginCtrl'
+                    },
+                    "navigation@home" : {
+                        templateUrl: 'partials/nav-home.html'
+                    }
+                }
+            });
+
+
+        $stateProvider.state('dashboard', {
             authRequired: true,
-            templateUrl: 'partials/dashboard/dashboard.html',
-            controller: 'DashboardCtrl'
-        });
+            resolve : {
+                userHolder : userHolderResolver
+            },
+            abstract : true,
+            templateUrl : "partials/dashboard/dashboard.html"
 
-
-        $routeProvider.when('/business/new', {
-            authRequired: true,
-            templateUrl: 'partials/business/new-business.html',
-            controller: 'BusinessCtrl'
-        });
-
-        $routeProvider.when('/business/:businessId/map', {
-            authRequired: true,
-            templateUrl: 'partials/business/map-business.html',
-            controller: 'BusinessCtrl'
-        });
-
-        $routeProvider.when('/business/:businessId/shifts', {
-            authRequired: true,
-            templateUrl: 'partials/business/shifts-business.html',
-            controller: 'BusinessCtrl'
-        });
-
-        $routeProvider.when('/business/:businessId/eventsStatuses', {
-            authRequired: true,
-            templateUrl: 'partials/business/events-statuses-business.html',
-            controller: 'EventsStatusesCtrl'
-        });
-
-        $routeProvider.when('/business/:businessId/events', {
-            authRequired: true,
-            templateUrl: 'partials/events/events.html',
-//            controller: 'EventsCtrl'
-        });
-
-
-
-        $routeProvider.when('/business/:businessId', {
-            authRequired: true,
+        }).state('dashboard.main',{
+            url : '/dashboard',
+            views : {
+                "navigation" : {
+                    templateUrl : "partials/nav-dashboard.html"
+                },
+                "main" : {
+                    templateUrl: 'partials/business/list-business.html',
+                    controller : 'BusinessesCtrl'
+                }
+            }
+        }).state('dashboard.business',{
+                url : '/business',
+                abstract : true,
+                views : {
+                    "navigation" : {
+                        templateUrl : "partials/nav-business.html",
+                        controller: "BusinessNavCtrl"
+                    },
+                    "main" : {
+                        template : "<ui-view/>"
+                    }
+                }
+        }).state('dashboard.business.show', {
+            url : '/:businessId',
             templateUrl: 'partials/business/show-business.html',
-            controller: 'BusinessCtrl'
-        });
+            controller: 'BusinessCtrl',
+            resolve : {
+                businessResolver : businessResolver
+            }
+        }).state('dashboard.business.new', {
+            url : '/new',
+            templateUrl: 'partials/business/new-business.html',
+            controller: 'BusinessCtrl',
+            resolve : {
+                businessResolver : businessResolver
+            }
+        }).state('dashboard.business.map', {
+                url : '/:businessId/map',
+                templateUrl: 'partials/business/map-business.html',
+                controller: 'BusinessCtrl',
+                resolve : {
+                    businessResolver : businessResolver
+                }
+        }).state('dashboard.business.shifts',{
+                url : '/:businessId/shifts',
+                templateUrl: 'partials/business/shifts-business.html',
+                controller: 'BusinessCtrl',
+                resolve : {
+                    businessResolver : businessResolver
+                }
+        }).state('dashboard.business.eventsStatuses',{
+                url : '/:businessId/eventsStatuses',
+                templateUrl: 'partials/business/events-statuses-business.html',
+                controller: 'EventsStatusesCtrl',
+                resolve : {
+                    businessResolver : businessResolver
+                }
+        }).state('dashboard.events', {
+                abstract : true,
+                views : {
+                    "navigation" : {
+                        template : ""
+                    },
+                    "main" : {
+                        templateUrl : "partials/events/events.html"
+                    }
+                }
+        }).state('dashboard.events.show',{
+                url : '/events/:businessId',
+                views: {
+                    'navigation@dashboard.events' : {
+                        templateUrl: 'partials/events/nav.html',
+                        controller: 'EventsNavigationCtrl'
+                    },
+                    'map@dashboard.events': {
+                        templateUrl: 'partials/events/map.html'
+//                        controller: 'MapCtrl'
+                    },
+                    'events-list@dashboard.events': {
+                        templateUrl: 'partials/events/events-list.html'
+//                        controller: 'EventsListCtrl'
+                    }
+                },
+                resolve : {
+                    businessResolver : businessResolver
+                }
+            });
 
 
 
 
 
-        $routeProvider.otherwise({redirectTo: '/home'});
+        $urlRouterProvider.otherwise("/");
 
     }]);
