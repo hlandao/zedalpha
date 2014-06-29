@@ -4,7 +4,7 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 zedAlphaServices
     .factory('Event', function(){
         function Event(data){
-            agnualr.extend(this, data);
+            angular.extend(this, data);
             return this;
         }
 

@@ -32,25 +32,48 @@
             <div class="col-xs-12">
                <table class="table" id="events-table">
                    <thead>
-                        <th class="status-col"> Status </th>
-                        <th class="name-col"> Name </th>
-                        <th class="guests-col"> Guests </th>
-                        <th class="seats-col"> Seats </th>
-                        <th class="time-col"> Time </th>
+                        <th class="status-col"> {{ 'STATUS' | translate }} </th>
+                        <th class="name-col"> {{ 'NAME' | translate }} </th>
+                        <th class="guests-col"> {{ 'GUESTS' | translate }} </th>
+                        <th class="seats-col"> {{ 'SEATS' | translate }} </th>
+                        <th class="time-col"> {{ 'TIME' | translate }} </th>
                    </thead>
-                   <tbody class="editedEvent">
+                   <tbody class="editedEvent" ng-show="newEvent">
                         <tr>
                             <td class="status-col"> <hl-status-selector ng-model="newEvent.status"></hl-status-selector> </td>
-                            <td class="name-col"> <input type="text" ng-model="newEvent.name" placeholder="Name" class="form-control"> </td>
-                            <td class="guests-col"> <input type="text" ng-model="newEvent.guests" placeholder="Guests" class="form-control"> </td>
-                            <td class="seats-col"> <input type="text" ng-model="newEvent.seats" placeholder="Seats" class="form-control"> </td>
-                            <td class="time-col"> <hl-timepicker ng-model="newEvent.date" ></hl-timepicker> </td>
+                            <td class="name-col"> <input type="text" ng-model="newEvent.name" placeholder="{{ 'NAME' | translate }}" class="form-control"> </td>
+                            <td class="guests-col"> <input type="text" ng-model="newEvent.guests" placeholder="0" class="form-control"> </td>
+                            <td class="seats-col"> <input type="text" ng-model="newEvent.seats" hl-seats-input  class="form-control"> </td>
+                            <td class="time-col"> <hl-timepicker ng-model="newEvent.startTime" ></hl-timepicker> </td>
+                        </tr>
+                        <tr ng-show="!newEvent.isOccasional">
+                            <td colspan="3"> <input type="text" ng-model="newEvent.phone" placeholder="{{ 'PHONE' | translate }}" class="form-control"></td>
+                            <td colspan="2"> <input type="text" ng-model="newEvent.email" placeholder="{{ 'EMAIL' | translate }}" class="form-control"> </td>
+
+                        </tr>
+                        <tr ng-show="!newEvent.isOccasional">
+                            <td colspan="3"> <input type="text" ng-model="newEvent.contactPerson" placeholder="{{ 'CONTACT_PERSON' | translate }}" class="form-control"> </td>
+                            <td colspan="2"> <select><option selected>Event Type</option></select> </td>
+
+                        </tr>
+                        <tr ng-show="!newEvent.isOccasional">
+                            <td colspan="5"> <input type="text" ng-model="newEvent.contactComment" placeholder="{{ 'CONTACT_COMMENT' | translate }}" class="form-control"> </td>
+                        </tr>
+                        <tr ng-show="!newEvent.isOccasional">
+                            <td colspan="5"> <input type="text" ng-model="newEvent.comment" placeholder="{{ 'COMMENT' | translate }}" class="form-control"> </td>
                         </tr>
                         <tr>
-                            <td colspan="2">  </td>
-                            <td colspan="3">  </td>
+                            <td colspan="5"> <input type="text" ng-model="newEvent.hostess" placeholder="{{ 'HOSTESS' | translate }}" class="form-control"> </td>
                         </tr>
 
+                        <tr>
+                            <td colspan="3"> <span> {{ 'EVENT_DURATION' | translate }}</span> <select><option>0</option></select> </td>
+                            <td colspan="2">
+                                <button class="btn btn-default"> {{ 'BACK' | translate }}</button>
+                                <button class="btn btn-danger"> {{ 'DELETE' | translate }}</button>
+                                <button class="btn btn-success"> {{ 'SAVE' | translate }}</button>
+                            </td>
+                        </tr>
                    </tbody>
                </table>
             </div>

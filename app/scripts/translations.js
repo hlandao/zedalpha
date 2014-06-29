@@ -22,6 +22,25 @@ zedAlphaConfigModule
         BUSINESS_SIZE: 'Business Size',
         // GENERAL
         CREATE: 'Create',
+        // EVENTS
+        STATUS: 'Status',
+        NAME: 'Name',
+        GUESTS: 'Guests',
+        SEATS: 'Seats',
+        TIME: 'Time',
+        PHONE: 'Phone',
+        EMAIL: 'Email',
+        CONTACT_PERSON: 'Contact',
+        CONTACT_COMMENT: 'Contact Comment',
+        COMMENT: 'Comment',
+        HOSTESS: 'Hostess',
+        EVENT_DURATION: 'Duration',
+        BACK: 'Back',
+        DELETE: 'Delete',
+        SAVE : 'Save',
+        OCCASIONAL : 'Walkin'
+
+
     });
     $translateProvider.preferredLanguage('en');
 });

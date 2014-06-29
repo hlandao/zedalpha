@@ -91,7 +91,6 @@ zedAlphaServices
         return {
             basicShiftForDayOfWeek : function(date){
                 var dayOfWeek = moment(date).day();
-                console.log(date);
                 return new BasicShiftDay(null, $basic[dayOfWeek], date);
             }
         }

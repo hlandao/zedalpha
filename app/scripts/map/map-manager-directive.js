@@ -32,7 +32,7 @@ zedAlphaDirectives
 //                        height:30,
 //                        visible : false
 //                    });
-                    walkInButton,
+                    occasionalButton,
                     destinationButton;
 
 
@@ -55,13 +55,16 @@ zedAlphaDirectives
                     if(map){
                         canvas.loadFromJSON(JSON.stringify(map), function(){
                             fabric.Image.fromURL('images/walkin.png', function(oImg) {
-                                walkInButton = oImg;
-                                canvas.add(walkInButton);
-                            },angular.extend(buttonDefault, {name : "walkInButton", type: "button"}));
+                                occasionalButton = oImg;
+                                occasionalButton.name = "occasional";
+                                canvas.add(occasionalButton);
+                            },angular.extend(buttonDefault, {type: "button"}));
+
                             fabric.Image.fromURL('images/dest.png', function(oImg) {
                                 destinationButton = oImg;
+                                destinationButton.name = "destination";
                                 canvas.add(destinationButton);
-                            }, angular.extend(buttonDefault, {name : "destinationButton", type: "button"}));
+                            }, angular.extend(buttonDefault, { type: "button"}));
 
 
                             canvas.renderAll();
@@ -76,7 +79,29 @@ zedAlphaDirectives
 
                 canvas.on('mouse:up', function(e){
                    var target = e.target;
-                    console.log('target',target,e);
+                    if(!isAddingNewEvent()){
+                        clickHandlerForNormalState(target,e);
+                    }else{
+                        clickHandlerForAddingNewEventState(target,e);
+                    }
+                });
+
+                var clickHandlerForAddingNewEventState = function (target, e){
+                    if(!target) return;
+                    if(~selectedShapes.indexOf(target)){
+                        scope.$apply(function(){
+                            scope.$parent.newEvent.seats = shapesArrToSeatsDic();
+                        });
+                    }else{
+                        target.selectNormal();
+                        $timeout(function(){
+                            selectedShapes.push(target);
+                        });
+                    }
+                    canvas.renderAll();
+                };
+
+                var clickHandlerForNormalState = function(target, e){
                     if(target){
                         if(target.type == 'seatShape'){
                             target.selectNormal();
@@ -85,11 +110,7 @@ zedAlphaDirectives
                                 selectedShapes.push(target);
                             });
                         }else if(target.type == 'button'){
-                            if(target.name == "walkInButton"){
-                                newEventForSelectedShaped();
-                            }else if(target.text == "destinationButton"){
-
-                            }
+                            newEventForSelectedShaped(target.name);
                         }
                     }else{
                         angular.forEach(selectedShapes, function(shape){
@@ -100,17 +121,16 @@ zedAlphaDirectives
                             selectedShapes = [];
                         });
                         hideButtons();
-
                     }
                     canvas.renderAll();
-                });
+                }
 
                 var showButtonsNearShape = function(shape){
-                    walkInButton.setTop(shape.top - (walkInButton.height/2-shape.height/2));
-                    walkInButton.setLeft(shape.left-walkInButton.width);
-                    walkInButton.setVisible(true);
-                    walkInButton.setCoords();
-                    destinationButton.setTop(shape.top - (walkInButton.height/2-shape.height/2));
+                    occasionalButton.setTop(shape.top - (occasionalButton.height/2-shape.height/2));
+                    occasionalButton.setLeft(shape.left-occasionalButton.width);
+                    occasionalButton.setVisible(true);
+                    occasionalButton.setCoords();
+                    destinationButton.setTop(shape.top - (occasionalButton.height/2-shape.height/2));
                     destinationButton.setLeft(shape.left+shape.width);
                     destinationButton.setVisible(true);
                     destinationButton.setCoords();
@@ -118,20 +138,26 @@ zedAlphaDirectives
                 };
 
                 var hideButtons = function(){
-                    walkInButton.setVisible(false);
+                    occasionalButton.setVisible(false);
                     destinationButton.setVisible(false);
-
                 };
+
+                var isAddingNewEvent = function(){
+                    return scope.$parent.newEvent;
+                }
                 
-                var newEventForSelectedShaped = function(){
-                    scope.newEventWithSeatsDic(shapesArrToSeatsDic());
+                var newEventForSelectedShaped = function(occasionalOrDestination){
+                    scope.$apply(function(){
+                        scope.$parent.newEventWithSeatsDic(occasionalOrDestination, shapesArrToSeatsDic());
+                    });
+                    hideButtons();
                 };
                 
                 var shapesArrToSeatsDic = function(){
                     var output = {};
                     angular.forEach(selectedShapes, function(shape){
                         if(shape.type == "seatShape"){
-                            output[seatNumber] = true;
+                            output[shape.seatNumber] = true;
                         }
                     });
                     return output;
