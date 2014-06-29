@@ -19,38 +19,22 @@ zedAlphaDirectives
                         lockMovementY : true,
                         visible : false
                     },
-//                    destinationButton = new LabeledRect({
-//                        label : 'Destination',
-//                        fill : '#add8e6',
-//                        hasBorders : false,
-//                        hasControls : false,
-//                        lockRotation : true,
-//                        lockScalingX : true,
-//                        lockMovementX : true,
-//                        lockMovementY : true,
-//                        width:100,
-//                        height:30,
-//                        visible : false
-//                    });
                     occasionalButton,
-                    destinationButton;
+                    destinationButton,
+                    selectedShapes=[];
 
-
-
-
-
-                var selectedShapes=[];
-
+                // ------- Init Canvas and Map --------//
                 canvas = new fabric.Canvas('canvas', {backgroundColor: 'rgb(240,240,240)'});
                 canvas.hoverCursor = 'pointer';
 
+                // init map db connection
                 $mapRef = BusinessHolder.$business.$child('map').$on('loaded', function(){
                     $mapRef.$off('loaded');
                     map = $mapRef;
                     renderMap(map);
                 });
 
-
+                // render map for the first time (after getting map from db)
                 var renderMap = function(map){
                     if(map){
                         canvas.loadFromJSON(JSON.stringify(map), function(){
@@ -66,7 +50,6 @@ zedAlphaDirectives
                                 canvas.add(destinationButton);
                             }, angular.extend(buttonDefault, { type: "button"}));
 
-
                             canvas.renderAll();
                             angular.forEach(canvas._objects, function(shape){
                                 if(shape.type=="seatShape") shape.setToStatic();
@@ -77,6 +60,7 @@ zedAlphaDirectives
                 };
 
 
+                // ----- Canvas Listeners ------ //
                 canvas.on('mouse:up', function(e){
                    var target = e.target;
                     if(!isAddingNewEvent()){
@@ -89,18 +73,17 @@ zedAlphaDirectives
                 var clickHandlerForAddingNewEventState = function (target, e){
                     if(!target) return;
                     if(~selectedShapes.indexOf(target)){
-                        scope.$apply(function(){
-                            scope.$parent.newEvent.seats = shapesArrToSeatsDic();
-                        });
+                        removeShapeFromShapes(target);
+                        updateNewEventSeats();
                     }else{
                         target.selectNormal();
-                        $timeout(function(){
-                            selectedShapes.push(target);
-                        });
+                        addShapeToShapes(target);
+                        updateNewEventSeats();
                     }
                     canvas.renderAll();
                 };
 
+                // click handler for normal state
                 var clickHandlerForNormalState = function(target, e){
                     if(target){
                         if(target.type == 'seatShape'){
@@ -125,6 +108,20 @@ zedAlphaDirectives
                     canvas.renderAll();
                 }
 
+                // -------- Map Helpers -------//
+                var addShapeToShapes = function(shape, render){
+                    selectedShapes.push(shape);
+                    if(render) canvas.renderAll();
+                };
+
+
+                var removeShapeFromShapes = function(shape, render){
+                    selectedShapes = _.without(selectedShapes, shape);
+                    shape.backToNormalState();
+                    if(render) canvas.renderAll();
+                };
+
+
                 var showButtonsNearShape = function(shape){
                     occasionalButton.setTop(shape.top - (occasionalButton.height/2-shape.height/2));
                     occasionalButton.setLeft(shape.left-occasionalButton.width);
@@ -142,10 +139,18 @@ zedAlphaDirectives
                     destinationButton.setVisible(false);
                 };
 
+
+                // ------- Sync with Events Ctrl --------//
                 var isAddingNewEvent = function(){
                     return scope.$parent.newEvent;
                 }
-                
+
+                var updateNewEventSeats = function (){
+                    scope.$apply(function(){
+                        scope.$parent.newEvent.seats = shapesArrToSeatsDic();
+                    });
+                }
+
                 var newEventForSelectedShaped = function(occasionalOrDestination){
                     scope.$apply(function(){
                         scope.$parent.newEventWithSeatsDic(occasionalOrDestination, shapesArrToSeatsDic());
@@ -162,6 +167,17 @@ zedAlphaDirectives
                     });
                     return output;
                 }
+
+                var newEventWatcher = scope.$parent.$watch('newEvent', function(newVal, oldVal){
+
+                });
+
+
+                // -------- $destory -------//
+                
+                scope.$on('$destroy', function(){
+                    newEventWatcher();
+                });
             }
         };
     });

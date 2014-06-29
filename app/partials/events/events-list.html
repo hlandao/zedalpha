@@ -69,8 +69,8 @@
                         <tr>
                             <td colspan="3"> <span> {{ 'EVENT_DURATION' | translate }}</span> <select><option>0</option></select> </td>
                             <td colspan="2">
-                                <button class="btn btn-default"> {{ 'BACK' | translate }}</button>
-                                <button class="btn btn-danger"> {{ 'DELETE' | translate }}</button>
+                                <button class="btn btn-default" ng-click="closeNewEvent()"> {{ 'BACK' | translate }}</button>
+                                <button class="btn btn-danger" ng-show=""> {{ 'DELETE' | translate }}</button>
                                 <button class="btn btn-success"> {{ 'SAVE' | translate }}</button>
                             </td>
                         </tr>

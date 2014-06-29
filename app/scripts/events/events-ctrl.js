@@ -16,7 +16,11 @@ zedAlphaControllers
                 status : isOccasional ? OccasionalEvent : OrderedEvent,
                 name : isOccasional ? $filter('translate')('OCCASIONAL') : ''
             });
-        }
+        };
+
+        $scope.closeNewEvent = function(){
+            $scope.newEvent=null;
+        };
 
         $scope.filters = ['all','seating','ordered','occasional'];
         $scope.selectedFilter = $scope.filters[0];
