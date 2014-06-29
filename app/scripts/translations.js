@@ -38,7 +38,8 @@ zedAlphaConfigModule
         BACK: 'Back',
         DELETE: 'Delete',
         SAVE : 'Save',
-        OCCASIONAL : 'Walkin'
+        OCCASIONAL : 'Walkin',
+        ERROR_MSG_COLLISION: "Error : event collide with another event"
 
 
     });

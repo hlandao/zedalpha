@@ -8,5 +8,9 @@ zedAlphaServices
             return this;
         }
 
+        Event.prototype.validate = function(){
+
+        };
+
         return Event;
     });

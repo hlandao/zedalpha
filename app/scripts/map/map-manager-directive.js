@@ -89,20 +89,12 @@ zedAlphaDirectives
                         if(target.type == 'seatShape'){
                             target.selectNormal();
                             showButtonsNearShape(target);
-                            $timeout(function(){
-                                selectedShapes.push(target);
-                            });
+                            addShapeToShapes(target);
                         }else if(target.type == 'button'){
                             newEventForSelectedShaped(target.name);
                         }
                     }else{
-                        angular.forEach(selectedShapes, function(shape){
-                            shape.backToNormalState();
-                        });
-
-                        $timeout(function(){
-                            selectedShapes = [];
-                        });
+                        unSelectAllShapes();
                         hideButtons();
                     }
                     canvas.renderAll();
@@ -110,7 +102,9 @@ zedAlphaDirectives
 
                 // -------- Map Helpers -------//
                 var addShapeToShapes = function(shape, render){
-                    selectedShapes.push(shape);
+                    $timeout(function(){
+                        selectedShapes.push(shape);
+                    });
                     if(render) canvas.renderAll();
                 };
 
@@ -132,6 +126,17 @@ zedAlphaDirectives
                     destinationButton.setVisible(true);
                     destinationButton.setCoords();
 
+                };
+
+                var unSelectAllShapes = function(render){
+                    angular.forEach(selectedShapes, function(shape){
+                        shape.backToNormalState();
+                    });
+
+                    $timeout(function(){
+                        selectedShapes = [];
+                    });
+                    if(render) canvas.renderAll();
                 };
 
                 var hideButtons = function(){
@@ -169,12 +174,15 @@ zedAlphaDirectives
                 }
 
                 var newEventWatcher = scope.$parent.$watch('newEvent', function(newVal, oldVal){
-
+                    // new Event was closed -  unselect all shapes
+                    if(!newVal && oldVal){
+                        unSelectAllShapes(true);
+                    }
                 });
 
 
                 // -------- $destory -------//
-                
+
                 scope.$on('$destroy', function(){
                     newEventWatcher();
                 });

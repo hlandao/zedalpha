@@ -71,16 +71,17 @@ angular.module('zedalpha.routes', [])
                         template : "<ui-view/>"
                     }
                 }
-        }).state('dashboard.business.show', {
-            url : '/:businessId',
-            templateUrl: 'partials/business/show-business.html',
+        }).state('dashboard.business.new', {
+            url : '/new',
+            templateUrl: 'partials/business/new-business.html',
             controller: 'BusinessCtrl',
             resolve : {
                 businessResolver : businessResolver
             }
-        }).state('dashboard.business.new', {
-            url : '/new',
-            templateUrl: 'partials/business/new-business.html',
+
+        }).state('dashboard.business.show', {
+            url : '/:businessId',
+            templateUrl: 'partials/business/show-business.html',
             controller: 'BusinessCtrl',
             resolve : {
                 businessResolver : businessResolver
