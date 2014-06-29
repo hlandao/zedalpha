@@ -55,6 +55,9 @@ angular.module('zedalpha.routes', [])
                     templateUrl: 'partials/business/list-business.html',
                     controller : 'BusinessesCtrl'
                 }
+            },
+            resolve : {
+                userHolder : userHolderResolver
             }
         }).state('dashboard.business',{
                 url : '/business',

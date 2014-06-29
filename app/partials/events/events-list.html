@@ -8,3 +8,52 @@
         </select>
     </div>
 </div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <form class="form-inline" role="form">
+            <div class="form-group">
+                <label class="sr-only">Search</label>
+                <input type="text" class="form-control" placeholder="Search">
+            </div>
+            <button class="btn btn-default">+ Add</button>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="row" id="events-lists-filter-buttons-row">
+            <div class="col-xs-12">
+                <button class="btn" ng-repeat="filter in filters" ng-click="selectedFilter = filter" ng-class="{'btn-default' : (filter != selectedFilter), 'btn-warning' : (filter == selectedFilter)}">{{filter}}</button>
+            </div>
+        </div>
+        <div class="row" id="the-events-list-row">
+            <div class="col-xs-12">
+               <table class="table" id="events-table">
+                   <thead>
+                        <th class="status-col"> Status </th>
+                        <th class="name-col"> Name </th>
+                        <th class="guests-col"> Guests </th>
+                        <th class="seats-col"> Seats </th>
+                        <th class="time-col"> Time </th>
+                   </thead>
+                   <tbody class="editedEvent">
+                        <tr>
+                            <td class="status-col"> <hl-status-selector ng-model="newEvent.status"></hl-status-selector> </td>
+                            <td class="name-col"> <input type="text" ng-model="newEvent.name" placeholder="Name" class="form-control"> </td>
+                            <td class="guests-col"> <input type="text" ng-model="newEvent.guests" placeholder="Guests" class="form-control"> </td>
+                            <td class="seats-col"> <input type="text" ng-model="newEvent.seats" placeholder="Seats" class="form-control"> </td>
+                            <td class="time-col"> <hl-timepicker ng-model="newEvent.date" ></hl-timepicker> </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">  </td>
+                            <td colspan="3">  </td>
+                        </tr>
+
+                   </tbody>
+               </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -5,7 +5,14 @@ zedAlphaServices
     .factory('DateHolder', function(){
         var _date = {};
 
-        _date.current = new Date();
+        var now = moment();
+
+        if(now.hour() < 4){
+            _date.current = new Date(now.subtract('days',1).hour(23).minute(0));
+        }else{
+            _date.current = new Date();
+        }
+
 
         return _date;
     })

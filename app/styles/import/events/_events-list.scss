@@ -1,2 +1,46 @@
 #events-list{
+  #events-lists-filter-buttons-row{
+    padding:15px;
+    border-radius: 20%;
+    border-bottom : 2px solid #f0ad4e;
+    .col-xs-12{
+      .btn{
+        margin:0px 3px;
+      }
+    }
+  }
+
+  #events-table{
+  .status-col{
+    width:10%;
+  }
+  .name-col{
+    width:30%;
+  }
+  .guests-col{
+    width:15%;
+  }
+  .seats-col{
+    width:25%;
+  }
+  .time-col{
+    width:30%;
+  }
+
+  thead{
+      th{
+        color:#eee;
+      }
+    }
+    tbody{
+      td{
+        color:white;
+      }
+    }
+  }
+  tbody.editedEvent{
+    input{
+      width:50px;
+    }
+  }
 }

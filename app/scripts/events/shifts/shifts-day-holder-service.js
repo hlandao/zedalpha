@@ -17,7 +17,8 @@ zedAlphaServices
                     return _shift.selected = currentShift;
                 }
             }
-            _shiftDay.shifts[0].selected = true;
+            var l =_shiftDay.shifts.length;
+            if(l) _shift.selected = _shiftDay.shifts[l-1];
         };
 
         var selectDefaultTimeForShift = function(shift){
@@ -48,12 +49,12 @@ zedAlphaServices
         var checkIfMomentTimeIsLaterThanCurrentEndingTime = function(dateMoment){
             var latestEndingTimeMoment, thisEndingTimeMoment;
             if (!_shift.current) return true;
-            for(var i = 0; i < _shift.shifts.length; ++i){
+            for(var i = 0; i < _shift.current.shifts.length; ++i){
                 if(!latestEndingTimeMoment){
-                    latestEndingTimeMoment = moment(_shift.shifts[i].endTime);
+                    latestEndingTimeMoment = moment(_shift.current.shifts[i].endTime);
                     continue;
                 }
-                thisEndingTimeMoment = moment(_shift.shifts[i].endTime);
+                thisEndingTimeMoment = moment(_shift.current.shifts[i].endTime);
                 latestEndingTimeMoment = (latestEndingTimeMoment >= thisEndingTimeMoment) ? thisEndingTimeMoment : thisEndingTimeMoment;
             }
 
@@ -80,12 +81,17 @@ zedAlphaServices
         }
 
         return _shift;
-    }).factory('BasicShift', function(BusinessHolder, BasicShiftDay){
+    }).factory('BasicShift', function($rootScope, BusinessHolder, BasicShiftDay){
         var $basic = BusinessHolder.$business.$child('shifts').$child('basic');
+
+        $rootScope.$on('$businessHolderChanged', function(){
+            $basic = BusinessHolder.$business.$child('shifts').$child('basic');
+        });
 
         return {
             basicShiftForDayOfWeek : function(date){
                 var dayOfWeek = moment(date).day();
+                console.log(date);
                 return new BasicShiftDay(null, $basic[dayOfWeek], date);
             }
         }

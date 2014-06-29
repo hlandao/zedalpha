@@ -1,7 +1,9 @@
-<div ui-view="navigation"></div>
-<div class="container-fluid" id="events-main">
-    <div class="row">
-        <div class="col-xs-12 col-md-6 col-lg-4" ui-view="events-list" id="events-list"></div>
-        <div class="col-xs-12 col-md-6 col-lg-8" ui-view="map"></div>
+<div ng-controller="EventsCtrl">
+    <div ui-view="navigation"></div>
+    <div class="container-fluid" id="events-main">
+        <div class="row">
+            <div class="col-xs-12 col-md-6 col-lg-5" ui-view="events-list" id="events-list"></div>
+            <div class="col-xs-12 col-md-6 col-lg-7" ui-view="map"></div>
+        </div>
     </div>
 </div>

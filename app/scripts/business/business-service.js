@@ -13,6 +13,7 @@ zedAlphaServices
                         _businessHolder.businessId = businessId;
                         defer.resolve(_businessHolder);
                         _oldBusinessId = businessId;
+                        $rootScope.$broadcast('$businessHolderChanged');
                     });
                 }else if(!businessId){
                     _businessHolder.$business = null;

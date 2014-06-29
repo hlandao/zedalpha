@@ -15,10 +15,6 @@ zedAlphaDirectives
                 $scope.timeInHours = dateMoment.format('HH:mm');
             }
 
-            $scope.$watch('disabled', function(newVal){
-                input.attr('disabled',newVal);
-            });
-
             $scope.onChange = function(){
                 var splittedTime = DateHelpers.hourAndMinutesArrFromString($scope.timeInHours);
                 if(!splittedTime) return;
@@ -41,10 +37,19 @@ zedAlphaDirectives
             link : function(scope, element, attrs, ctrls) {
                 var ctrl = ctrls[0];
                 var ngModel = ctrls[1];
+                var input = element.find('input').eq(0);
 
                 if ( ngModel ) {
-                    ctrl.init( ngModel, element.find('input').eq(0) );
+                    ctrl.init( ngModel, input);
                 }
+
+                var unbindWatcher = scope.$watch('disabled', function(newVal){
+                    input.attr('disabled',newVal);
+                });
+
+                scope.$on('$destroy', function(){
+                    unbindWatcher();
+                });
 
 
             }

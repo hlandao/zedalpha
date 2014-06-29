@@ -1,0 +1,39 @@
+.status-selector{
+  .status-box{
+    width:30px;
+    height:30px;
+    border:1px solid #333;
+    border-radius: 5px;
+    cursor:pointer;
+  }
+
+  .events-statuses-list{
+    background: black;
+    border:1px solid #333;
+    position:absolute;
+    -webkit-transform: translate(00px,10px);
+    transform: translate(0px,10px);
+
+    .events-status{
+      width:200px;
+      border-bottom: 1px solid #333;
+      padding: 5px;
+      cursor:pointer;
+      &:hover{
+        background:#777;
+      }
+      &:last-child{
+        border-bottom:0;
+      }
+
+      .status-box{
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .status-title{
+        display: inline-block;
+        font-size:14px;
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+<div class="status-selector">
+    <div class="status-box" ng-style="{backgroundColor : status.color}" ng-click="showSelector = !showSelector"></div>
+    <div class="events-statuses-list" ng-show="showSelector">
+        <div class="events-status" ng-repeat="status in EventsStatusesHolder" ng-click="selectStatus(status)">
+            <div class="status-box" ng-style="{backgroundColor : status.color}"></div>
+            <div class="status-title">{{status.status}}</div>
+        </div>
+    </div>
+</div>

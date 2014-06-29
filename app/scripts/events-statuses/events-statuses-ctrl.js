@@ -12,7 +12,7 @@ zedAlphaControllers
         // get business data from business holder
         $scope.business = BusinessHolder.$business;
         $scope.businessId = BusinessHolder.businessId;
-
+        $scope.eventsStatuses = $scope.business.$child('eventsStatuses');
 
         $scope.msg = new Alert(4000);
 

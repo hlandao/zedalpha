@@ -115,23 +115,30 @@ zedAlphaServices
             if(data){
                 angular.extend(this, data);
                 if(date){
-                    var oldStartTimeMoment = moment(this.startTime);
-                    var oldEndTimeMoment = moment(this.endTime);
-                    var oldDefaultTimeMoment = moment(this.defaultTime);
-
-                    var newStartTimeMoment = moment(date);
-                    var newEndTimeMoment = moment(date);
-                    var newDefaultTimeMoment = moment(date);
-
-
-                    newStartTimeMoment.hour(oldStartTimeMoment.hour()).minute(oldStartTimeMoment.minute());
-                    newEndTimeMoment.hour(oldEndTimeMoment.hour()).minute(oldEndTimeMoment.minute());
-                    newDefaultTimeMoment.hour(oldDefaultTimeMoment.hour()).minute(oldDefaultTimeMoment.minute());
+                    var newStartTimeMoment = moment(date),
+                        newEndTimeMoment = moment(date),
+                        newDefaultTimeMoment = moment(date),
+                        oldStartTimeMoment,
+                        oldEndTimeMoment,
+                        oldDefaultTimeMoment;
 
 
-                    this.startTime = newStartTimeMoment.format(FullDateFormat);
-                    this.endTime = newEndTimeMoment.format(FullDateFormat);
-                    this.defaulttime = newDefaultTimeMoment.format(FullDateFormat);
+                    this.date = newStartTimeMoment.format(FullDateFormat);
+                    for (var i = 0; i < this.shifts.length; ++i){
+                        var oldStartTimeMoment = moment(this.shifts[i].startTime);
+                        var oldEndTimeMoment = moment(this.shifts[i].endTime);
+                        var oldDefaultTimeMoment = moment(this.shifts[i].defaultTime);
+
+                        newStartTimeMoment.hour(oldStartTimeMoment.hour()).minute(oldStartTimeMoment.minute());
+                        newEndTimeMoment.hour(oldEndTimeMoment.hour()).minute(oldEndTimeMoment.minute());
+                        newDefaultTimeMoment.hour(oldDefaultTimeMoment.hour()).minute(oldDefaultTimeMoment.minute());
+
+
+                        this.shifts[i].startTime = newStartTimeMoment.format(FullDateFormat);
+                        this.shifts[i].endTime = newEndTimeMoment.format(FullDateFormat);
+                        this.shifts[i].defaulttime = newDefaultTimeMoment.format(FullDateFormat);
+
+                    }
                 }
 
                 return this;
