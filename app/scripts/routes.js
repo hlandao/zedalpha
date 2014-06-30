@@ -107,16 +107,24 @@ angular.module('zedalpha.routes', [])
                 resolve : {
                     businessResolver : businessResolver
                 }
+        }).state('dashboard.business.eventsDuration',{
+            url : '/:businessId/eventsDuration',
+            templateUrl: 'partials/business/events-duration-business.html',
+            controller: 'EventsDurationCtrl',
+            resolve : {
+                businessResolver : businessResolver
+            }
+
         }).state('dashboard.events', {
-                abstract : true,
-                views : {
-                    "navigation" : {
-                        template : ""
-                    },
-                    "main" : {
-                        templateUrl : "partials/events/events.html"
-                    }
+            abstract : true,
+            views : {
+                "navigation" : {
+                    template : ""
+                },
+                "main" : {
+                    templateUrl : "partials/events/events.html"
                 }
+            }
         }).state('dashboard.events.show',{
                 url : '/events/:businessId',
                 views: {

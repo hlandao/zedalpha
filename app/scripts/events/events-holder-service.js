@@ -20,7 +20,8 @@ zedAlphaServices
 
         return $events;
 
-    }).factory('EventsLogic', function(EventsHolder, BusinessHolder){
+    }).factory('EventsLogic', function(EventsHolder, BusinessHolder, EventsDurationForGuestsHolder, FullDateFormat){
+        var DEFAULT_EVENT_DURATION = _.findWhere(EventsDurationForGuestsHolder, {guests : 'default'}).duration || 90;
         var checkCollisionsForEvent = function(event){
             for(var i in EventsHolder){
 
@@ -61,10 +62,16 @@ zedAlphaServices
             return isEmptyObject(event.seats)
         }
 
+        var endTimeForNewEventWithStartTime = function(startTime){
+            console.log('DEFAULT_EVENT_DURATION',DEFAULT_EVENT_DURATION);
+            return new Date(moment(startTime).add('minute', DEFAULT_EVENT_DURATION).format(FullDateFormat));
+        };
+
         return {
             isInValidateEventBeforeSave : isInValidateEventBeforeSave,
             isInValidateEventWhileEdit : isInValidateEventWhileEdit,
-            checkCollisionsForEvent : checkCollisionsForEvent
+            checkCollisionsForEvent : checkCollisionsForEvent,
+            endTimeForNewEventWithStartTime : endTimeForNewEventWithStartTime
         }
 
     });

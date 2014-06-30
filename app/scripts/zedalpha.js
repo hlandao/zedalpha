@@ -11,6 +11,16 @@ angular.module('zedalpha',zedalphaModules)
     .run(['loginService', '$rootScope', 'FBURL','UserHolder', '$state', function(loginService, $rootScope, FBURL, UserHolder, $state) {
             $rootScope.auth = loginService.init();
             $rootScope.FBURL = FBURL;
+            $rootScope.safeApply = function(fn) {
+                var phase = this.$root.$$phase;
+                if(phase == '$apply' || phase == '$digest') {
+                    if(fn && (typeof(fn) === 'function')) {
+                        fn();
+                    }
+                } else {
+                    this.$apply(fn);
+                }
+            };
 //            $state.reload();
     }]);
 
