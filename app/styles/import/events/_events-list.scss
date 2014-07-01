@@ -13,18 +13,23 @@
   #events-table{
   .status-col{
     width:10%;
+    text-align: center;
   }
   .name-col{
     width:30%;
+    text-align: center;
   }
   .guests-col{
     width:15%;
+    text-align: center;
   }
   .seats-col{
     width:25%;
+    text-align: center;
   }
   .time-col{
     width:30%;
+    text-align: center;
   }
 
   thead{
@@ -39,10 +44,19 @@
     }
   }
   tbody.editedEvent{
+    tr.events-table-row{
+      input{
+        width:100%;
+        background: transparent;
+        border:0;
+        text-align: center;
+      }
+    }
     input{
       width:100%;
       background: transparent;
       border:0;
     }
+
   }
 }

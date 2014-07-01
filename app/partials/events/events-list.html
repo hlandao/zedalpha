@@ -39,7 +39,7 @@
                         <th class="time-col"> {{ 'TIME' | translate }} </th>
                    </thead>
                    <tbody class="editedEvent" ng-show="newEvent">
-                        <tr>
+                        <tr class="events-table-row">
                             <td class="status-col"> <hl-status-selector ng-model="newEvent.status"></hl-status-selector> </td>
                             <td class="name-col"> <input type="text" ng-model="newEvent.name" placeholder="{{ 'NAME' | translate }}" class="form-control"> </td>
                             <td class="guests-col"> <input type="text" ng-model="newEvent.guests" placeholder="0" class="form-control"> </td>
@@ -70,10 +70,20 @@
                             <td colspan="2">
                                 <button class="btn btn-default" ng-click="closeNewEvent()"> {{ 'BACK' | translate }}</button>
                                 <button class="btn btn-danger" ng-show=""> {{ 'DELETE' | translate }}</button>
-                                <button class="btn btn-success"> {{ 'SAVE' | translate }}</button>
+                                <button class="btn btn-success" ng-click="saveEvent(newEvent)"> {{ 'SAVE' | translate }}</button>
                             </td>
                         </tr>
                    </tbody>
+                   <tbody>
+                       <tr ng-repeat="event in EventsHolder.today | eventsByTime" class="events-table-row">
+                           <td class="status-col"> <hl-status-selector ng-model="event.status"></hl-status-selector> </td>
+                           <td class="name-col"> {{event.name}}</td>
+                           <td class="guests-col"> {{event.guests}} </td>
+                           <td class="seats-col"> {{event.seats | seats}} </td>
+                           <td class="time-col"> {{event.startTime | date : 'HH:mm'}} </td>
+                       </tr>
+                   </tbody>
+
                </table>
             </div>
         </div>

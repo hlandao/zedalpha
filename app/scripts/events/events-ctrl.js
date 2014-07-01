@@ -7,6 +7,7 @@ zedAlphaControllers
     .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic){
         var OccasionalEvent = _.findWhere(EventsStatusesHolder, {status : 'OCCASIONAL'});
         var OrderedEvent = _.findWhere(EventsStatusesHolder, {status : 'ORDERED'});
+
         $scope.EventsDurationHolder = EventsDurationHolder;
         $scope.newEventWithSeatsDic = function(occasionalOrDestination, dic){
             var isOccasional = occasionalOrDestination == 'occasional';
@@ -18,12 +19,21 @@ zedAlphaControllers
                 startTime : startTime,
                 endTime : endTime,
                 status : isOccasional ? OccasionalEvent : OrderedEvent,
-                name : isOccasional ? $filter('translate')('OCCASIONAL') : ''
+                name : isOccasional ? $filter('translate')('OCCASIONAL') : '',
+                createdAt : new Date()
             });
         };
 
         $scope.saveEvent = function(eventToSave){
-            EventsHolder.$add(eventToSave);
+            console.log('$scope EventsHolder',EventsHolder);
+            var error = EventsLogic.isInValidateEventBeforeSave(eventToSave);
+            if(error){
+                alert(error);
+            }else{
+                EventsHolder.today.$add(eventToSave);
+                eventToSave = {}
+            }
+
         };
 
         $scope.closeNewEvent = function(){
@@ -43,4 +53,5 @@ zedAlphaControllers
         $scope.filters = ['all','seating','ordered','occasional'];
         $scope.selectedFilter = $scope.filters[0];
 
+        $scope.EventsHolder = EventsHolder;
     });

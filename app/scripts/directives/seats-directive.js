@@ -39,4 +39,14 @@ zedAlphaDirectives
 
             }
         };
-    }]);
+    }])
+    .filter('seats', function(){
+       return function(input){
+           if(!input) return;
+           var arr = [];
+           for(var i in input){
+               arr.push(i);
+           }
+           return arr.join(',');
+       }
+    });

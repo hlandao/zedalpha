@@ -3,18 +3,19 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 zedAlphaServices
     .factory('EventsHolder', function($rootScope,BusinessHolder, DateHolder){
-        var $events;
+        var $events = {today : null};
         var updateEvents = function(){
+            console.log('updateEvents',BusinessHolder.$business,DateHolder.current);
             if(BusinessHolder.$business && DateHolder.current){
                 var dayOfYear = moment(DateHolder.current).dayOfYear();
-                $events = BusinessHolder.$business.$child('events').$child(dayOfYear);
+                $events.today = BusinessHolder.$business.$child('events').$child(dayOfYear);
             }
         };
 
         $rootScope.$on('$businessHolderChanged', updateEvents);
 
         $rootScope.$watch(function(){
-            return DateHolder.current
+            return DateHolder.current;
         }, updateEvents);
 
 
