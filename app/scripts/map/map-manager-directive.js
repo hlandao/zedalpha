@@ -1,7 +1,7 @@
 var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directives', []);
 
 zedAlphaDirectives
-    .directive('mapManager', function(firebaseRef, BusinessHolder, $timeout, DateHolder) {
+    .directive('mapManager', function(firebaseRef, BusinessHolder, $timeout, DateHolder, EventsStatusesHolder) {
         return {
             restrict: 'E',
             templateUrl : 'partials/map/map-manager.html',
@@ -151,9 +151,9 @@ zedAlphaDirectives
                 }
 
                 var updateNewEventSeats = function (){
-                    scope.$apply(function(){
+                    $timeout(function(){
                         scope.$parent.newEvent.seats = shapesArrToSeatsDic();
-                    });
+                    },1);
                 }
 
                 var newEventForSelectedShaped = function(occasionalOrDestination){
@@ -176,9 +176,44 @@ zedAlphaDirectives
                 var newEventWatcher = scope.$parent.$watch('newEvent', function(newVal, oldVal){
                     // new Event was closed -  unselect all shapes
                     if(!newVal && oldVal){
+
                         unSelectAllShapes(true);
                     }
                 });
+
+                var filteredEventsWatcher = scope.$parent.$watch('filteredEvents', function(newVal){
+                    $timeout(function(){
+                        if(newVal){
+                            angular.forEach(newVal.events, function(event){
+                                console.log('event',event);
+                                var color = getEventStatusColor(event.status);
+                                angular.forEach(event.seats, function(value, seatNumber){
+                                    var theShape;
+                                    for (var i = 0;i < canvas._objects.length; ++i){
+                                        theShape = canvas._objects[i];
+                                        if(theShape.type == 'seatShape' && theShape.seatNumber == seatNumber){
+                                            theShape.setBackgroundColor(color);
+                                        }
+                                    }
+                                })
+                            });
+                        }
+                    },10);
+
+                });
+
+
+                var getEventStatusColor = function(status){
+                    var statusObj;
+
+                    for (var i in EventsStatusesHolder){
+                        statusObj = EventsStatusesHolder[i];
+                        if(statusObj.status == status.status){
+                            return statusObj.color;
+                        }
+                    }
+                    return null;
+                }
 
 
                 // -------- $destory -------//

@@ -11,13 +11,12 @@ zedAlphaDirectives
             var filteredEventsArr = [];
 
             angular.forEach(events, function(event, key){
-                if(key == '$id' || typeof event == "function") return;
+                if(!event || key == '$id' || typeof event == "function") return;
                 var startTimeMoment = moment(event.startTime);
                 var endTimeMoment = moment(event.endTime);
                 var startTimeDiffInMinutes =  startTimeMoment.diff(currentDateMoment, 'minutes');
                 var isStartingAfterCurrentDate = startTimeDiffInMinutes > 0;
                 var isEndingAfterCurrentDate = endTimeMoment >= currentDateMoment;
-                console.log('startTimeDiffInMinutes',startTimeDiffInMinutes);
                 if((startTimeDiffInMinutes == 0) || (isStartingAfterCurrentDate &&  startTimeDiffInMinutes < EVENT_TIME_FRAME_IN_MINUTES) || (!isStartingAfterCurrentDate && isEndingAfterCurrentDate)){
                     filteredEventsArr.push(event);
                 }

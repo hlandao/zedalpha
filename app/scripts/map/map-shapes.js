@@ -16,7 +16,8 @@ fabric.SeatShape = fabric.util.createClass(fabric.Group, {
            width : shape.getWidth(),
            height : shape.getHeight(),
            stroke : shape.getStroke(),
-           strokeWidth : shape.getStrokeWidth()
+           strokeWidth : shape.getStrokeWidth(),
+           fill : shape.getFill()
         });
 
     },
@@ -39,9 +40,13 @@ fabric.SeatShape = fabric.util.createClass(fabric.Group, {
     selectNormal : function(){
         var shape = this.theShape();
         shape.setStroke("#CD5C5C");
-        shape.setStrokeWidth(3);
+//        shape.setStrokeWidth(3);
     },
 
+    setBackgroundColor : function(color){
+        console.log('color : ',color);
+        this.theShape().setFill(color);
+    },
 //    addButtons : function(){
 //      var sharedButtonConfig = {
 //        hasBorders : false,

@@ -27,11 +27,13 @@ zedAlphaControllers
         $scope.saveEvent = function(eventToSave){
             console.log('$scope EventsHolder',EventsHolder);
             var error = EventsLogic.isInValidateEventBeforeSave(eventToSave);
+            console.log('error',error);
             if(error){
-                alert(error);
+                console.error('error',error);
+
             }else{
                 EventsHolder.today.$add(eventToSave);
-                eventToSave = {}
+                $scope.newEvent = {}
             }
 
         };
@@ -52,6 +54,7 @@ zedAlphaControllers
 
 
         $scope.filters = ['ALL','SEATING','ORDERED','OCCASIONAL'];
+        $scope.filteredEvents = {};
         $scope.selectedFilter = $scope.filters[0];
 
         $scope.selectFilter = function(filter){
