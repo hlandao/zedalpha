@@ -3,7 +3,7 @@
         <div class="col-xs-12 col-md-1 nav-col" id="logo-col">
             <h2> {{business.name||'Logo'}} </h2>
         </div>
-        <div class="col-xs-12 col-md-2  nav-col" id="date-col">
+        <div class="col-xs-12 col-md-3  nav-col" id="date-col">
                 <input type="text" class="form-control datepicker-input" ng-click="openDatePicker($event)" datepicker-popup="dd/MM/yyyy" ng-model="DateHolder.current"  is-open="datePickerOpened"/>
                 <hl-timepicker ng-model="DateHolder.current" ></hl-timepicker>
 
@@ -12,25 +12,25 @@
             <div class="row">
                 <div class="col-xs-3 col-md-3 circle-container">
                     <div class="circle circle-green">1</div>
-                    <div class="title"> Total Orders </div>
+                    <div class="title"> {{ 'TOTAL_ORDERS' | translate}} </div>
                 </div>
                 <div class="col-xs-3 col-md-3 circle-container">
                     <div class="circle circle-red">1</div>
-                    <div class="title"> Total Orders </div>
+                    <div class="title"> {{ 'TOTAL_GUESTS' | translate}} </div>
                 </div>
                 <div class="col-xs-3 col-md-3 circle-container">
                     <div class="circle circle-blue">1</div>
-                    <div class="title"> Total Orders </div>
+                    <div class="title"> {{ 'GUESTS_LEFT' | translate}} </div>
                 </div>
                 <div class="col-xs-3 col-md-3 circle-container">
                     <div class="circle circle-yellow">1</div>
-                    <div class="title"> Total Orders </div>
+                    <div class="title"> {{ 'TOTAL_WALKINS' | translate}} </div>
                 </div>
 
             </div>
         </div>
 
-        <div class="col-xs-12 col-md-3  nav-col" id="menu-col">
+        <div class="col-xs-12 col-md-2  nav-col" id="menu-col">
             <!--menu-container-->
         </div>
     </div>

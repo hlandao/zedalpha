@@ -1,0 +1,93 @@
+#events-list{
+  #the-events-list-row{
+    padding:20px 0 ;
+    .col-xs-12{
+      padding:0;
+      table#events-table{
+        width:100%;
+        .status-col{
+          width:10%;
+          text-align: center;
+        }
+        .name-col{
+          width:30%;
+          text-align: center;
+        }
+        .guests-col{
+          width:15%;
+          text-align: center;
+        }
+        .seats-col{
+          width:25%;
+          text-align: center;
+        }
+        .time-col{
+          width:30%;
+          text-align: center;
+        }
+
+        thead{
+          th{
+            color:#eee;
+            padding:5px 0;
+            border-left:1px solid #5f565d;
+            border-bottom:1px solid #5f565d;
+
+            font-weight: lighter;
+            //        border-right:1px solid #000;
+            &:first-child{
+              border-left:0;
+            }
+            &:last-child{
+              border-right:0;
+            }
+          }
+        }
+        tbody{
+          tr{
+            &:hover{
+              background: #353034;
+            }
+            td{
+              padding:10px;
+              color:white;
+              border-left:1px solid #353034;
+              border-bottom:1px solid #353034;
+            }
+          }
+        }
+      }
+
+    }
+  }
+  tbody.editedEvent{
+    background: #414141;
+    border:3px solid #8a8a8a;
+    tr{
+      &:hover{
+        background: inherit !important;
+      }
+    }
+    tr.events-table-row{
+
+      td{
+        border-left:1px solid #ffe8fc;
+        border-bottom:1px solid #ffe7fb;
+      }
+      input{
+        width:100%;
+        background: transparent;
+        border:0;
+        text-align: center;
+      }
+    }
+    input{
+      width:100%;
+      background: transparent;
+      border:0;
+    }
+
+  }
+
+
+}

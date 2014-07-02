@@ -39,8 +39,16 @@ zedAlphaConfigModule
         DELETE: 'Delete',
         SAVE : 'Save',
         OCCASIONAL : 'Walkin',
-        ERROR_MSG_COLLISION: "Error : event collide with another event"
-
+        ALL: "All",
+        SEATING: "Seating",
+        ORDERED: "Orderd",
+        // ERRORS
+        ERROR_MSG_COLLISION: "Error : event collide with another event",
+        // TOP NAV BAR
+        TOTAL_ORDERS: "Total Orders",
+        TOTAL_GUESTS: "Total Gusets",
+        GUESTS_LEFT: "Gusets Left",
+        TOTAL_WALKINS: "Total Walkins"
 
     });
     $translateProvider.preferredLanguage('en');

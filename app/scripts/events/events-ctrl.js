@@ -50,8 +50,12 @@ zedAlphaControllers
             }
         });
 
-        $scope.filters = ['all','seating','ordered','occasional'];
+
+        $scope.filters = ['ALL','SEATING','ORDERED','OCCASIONAL'];
         $scope.selectedFilter = $scope.filters[0];
 
+        $scope.selectFilter = function(filter){
+            $scope.selectedFilter = filter;
+        }
         $scope.EventsHolder = EventsHolder;
     });

@@ -1,0 +1,57 @@
+#events-table-row.row{
+//  background: url(../images/topbar-texture.png) repeat;
+  .col-xs-12{
+    #events-lists-filter-buttons-row.row{
+      border-bottom:1px solid #4c4c4c;
+      background: #111;
+
+      .col-xs-3{
+        padding: 15px 0;
+        text-align: center;
+        color: rgb(231, 231, 231);
+        border-left:1px solid #484347;
+        border-right:1px solid #000;
+        position: relative;
+        cursor: pointer;
+        &:hover,&.selected{
+          background: #1d1d1d;
+        }
+        &.selected{
+          color:#73d1b7;
+        }
+        &:first-child{
+          border-left:0;
+        }
+        &:last-child{
+          border-right:0;
+        }
+        &.selected{
+          &:before{
+            content : "";
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid #4c4c4c;
+            position:absolute;
+            bottom:0;
+            left:45%;
+          }
+          &:after{
+            content : "";
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid #1D1D1D;
+            position:absolute;
+            bottom:-2px;
+            left:45%;
+          }
+        }
+
+      }
+    }
+  }
+
+}

@@ -10,9 +10,14 @@ $icon-font-path: "../bower_components/bootstrap-sass-official/vendor/assets/font
     padding: 0.2em 0;
 }
 
+html{
+  height:100%;
+}
 /* Space out content a bit */
 body {
-    padding-bottom: 20px;
+  height:100%;
+  padding-bottom: 20px;
+  overflow-y:hidden;
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
@@ -96,8 +101,14 @@ body {
 @import "import/admin";
 @import "import/events/events";
 @import "import/events/navigation";
-@import "import/events/events-list";
+@import "import/events/events-list-the-table";
 @import "import/events/status-selector";
+@import "import/events/shift-selector";
+@import "import/events/search-row";
+@import "import/events/events-table-row";
+@import "import/events/map";
+
+
 
 
 

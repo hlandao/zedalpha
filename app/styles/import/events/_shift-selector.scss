@@ -1,0 +1,37 @@
+#shift-selector-row{
+  padding:0px;
+  border-bottom:1px solid #111;
+  .shift-select-col{
+    padding-left:0 ;
+    padding-right:0 ;
+    border-left:1px solid #484347;
+    border-right:1px solid #000;
+    &:first-child{
+      border-left:0;
+    }
+    &:last-child{
+      border-right:0;
+    }
+
+    .styled-shift-select{
+      border: 0px;
+      width: 100%;
+      overflow: hidden;
+      color:white;
+      padding: 5px;
+      background: #2a292f url("data:image/png;base64,R0lGODlhDwAUAIABAAAAAP///yH5BAEAAAEALAAAAAAPABQAAAIXjI+py+0Po5wH2HsXzmw//lHiSJZmUAAAOw==") no-repeat 90% 50%;
+      select{
+        padding: 5px 8px;
+        width: 130%;
+        border: none;
+        box-shadow: none;
+        background: transparent;
+        background-image: none ;
+        &:focus{
+          outline: none;
+        }
+      }
+    }
+
+  }
+}

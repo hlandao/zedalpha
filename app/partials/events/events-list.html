@@ -1,69 +1,75 @@
 <div class="row" id="shift-selector-row" ng-controller="ShiftSelectorCtrl">
-    <div class="col-xs-12">
-        <select ng-model="ShiftsDayHolder.selected" ng-options="shift.name for shift in ShiftsDayHolder.current.shifts">
-        </select>
-        <select ng-model="hour" ng-options="shiftHour.value as shiftHour.label for shiftHour in shiftHours()" ng-change="hourChanged()">
-        </select>
-        <select ng-model="minute" ng-options="shiftMinute as shiftMinute for shiftMinute in shiftMinutes()"  ng-change="minuteChanged()">
-        </select>
+    <div class="col-xs-4 shift-select-col select-shift">
+        <div class="styled-shift-select">
+            <select ng-model="ShiftsDayHolder.selected" ng-options="shift.name for shift in ShiftsDayHolder.current.shifts"></select>
+        </div>
+    </div>
+    <div class="col-xs-4 shift-select-col select-hour">
+        <div class="styled-shift-select">
+            <select ng-model="hour" ng-options="shiftHour.value as shiftHour.label for shiftHour in shiftHours()" ng-change="hourChanged()"></select>
+        </div>
+    </div>
+    <div class="col-xs-4 shift-select-col select-minute">
+        <div class="styled-shift-select">
+            <select ng-model="minute" ng-options="shiftMinute as shiftMinute for shiftMinute in shiftMinutes()"  ng-change="minuteChanged()"></select>
+        </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-xs-12">
-        <form class="form-inline" role="form">
-            <div class="form-group">
-                <label class="sr-only">Search</label>
-                <input type="text" class="form-control" placeholder="Search">
-            </div>
-            <button class="btn btn-default">+ Add</button>
-        </form>
+<div class="row" id="search-row">
+    <div class="col-xs-10 search-input-col">
+            <input type="text" placeholder="Search">
+    </div>
+    <div class="col-xs-2 button-col">
+        <button class="">+ Add</button>
     </div>
 </div>
 
-<div class="row">
+<div class="row" id="events-table-row">
     <div class="col-xs-12">
         <div class="row" id="events-lists-filter-buttons-row">
-            <div class="col-xs-12">
-                <button class="btn" ng-repeat="filter in filters" ng-click="selectedFilter = filter" ng-class="{'btn-default' : (filter != selectedFilter), 'btn-warning' : (filter == selectedFilter)}">{{filter}}</button>
+            <div class="col-xs-3" ng-repeat="filter in filters" ng-click="selectFilter(filter)" ng-class="{selected : (selectedFilter == filter)}">
+                <span>{{filter | translate}}</span>
             </div>
         </div>
         <div class="row" id="the-events-list-row">
             <div class="col-xs-12">
-               <table class="table" id="events-table">
+               <table id="events-table">
                    <thead>
+                    <tr>
                         <th class="status-col"> {{ 'STATUS' | translate }} </th>
                         <th class="name-col"> {{ 'NAME' | translate }} </th>
                         <th class="guests-col"> {{ 'GUESTS' | translate }} </th>
                         <th class="seats-col"> {{ 'SEATS' | translate }} </th>
                         <th class="time-col"> {{ 'TIME' | translate }} </th>
+                    </tr>
                    </thead>
                    <tbody class="editedEvent" ng-show="newEvent">
                         <tr class="events-table-row">
                             <td class="status-col"> <hl-status-selector ng-model="newEvent.status"></hl-status-selector> </td>
-                            <td class="name-col"> <input type="text" ng-model="newEvent.name" placeholder="{{ 'NAME' | translate }}" class="form-control"> </td>
-                            <td class="guests-col"> <input type="text" ng-model="newEvent.guests" placeholder="0" class="form-control"> </td>
-                            <td class="seats-col"> <input type="text" ng-model="newEvent.seats" hl-seats-input  class="form-control"> </td>
+                            <td class="name-col"> <input type="text" ng-model="newEvent.name" placeholder="{{ 'NAME' | translate }}" class=""> </td>
+                            <td class="guests-col"> <input type="text" ng-model="newEvent.guests" placeholder="0" class=""> </td>
+                            <td class="seats-col"> <input type="text" ng-model="newEvent.seats" hl-seats-input  class=""> </td>
                             <td class="time-col"> <hl-timepicker ng-model="newEvent.startTime" ></hl-timepicker> </td>
                         </tr>
                         <tr ng-show="!newEvent.isOccasional">
-                            <td colspan="3"> <input type="text" ng-model="newEvent.phone" placeholder="{{ 'PHONE' | translate }}" class="form-control"></td>
-                            <td colspan="2"> <input type="text" ng-model="newEvent.email" placeholder="{{ 'EMAIL' | translate }}" class="form-control"> </td>
+                            <td colspan="3"> <input type="text" ng-model="newEvent.phone" placeholder="{{ 'PHONE' | translate }}" class=""></td>
+                            <td colspan="2"> <input type="text" ng-model="newEvent.email" placeholder="{{ 'EMAIL' | translate }}" class=""> </td>
 
                         </tr>
                         <tr ng-show="!newEvent.isOccasional">
-                            <td colspan="3"> <input type="text" ng-model="newEvent.contactPerson" placeholder="{{ 'CONTACT_PERSON' | translate }}" class="form-control"> </td>
+                            <td colspan="3"> <input type="text" ng-model="newEvent.contactPerson" placeholder="{{ 'CONTACT_PERSON' | translate }}" class=""> </td>
                             <td colspan="2"> <select><option selected>Event Type</option></select> </td>
 
                         </tr>
                         <tr ng-show="!newEvent.isOccasional">
-                            <td colspan="5"> <input type="text" ng-model="newEvent.contactComment" placeholder="{{ 'CONTACT_COMMENT' | translate }}" class="form-control"> </td>
+                            <td colspan="5"> <input type="text" ng-model="newEvent.contactComment" placeholder="{{ 'CONTACT_COMMENT' | translate }}" class=""> </td>
                         </tr>
                         <tr ng-show="!newEvent.isOccasional">
-                            <td colspan="5"> <input type="text" ng-model="newEvent.comment" placeholder="{{ 'COMMENT' | translate }}" class="form-control"> </td>
+                            <td colspan="5"> <input type="text" ng-model="newEvent.comment" placeholder="{{ 'COMMENT' | translate }}" class=""> </td>
                         </tr>
                         <tr>
-                            <td colspan="5"> <input type="text" ng-model="newEvent.hostess" placeholder="{{ 'HOSTESS' | translate }}" class="form-control"> </td>
+                            <td colspan="5"> <input type="text" ng-model="newEvent.hostess" placeholder="{{ 'HOSTESS' | translate }}" class=""> </td>
                         </tr>
                         <tr>
                             <td colspan="3"> <span> {{ 'EVENT_DURATION' | translate }}</span> <hl-event-duration-select ng-model="newEvent.endTime" start-time="newEvent.startTime" durations="EventsDurationHolder"></hl-event-duration-select> </td>
