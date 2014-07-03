@@ -85,7 +85,7 @@
                    </tbody>
                    <tbody>
                        <tr ng-repeat="event in filteredEvents.filteredEvents" class="events-table-row">
-                           <td class="status-col"> <hl-status-selector ng-model="event.status"></hl-status-selector> </td>
+                           <td class="status-col"> <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector> </td>
                            <td class="name-col"> {{event.name}}</td>
                            <td class="guests-col"> {{event.guests}} </td>
                            <td class="seats-col"> {{event.seats | seats}} </td>

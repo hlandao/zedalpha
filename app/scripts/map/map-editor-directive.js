@@ -6,11 +6,15 @@ zedAlphaDirectives
         return {
             restrict: 'E',
             replace : true,
-            templateUrl : 'partials/map/map-editor.html',
+            templateUrl : '/partials/map/map-editor.html',
             link: function(scope, elem, attrs) {
                 var mapRef, map, businessId,canvas, objModified;
+                var grid=50, snappingGrid=grid/4;
 
                 canvas = sharedCanvasResources.createTheCanvas();
+
+
+
                 sharedCanvasResources.listenToContainerScrollWithCanvas(canvas);
                 attrs.$observe('businessId', function(val){
                     UserHolder.promise().then(function(){
@@ -30,12 +34,37 @@ zedAlphaDirectives
                 var renderMap = function(map){
                     if(map){
                         canvas.loadFromJSON(JSON.stringify(map), function(){
-                            sharedCanvasResources.removeBgIfAlreadyAdded(canvas);
-                            sharedCanvasResources.addBGToCanvas(canvas);
+//                            sharedCanvasResources.removeBgIfAlreadyAdded(canvas);
+//                            sharedCanvasResources.addBGToCanvas(canvas);
+
                             canvas.renderAll();
                         });
                     }else{
-                        sharedCanvasResources.addBGToCanvas(canvas);
+                        for (var i = 0; i < (canvas.width / grid); i++) {
+                            canvas.add(new fabric.Line([ i * grid, 0, i * grid, canvas.width], {
+                                stroke: '#f8f8f8',
+                                selectable: false,
+                                hasBorders : false,
+                                hasControls : false,
+                                lockRotation : true,
+                                lockScalingX : true,
+                                lockMovementX : true,
+                                lockMovementY : true
+                            }));
+                            canvas.add(new fabric.Line([ 0, i * grid, canvas.width, i * grid], {
+                                stroke: '#f8f8f8',
+                                selectable: false,
+                                hasBorders : false,
+                                hasControls : false,
+                                lockRotation : true,
+                                lockScalingX : true,
+                                lockMovementX : true,
+                                lockMovementY : true
+
+                            }));
+                        }
+
+//                        sharedCanvasResources.addBGToCanvas(canvas);
                     }
                 };
 
@@ -82,6 +111,13 @@ zedAlphaDirectives
                     });
                 });
 
+                canvas.on('object:moving', function(options) {
+                    options.target.set({
+                        left: Math.round(options.target.left / snappingGrid) * snappingGrid,
+                        top: Math.round(options.target.top / snappingGrid) * snappingGrid
+                    });
+                });
+
 
 
                 scope.updateShape = function(shape){
@@ -116,7 +152,8 @@ zedAlphaDirectives
                     for(var i = 0; i< json.objects.length;++i){
                         if(json.objects[i].bgImage){
                             json.objects.splice(i,1);
-                            break;
+                        } else if(json.objects[i].snappingLine){
+                            json.objects.splice(i,1);
                         }
                     }
                     mapRef.set(json, function(error){

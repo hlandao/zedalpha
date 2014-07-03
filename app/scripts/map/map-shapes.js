@@ -1,14 +1,19 @@
 fabric.SeatShape = fabric.util.createClass(fabric.Group, {
     type: 'seatShape',
     initialize : function(objects, options){
+        console.log(this);
 
         this.callSuper('initialize', objects, options);
         var text = this.theText();
         var shape = this.theShape();
         text.centeredRotation = true;
         text.centeredScaling = true;
-        text.setLeft(0-(text.width/2));
-        text.setTop(0-(text.height/2));
+        if(this.shouldCenterText){
+            text.setLeft(0-(text.width/2));
+            text.setTop(0-(text.height/2));
+            this.shouldCenterText = false;
+        }
+
         this.set('seatNumber', options.seatNumber || '');
         this.set('normalState', {
            top : shape.getTop(),
@@ -19,7 +24,6 @@ fabric.SeatShape = fabric.util.createClass(fabric.Group, {
            strokeWidth : shape.getStrokeWidth(),
            fill : shape.getFill()
         });
-
     },
 
     theShape : function(){
@@ -88,7 +92,7 @@ fabric.SeatShape = fabric.util.createClass(fabric.Group, {
     backToNormalState : function(){
         var shape = this.theShape();
         shape.setStroke(this.normalState.stroke);
-        shape.setStrokeWidth(this.normalState.stokeWidth);
+//        shape.setStrokeWidth(this.normalState.stokeWidth);
         shape.setFill(this.normalState.fill);
 
     },
@@ -112,6 +116,8 @@ fabric.SeatShape = fabric.util.createClass(fabric.Group, {
     transform : function(ctx, fromLeft){
         this.callSuper('transform', ctx, fromLeft);
         var text = this.theText();
+//        text.setLeft(0-(text.width/2));
+//        text.setTop(0-(text.height/2));
         text.setAngle(-this.angle);
     }
 });
@@ -131,20 +137,21 @@ fabric.SeatShape.fromObject = function (object, callback) {
 
 var seatRectFactory = function(seatNumber, seatConfig){
     var shapeDefault = {
-        fill: '#777',
-        stroke: "black",
-        strokeWidth: 2,
+        fill: '#fff',
+        stroke: "#bbb",
+        strokeWidth: 3,
         width: 50,
         height: 50
     };
     var textDefault = {
         fontSize: 25,
-        fill: "white"
+        fill: "#333"
     };
 
     var groupDefault = {
         top: 100,
-        left: 100
+        left: 100,
+        shouldCenterText : true
     };
 
     var text = new fabric.Text("" + seatNumber, $.extend(textDefault, seatConfig.textOptions));
@@ -155,19 +162,21 @@ var seatRectFactory = function(seatNumber, seatConfig){
 
 var seatCircleFactory = function(seatNumber, seatConfig){
     var shapeDefault = {
-        fill: '#777',
-        stroke: "black",
-        strokeWidth: 2,
+        fill: '#fff',
+        stroke: "#bbb",
+        strokeWidth: 3,
         radius : 25
     };
     var textDefault = {
         fontSize: 25,
-        fill: "white"
+        fill: "#333"
     };
 
     var groupDefault = {
         top: 100,
-        left: 100
+        left: 100,
+        shouldCenterText : true
+
     };
 
     var text = new fabric.Text("" + seatNumber, $.extend(textDefault, seatConfig.textOptions));

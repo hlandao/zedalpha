@@ -1,4 +1,4 @@
-'use strict';
+//'use strict';
 
 /* Controllers */
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);

@@ -1,4 +1,4 @@
-'use strict';
+//'use strict';
 
 /* Controllers */
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
@@ -26,21 +26,22 @@ zedAlphaControllers
         };
 
         $scope.saveEvent = function(eventToSave){
-            console.log('$scope EventsHolder',EventsHolder);
             var error = EventsLogic.isInValidateEventBeforeSave(eventToSave);
-            console.log('error',error);
             if(error){
                 console.error('error',error);
-
             }else{
                 EventsHolder.today.$add(eventToSave);
-                $scope.newEvent = {}
+                $scope.newEvent = null;
             }
 
         };
 
         $scope.closeNewEvent = function(){
             $scope.newEvent=null;
+        };
+
+        $scope.eventStatusChanged = function(event){
+            EventsHolder.today.$save();
         };
 
         $scope.$watch('newEvent', function(newVal, oldVal){

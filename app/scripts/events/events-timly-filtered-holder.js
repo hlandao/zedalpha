@@ -6,11 +6,11 @@ zedAlphaServices
 
         var _holder = {};
 
-        $rootScope.$watch(function(){
-            return DateHolder;
-        }, function(newVal){
-            var current = newVal.current;
-            var isEntireShift = newVal.isEntireShift;
+
+        var filterEvents = function(){
+            console.log('filterEvents');
+            var current = DateHolder.current;
+            var isEntireShift = DateHolder.isEntireShift;
             if(isEntireShift){
                 _holder.filteredEvents = $filter('eventsByEntireShift')(EventsHolder.today,ShiftsDayHolder.selected);
             }else{
@@ -20,7 +20,16 @@ zedAlphaServices
 
                 }
             }
-        },true);
+        };
+
+        $rootScope.$watch(function(){
+            return DateHolder;
+        }, filterEvents ,true);
+
+        $rootScope.$watch(function(){
+            return EventsHolder.today;
+        }, filterEvents ,true);
+
 
         return _holder;
     })

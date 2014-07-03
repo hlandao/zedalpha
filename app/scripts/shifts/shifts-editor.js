@@ -5,7 +5,7 @@ zedAlphaDirectives
     .directive('shiftsEditor', function(ShiftsWeek, ShiftsNames, $timeout) {
         return {
             restrict: 'E',
-            templateUrl : 'partials/shifts/shifts-editor.html',
+            templateUrl : '/partials/shifts/shifts-editor.html',
             controller : function($scope, BusinessHolder, ShiftsWeek, Alert){
                 var daysArray, weekDateMoment, watcher, firstWeekWatch = false;
                 $scope.msg = new Alert(3000);

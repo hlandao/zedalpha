@@ -1,4 +1,4 @@
-"use strict";
+//"use strict";
 
 angular.module('zedalpha.routes', [])
 
@@ -27,11 +27,11 @@ angular.module('zedalpha.routes', [])
                 url : '/',
                 views : {
                     "" : {
-                        templateUrl: 'partials/home/home.html',
+                        templateUrl: '/partials/home/home.html',
                         controller: 'LoginCtrl'
                     },
                     "navigation@home" : {
-                        templateUrl: 'partials/nav-home.html'
+                        templateUrl: '/partials/nav-home.html'
                     }
                 }
             });
@@ -43,16 +43,16 @@ angular.module('zedalpha.routes', [])
                 userHolder : userHolderResolver
             },
             abstract : true,
-            templateUrl : "partials/dashboard/dashboard.html"
+            templateUrl : "/partials/dashboard/dashboard.html"
 
         }).state('dashboard.main',{
             url : '/dashboard',
             views : {
                 "navigation" : {
-                    templateUrl : "partials/nav-dashboard.html"
+                    templateUrl : "/partials/nav-dashboard.html"
                 },
                 "main" : {
-                    templateUrl: 'partials/business/list-business.html',
+                    templateUrl: '/partials/business/list-business.html',
                     controller : 'BusinessesCtrl'
                 }
             },
@@ -64,7 +64,7 @@ angular.module('zedalpha.routes', [])
                 abstract : true,
                 views : {
                     "navigation" : {
-                        templateUrl : "partials/nav-business.html",
+                        templateUrl : "/partials/nav-business.html",
                         controller: "BusinessNavCtrl"
                     },
                     "main" : {
@@ -73,7 +73,7 @@ angular.module('zedalpha.routes', [])
                 }
         }).state('dashboard.business.new', {
             url : '/new',
-            templateUrl: 'partials/business/new-business.html',
+            templateUrl: '/partials/business/new-business.html',
             controller: 'BusinessCtrl',
             resolve : {
                 businessResolver : businessResolver
@@ -81,35 +81,35 @@ angular.module('zedalpha.routes', [])
 
         }).state('dashboard.business.show', {
             url : '/:businessId',
-            templateUrl: 'partials/business/show-business.html',
+            templateUrl: '/partials/business/show-business.html',
             controller: 'BusinessCtrl',
             resolve : {
                 businessResolver : businessResolver
             }
         }).state('dashboard.business.map', {
                 url : '/:businessId/map',
-                templateUrl: 'partials/business/map-business.html',
+                templateUrl: '/partials/business/map-business.html',
                 controller: 'BusinessCtrl',
                 resolve : {
                     businessResolver : businessResolver
                 }
         }).state('dashboard.business.shifts',{
                 url : '/:businessId/shifts',
-                templateUrl: 'partials/business/shifts-business.html',
+                templateUrl: '/partials/business/shifts-business.html',
                 controller: 'BusinessCtrl',
                 resolve : {
                     businessResolver : businessResolver
                 }
         }).state('dashboard.business.eventsStatuses',{
                 url : '/:businessId/eventsStatuses',
-                templateUrl: 'partials/business/events-statuses-business.html',
+                templateUrl: '/partials/business/events-statuses-business.html',
                 controller: 'EventsStatusesCtrl',
                 resolve : {
                     businessResolver : businessResolver
                 }
         }).state('dashboard.business.eventsDuration',{
             url : '/:businessId/eventsDuration',
-            templateUrl: 'partials/business/events-duration-business.html',
+            templateUrl: '/partials/business/events-duration-business.html',
             controller: 'EventsDurationCtrl',
             resolve : {
                 businessResolver : businessResolver
@@ -122,22 +122,22 @@ angular.module('zedalpha.routes', [])
                     template : ""
                 },
                 "main" : {
-                    templateUrl : "partials/events/events.html"
+                    templateUrl : "/partials/events/events.html"
                 }
             }
         }).state('dashboard.events.show',{
                 url : '/events/:businessId',
                 views: {
                     'navigation@dashboard.events' : {
-                        templateUrl: 'partials/events/nav.html',
+                        templateUrl: '/partials/events/nav.html',
                         controller: 'EventsNavigationCtrl'
                     },
                     'map@dashboard.events': {
-                        templateUrl: 'partials/events/map.html'
+                        templateUrl: '/partials/events/map.html'
 //                        controller: 'MapCtrl'
                     },
                     'events-list@dashboard.events': {
-                        templateUrl: 'partials/events/events-list.html'
+                        templateUrl: '/partials/events/events-list.html'
 //                        controller: 'EventsListCtrl'
                     }
                 },

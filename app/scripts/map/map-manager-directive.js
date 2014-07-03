@@ -5,7 +5,7 @@ zedAlphaDirectives
         return {
             restrict: 'E',
             replace : true,
-            templateUrl : 'partials/map/map-manager.html',
+            templateUrl : '/partials/map/map-manager.html',
             link: function(scope, elem, attrs) {
                 var $mapRef,
                     map,
@@ -41,8 +41,8 @@ zedAlphaDirectives
                 var renderMap = function(map){
                     if(map){
                         canvas.loadFromJSON(JSON.stringify(map), function(){
-                            sharedCanvasResources.removeBgIfAlreadyAdded(canvas);
-                            bgImage =sharedCanvasResources.addBGToCanvas(canvas);
+//                            sharedCanvasResources.removeBgIfAlreadyAdded(canvas);
+//                            bgImage =sharedCanvasResources.addBGToCanvas(canvas);
                             addButtons();
                             angular.forEach(canvas._objects, function(shape){
                                 if(shape.type=="seatShape") shape.setToStatic();
@@ -50,7 +50,7 @@ zedAlphaDirectives
                             canvas.renderAll();
                         });
                     }else{
-                        bgImage = sharedCanvasResources.addBGToCanvas(canvas);
+//                        bgImage = sharedCanvasResources.addBGToCanvas(canvas);
                         addButtons();
                     }
 

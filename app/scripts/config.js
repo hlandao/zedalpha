@@ -1,4 +1,4 @@
-'use strict';
+//'use strict';
 
 // Declare app level module which depends on filters, and services
 var zedAlphaConfigModule = zedAlphaConfigModule || angular.module('zedalpha.config', []);

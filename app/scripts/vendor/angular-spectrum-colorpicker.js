@@ -9,7 +9,7 @@
  * Released under the MIT license
  */
 (function(angular) {
-  'use strict';
+//  'use strict';
 
   // src/js/spectrumColorpicker.module.js
   var angularSpectrumColorpicker = angular.module('angularSpectrumColorpicker', []);
