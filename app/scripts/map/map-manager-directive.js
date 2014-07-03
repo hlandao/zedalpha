@@ -4,11 +4,13 @@ zedAlphaDirectives
     .directive('mapManager', function(firebaseRef, BusinessHolder, $timeout, DateHolder, EventsStatusesHolder) {
         return {
             restrict: 'E',
+            replace : true,
             templateUrl : 'partials/map/map-manager.html',
             link: function(scope, elem, attrs) {
                 var $mapRef,
                     map,
                     businessId,
+                    bgImage,
                     canvas,
                     buttonDefault = {
                         hasBorders : false,
@@ -24,7 +26,7 @@ zedAlphaDirectives
                     selectedShapes=[];
 
                 // ------- Init Canvas and Map --------//
-                canvas = new fabric.Canvas('canvas', {backgroundColor: 'rgb(240,240,240)'});
+                canvas = sharedCanvasResources.createTheCanvas();
                 canvas.hoverCursor = 'pointer';
 
                 // init map db connection
@@ -38,37 +40,49 @@ zedAlphaDirectives
                 var renderMap = function(map){
                     if(map){
                         canvas.loadFromJSON(JSON.stringify(map), function(){
-                            fabric.Image.fromURL('images/walkin.png', function(oImg) {
-                                occasionalButton = oImg;
-                                occasionalButton.name = "occasional";
-                                canvas.add(occasionalButton);
-                            },angular.extend(buttonDefault, {type: "button"}));
-
-                            fabric.Image.fromURL('images/dest.png', function(oImg) {
-                                destinationButton = oImg;
-                                destinationButton.name = "destination";
-                                canvas.add(destinationButton);
-                            }, angular.extend(buttonDefault, { type: "button"}));
-
-                            canvas.renderAll();
+                            sharedCanvasResources.removeBgIfAlreadyAdded(canvas);
+                            bgImage =sharedCanvasResources.addBGToCanvas(canvas);
+                            addButtons();
                             angular.forEach(canvas._objects, function(shape){
                                 if(shape.type=="seatShape") shape.setToStatic();
                             });
-
+                            canvas.renderAll();
                         });
+                    }else{
+                        bgImage = sharedCanvasResources.addBGToCanvas(canvas);
+                        addButtons();
                     }
+
+                    setBGImageListeners();
+                };
+
+                var addButtons = function(){
+                    fabric.Image.fromURL('images/walkin.png', function(oImg) {
+                        occasionalButton = oImg;
+                        occasionalButton.name = "occasional";
+                        canvas.add(occasionalButton);
+                    },angular.extend(buttonDefault, {type: "button"}));
+
+                    fabric.Image.fromURL('images/dest.png', function(oImg) {
+                        destinationButton = oImg;
+                        destinationButton.name = "destination";
+                        canvas.add(destinationButton);
+                    }, angular.extend(buttonDefault, { type: "button"}));
                 };
 
 
                 // ----- Canvas Listeners ------ //
-                canvas.on('mouse:up', function(e){
-                   var target = e.target;
-                    if(!isAddingNewEvent()){
-                        clickHandlerForNormalState(target,e);
-                    }else{
-                        clickHandlerForAddingNewEventState(target,e);
-                    }
-                });
+                var setBGImageListeners = function(){
+                    canvas.on('mouse:up', function(e){
+                        var target = e.target;
+                        console.log('target,target',target);
+                        if(!isAddingNewEvent()){
+                            clickHandlerForNormalState(target,e);
+                        }else{
+                            clickHandlerForAddingNewEventState(target,e);
+                        }
+                    });
+                }
 
                 var clickHandlerForAddingNewEventState = function (target, e){
                     if(!target) return;
@@ -85,7 +99,7 @@ zedAlphaDirectives
 
                 // click handler for normal state
                 var clickHandlerForNormalState = function(target, e){
-                    if(target){
+                    if(target && !target.bgImage){
                         if(target.type == 'seatShape'){
                             target.selectNormal();
                             showButtonsNearShape(target);
@@ -181,18 +195,19 @@ zedAlphaDirectives
                     }
                 });
 
-                var filteredEventsWatcher = scope.$parent.$watch('filteredEvents', function(newVal){
+                var filteredEventsWatcher = scope.$parent.$watch('filteredEvents.filteredEvents', function(newVal){
                     $timeout(function(){
                         if(newVal){
-                            angular.forEach(newVal.events, function(event){
-                                console.log('event',event);
+                            angular.forEach(newVal, function(event){
                                 var color = getEventStatusColor(event.status);
                                 angular.forEach(event.seats, function(value, seatNumber){
                                     var theShape;
                                     for (var i = 0;i < canvas._objects.length; ++i){
                                         theShape = canvas._objects[i];
+                                        console.log('theShape',theShape,'color',color);
                                         if(theShape.type == 'seatShape' && theShape.seatNumber == seatNumber){
                                             theShape.setBackgroundColor(color);
+                                            canvas.renderAll();
                                         }
                                     }
                                 })

@@ -1,0 +1,17 @@
+#map-container{
+  border:0px dashed #aaa;width:700px;height:600px;overflow: scroll;
+}
+
+#map-col{
+  border-left:3px solid #9C9C99;
+  border-bottom:3px solid #9C9C99;
+
+  background: rgb(240,240,240);
+  height: 100%;
+  padding:0;
+  position: relative;
+  #map-container{
+    width:100%;
+    height: 100%;
+  }
+}

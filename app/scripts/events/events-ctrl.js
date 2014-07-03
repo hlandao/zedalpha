@@ -4,7 +4,7 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic){
+    .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic,TimelyFilteredEvents){
         var OccasionalEvent = _.findWhere(EventsStatusesHolder, {status : 'OCCASIONAL'});
         var OrderedEvent = _.findWhere(EventsStatusesHolder, {status : 'ORDERED'});
 
@@ -60,5 +60,5 @@ zedAlphaControllers
         $scope.selectFilter = function(filter){
             $scope.selectedFilter = filter;
         }
-        $scope.EventsHolder = EventsHolder;
+        $scope.filteredEvents = TimelyFilteredEvents;
     });

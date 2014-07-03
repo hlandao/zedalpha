@@ -17,8 +17,11 @@
 </div>
 
 <div class="row" id="search-row">
-    <div class="col-xs-10 search-input-col">
+    <div class="col-xs-8 search-input-col">
             <input type="text" placeholder="Search">
+    </div>
+    <div class="col-xs-2 button-col">
+        <button class=""> Replace </button>
     </div>
     <div class="col-xs-2 button-col">
         <button class="">+ Add</button>
@@ -81,7 +84,7 @@
                         </tr>
                    </tbody>
                    <tbody>
-                       <tr ng-repeat="event in (filteredEvents.events = (EventsHolder.today | eventsByTime))" class="events-table-row">
+                       <tr ng-repeat="event in filteredEvents.filteredEvents" class="events-table-row">
                            <td class="status-col"> <hl-status-selector ng-model="event.status"></hl-status-selector> </td>
                            <td class="name-col"> {{event.name}}</td>
                            <td class="guests-col"> {{event.guests}} </td>

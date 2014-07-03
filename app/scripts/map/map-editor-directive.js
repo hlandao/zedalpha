@@ -5,13 +5,13 @@ zedAlphaDirectives
     .directive('map', function(firebaseRef, UserHolder, $timeout) {
         return {
             restrict: 'E',
+            replace : true,
             templateUrl : 'partials/map/map-editor.html',
             link: function(scope, elem, attrs) {
                 var mapRef, map, businessId,canvas, objModified;
 
-                canvas = new fabric.Canvas('canvas', {backgroundColor: 'rgb(240,240,240)'});
-
-
+                canvas = sharedCanvasResources.createTheCanvas();
+                sharedCanvasResources.listenToContainerScrollWithCanvas(canvas);
                 attrs.$observe('businessId', function(val){
                     UserHolder.promise().then(function(){
                         if(UserHolder.auth){
@@ -29,12 +29,16 @@ zedAlphaDirectives
 
                 var renderMap = function(map){
                     if(map){
-                        console.log(map);
-//                        console.log(JSON.parse(map));
-                        canvas.loadFromJSON(JSON.stringify(map), canvas.renderAll.bind(canvas));
+                        canvas.loadFromJSON(JSON.stringify(map), function(){
+                            sharedCanvasResources.removeBgIfAlreadyAdded(canvas);
+                            sharedCanvasResources.addBGToCanvas(canvas);
+                            canvas.renderAll();
+                        });
+                    }else{
+                        sharedCanvasResources.addBGToCanvas(canvas);
                     }
-
                 };
+
 
                 scope.seatConfigs = {
                     'Chair' : {
@@ -107,9 +111,14 @@ zedAlphaDirectives
                 };
 
                 scope.saveMap = function(){
-                    console.log('scope.saveMap');
                     objModified = false;
-                    var json = canvas.toJSON([]);
+                    var json = canvas.toJSON(['bgImage']);
+                    for(var i = 0; i< json.objects.length;++i){
+                        if(json.objects[i].bgImage){
+                            json.objects.splice(i,1);
+                            break;
+                        }
+                    }
                     mapRef.set(json, function(error){
                         scope.$apply(function(){
                             if(error){
