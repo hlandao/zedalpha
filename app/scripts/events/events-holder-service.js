@@ -5,7 +5,6 @@ zedAlphaServices
     .factory('EventsHolder', function($rootScope,BusinessHolder, DateHolder){
         var $events = {today : null};
         var updateEvents = function(){
-            console.log('updateEvents',BusinessHolder.$business,DateHolder.current);
             if(BusinessHolder.$business && DateHolder.current){
                 var dayOfYear = moment(DateHolder.current).dayOfYear();
                 $events.today = BusinessHolder.$business.$child('events').$child(dayOfYear);

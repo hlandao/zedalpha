@@ -33,12 +33,10 @@ zedAlphaDirectives
 
 
                 scope.$watch('selectedDuration', function(newVal){
-                    console.log('$watch selectedDuration',newVal);
                     ngModel.$setViewValue(newVal);
                 });
 
                 var calcDuration = function(modelValue){
-                    console.log('formatters modelValue', modelValue);
                     if(!scope.startTime || !modelValue) return null;
 
                     var startTimeMoment = moment(scope.startTime);
@@ -54,7 +52,6 @@ zedAlphaDirectives
                 ngModel.$formatters.push(calcDuration);
 
                 ngModel.$render = function(){
-                    console.log('$render',ngModel.$viewValue);
                     scope.selectedDuration = '' + ngModel.$viewValue;
 
                 };
@@ -62,7 +59,6 @@ zedAlphaDirectives
 
 
                 ngModel.$parsers.push(function(viewValue){
-                    console.log('$parsers viewValue', viewValue);
                     if(viewValue && scope.startTime)
                         return endTimeFromDuration(viewValue);
                 });

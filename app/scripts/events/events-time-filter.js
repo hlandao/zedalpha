@@ -24,4 +24,27 @@ zedAlphaDirectives
 
             return filteredEventsArr;
         }
-    });
+    }).filter('eventsByEntireShift', function(DateHolder){
+        return function(events,shift){
+            // include events that starts X minutes after the current time
+//            var EVENT_TIME_FRAME_IN_MINUTES = 120;
+
+            var shiftStartTimeMoment = moment(shift.startTime);
+            var shiftEndTimeMoment = moment(shift.endTime);
+            var filteredEventsArr = [];
+
+            angular.forEach(events, function(event, key){
+                if(!event || key == '$id' || typeof event == "function") return;
+                var startTimeMoment = moment(event.startTime);
+                var endTimeMoment = moment(event.endTime);
+                var isStartingAtShift =  startTimeMoment >= shiftStartTimeMoment && startTimeMoment <= shiftEndTimeMoment  ;
+                var isEndingWithinShift = startTimeMoment < shiftStartTimeMoment && endTimeMoment >= shiftStartTimeMoment;
+                if(isStartingAtShift || isEndingWithinShift){
+                    filteredEventsArr.push(event);
+                }
+            });
+
+            return filteredEventsArr;
+        }
+    })
+

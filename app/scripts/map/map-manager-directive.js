@@ -28,6 +28,7 @@ zedAlphaDirectives
                 // ------- Init Canvas and Map --------//
                 canvas = sharedCanvasResources.createTheCanvas();
                 canvas.hoverCursor = 'pointer';
+                sharedCanvasResources.listenToContainerScrollWithCanvas(canvas);
 
                 // init map db connection
                 $mapRef = BusinessHolder.$business.$child('map').$on('loaded', function(){
@@ -75,7 +76,6 @@ zedAlphaDirectives
                 var setBGImageListeners = function(){
                     canvas.on('mouse:up', function(e){
                         var target = e.target;
-                        console.log('target,target',target);
                         if(!isAddingNewEvent()){
                             clickHandlerForNormalState(target,e);
                         }else{
@@ -87,6 +87,9 @@ zedAlphaDirectives
                 var clickHandlerForAddingNewEventState = function (target, e){
                     if(!target) return;
                     if(~selectedShapes.indexOf(target)){
+                        if(isShapeInFilteredEvents(target)){
+                            return;
+                        }
                         removeShapeFromShapes(target);
                         updateNewEventSeats();
                     }else{
@@ -101,6 +104,9 @@ zedAlphaDirectives
                 var clickHandlerForNormalState = function(target, e){
                     if(target && !target.bgImage){
                         if(target.type == 'seatShape'){
+                            if(isShapeInFilteredEvents(target)){
+                                return;
+                            }
                             target.selectNormal();
                             showButtonsNearShape(target);
                             addShapeToShapes(target);
@@ -198,24 +204,47 @@ zedAlphaDirectives
                 var filteredEventsWatcher = scope.$parent.$watch('filteredEvents.filteredEvents', function(newVal){
                     $timeout(function(){
                         if(newVal){
+                            setAllShapesToNormal();
                             angular.forEach(newVal, function(event){
                                 var color = getEventStatusColor(event.status);
                                 angular.forEach(event.seats, function(value, seatNumber){
                                     var theShape;
                                     for (var i = 0;i < canvas._objects.length; ++i){
                                         theShape = canvas._objects[i];
-                                        console.log('theShape',theShape,'color',color);
                                         if(theShape.type == 'seatShape' && theShape.seatNumber == seatNumber){
                                             theShape.setBackgroundColor(color);
-                                            canvas.renderAll();
                                         }
                                     }
+                                    canvas.renderAll();
                                 })
                             });
                         }
                     },10);
-
                 });
+
+                var setAllShapesToNormal = function(){
+                    var theShape;
+                    for (var i = 0;i < canvas._objects.length; ++i){
+                        theShape = canvas._objects[i];
+                        if(theShape.type == 'seatShape'){
+                            theShape.backToNormalState();
+                        }
+                    }
+                }
+
+                var isShapeInFilteredEvents = function(shape){
+                    var event;
+                    for( var i = 0; i < scope.filteredEvents.filteredEvents.length; ++i){
+                        event = scope.filteredEvents.filteredEvents[i];
+                        for(var seatNumber in event.seats){
+                            if(seatNumber == shape.seatNumber){
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+
 
 
                 var getEventStatusColor = function(status){

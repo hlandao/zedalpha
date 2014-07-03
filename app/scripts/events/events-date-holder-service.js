@@ -15,4 +15,4 @@ zedAlphaServices
 
 
         return _date;
-    })
+    });

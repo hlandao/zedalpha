@@ -44,7 +44,6 @@ fabric.SeatShape = fabric.util.createClass(fabric.Group, {
     },
 
     setBackgroundColor : function(color){
-        console.log('color : ',color);
         this.theShape().setFill(color);
     },
 //    addButtons : function(){
@@ -90,6 +89,8 @@ fabric.SeatShape = fabric.util.createClass(fabric.Group, {
         var shape = this.theShape();
         shape.setStroke(this.normalState.stroke);
         shape.setStrokeWidth(this.normalState.stokeWidth);
+        shape.setFill(this.normalState.fill);
+
     },
 
     setToStatic : function(){

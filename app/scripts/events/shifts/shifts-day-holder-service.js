@@ -41,9 +41,12 @@ zedAlphaServices
                 oldValMoment = moment(oldVal),
                 oldDayOfYear = oldValMoment.dayOfYear();
 
-
-            if(!_shift.current || (newDayOfYear != oldDayOfYear && (Math.abs(oldDayOfYear - oldDayOfYear) > 1 || checkIfMomentTimeIsLaterThanCurrentEndingTime(newValMoment))))
+            console.log('should ? fetching new shift day');
+            if(!_shift.current || (newDayOfYear != oldDayOfYear &&  ((newDayOfYear-oldDayOfYear) != 1 || checkIfMomentTimeIsLaterThanCurrentEndingTime(newValMoment)))){
+                console.log('fetching new shift day');
                 fetchShiftWithDate(newVal);
+            }
+
         });
 
         var checkIfMomentTimeIsLaterThanCurrentEndingTime = function(dateMoment){
@@ -55,7 +58,7 @@ zedAlphaServices
                     continue;
                 }
                 thisEndingTimeMoment = moment(_shift.current.shifts[i].endTime);
-                latestEndingTimeMoment = (latestEndingTimeMoment >= thisEndingTimeMoment) ? thisEndingTimeMoment : thisEndingTimeMoment;
+                latestEndingTimeMoment = (latestEndingTimeMoment >= thisEndingTimeMoment) ? latestEndingTimeMoment : thisEndingTimeMoment;
             }
 
             return (dateMoment > latestEndingTimeMoment);

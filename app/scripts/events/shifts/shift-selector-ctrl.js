@@ -22,7 +22,7 @@ zedAlphaControllers
             var initialDay = startTimeMoment.dayOfYear();
             var endTimeMoment = moment(ShiftsDayHolder.selected.endTime);
             var result = [
-                {value : 'NOW', label : 'NOW'},
+//                {value : 'NOW', label : 'NOW'},
                 {value : 'ENTIRE_SHIFT', label : 'ENTIRE_SHIFT'}
             ];
             var hourToPush, oldHourToPush;
@@ -67,7 +67,15 @@ zedAlphaControllers
 
 
         $scope.hourChanged = function(){
-            DateHolder.current = DateHelpers.changeDateHourAndMinutes(DateHolder.current,null,$scope.hour, null);
+            if($scope.hour == 'ENTIRE_SHIFT'){
+                DateHolder.isEntireShift=true;
+            }else if($scope.hour == 'NOW'){
+                DateHolder.isEntireShift = false;
+            }else{
+                DateHolder.isEntireShift = false;
+                DateHolder.current = DateHelpers.changeDateHourAndMinutes(DateHolder.current,null,$scope.hour, null);
+            }
+
         };
 
 

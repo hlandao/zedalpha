@@ -9,6 +9,7 @@ zedAlphaControllers
         var OrderedEvent = _.findWhere(EventsStatusesHolder, {status : 'ORDERED'});
 
         $scope.EventsDurationHolder = EventsDurationHolder;
+        $scope.DateHolder = DateHolder;
         $scope.newEventWithSeatsDic = function(occasionalOrDestination, dic){
             var isOccasional = occasionalOrDestination == 'occasional';
             var startTime = isOccasional ? new Date() : DateHolder.current;
