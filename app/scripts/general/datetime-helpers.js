@@ -2,9 +2,9 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-
+    .constant('EventInterval',15)
     .constant('FullDateFormat',"YYYY-MM-DD HH:mm:ss")
-    .factory('DateHelpers', function(FullDateFormat){
+    .factory('DateHelpers', function(FullDateFormat, EventInterval){
 
         /**
          * return new date with the hour and minutes spefified via either hourAndMinuteStr OR hour/minute
@@ -53,10 +53,18 @@ zedAlphaServices
             }
         };
 
+        var findClosestIntervalToDate = function(date){
+            if(!date) return false;
+            var minutes = moment(date).minute();
+            return parseInt(minutes/EventInterval) * EventInterval;
+        }
+
+
 
         return {
             changeDateHourAndMinutes : changeDateHourAndMinutes,
-            hourAndMinutesArrFromString : hourAndMinutesArrFromString
+            hourAndMinutesArrFromString : hourAndMinutesArrFromString,
+            findClosestIntervalToDate : findClosestIntervalToDate
         };
     })
     .filter('numberFixedLen', function () {

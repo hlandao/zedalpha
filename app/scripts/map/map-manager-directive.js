@@ -173,8 +173,9 @@ zedAlphaDirectives
 
                 var updateNewEventSeats = function (){
                     $timeout(function(){
+                        console.log('here1 ?');
                         scope.$parent.newEvent.seats = shapesArrToSeatsDic();
-                    },1);
+                    });
                 }
 
                 var newEventForSelectedShaped = function(occasionalOrDestination){

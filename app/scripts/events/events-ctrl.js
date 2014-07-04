@@ -20,13 +20,11 @@ zedAlphaControllers
                 isOccasional : isOccasional,
                 seats : dic,
                 startTime : startTime,
-//                endTime : endTime,
                 status : isOccasional ? OccasionalEvent : OrderedEvent,
                 name : isOccasional ? $filter('translate')('OCCASIONAL') : '',
                 createdAt : new Date()
             });
             var maxDuration = EventsLogic.maxDurationForEventInMinutes(newEvent);
-            console.log('maxDuration',maxDuration);
             if(maxDuration == 0){
                 if(isOccasional && !specificStartTime){
                     $scope.newEventWithSeatsDic(occasionalOrDestination, dic, DateHolder.current);
@@ -38,18 +36,20 @@ zedAlphaControllers
             }else{
                 newEvent.endTime = EventsLogic.endTimeForNewEventWithStartTimeAndMaxDuration(startTime, maxDuration);
             }
-            console.log('newEvent',newEvent);
+            console.log('newEvent,newEvent',newEvent);
             $scope.newEvent = newEvent;
         };
 
         $scope.saveEvent = function(eventToSave){
+            console.log('saveEvent');
             var error = EventsLogic.isInValidateEventBeforeSave(eventToSave);
             if(error){
                 console.error('error',error);
                 alert('Error : ' + error);
             }else{
-                delete eventToSave.helpers;
-                EventsHolder.$allEvents.$add(eventToSave);
+                var cloned = angular.copy(eventToSave);
+                delete cloned.helpers;
+                EventsHolder.$allEvents.$add(cloned);
                 $scope.newEvent = null;
             }
 
@@ -65,30 +65,42 @@ zedAlphaControllers
                 if(error){
                     console.error('[EventsCtrl]: error while edit event', error);
                     alert('Error : ' + error);
-                    newVal.startTime=null;
-                    newVal.endTime=null;
+                    newVal.startTime=oldVal.startTime;
+                    newVal.endTime=oldVal.endTime;
                 }
             }
         },true);
 
 
         // --------- Edit event ----------- //
-
+        var editedEvent;
         var editedEventWatcher;
         $scope.openEditedEvent = function (event){
+            console.log('event',event);
+            if(editedEvent){
+                $scope.closeEditedEvent(editedEvent);
+            }
             event.helpers = event.helpers || {};
             event.helpers.isEditing = true;
+            editedEvent = angular.copy(event);
             $scope.isEditingEvent = true;
-            editedEventWatcher = $scope.$watch(function(){
+            var justReverted = false;
+            editedEventWatcher = $scope.$watchCollection(function(){
                 return event;
             }, function(newVal, oldVal){
-                if(newVal){
+                if(justReverted){
+                    justReverted = false;
                     return;
+                }
+                if(newVal){
                     var error = EventsLogic.isInValidateEventWhileEdit(newVal);
+                    console.log('error',error);
                     if(error){
                         console.error('[EventsCtrl]: error while edit event', error);
                         alert('Error : ' + error);
-                        event = oldVal;
+                        justReverted = true;
+                        event.startTime =  oldVal.startTime;
+                        event.endTime =  oldVal.endTime;
                     }
                 }
             },true);
@@ -96,8 +108,12 @@ zedAlphaControllers
         };
 
         $scope.closeEditedEvent = function(event){
-            event.helpers.isEditing = false;
             $scope.isEditingEvent = false;
+            console.log('editedEvent',editedEvent);
+            angular.extend(event, editedEvent);
+            editedEvent = null;
+            event.helpers = event.helpers || {};
+            event.helpers.isEditing = false;
             if(angular.isFunction(editedEventWatcher)) editedEventWatcher();
         };
 
@@ -113,7 +129,7 @@ zedAlphaControllers
                 delete eventToSave.helpers;
                 var $event = EventsHolder.$allEvents.$child(eventToSave.$id);
                 $event.$set(eventToSave);
-                eventToSave.helpers.isEditing = false;
+                if(eventToSave.helpers) eventToSave.helpers.isEditing = false;
                 $scope.isEditingEvent = false;
             }
 

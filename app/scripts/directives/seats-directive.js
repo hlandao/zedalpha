@@ -45,7 +45,8 @@ zedAlphaDirectives
            if(!input) return;
            var arr = [];
            for(var i in input){
-               arr.push(i);
+               if(input[i])
+                    arr.push(i);
            }
            return arr.join(',');
        }

@@ -42,8 +42,8 @@ zedAlphaServices
             var eventToCheckEndTimeMoment = moment(eventToCheck.endTime);
             var e2StartTimeMoment = moment(e2.startTime);
             var e2EndTimeMoment = moment(e2.endTime);
-            var isStartingBeforeEndAfter = (eventToCheckEndTimeMoment > e2StartTimeMoment && eventToCheckEndTimeMoment <= e2StartTimeMoment);
-            var isStartingAfter = (eventToCheckStartTimeMoment >= e2StartTimeMoment && eventToCheckStartTimeMoment < e2EndTimeMoment);
+            var isStartingBeforeEndAfter = (eventToCheckStartTimeMoment <= e2StartTimeMoment) && (eventToCheckEndTimeMoment > e2StartTimeMoment);
+            var isStartingAfter = (eventToCheckStartTimeMoment >= e2StartTimeMoment) && (eventToCheckStartTimeMoment < e2EndTimeMoment);
             return (isStartingBeforeEndAfter || isStartingAfter);
         };
 
@@ -112,8 +112,6 @@ zedAlphaServices
             // Event has no end time
             }else if(!event.endTime){
                 return "ERROR_EVENT_MSG_ENDTIME";
-            }else if(checkCollisionsForEvent(event)){
-                return "ERROR_EVENT_MSG_COLLISION";
             }else if(checkCollisionsForEvent(event)){
                 return "ERROR_EVENT_MSG_COLLISION";
             }

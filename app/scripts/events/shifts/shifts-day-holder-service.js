@@ -39,7 +39,6 @@ zedAlphaServices
             if(isShiftJustChanged){
                 return isShiftJustChanged = false;
             }
-            console.log('setting isDateHolderJustChanged = true',newVal,oldVal);
             isDateHolderJustChanged = true;
 
             var newValMoment = moment(newVal),
@@ -47,7 +46,6 @@ zedAlphaServices
                 oldValMoment = moment(oldVal),
                 oldDayOfYear = oldValMoment.dayOfYear();
             if(!_shift.current || (newDayOfYear != oldDayOfYear &&  ((newDayOfYear-oldDayOfYear) != 1 || checkIfMomentTimeIsLaterThanCurrentEndingTime(newValMoment)))){
-                console.log('changing shift!');
                 fetchShiftWithDate(newVal);
             }else{
                 isDateHolderJustChanged=false;
@@ -59,14 +57,12 @@ zedAlphaServices
         $rootScope.$watch(function(){
             return _shift.selected;
         },function(newVal){
-            console.log('isDateHolderJustChanged',isDateHolderJustChanged, 'newVal',newVal);
             if(isDateHolderJustChanged){
-                console.log('setting isDateHolderJustChanged = false');
                 isDateHolderJustChanged = false;
                 return;
             }
             isShiftJustChanged = true;
-            console.log('changing the shift');
+
             DateHolder.current = new Date(newVal.defaultTime || newVal.startTime);
 
         });

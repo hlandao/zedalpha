@@ -7,7 +7,6 @@ zedAlphaControllers
 
     .controller('ShiftSelectorCtrl', function($scope, DateHolder, ShiftsDayHolder, BusinessHolder, DateHelpers){
         $scope.ShiftsDayHolder = ShiftsDayHolder;
-        console.log('ShiftsDayHolder',ShiftsDayHolder);
 
         $scope.$watch(function(){
             return DateHolder.current;

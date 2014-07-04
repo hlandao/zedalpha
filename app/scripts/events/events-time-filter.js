@@ -2,6 +2,7 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 
 
 zedAlphaDirectives
+
     .filter('eventsByTime', function(DateHolder){
         return function(events){
             // include events that starts X minutes after the current time

@@ -9,6 +9,7 @@ zedAlphaDirectives
             restrict: 'E',
             replace: true,
             require:['ngModel'],
+            scope : {},
             templateUrl: '/partials/directives/clockpicker-directive.html',
             link : function(scope, element, attrs, ctrls) {
                 var ngModel = ctrls[0];
@@ -36,7 +37,7 @@ zedAlphaDirectives
                 ngModel.$parsers.push(function(viewValue){
                     var hourSplitted = DateHelpers.hourAndMinutesArrFromString(viewValue);
                     if(hourSplitted){
-                        return new Date(moment(ngModel).hour(hourSplitted.hour).minute(hourSplitted.minute).format(FullDateFormat));
+                        return new Date(moment(ngModel.$modelValue).hour(hourSplitted.hour).minute(hourSplitted.minute).format(FullDateFormat));
                     }
 
                 });

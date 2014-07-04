@@ -26,7 +26,7 @@
           text-align: center;
         }
 
-        thead{
+        >thead{
           th{
             color:#eee;
             padding:5px 0;
@@ -70,6 +70,19 @@
         }
       }
 
+    }
+  }
+
+  ul.dropdown-menu{
+    table{
+      thead{
+        th{
+          color:#666;
+        }
+      }
+    }
+    .btn-danger{
+      display:none;
     }
   }
 

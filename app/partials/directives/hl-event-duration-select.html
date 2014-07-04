@@ -1,0 +1,24 @@
+<div class="hl-event-duration-select row">
+    <div class="col-xs-3">
+        <input type="text" class="datepicker-input" ng-click="datepickerOpened=true" datepicker-popup="dd/MM/yyyy" ng-model="event.startTime" ng-change="changeDate()"  is-open="datepickerOpened" close-text=""/>
+    </div>
+    <div class="col-xs-2">
+        <fm-timepicker ng-model="startTimeHelperModel" ng-change="changeStartTime()" start-time="defaultFMOptions.startOfTheDay" end-time="defaultFMOptions.endOfTheDay" interval="defaultFMOptions.interval" format="timeFormat"></fm-timepicker>
+    </div>
+    <div class="col-xs-1">
+        <span style="line-height: 28px;"> to </span>
+    </div>
+    <div class="col-xs-2">
+        <fm-timepicker ng-model="endTimeHelperModel" ng-change="changeEndTime()" start-time="defaultFMOptions.startOfTheDay" end-time="defaultFMOptions.endOfTheDay" interval="defaultFMOptions.interval" format="timeFormat"></fm-timepicker>
+    </div>
+    <div class="col-xs-2">
+        <div class="btn-group" dropdown>
+            <button type="button" class="btn-sm btn dropdown-toggle" style="background:transparent;">
+                {{durationLabel}} min<span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li ng-repeat="(duration,val) in durations" ng-click="changeDuration(duration)"><a href="#" dropdown-toggle>{{duration}} min</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
