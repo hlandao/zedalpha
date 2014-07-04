@@ -53,8 +53,14 @@
                             <td class="name-col"> <input type="text" ng-model="newEvent.name" placeholder="{{ 'NAME' | translate }}" class=""> </td>
                             <td class="guests-col"> <input type="text" ng-model="newEvent.guests" placeholder="0" class=""> </td>
                             <td class="seats-col"> <input type="text" ng-model="newEvent.seats" hl-seats-input  class=""> </td>
-                            <td class="time-col"> <hl-timepicker ng-model="newEvent.startTime" ></hl-timepicker> </td>
+                            <td class="time-col"> {{newEvent.startTime  | date : 'HH:mm'}} </td>
                         </tr>
+                        <tr class="event-form-row">
+                            <td colspan="5">
+                                <hl-event-duration-select ng-model="event"></hl-event-duration-select>
+                            </td>
+                        </tr>
+
                         <tr class="event-form-row" ng-show="!newEvent.isOccasional">
                             <td colspan="3"> <input type="text" ng-model="newEvent.phone" placeholder="{{ 'PHONE' | translate }}" class=""></td>
                             <td colspan="2"> <input type="text" ng-model="newEvent.email" placeholder="{{ 'EMAIL' | translate }}" class=""> </td>
@@ -72,13 +78,10 @@
                             <td colspan="5"> <input type="text" ng-model="newEvent.comment" placeholder="{{ 'COMMENT' | translate }}" class=""> </td>
                         </tr>
                         <tr class="event-form-row">
-                            <td colspan="3"> <input type="text" ng-model="newEvent.hostess" placeholder="{{ 'HOSTESS' | translate }}" class=""> </td>
-                            <td colspan="2"> <input type="text" class="datepicker-input" ng-click="newEvent.helpers.isDatepickerOpened = true" datepicker-popup="dd/MM/yyyy" ng-model="newEvent.startTime"  is-open="newEvent.helpers.isDatepickerOpened"/> </td>
-
+                            <td colspan="5"> <input type="text" ng-model="newEvent.hostess" placeholder="{{ 'HOSTESS' | translate }}" class=""> </td>
                         </tr>
                         <tr class="event-form-row">
-                            <td colspan="3"> <span> {{ 'EVENT_DURATION' | translate }}</span> <hl-event-duration-select ng-model="newEvent.endTime" start-time="newEvent.startTime" durations="EventsDurationHolder"></hl-event-duration-select> </td>
-                            <td colspan="2">
+                            <td colspan="5">
                                 <button class="btn btn-default" ng-click="closeNewEvent()"> {{ 'BACK' | translate }}</button>
                                 <button class="btn btn-danger" ng-show=""> {{ 'DELETE' | translate }}</button>
                                 <button class="btn btn-success" ng-click="saveEvent(newEvent)"> {{ 'SAVE' | translate }}</button>
@@ -87,7 +90,7 @@
                    </tbody>
                    <tbody class="edited-event existing-event top-form" ng-class="{'is-editing' : event.helpers.isEditing}" ng-repeat-start="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter))">
                        <tr  class="events-table-row" ng-click="openEditedEvent(event)">
-                           <td class="status-col"> <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector> </td>
+                           <td class="status-col"> <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event, $event)"></hl-status-selector> </td>
                            <td class="name-col"> {{event.name}}</td>
                            <td class="guests-col"> {{event.guests}} </td>
                            <td class="seats-col"> {{event.seats | seats}} </td>

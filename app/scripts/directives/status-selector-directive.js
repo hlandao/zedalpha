@@ -13,8 +13,16 @@ zedAlphaDirectives
                 $scope.status = ngModel.$viewValue;
             };
 
-            $scope.selectStatus = function(selectedStatus){
-                console.log('selectedStatus',selectedStatus);
+
+            $scope.toggleSelector = function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                $scope.showSelector = !$scope.showSelector
+            }
+            $scope.selectStatus = function(selectedStatus, e){
+                e.preventDefault();
+                e.stopPropagation();
+
                 ngModel.$setViewValue(selectedStatus);
                 $scope.status = selectedStatus;
                 $timeout(function(){
@@ -39,6 +47,7 @@ zedAlphaDirectives
             link : function(scope, element, attrs, ctrls) {
                 var ctrl = ctrls[0];
                 var ngModel = ctrls[1];
+
 
                 if ( ngModel ) {
                     ctrl.init( ngModel);

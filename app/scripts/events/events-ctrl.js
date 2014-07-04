@@ -13,28 +13,43 @@ zedAlphaControllers
         $scope.ShiftsDayHolder = ShiftsDayHolder;
 
         // --------- New event ----------- //
-        $scope.newEventWithSeatsDic = function(occasionalOrDestination, dic){
+        $scope.newEventWithSeatsDic = function(occasionalOrDestination, dic, specificStartTime){
             var isOccasional = occasionalOrDestination == 'occasional';
-            var startTime = isOccasional ? new Date() : DateHolder.current;
-            var endTime = EventsLogic.endTimeForNewEventWithStartTime(startTime);
-            $scope.newEvent = new Event({
+            var startTime = specificStartTime || (isOccasional ? new Date() : DateHolder.current);
+            var newEvent = new Event({
                 isOccasional : isOccasional,
                 seats : dic,
                 startTime : startTime,
-                endTime : endTime,
+//                endTime : endTime,
                 status : isOccasional ? OccasionalEvent : OrderedEvent,
                 name : isOccasional ? $filter('translate')('OCCASIONAL') : '',
                 createdAt : new Date()
             });
+            var maxDuration = EventsLogic.maxDurationForEventInMinutes(newEvent);
+            console.log('maxDuration',maxDuration);
+            if(maxDuration == 0){
+                if(isOccasional && !specificStartTime){
+                    $scope.newEventWithSeatsDic(occasionalOrDestination, dic, DateHolder.current);
+                    return;
+                }
+
+                alert('Error : cannot start event at ' + moment(startTime).format('HH:mm'));
+                return false;
+            }else{
+                newEvent.endTime = EventsLogic.endTimeForNewEventWithStartTimeAndMaxDuration(startTime, maxDuration);
+            }
+            console.log('newEvent',newEvent);
+            $scope.newEvent = newEvent;
         };
 
         $scope.saveEvent = function(eventToSave){
             var error = EventsLogic.isInValidateEventBeforeSave(eventToSave);
             if(error){
                 console.error('error',error);
+                alert('Error : ' + error);
             }else{
                 delete eventToSave.helpers;
-                EventsHolder.today.$add(eventToSave);
+                EventsHolder.$allEvents.$add(eventToSave);
                 $scope.newEvent = null;
             }
 
@@ -49,10 +64,12 @@ zedAlphaControllers
                 var error = EventsLogic.isInValidateEventWhileEdit(newVal);
                 if(error){
                     console.error('[EventsCtrl]: error while edit event', error);
-                    newVal = oldVal;
+                    alert('Error : ' + error);
+                    newVal.startTime=null;
+                    newVal.endTime=null;
                 }
             }
-        });
+        },true);
 
 
         // --------- Edit event ----------- //
@@ -70,10 +87,11 @@ zedAlphaControllers
                     var error = EventsLogic.isInValidateEventWhileEdit(newVal);
                     if(error){
                         console.error('[EventsCtrl]: error while edit event', error);
+                        alert('Error : ' + error);
                         event = oldVal;
                     }
                 }
-            });
+            },true);
 
         };
 
@@ -87,12 +105,23 @@ zedAlphaControllers
 
         };
 
-        $scope.saveEditedEvent = function(event){
+        $scope.saveEditedEvent = function(eventToSave){
+            var error = EventsLogic.isInValidateEventBeforeSave(eventToSave);
+            if(error){
+                alert('Error : ' + error);
+            }else{
+                delete eventToSave.helpers;
+                var $event = EventsHolder.$allEvents.$child(eventToSave.$id);
+                $event.$set(eventToSave);
+                eventToSave.helpers.isEditing = false;
+                $scope.isEditingEvent = false;
+            }
 
         };
 
         $scope.eventStatusChanged = function(event){
-            EventsHolder.today.$save();
+            $scope.saveEditedEvent(event);
+//            EventsHolder.$allEvents.$save();
         };
 
 

@@ -248,8 +248,8 @@ zedAlphaDirectives
 
                 var isShapeInFilteredEvents = function(shape){
                     var event;
-                    for( var i = 0; i < scope.$parent.events.length; ++i){
-                        event = scope.$parent.events[i];
+                    for( var i = 0; i < scope.$parent.events.events.length; ++i){
+                        event = scope.$parent.events.events[i];
                         for(var seatNumber in event.seats){
                             if(seatNumber == shape.seatNumber){
                                 return true;

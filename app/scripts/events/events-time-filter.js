@@ -10,7 +10,6 @@ zedAlphaDirectives
             var currentDateMoment = moment(DateHolder.current);
             var filteredEventsArr = [];
 
-            console.log('events',events);
             angular.forEach(events, function(event, key){
                 if(!event || key == '$id' || typeof event == "function") return;
                 var startTimeMoment = moment(event.startTime);
@@ -20,6 +19,7 @@ zedAlphaDirectives
                 var isEndingAfterCurrentDate = endTimeMoment >= currentDateMoment;
                 var isEditingNow = event.helpers && event.helpers.isEditing;
                 if(isEditingNow || (startTimeDiffInMinutes == 0) || (isStartingAfterCurrentDate &&  startTimeDiffInMinutes < EVENT_TIME_FRAME_IN_MINUTES) || (!isStartingAfterCurrentDate && isEndingAfterCurrentDate)){
+                    event.$id = key;
                     filteredEventsArr.push(event);
                 }
             });
@@ -43,6 +43,7 @@ zedAlphaDirectives
                 var isEndingWithinShift = startTimeMoment < shiftStartTimeMoment && endTimeMoment >= shiftStartTimeMoment;
                 var isEditingNow = event.helpers && event.helpers.isEditing;
                 if(isEditingNow || isStartingAtShift || isEndingWithinShift){
+                    event.$id = key;
                     filteredEventsArr.push(event);
                 }
             });

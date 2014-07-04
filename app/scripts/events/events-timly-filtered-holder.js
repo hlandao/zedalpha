@@ -11,14 +11,14 @@ zedAlphaServices
             var current = DateHolder.current;
             var isEntireShift = DateHolder.isEntireShift;
 
-            _holder.filteredEventsByShift = $filter('eventsByEntireShift')(EventsHolder.today,ShiftsDayHolder.selected);
+            _holder.filteredEventsByShift = $filter('eventsByEntireShift')(EventsHolder.$allEvents,ShiftsDayHolder.selected);
 
 
             if(isEntireShift){
                 _holder.filteredEvents = _holder.filteredEventsByShift;
             }else{
                 if(angular.isDate(current)){
-                    _holder.filteredEvents = $filter('eventsByTime')(EventsHolder.today);
+                    _holder.filteredEvents = $filter('eventsByTime')(EventsHolder.$allEvents);
                 }else{
 
                 }
@@ -27,15 +27,15 @@ zedAlphaServices
 
         $rootScope.$watch(function(){
             return DateHolder;
-        }, filterEvents ,true);
+        }, filterEvents, true);
 
         $rootScope.$watch(function(){
-            return EventsHolder.today;
-        }, filterEvents ,true);
+            return EventsHolder.$allEvents;
+        }, filterEvents, true);
 
         $rootScope.$watch(function(){
             return ShiftsDayHolder.selected;
-        }, filterEvents ,true);
+        }, filterEvents,true);
 
 
 

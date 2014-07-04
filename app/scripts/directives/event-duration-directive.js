@@ -21,10 +21,10 @@ zedAlphaDirectives
                 scope.$watch('startTime', function(newVal){
                     if(newVal){
                         if(!ngModel.$viewValue){
-                            ngModel.$setViewValue('' + calcDuration(ngModel.$modelValue));
+                            ngModel.$setViewValue(calcDuration(ngModel.$modelValue));
                             ngModel.$render();
                         }else{
-                            ngModel.$setViewValue('' + ngModel.$viewValue);
+                            ngModel.$setViewValue(ngModel.$viewValue);
                         }
 
                     }
@@ -37,6 +37,7 @@ zedAlphaDirectives
                 });
 
                 var calcDuration = function(modelValue){
+                    console.log('modelValue',modelValue,'scope.startTime',scope.startTime);
                     if(!scope.startTime || !modelValue) return null;
 
                     var startTimeMoment = moment(scope.startTime);
@@ -52,8 +53,7 @@ zedAlphaDirectives
                 ngModel.$formatters.push(calcDuration);
 
                 ngModel.$render = function(){
-                    scope.selectedDuration = '' + ngModel.$viewValue;
-
+                    scope.selectedDuration = ngModel.$viewValue;
                 };
 
 
