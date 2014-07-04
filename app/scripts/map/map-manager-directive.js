@@ -47,6 +47,7 @@ zedAlphaDirectives
                             angular.forEach(canvas._objects, function(shape){
                                 if(shape.type=="seatShape") shape.setToStatic();
                             });
+                            renderMapWithEvents(scope.$parent.events);
                             canvas.renderAll();
                         });
                     }else{
@@ -201,26 +202,39 @@ zedAlphaDirectives
                     }
                 });
 
-                var filteredEventsWatcher = scope.$parent.$watch('filteredEvents.filteredEvents', function(newVal){
-                    $timeout(function(){
-                        if(newVal){
-                            setAllShapesToNormal();
-                            angular.forEach(newVal, function(event){
-                                var color = getEventStatusColor(event.status);
-                                angular.forEach(event.seats, function(value, seatNumber){
-                                    var theShape;
-                                    for (var i = 0;i < canvas._objects.length; ++i){
-                                        theShape = canvas._objects[i];
-                                        if(theShape.type == 'seatShape' && theShape.seatNumber == seatNumber){
-                                            theShape.setBackgroundColor(color);
-                                        }
-                                    }
-                                    canvas.renderAll();
-                                })
-                            });
+
+                var renderMapWithEvents = _.throttle(function(newVal){
+                    if(!newVal) return;
+                    var events = newVal.events;
+                    if(events){
+                        setAllShapesToNormal();
+                        if(!events.length){
+                            return canvas.renderAll();
                         }
-                    },10);
-                });
+
+                        var event, color, seatNumber, theShape;
+                        for(var j = 0; j < events.length; ++j){
+                            event = events[j];
+                            color = getEventStatusColor(event.status);
+                            for(seatNumber  in  event.seats){
+                                for (var i = 0;i < canvas._objects.length; ++i){
+                                    theShape = canvas._objects[i];
+                                    if(theShape.type == 'seatShape' && theShape.seatNumber == seatNumber){
+
+                                        theShape.setBackgroundColor(color);
+                                    }
+                                }
+
+                            }
+
+                        }
+                        canvas.renderAll();
+
+                    }
+                },10);
+
+                var filteredEventsWatcher = scope.$parent.$watch('events', renderMapWithEvents,true);
+
 
                 var setAllShapesToNormal = function(){
                     var theShape;
@@ -234,8 +248,8 @@ zedAlphaDirectives
 
                 var isShapeInFilteredEvents = function(shape){
                     var event;
-                    for( var i = 0; i < scope.filteredEvents.filteredEvents.length; ++i){
-                        event = scope.filteredEvents.filteredEvents[i];
+                    for( var i = 0; i < scope.$parent.events.length; ++i){
+                        event = scope.$parent.events[i];
                         for(var seatNumber in event.seats){
                             if(seatNumber == shape.seatNumber){
                                 return true;

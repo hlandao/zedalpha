@@ -14,8 +14,8 @@ gulp.task('styles', function () {
 
 gulp.task('scripts', function () {
   return gulp.src('app/scripts/**/*.js')
-    .pipe($.jshint())
-    .pipe($.jshint.reporter('jshint-stylish'))
+//    .pipe($.jshint())
+//    .pipe($.jshint.reporter('jshint-stylish'))
     .pipe($.size());
 });
 
@@ -49,7 +49,7 @@ gulp.task('html', ['styles', 'scripts', 'partials'], function () {
     .pipe($.rev())
     .pipe(jsFilter)
     .pipe($.ngmin())
-    .pipe($.uglify())
+//    .pipe($.uglify())
     .pipe(jsFilter.restore())
     .pipe(cssFilter)
     .pipe($.replace('bower_components/bootstrap-sass-official/vendor/assets/fonts/bootstrap','fonts'))

@@ -136,7 +136,7 @@ zedAlphaServices
 
                         this.shifts[i].startTime = newStartTimeMoment.format(FullDateFormat);
                         this.shifts[i].endTime = newEndTimeMoment.format(FullDateFormat);
-                        this.shifts[i].defaulttime = newDefaultTimeMoment.format(FullDateFormat);
+                        this.shifts[i].defaultTime = newDefaultTimeMoment.format(FullDateFormat);
 
                     }
                 }

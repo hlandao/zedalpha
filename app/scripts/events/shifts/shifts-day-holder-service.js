@@ -36,18 +36,33 @@ zedAlphaServices
             // fetch current day shifts from server or use the basic shift
             // ONLY if the *date* was changed;
             // AND if the date is the next day only and the new *hour* is later than the current latest shift ending time
+            if(isShiftJustChanged){
+                return isShiftJustChanged = false;
+            }
+            isDateHolderJustChanged = true;
+
             var newValMoment = moment(newVal),
                 newDayOfYear = newValMoment.dayOfYear(),
                 oldValMoment = moment(oldVal),
                 oldDayOfYear = oldValMoment.dayOfYear();
-
-            console.log('should ? fetching new shift day');
             if(!_shift.current || (newDayOfYear != oldDayOfYear &&  ((newDayOfYear-oldDayOfYear) != 1 || checkIfMomentTimeIsLaterThanCurrentEndingTime(newValMoment)))){
-                console.log('fetching new shift day');
                 fetchShiftWithDate(newVal);
             }
 
         });
+
+        var  isShiftJustChanged = false, isDateHolderJustChanged = false;
+        $rootScope.$watch(function(){
+            return _shift.selected;
+        },function(newVal){
+            if(isDateHolderJustChanged){
+                return isDateHolderJustChanged = false;
+            }
+            isShiftJustChanged = true;
+            DateHolder.current = new Date(newVal.defaultTime || newVal.startTime);
+
+        });
+
 
         var checkIfMomentTimeIsLaterThanCurrentEndingTime = function(dateMoment){
             var latestEndingTimeMoment, thisEndingTimeMoment;
@@ -69,7 +84,6 @@ zedAlphaServices
             var dateMoment = moment(date);
             if(dateMoment){
                 var dayOfYear = dateMoment.dayOfYear();
-
                 $shiftsDays.$child(''+dayOfYear+'').$getRef().once('value', function(snapshot){
                     var val = snapshot.val();
                     if(val){
@@ -94,7 +108,8 @@ zedAlphaServices
         return {
             basicShiftForDayOfWeek : function(date){
                 var dayOfWeek = moment(date).day();
-                return new BasicShiftDay(null, $basic[dayOfWeek], date);
+                var output = new BasicShiftDay(null, $basic[dayOfWeek], date);
+                return output;
             }
         }
     });

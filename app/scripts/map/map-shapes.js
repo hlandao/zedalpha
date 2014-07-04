@@ -1,8 +1,6 @@
 fabric.SeatShape = fabric.util.createClass(fabric.Group, {
     type: 'seatShape',
     initialize : function(objects, options){
-        console.log(this);
-
         this.callSuper('initialize', objects, options);
         var text = this.theText();
         var shape = this.theShape();

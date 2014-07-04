@@ -41,6 +41,8 @@ zedAlphaConfigModule
         OCCASIONAL : 'Walkin',
         ALL: "All",
         SEATING: "Seating",
+        SEATED: "Seating",
+
         ORDERED: "Orderd",
         // ERRORS
         ERROR_MSG_COLLISION: "Error : event collide with another event",

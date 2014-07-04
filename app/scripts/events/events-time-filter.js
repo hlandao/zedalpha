@@ -10,6 +10,7 @@ zedAlphaDirectives
             var currentDateMoment = moment(DateHolder.current);
             var filteredEventsArr = [];
 
+            console.log('events',events);
             angular.forEach(events, function(event, key){
                 if(!event || key == '$id' || typeof event == "function") return;
                 var startTimeMoment = moment(event.startTime);
@@ -17,7 +18,8 @@ zedAlphaDirectives
                 var startTimeDiffInMinutes =  startTimeMoment.diff(currentDateMoment, 'minutes');
                 var isStartingAfterCurrentDate = startTimeDiffInMinutes > 0;
                 var isEndingAfterCurrentDate = endTimeMoment >= currentDateMoment;
-                if((startTimeDiffInMinutes == 0) || (isStartingAfterCurrentDate &&  startTimeDiffInMinutes < EVENT_TIME_FRAME_IN_MINUTES) || (!isStartingAfterCurrentDate && isEndingAfterCurrentDate)){
+                var isEditingNow = event.helpers && event.helpers.isEditing;
+                if(isEditingNow || (startTimeDiffInMinutes == 0) || (isStartingAfterCurrentDate &&  startTimeDiffInMinutes < EVENT_TIME_FRAME_IN_MINUTES) || (!isStartingAfterCurrentDate && isEndingAfterCurrentDate)){
                     filteredEventsArr.push(event);
                 }
             });
@@ -39,7 +41,8 @@ zedAlphaDirectives
                 var endTimeMoment = moment(event.endTime);
                 var isStartingAtShift =  startTimeMoment >= shiftStartTimeMoment && startTimeMoment <= shiftEndTimeMoment  ;
                 var isEndingWithinShift = startTimeMoment < shiftStartTimeMoment && endTimeMoment >= shiftStartTimeMoment;
-                if(isStartingAtShift || isEndingWithinShift){
+                var isEditingNow = event.helpers && event.helpers.isEditing;
+                if(isEditingNow || isStartingAtShift || isEndingWithinShift){
                     filteredEventsArr.push(event);
                 }
             });

@@ -2,7 +2,7 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory('DateHolder', function(){
+    .factory('DateHolder', function($rootScope){
         var _date = {};
 
         var now = moment();
@@ -12,7 +12,6 @@ zedAlphaServices
         }else{
             _date.current = new Date();
         }
-
 
         return _date;
     });

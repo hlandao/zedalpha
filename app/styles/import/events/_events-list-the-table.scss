@@ -44,7 +44,7 @@
           }
         }
         tbody{
-          tr{
+          tr.events-table-row{
             &:hover{
               background: #353034;
             }
@@ -55,39 +55,24 @@
               border-bottom:1px solid #353034;
             }
           }
+
+          tr.separator-table-row{
+            td{
+              text-align: center;
+              font-weight: lighter;
+              padding:10px;
+              color:white;
+              border-left:1px solid #353034;
+              border-bottom:1px solid #353034;
+            }
+
+          }
         }
       }
 
     }
   }
-  tbody.editedEvent{
-    background: #414141;
-    border:3px solid #8a8a8a;
-    tr{
-      &:hover{
-        background: inherit !important;
-      }
-    }
-    tr.events-table-row{
 
-      td{
-        border-left:1px solid #ffe8fc;
-        border-bottom:1px solid #ffe7fb;
-      }
-      input{
-        width:100%;
-        background: transparent;
-        border:0;
-        text-align: center;
-      }
-    }
-    input{
-      width:100%;
-      background: transparent;
-      border:0;
-    }
-
-  }
 
 
 }
