@@ -7,35 +7,31 @@ zedAlphaControllers
 
     .controller('ShiftSelectorCtrl', function($scope, DateHolder, ShiftsDayHolder, BusinessHolder, DateHelpers){
         $scope.ShiftsDayHolder = ShiftsDayHolder;
+        console.log('ShiftsDayHolder',ShiftsDayHolder);
 
         $scope.$watch(function(){
             return DateHolder.current;
         }, function(){
             if(!DateHolder.current) return;
-            $scope.hour =  moment(DateHolder.current).hour();
-            $scope.minute =  moment(DateHolder.current).minute();
+            generateShiftHours();
+            $scope.minuteLabel = moment(DateHolder.current).minute();
         });
 
-        $scope.shiftHours = function(){
+        var generateShiftHours = function(){
             if(!ShiftsDayHolder.selected) return;
             var startTimeMoment = moment(ShiftsDayHolder.selected.startTime);
             var initialDay = startTimeMoment.dayOfYear();
             var endTimeMoment = moment(ShiftsDayHolder.selected.endTime);
+            var nowHour = moment(DateHolder.current).hour();
             var result = [
 //                {value : 'NOW', label : 'NOW'},
                 {value : 'ENTIRE_SHIFT', label : 'ENTIRE_SHIFT'}
             ];
-            var hourToPush, oldHourToPush;
+            var hourToPush;
             do{
-                if($scope.hour && hourToPush){
-                    oldHourToPush = hourToPush;
-                    hourToPush = startTimeMoment.hour();
-                    if(parseInt($scope.hour) > hourToPush && (parseInt($scope.hour) < hourToPush)){
-                        result.push({value : $scope.hour, label : $scope.hour});
-                    }
-                }else{
-                    hourToPush = startTimeMoment.hour();
-                }
+
+                hourToPush = startTimeMoment.hour();
+
 
                 if(startTimeMoment.dayOfYear() == initialDay){
                     result.push({value : hourToPush, label :  hourToPush});
@@ -45,41 +41,30 @@ zedAlphaControllers
                 startTimeMoment.minutes(0).add('hours',1);
             }while (startTimeMoment <= endTimeMoment);
 
-            return result;
+            $scope.hourLabel = nowHour;
+            $scope.shiftHours =  result;
         }
 
-        var defaultShiftMinutes = [0,15,30,45];
-        $scope.shiftMinutes = function(){
-            $scope.minute = $scope.minute || 0;
-            if(~defaultShiftMinutes.indexOf($scope.minute)) return defaultShiftMinutes;
-            var i = 0;
-            while (i < defaultShiftMinutes){
-                if($scope.minute < defaultShiftMinutes[i]){
-                    break;
-                }else if($scope.minute >= defaultShiftMinutes[i] && defaultShiftMinutes[++i] >= $scope.minute ){
-                    break;
-                }
-            }
-            var output = [].concat(defaultShiftMinutes);
-            output.splice(i, 0, $scope.minute);
-            return output;
-        };
+        $scope.defaultShiftMinutes = [0,15,30,45];
 
 
-        $scope.hourChanged = function(){
-            if($scope.hour == 'ENTIRE_SHIFT'){
+        $scope.hourChanged = function(newHour){
+            var hour = newHour.value;
+            $scope.hourLabel = newHour.label;
+            if(hour == 'ENTIRE_SHIFT'){
                 DateHolder.isEntireShift=true;
-            }else if($scope.hour == 'NOW'){
+            }else if(hour == 'NOW'){
                 DateHolder.isEntireShift = false;
             }else{
                 DateHolder.isEntireShift = false;
-                DateHolder.current = DateHelpers.changeDateHourAndMinutes(DateHolder.current,null,$scope.hour, null);
+                DateHolder.current = DateHelpers.changeDateHourAndMinutes(DateHolder.current,null,hour, null);
             }
 
         };
 
 
-        $scope.minuteChanged = function(){
-            DateHolder.current = DateHelpers.changeDateHourAndMinutes(DateHolder.current,null,null, $scope.minute);
+        $scope.minuteChanged = function(minute){
+            $scope.minuteLabel = minute;
+            DateHolder.current = DateHelpers.changeDateHourAndMinutes(DateHolder.current,null,null, minute);
         };
     });

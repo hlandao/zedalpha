@@ -42,7 +42,9 @@ tbody.edited-event.new-event{
   tr.event-form-row{
     color:white;
     td{
-      padding: 5px;
+      border-left:1px solid #353034;
+      border-bottom:1px solid #353034;
+      padding: 10px;
     }
     &:hover{
       background: inherit !important;

@@ -1,17 +1,40 @@
 <div class="row" id="shift-selector-row" ng-controller="ShiftSelectorCtrl">
     <div class="col-xs-4 shift-select-col select-shift">
         <div class="styled-shift-select">
-            <select ng-model="ShiftsDayHolder.selected" ng-options="shift.name for shift in ShiftsDayHolder.current.shifts"></select>
+            <div class="btn-group" dropdown>
+                <button type="button" class="btn btn-primary dropdown-toggle">
+                    {{ShiftsDayHolder.selected.name}} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li ng-repeat="shift in ShiftsDayHolder.current.shifts" ng-click="ShiftsDayHolder.selected = shift"><a href="#" dropdown-toggle>{{shift.name | translate}}</a></li>
+                </ul>
+            </div>
         </div>
     </div>
     <div class="col-xs-4 shift-select-col select-hour">
         <div class="styled-shift-select">
-            <select ng-model="hour" ng-options="shiftHour.value as shiftHour.label for shiftHour in shiftHours()" ng-change="hourChanged()"></select>
+            <!--<select ng-model="hour" ng-options="shiftHour.value as shiftHour.label for shiftHour in shiftHours()" ng-change="hourChanged()"></select>-->
+            <div class="btn-group" dropdown>
+                <button type="button" class="btn btn-primary dropdown-toggle">
+                    {{hourLabel}} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li ng-repeat="shiftHour in shiftHours" ng-click="hourChanged(shiftHour)"><a href="#" dropdown-toggle>{{shiftHour.value}}</a></li>
+                </ul>
+            </div>
+
         </div>
     </div>
     <div class="col-xs-4 shift-select-col select-minute">
         <div class="styled-shift-select">
-            <select ng-model="minute" ng-options="shiftMinute as shiftMinute for shiftMinute in shiftMinutes()"  ng-change="minuteChanged()"></select>
+            <div class="btn-group" dropdown>
+                <button type="button" class="btn btn-primary dropdown-toggle">
+                    {{minuteLabel}} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li ng-repeat="shiftMinute in defaultShiftMinutes" ng-click="minuteChanged(shiftMinute)"><a href="#" dropdown-toggle>{{shiftMinute}}</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>

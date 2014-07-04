@@ -16,19 +16,15 @@
     .styled-shift-select{
       border: 0px;
       width: 100%;
-      overflow: hidden;
-      color:white;
+      color: white;
+      height: 40px;
       padding: 5px;
-      background: #2a292f url("data:image/png;base64,R0lGODlhDwAUAIABAAAAAP///yH5BAEAAAEALAAAAAAPABQAAAIXjI+py+0Po5wH2HsXzmw//lHiSJZmUAAAOw==") no-repeat 90% 50%;
-      select{
-        padding: 5px 8px;
-        width: 130%;
-        border: none;
-        box-shadow: none;
-        background: transparent;
-        background-image: none ;
-        &:focus{
-          outline: none;
+      .btn-group{
+        width: 100%;
+        button{
+          background: transparent;
+          border: 0;
+          width: 100%;
         }
       }
     }
