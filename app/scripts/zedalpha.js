@@ -8,7 +8,7 @@ var zedalphaModules = [].concat(angularDependencies,myModules);
 
 angular.module('zedalpha',zedalphaModules)
 
-    .run(['loginService', '$rootScope', 'FBURL','UserHolder', '$state', function(loginService, $rootScope, FBURL, UserHolder, $state) {
+    .run(['loginService', '$rootScope', 'FBURL','UserHolder', '$state','Localizer', function(loginService, $rootScope, FBURL, UserHolder, $state,Localizer) {
             $rootScope.auth = loginService.init();
             $rootScope.FBURL = FBURL;
             $rootScope.safeApply = function(fn) {
@@ -21,6 +21,7 @@ angular.module('zedalpha',zedalphaModules)
                     this.$apply(fn);
                 }
             };
+
 //            $state.reload();
     }]);
 

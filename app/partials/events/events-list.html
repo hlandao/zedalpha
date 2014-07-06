@@ -3,7 +3,7 @@
         <div class="styled-shift-select">
             <div class="btn-group" dropdown>
                 <button type="button" class="btn btn-primary dropdown-toggle">
-                    {{ShiftsDayHolder.selected.name}} <span class="caret"></span>
+                    {{ShiftsDayHolder.selected.name | translate}} <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     <li ng-repeat="shift in ShiftsDayHolder.current.shifts" ng-click="ShiftsDayHolder.selected = shift"><a href="#" dropdown-toggle>{{shift.name | translate}}</a></li>
@@ -42,13 +42,13 @@
 
 <div class="row" id="search-row">
     <div class="col-xs-8 search-input-col">
-            <input type="text" placeholder="Search">
+            <!--<input type="text" placeholder="Search">-->
     </div>
     <div class="col-xs-2 button-col">
-        <button class=""> Replace </button>
+        <button class=""> {{ 'REPLACE_BUTTON_LABEL' | translate }} </button>
     </div>
     <div class="col-xs-2 button-col">
-        <button class="">+ Add</button>
+        <button class="">+ {{ 'ADD_BUTTON_LABEL' | translate }}</button>
     </div>
 </div>
 
@@ -156,7 +156,7 @@
                    </tbody>
 
                    <tbody ng-show="selectedFilter == 'ALL'">
-                   <tr class="separator-table-row"> <td colspan="5">Dead Events</td> </tr>
+                   <tr class="separator-table-row"> <td colspan="5">{{"DEAD_EVENTS" | translate }}</td> </tr>
                    <tr ng-repeat="event in TimelyFilteredEvents.filteredEvents | statusesFilter:'DEAD'" class="events-table-row">
                        <td class="status-col"> <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector> </td>
                        <td class="name-col"> {{event.name}}</td>

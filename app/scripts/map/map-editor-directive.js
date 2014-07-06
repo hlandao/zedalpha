@@ -36,7 +36,7 @@ zedAlphaDirectives
                         canvas.loadFromJSON(JSON.stringify(map), function(){
 //                            sharedCanvasResources.removeBgIfAlreadyAdded(canvas);
 //                            sharedCanvasResources.addBGToCanvas(canvas);
-
+                            canvas.calcOffset();
                             canvas.renderAll();
                         });
                     }else{

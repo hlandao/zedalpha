@@ -50,61 +50,76 @@ zedAlphaConfigModule
         TOTAL_ORDERS: "Total Orders",
         TOTAL_GUESTS: "Total Gusets",
         GUESTS_LEFT: "Gusets Left",
-        TOTAL_WALKINS: "Total Walkins"
+        TOTAL_WALKINS: "Total Walkins",
+        "REPLACE_BUTTON_LABEL": "Switch",
+        "ADD_BUTTON_LABEL":"Add",
+        "evening_SHIFT" : "Evening Shift",
+        "morning_SHIFT" : "Morning Shift",
+        "noon_SHIFT" : "Afternoon Shift",
+        "SHIFT" : "Shift",
+        "DEAD_EVENTS" : "Dead Events"
+
+
 
     });
 
+
         $translateProvider.translations('he', {
-            // HOME
-            EMAIL_ADDRESS: 'Email Address',
-            PASSWORD: 'Password',
-            CONFIRM_PASSWORD: 'Confirm Password',
-            DONE_HAVE_ACCOUNT_LABEL: 'Don\'t have an account ? click here',
-            REGISTER_ACCOUNT_LABEL: 'Register New Account',
-            REGISTER: 'Register',
-            ALREADY_REGISTERED_LABEL: 'Already registered ? click here',
-            // DASHBOARD
-            YOUR_BUSINESSES: 'Your Businesses',
-            ADD_NEW_BUSINESS: 'Add New Business',
-            // Business
-            ADD_NEW_BUSINESS_LABEL : "Add New Business",
-            BUSINESS_NAME: "Business Name",
-            BUSINESS_TYPE: 'Business Type',
-            BUSINESS_AREA: 'Area',
-            BUSINESS_SIZE: 'Business Size',
-            // GENERAL
-            CREATE: 'Create',
-            // EVENTS
-            STATUS: 'Status',
-            NAME: 'Name',
-            GUESTS: 'Guests',
-            SEATS: 'Seats',
-            TIME: 'Time',
-            PHONE: 'Phone',
-            EMAIL: 'Email',
-            CONTACT_PERSON: 'Contact',
-            CONTACT_COMMENT: 'Contact Comment',
-            COMMENT: 'Comment',
-            HOSTESS: 'Hostess',
-            EVENT_DURATION: 'Duration',
-            BACK: 'Back',
-            DELETE: 'Delete',
-            SAVE : 'Save',
-            OCCASIONAL : 'Walkin',
-            ALL: "All",
-            SEATING: "Seating",
-            SEATED: "Seating",
+                "EMAIL_ADDRESS": "כתובת דוא״ל",
+                "PASSWORD": "סיסמא",
+                "CONFIRM_PASSWORD": "אישור סיסמא",
+                "DONE_HAVE_ACCOUNT_LABEL": "אין לך חשבון? לחץ כאן",
+                "REGISTER_ACCOUNT_LABEL": "הרשמה לחשבון חדש",
+                "REGISTER": "הרשמה",
+                "ALREADY_REGISTERED_LABEL": "משתמש רשום? לחץ כאן",
+                "YOUR_BUSINESSES": "העסק שלך",
+                "ADD_NEW_BUSINESS": "הוספת עסק חדש",
+                "ADD_NEW_BUSINESS_LABEL": "add new business",
+                "BUSINESS_NAME": "שם העסק",
+                "BUSINESS_TYPE": "סוג העסק",
+                "BUSINESS_AREA": "מיקום העסק",
+                "BUSINESS_SIZE": "גודל העסק",
+                "CREATE": "צור",
+                "STATUS": "מצב",
+                "NAME": "שם מלא",
+                "GUESTS": "מוזמנים",
+                "SEATS": "שולחנות",
+                "TIME": "שעה",
+                "PHONE": "טלפון",
+                "EMAIL": "כתובת דוא\"ל",
+                "CONTACT_PERSON": "איש קשר",
+                "CONTACT_COMMENT": "הערה קבועה",
+                "COMMENT": "הערה להזמנה",
+                "HOSTESS": "מארחת",
+                "EVENT_DURATION": "משך",
+                "BACK": "חזור",
+                "DELETE": "מחק",
+                "SAVE": "שמור",
+                "OCCASIONAL": "מזדמן",
+                "ALL": "הכל",
+                "SEATING": "יושבים",
+                "SEATED": "יושבים",
+                "ORDERED": "מוזמנים",
+                "ERROR_MSG_COLLISION": "תקלה: אירוע זה מתנגש עם אירוע אחר",
+                "TOTAL_ORDERS": "מספר הזמנות",
+                "TOTAL_GUESTS": "מספר אורחים ",
+                "GUESTS_LEFT": "אורחים נותרו",
+                "TOTAL_WALKINS": "מזדמנים",
+                "REPLACE_BUTTON_LABEL": "החלף",
+                "ADD_BUTTON_LABEL":"חדש",
+                "evening" : "ערב",
+                "morning" : "בוקר",
+                "noon" : "אחה\״צ",
+                "evening_SHIFT" : "משמרת ערב",
+                "morning_SHIFT" : "משמרת בוקר",
+                "noon_SHIFT" : "משמרת אחה\"צ",
 
-            ORDERED: "Orderd",
-            // ERRORS
-            ERROR_MSG_COLLISION: "Error : event collide with another event",
-            // TOP NAV BAR
-            TOTAL_ORDERS: "Total Orders",
-            TOTAL_GUESTS: "Total Gusets",
-            GUESTS_LEFT: "Gusets Left",
-            TOTAL_WALKINS: "Total Walkins"
+                "SHIFT" : "משמרת",
+                "DEAD_EVENTS" : "ארועים שהסתיימו"
 
-        });
+            }
+        );
+
 
         $translateProvider.preferredLanguage('en');
 });

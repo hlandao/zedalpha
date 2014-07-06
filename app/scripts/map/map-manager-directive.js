@@ -46,8 +46,13 @@ zedAlphaDirectives
                             addButtons();
                             angular.forEach(canvas._objects, function(shape){
                                 if(shape.type=="seatShape") shape.setToStatic();
+                                else if(shape.type == 'line'){
+                                    shape.selectable = false;
+                                }
                             });
+                            console.log('canvas._objects',canvas._objects);
                             renderMapWithEvents(scope.$parent.events);
+                            canvas.calcOffset();
                             canvas.renderAll();
                         });
                     }else{
@@ -275,6 +280,11 @@ zedAlphaDirectives
                 }
 
 
+                // -------- locale changed ---------//
+                scope.$on('$localeStateChanged', function(){
+                    canvas.calcOffset();
+                    canvas.renderAll();
+                });
                 // -------- $destory -------//
 
                 scope.$on('$destroy', function(){

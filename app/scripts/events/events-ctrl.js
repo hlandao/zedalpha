@@ -4,7 +4,9 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic,TimelyFilteredEvents, ShiftsDayHolder){
+    .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic,TimelyFilteredEvents, ShiftsDayHolder, Localizer){
+        Localizer.setLocale('he');
+
         var OccasionalEvent = _.findWhere(EventsStatusesHolder, {status : 'OCCASIONAL'});
         var OrderedEvent = _.findWhere(EventsStatusesHolder, {status : 'ORDERED'});
 
@@ -36,12 +38,10 @@ zedAlphaControllers
             }else{
                 newEvent.endTime = EventsLogic.endTimeForNewEventWithStartTimeAndMaxDuration(startTime, maxDuration);
             }
-            console.log('newEvent,newEvent',newEvent);
             $scope.newEvent = newEvent;
         };
 
         $scope.saveEvent = function(eventToSave){
-            console.log('saveEvent');
             var error = EventsLogic.isInValidateEventBeforeSave(eventToSave);
             if(error){
                 console.error('error',error);
@@ -76,7 +76,6 @@ zedAlphaControllers
         var editedEvent;
         var editedEventWatcher;
         $scope.openEditedEvent = function (event){
-            console.log('event',event);
             if(editedEvent){
                 $scope.closeEditedEvent(editedEvent);
             }
@@ -94,7 +93,6 @@ zedAlphaControllers
                 }
                 if(newVal){
                     var error = EventsLogic.isInValidateEventWhileEdit(newVal);
-                    console.log('error',error);
                     if(error){
                         console.error('[EventsCtrl]: error while edit event', error);
                         alert('Error : ' + error);

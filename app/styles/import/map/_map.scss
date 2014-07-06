@@ -1,7 +1,7 @@
 #map-container{
   border:0px dashed #aaa;width:700px;height:600px;overflow: scroll;
   background: rgb(237, 237, 237);
-
+  direction : ltr !important;
 }
 
 #map-col{
