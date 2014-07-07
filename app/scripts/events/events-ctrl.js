@@ -4,7 +4,7 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic,TimelyFilteredEvents, ShiftsDayHolder, Localizer){
+    .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic,TimelyFilteredEvents, ShiftsDayHolder, Localizer, $filter, DateHelpers){
         Localizer.setLocale('he');
 
         var OccasionalEvent = _.findWhere(EventsStatusesHolder, {status : 'OCCASIONAL'});
@@ -18,6 +18,7 @@ zedAlphaControllers
         $scope.newEventWithSeatsDic = function(occasionalOrDestination, dic, specificStartTime){
             var isOccasional = occasionalOrDestination == 'occasional';
             var startTime = specificStartTime || (isOccasional ? new Date() : DateHolder.current);
+            startTime = DateHelpers.resetDateSeconds(startTime);
             var newEvent = new Event({
                 isOccasional : isOccasional,
                 seats : dic,
@@ -28,15 +29,16 @@ zedAlphaControllers
             });
             var maxDuration = EventsLogic.maxDurationForEventInMinutes(newEvent);
             if(maxDuration == 0){
-                if(isOccasional && !specificStartTime){
-                    $scope.newEventWithSeatsDic(occasionalOrDestination, dic, DateHolder.current);
-                    return;
-                }
+
+//                if(isOccasional && !specificStartTime){
+//                    $scope.newEventWithSeatsDic(occasionalOrDestination, dic, DateHolder.current);
+//                    return;
+//                }
 
                 alert('Error : cannot start event at ' + moment(startTime).format('HH:mm'));
                 return false;
             }else{
-                newEvent.endTime = EventsLogic.endTimeForNewEventWithStartTimeAndMaxDuration(startTime, maxDuration);
+                newEvent.endTime = DateHelpers.resetDateSeconds(EventsLogic.endTimeForNewEventWithStartTimeAndMaxDuration(startTime, maxDuration));
             }
             $scope.newEvent = newEvent;
         };
@@ -44,8 +46,9 @@ zedAlphaControllers
         $scope.saveEvent = function(eventToSave){
             var error = EventsLogic.isInValidateEventBeforeSave(eventToSave);
             if(error){
+                var localizedError = $filter('translate')(error);
                 console.error('error',error);
-                alert('Error : ' + error);
+                alert(localizedError);
             }else{
                 var cloned = angular.copy(eventToSave);
                 delete cloned.helpers;
@@ -63,8 +66,9 @@ zedAlphaControllers
             if(newVal){
                 var error = EventsLogic.isInValidateEventWhileEdit(newVal);
                 if(error){
+                    var localizedError = $filter('translate')(error);
                     console.error('[EventsCtrl]: error while edit event', error);
-                    alert('Error : ' + error);
+                    alert(localizedError);
                     newVal.startTime=oldVal.startTime;
                     newVal.endTime=oldVal.endTime;
                 }
@@ -76,13 +80,16 @@ zedAlphaControllers
         var editedEvent;
         var editedEventWatcher;
         $scope.openEditedEvent = function (event){
-            if(editedEvent){
+            if($scope.editedEvent == event){
+                return;
+            }else if(editedEvent){
                 $scope.closeEditedEvent(editedEvent);
             }
             event.helpers = event.helpers || {};
             event.helpers.isEditing = true;
             editedEvent = angular.copy(event);
             $scope.isEditingEvent = true;
+            $scope.editedEvent = event;
             var justReverted = false;
             editedEventWatcher = $scope.$watchCollection(function(){
                 return event;
@@ -95,10 +102,12 @@ zedAlphaControllers
                     var error = EventsLogic.isInValidateEventWhileEdit(newVal);
                     if(error){
                         console.error('[EventsCtrl]: error while edit event', error);
-                        alert('Error : ' + error);
+                        var localizedError = $filter('translate')(error);
+                        alert(localizedError);
                         justReverted = true;
                         event.startTime =  oldVal.startTime;
                         event.endTime =  oldVal.endTime;
+                        event.seats =  oldVal.seats;
                     }
                 }
             },true);
@@ -107,11 +116,11 @@ zedAlphaControllers
 
         $scope.closeEditedEvent = function(event){
             $scope.isEditingEvent = false;
-            console.log('editedEvent',editedEvent);
             angular.extend(event, editedEvent);
             editedEvent = null;
             event.helpers = event.helpers || {};
             event.helpers.isEditing = false;
+            $scope.editedEvent = null;
             if(angular.isFunction(editedEventWatcher)) editedEventWatcher();
         };
 
@@ -122,21 +131,27 @@ zedAlphaControllers
         $scope.saveEditedEvent = function(eventToSave){
             var error = EventsLogic.isInValidateEventBeforeSave(eventToSave);
             if(error){
-                alert('Error : ' + error);
+                var localizedError = $filter('translate')(error);
+                alert(localizedError);
             }else{
                 delete eventToSave.helpers;
                 var $event = EventsHolder.$allEvents.$child(eventToSave.$id);
                 $event.$set(eventToSave);
                 if(eventToSave.helpers) eventToSave.helpers.isEditing = false;
                 $scope.isEditingEvent = false;
+                $scope.editedEvent = null;
             }
 
         };
 
         $scope.eventStatusChanged = function(event){
             $scope.saveEditedEvent(event);
-//            EventsHolder.$allEvents.$save();
         };
+
+        $scope.removeEvent = function(eventToRemove){
+            var $event = EventsHolder.$allEvents.$child(eventToRemove.$id);
+            $event.$remove();
+        }
 
 
 

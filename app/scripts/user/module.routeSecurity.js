@@ -24,8 +24,9 @@
 
          // Set up a handler for all future route changes, so we can check
          // if authentication is required.
-         self._rootScope.$on("stateChangeStart", function(event, toState, toParams, fromState, fromParams) {
-             console.log('stateChangeStart', event, toState, toParams, fromState, fromParams);
+          console.log('here!');
+         self._rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams) {
+             console.log('stateChangeStart', event, toState);
             self._authRequiredRedirect(event, toState, toParams, fromState, fromParams, self._loginPath);
          });
 
@@ -42,14 +43,13 @@
       },
 
       _login: function() {
+          console.log('_login');
          this._authenticated = true;
          if( this._redirectTo ) {
             this._redirect(this._redirectTo);
             this._redirectTo = null;
-         }
-         else if( this._location.path() === this._loginPath ) {
-//            this._location.replace();
-            this._location.path('/dashboard');
+         }else if(this._state.current.name == 'home'){
+             this._redirect('dashboard.main');
          }
       },
 
@@ -65,27 +65,29 @@
          this._checkCurrent();
       },
 
-      _redirect: function(path) {
-         this._location.replace();
-         this._location.path(path);
+      _redirect: function(newState) {
+          console.log('newState',newState);
+          this._state.go(newState,null,{reload:true});
       },
 
       // A function to check whether the current path requires authentication,
       // and if so, whether a redirect to a login page is needed.
       _authRequiredRedirect: function(e, toState, toParams, fromState, fromParams, _loginPath) {
-          if(e) e.prevnetDefault();
+          console.log('toState.authRequired',toState.authRequired,'this._authenticated',this._authenticated,'toState.name',toState.name);
+          if(toState.abstract) return;
          if (toState.authRequired && !this._authenticated){
-            if (toState.pathTo === undefined) {
-               this._redirectTo = this._location.path();
+            if (toState.name === undefined) {
+               this._redirectTo = 'dashboard.main';
             } else {
-               this._redirectTo = toState.pathTo === _loginPath ? "/" : route.pathTo;
+               this._redirectTo = toState.name;
             }
-            return this._redirect(_loginPath);
+             if(e) e.preventDefault();
+             return this._redirect(_loginPath);
          }
-         else if( this._authenticated && this._location.path() === this._loginPath ) {
-            return this._redirect('/dashboard');
+         else if( this._authenticated && this.toState && this.toState.name === this._loginPath ) {
+             if(e) e.preventDefault();
+             return this._redirect('dashboard.main');
          }
-          return this._urlRouter.sync();
 
       }
    };

@@ -42,8 +42,14 @@ zedAlphaServices
             var eventToCheckEndTimeMoment = moment(eventToCheck.endTime);
             var e2StartTimeMoment = moment(e2.startTime);
             var e2EndTimeMoment = moment(e2.endTime);
-            var isStartingBeforeEndAfter = (eventToCheckStartTimeMoment <= e2StartTimeMoment) && (eventToCheckEndTimeMoment > e2StartTimeMoment);
-            var isStartingAfter = (eventToCheckStartTimeMoment >= e2StartTimeMoment) && (eventToCheckStartTimeMoment < e2EndTimeMoment);
+
+            var startTimesDiff = e2StartTimeMoment.diff(eventToCheckStartTimeMoment, 'minutes');
+            var eventToCheckEndTimeDiffE2StartTime = eventToCheckEndTimeMoment.diff(e2StartTimeMoment, 'minutes');
+            var eventToCheckStartTimeDiffE2EndTime = eventToCheckStartTimeMoment.diff(e2EndTimeMoment, 'minutes');
+
+
+            var isStartingBeforeEndAfter = (startTimesDiff >= 0) && (eventToCheckEndTimeDiffE2StartTime > 0);
+            var isStartingAfter = (startTimesDiff <= 0) && (eventToCheckStartTimeDiffE2EndTime < 0);
             return (isStartingBeforeEndAfter || isStartingAfter);
         };
 
@@ -71,8 +77,6 @@ zedAlphaServices
                     }else{
 
                     }
-
-
                 }
             }
             return maxDuration;
@@ -84,7 +88,14 @@ zedAlphaServices
             var eventToCheckEndTimeMoment = moment(eventToCheck.endTime);
             var e2StartTimeMoment = moment(e2.startTime);
             var e2EndTimeMoment = moment(e2.endTime);
-            var isE2StartBeforeAndEndAfter = e2StartTimeMoment <= eventToCheckStartTimeMoment && e2EndTimeMoment > eventToCheckStartTimeMoment;
+
+            var e2StartTimeDiffEventToCheckStartTime = e2StartTimeMoment.diff(eventToCheckStartTimeMoment, 'minutes');
+            var e2EndTimeDiffEventToCheckStartTime = e2EndTimeMoment.diff(eventToCheckStartTimeMoment, 'minutes');
+
+
+            var isE2StartBeforeAndEndAfter = e2StartTimeDiffEventToCheckStartTime <= 0 && e2EndTimeDiffEventToCheckStartTime > 0;
+
+
             return isE2StartBeforeAndEndAfter ? 0 : Math.max(-1, e2StartTimeMoment.diff(eventToCheckStartTimeMoment, 'minutes')) ;
         };
 

@@ -1,45 +1,70 @@
 <div id="map">
-    <div id="map-controls">
-        <h3> Map Controls </h3>
-
+    <div class="container">
         <div class="row">
-            <div class="col-lg-6">
-                <h4>Add Elements</h4>
-                <form class="form-inline" role="form">
-                    <div class="form-group">
-                        <label> Seat Number </label>
-                        <input type="text" class="form-control input-sm"  ng-model="newSeat.seatNumber" style="width:50px;">
+            <div class="col-lg-12">
+                <div id="map-controls">
+                    <h3> Map Controls </h3>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <h4>Add Elements</h4>
+                            <form class="form-inline" role="form">
+                                <div class="form-group">
+                                    <label> Seat Number </label>
+                                    <input type="text" class="form-control input-sm"  ng-model="newSeat.seatNumber" style="width:50px;">
+                                </div>
+                                <div class="form-group">
+                                    <label> Seat Type </label>
+                                    <select class="form-control input-sm" ng-options="v as k for (k,v) in seatConfigs" ng-model="newSeat.seatConfig">
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-default" ng-click="addSeat(newSeat)">Add</button>
+                            </form>
+
+                        </div>
+                        <div class="col-lg-6" style="height: 50px;">
+                            <div ng-show="selectedShape">
+                                <h4>Selected Seat : {{selectedShape.seatNumber}}</h4>
+                                <form class="form-inline" role="form">
+                                    <div class="form-group">
+                                        <label> Seat Number </label>
+                                        <input type="text" class="form-control input-sm"  ng-model="selectedShape.newSeatNumber" style="width:50px;">
+                                    </div>
+                                    <button class="btn btn-default" ng-click="updateShape(selectedShape)">Update</button>
+                                    <button class="btn btn-default" ng-click="removeShape(selectedShape)">Remove</button>
+
+                                </form>
+
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label> Seat Type </label>
-                        <select class="form-control input-sm" ng-options="v as k for (k,v) in seatConfigs" ng-model="newSeat.seatConfig">
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-default" ng-click="addSeat(newSeat)">Add</button>
-                </form>
+                </div>
 
             </div>
-            <div class="col-lg-6" style="height: 50px;">
-                <div ng-show="selectedShape">
-                    <h4>Selected Seat : {{selectedShape.seatNumber}}</h4>
-                    <form class="form-inline" role="form">
-                        <div class="form-group">
-                            <label> Seat Number </label>
-                            <input type="text" class="form-control input-sm"  ng-model="selectedShape.newSeatNumber" style="width:50px;">
-                        </div>
-                        <button class="btn btn-default" ng-click="updateShape(selectedShape)">Update</button>
-                        <button class="btn btn-default" ng-click="removeShape(selectedShape)">Remove</button>
+        </div>
+    </div>
 
-                    </form>
-
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="map-container" class="editor">
+                    <canvas id="canvas"></canvas>
                 </div>
             </div>
         </div>
     </div>
-    <div id="map-container">
-        <canvas id="canvas"></canvas>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <pre ng-show="err" class="alert alert-danger"> {{err}}</pre>
+                <pre ng-show="msg" class="alert alert-success"> {{msg}} </pre>
+            </div>
+        </div>
     </div>
-    <pre ng-show="err" class="alert alert-danger"> {{err}}</pre>
-    <pre ng-show="msg" class="alert alert-success"> {{msg}} </pre>
+
+
+
 
 </div>

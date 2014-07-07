@@ -33,7 +33,8 @@ angular.module('zedalpha.routes', [])
                     "navigation@home" : {
                         templateUrl: '/partials/nav-home.html'
                     }
-                }
+                },
+                authRequired : false
             });
 
 
@@ -46,6 +47,7 @@ angular.module('zedalpha.routes', [])
             templateUrl : "/partials/dashboard/dashboard.html"
 
         }).state('dashboard.main',{
+            authRequired: true,
             url : '/dashboard',
             views : {
                 "navigation" : {

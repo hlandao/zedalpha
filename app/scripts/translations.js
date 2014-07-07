@@ -57,7 +57,17 @@ zedAlphaConfigModule
         "morning_SHIFT" : "Morning Shift",
         "noon_SHIFT" : "Afternoon Shift",
         "SHIFT" : "Shift",
-        "DEAD_EVENTS" : "Dead Events"
+        "DEAD_EVENTS" : "Dead Events",
+        "TO" : 'To',
+
+        // ERRORS
+        "ERROR_EVENT_MSG_NAME": "Please enter the event name",
+        "ERROR_EVENT_MSG_SEATS": "Please pick at least one seat for the event",
+        "ERROR_EVENT_MSG_PHONE": "Please enter phone number",
+        "ERROR_EVENT_MSG_STARTTIME": "Start time is invalid",
+        "ERROR_EVENT_MSG_ENDTIME": "End time is invalid",
+        "ERROR_EVENT_MSG_COLLISION": "A Collision with another event was detected"
+
 
 
 
@@ -115,7 +125,16 @@ zedAlphaConfigModule
                 "noon_SHIFT" : "משמרת אחה\"צ",
 
                 "SHIFT" : "משמרת",
-                "DEAD_EVENTS" : "ארועים שהסתיימו"
+                "DEAD_EVENTS" : "ארועים שהסתיימו",
+                "TO" : 'עד',
+
+                // ERRORS
+                "ERROR_EVENT_MSG_NAME": "חובה למלא את שם הארוע",
+                "ERROR_EVENT_MSG_SEATS": "חובה לבחור לפחות שולחן אחד",
+                "ERROR_EVENT_MSG_PHONE": "חובה למלא מספר טלפון",
+                "ERROR_EVENT_MSG_STARTTIME": "זמן התחלת הארוע לא קיים או לא תקין",
+                "ERROR_EVENT_MSG_ENDTIME": "זמן סיום הארוע לא קיים או לא תקין",
+                "ERROR_EVENT_MSG_COLLISION": "אותרה התנגשות עם ארוע נוסף, נא נסה שנית"
 
             }
         );

@@ -28,7 +28,7 @@ zedAlphaControllers
                 if(!event.isOccasional){
                     ++totalOrdersCount;
                     totalGuestsCount += eventGuests;
-                    if(event.status.ORDERED || event.status.CONFIRMED){
+                    if(event.status && (event.status.ORDERED || event.status.CONFIRMED)){
                         guestsLeftCount += eventGuests
                     }
                 }else{

@@ -4,24 +4,57 @@ fabric.SeatShape = fabric.util.createClass(fabric.Group, {
         this.callSuper('initialize', objects, options);
         var text = this.theText();
         var shape = this.theShape();
-        text.centeredRotation = true;
-        text.centeredScaling = true;
         if(this.shouldCenterText){
             text.setLeft(0-(text.width/2));
             text.setTop(0-(text.height/2));
             this.shouldCenterText = false;
         }
+        if(shape.type == 'triangle'){
+            text.setTop(0);
+        }
+
 
         this.set('seatNumber', options.seatNumber || '');
-        this.set('normalState', {
-           top : shape.getTop(),
-           left : shape.getLeft(),
-           width : shape.getWidth(),
-           height : shape.getHeight(),
-           stroke : shape.getStroke(),
-           strokeWidth : shape.getStrokeWidth(),
-           fill : shape.getFill()
+        if(!this.normalState)
+            this.normalState = {
+               top : shape.getTop(),
+               left : shape.getLeft(),
+               width : shape.getWidth(),
+               radius : shape.radius,
+               height : shape.getHeight(),
+               stroke : shape.getStroke(),
+               strokeWidth : shape.getStrokeWidth(),
+               fill : shape.getFill()
+            };
+
+
+        this.on('scaling', function(){
+            var text = this.theText();
+            var shape = this.theShape();
+            text.scaleX = this.scaleY/this.scaleX;
+
+            if(shape.type =='circle'){
+                shape.strokeWidth = (2) / this.scaleX;
+            }else if(shape.type == 'rect'){
+                shape.width = this.normalState.width * this.scaleX;
+                shape.height = this.normalState.height * this.scaleY;
+                shape.scaleX = 1 / this.scaleX ;
+                shape.scaleY = 1 / this.scaleY ;
+
+            }else if( shape.type == 'triangle'){
+                var triScale = Math.max(this.scaleX, this.scaleY);
+                shape.width = this.normalState.width * triScale;
+                shape.height = this.normalState.height * triScale;
+                shape.scaleX = 1 / triScale ;
+                shape.scaleY = 1 / triScale ;
+            }
+
+//            shape.height *= this.scaleY;
+//            shape.scaleX = 1;
+//            shape.scaleY = 1;
+
         });
+
     },
 
     theShape : function(){
@@ -111,11 +144,11 @@ fabric.SeatShape = fabric.util.createClass(fabric.Group, {
         });
     },
 
+
     transform : function(ctx, fromLeft){
         this.callSuper('transform', ctx, fromLeft);
         var text = this.theText();
-//        text.setLeft(0-(text.width/2));
-//        text.setTop(0-(text.height/2));
+        var shape = this.theShape();
         text.setAngle(-this.angle);
     }
 });
@@ -137,13 +170,14 @@ var seatRectFactory = function(seatNumber, seatConfig){
     var shapeDefault = {
         fill: '#fff',
         stroke: "#bbb",
-        strokeWidth: 3,
+        strokeWidth: 2,
         width: 50,
         height: 50
     };
     var textDefault = {
-        fontSize: 25,
-        fill: "#333"
+        fontSize: 18,
+        fill: "#333",
+        fontFamily: "Arial"
     };
 
     var groupDefault = {
@@ -162,12 +196,13 @@ var seatCircleFactory = function(seatNumber, seatConfig){
     var shapeDefault = {
         fill: '#fff',
         stroke: "#bbb",
-        strokeWidth: 3,
+        strokeWidth: 2,
         radius : 25
     };
     var textDefault = {
-        fontSize: 25,
-        fill: "#333"
+        fontSize: 18,
+        fill: "#333",
+        fontFamily: "Arial"
     };
 
     var groupDefault = {
@@ -183,12 +218,53 @@ var seatCircleFactory = function(seatNumber, seatConfig){
     return new fabric.SeatShape([ circle, text ], $.extend(groupDefault, seatConfig.groupOptions, {seatNumber : seatNumber}));
 };
 
+var seatTriangleFactory = function(seatNumber, seatConfig){
+    var shapeDefault = {
+        fill: '#fff',
+        stroke: "#bbb",
+        strokeWidth: 2,
+        width: 12,
+        height: 12
+    };
+    var textDefault = {
+        fontSize: 18,
+        fill: "#333",
+        fontFamily: "Arial"
+    };
+
+    var groupDefault = {
+        top: 100,
+        left: 100,
+        shouldCenterText : true
+    };
+
+    var text = new fabric.Text("" + seatNumber, $.extend(textDefault, seatConfig.textOptions));
+    var rect = new fabric.Triangle($.extend(shapeDefault, seatConfig.shapeOptions));
+
+    return new fabric.SeatShape([ rect, text ], $.extend(groupDefault, seatConfig.groupOptions, {seatNumber : seatNumber}));
+};
+
+
+var blockFactory = function(seatConfig){
+    var shapeDefault = {
+        fill: '#333',
+        strokeWidth: 0
+    };
+    var rect = new fabric.Rect($.extend(shapeDefault, seatConfig.shapeOptions));
+
+    return rect;
+
+};
 
 var seatShapeFactory = function(seatNumber, seatConfig){
     if(seatConfig.shape === 'circle'){
         return seatCircleFactory(seatNumber, seatConfig);
-    }else{
+    }else if(seatConfig.shape === 'rect'){
         return seatRectFactory(seatNumber, seatConfig);
+    }else if(seatConfig.shape === 'triangle'){
+        return seatTriangleFactory(seatNumber, seatConfig);
+    }else if(seatConfig.shape === 'block'){
+        return blockFactory(seatConfig);
     }
 }
 

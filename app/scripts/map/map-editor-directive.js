@@ -70,21 +70,118 @@ zedAlphaDirectives
 
 
                 scope.seatConfigs = {
-                    'Chair' : {
-                        name : 'chair',
+                    'BAR_CHAIR' : {
+                        name : 'BAR_CHAIR',
+                        drawingDefaults : {
+                            shape : 'triangle',
+                            shapeOptions : {width:35, height:30},
+                            textOptions : {fontSize: 10},
+                            groupOptions : {lockRotation : true, lockUniScaling : true,hasRotatingPoint :false}
+            }
+                    },
+                    'SQUARE_TABLE_FOR_2' :  {
+                        name : 'SQUARE_TABLE_FOR_2',
+                        drawingDefaults : {
+                            shape : 'rect',
+                            shapeOptions : {width:34, height:34},
+                            textOptions : {fontSize: 15}
+                        }
+                    },
+
+                    'CIRCLE_TABLE_FOR_2' : {
+                        name : 'CIRCLE_TABLE_FOR_2',
                         drawingDefaults : {
                             shape : 'circle',
-                            circleOptions : {radius : 25},
-                            textOptions : {fontSize: 25},
+                            shapeOptions : {radius : 17},
+                            textOptions : {fontSize: 15},
+                            groupOptions : {lockRotation : true, lockUniScaling : true,hasRotatingPoint :false}
+                        }
+                    },
+
+                    'SQUARE_TABLE_FOR_4' :  {
+                        name : 'SQUARE_TABLE_FOR_4',
+                        drawingDefaults : {
+                            shape : 'rect',
+                            shapeOptions : {width:50, height:50},
+                            textOptions : {fontSize: 18}
+                        }
+                    },
+
+                    'CIRCLE_TABLE_FOR_4' : {
+                        name : 'CIRCLE_TABLE_FOR_4',
+                        drawingDefaults : {
+                            shape : 'circle',
+                            shapeOptions : {radius : 25},
+                            textOptions : {fontSize: 18},
+                            groupOptions : {lockRotation : true, lockUniScaling : true,hasRotatingPoint :false}
+                        }
+                    },
+
+                    'RECT_TABLE_FOR_6' :  {
+                        name : 'SQUARE_TABLE_FOR_6',
+                        drawingDefaults : {
+                            shape : 'rect',
+                            shapeOptions : {width:100, height:50},
+                            textOptions : {fontSize: 18}
+                        }
+                    },
+
+                    'CIRCLE_TABLE_FOR_6' : {
+                        name : 'CIRCLE_TABLE_FOR_6',
+                        drawingDefaults : {
+                            shape : 'circle',
+                            shapeOptions : {radius : 40},
+                            textOptions : {fontSize: 18},
+                            groupOptions : {lockRotation : true, lockUniScaling : true,hasRotatingPoint :false}
+                        }
+                    },
+
+                    'RECT_TABLE_FOR_8' :  {
+                        name : 'SQUARE_TABLE_FOR_8',
+                        drawingDefaults : {
+                            shape : 'rect',
+                            shapeOptions : {width:150, height:50},
+                            textOptions : {fontSize: 18}
+                        }
+                    },
+
+                    'CIRCLE_TABLE_FOR_8' : {
+                        name : 'CIRCLE_TABLE_FOR_8',
+                        drawingDefaults : {
+                            shape : 'circle',
+                            shapeOptions : {radius : 50},
+                            textOptions : {fontSize: 18},
+                            groupOptions : {lockRotation : true, lockUniScaling : true,hasRotatingPoint :false}
+                        }
+                    },
+
+                    'CIRCLE_TABLE_FOR_10' : {
+                        name : 'CIRCLE_TABLE_FOR_10',
+                        drawingDefaults : {
+                            shape : 'circle',
+                            shapeOptions : {radius : 60},
+                            textOptions : {fontSize: 18},
+                            groupOptions : {lockRotation : true, lockUniScaling : true,hasRotatingPoint :false}
+                        }
+                    },
+
+                    'BLOCK' : {
+                        name : 'BLOCK',
+                        drawingDefaults : {
+                            shape : 'block',
+                            shapeOptions : {width : 20, height:100},
                             groupOptions : {}
                         }
                     },
-                    'Table' :  {
-                        name : 'table',
-                        drawingDefaults : {
-                            shape : 'rect'
-                        }
-                    }
+
+
+
+
+
+
+
+
+
                 };
 //
 //
@@ -134,9 +231,9 @@ zedAlphaDirectives
                 };
 
                 scope.addSeat = function(newSeat){
-                    if(!newSeat.seatNumber && newSeat.seatNumber !== 0){
+                    if(newSeat.seatConfig.type != 'block' && !newSeat.seatNumber && newSeat.seatNumber !== 0){
                         scope.err = "Please enter seat number";
-                    }else if(!newSeat.seatConfig.drawingDefaults){
+                    }else if(!newSeat.seatConfig || !newSeat.seatConfig.drawingDefaults){
                         scope.err = "Please select seat type";
                     }
                     var shape = seatShapeFactory(newSeat.seatNumber, newSeat.seatConfig.drawingDefaults);
@@ -148,7 +245,7 @@ zedAlphaDirectives
 
                 scope.saveMap = function(){
                     objModified = false;
-                    var json = canvas.toJSON(['bgImage']);
+                    var json = canvas.toJSON(['bgImage','normalState']);
                     for(var i = 0; i< json.objects.length;++i){
                         if(json.objects[i].bgImage){
                             json.objects.splice(i,1);

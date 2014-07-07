@@ -21,11 +21,11 @@ zedAlphaServices
                 minute = splitArr.minute;
             }
             var dateMoment = moment(date);
-            if(hour){
+            if(hour >= 0){
                 dateMoment.hour(hour);
             }
 
-            if(minute){
+            if(minute >= 0){
                 dateMoment.minute(minute);
             }
 
@@ -60,11 +60,18 @@ zedAlphaServices
         }
 
 
+        var resetDateSeconds = function(date){
+            var dateMoment = moment(date);
+            dateMoment.set('seconds',0);
+            return new Date(dateMoment.format(FullDateFormat));
+        }
+
 
         return {
             changeDateHourAndMinutes : changeDateHourAndMinutes,
             hourAndMinutesArrFromString : hourAndMinutesArrFromString,
-            findClosestIntervalToDate : findClosestIntervalToDate
+            findClosestIntervalToDate : findClosestIntervalToDate,
+            resetDateSeconds : resetDateSeconds
         };
     })
     .filter('numberFixedLen', function () {

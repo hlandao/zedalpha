@@ -6,7 +6,7 @@
         <fm-timepicker ng-model="startTimeHelperModel" ng-change="changeStartTime()" start-time="defaultFMOptions.startOfTheDay" end-time="defaultFMOptions.endOfTheDay" interval="defaultFMOptions.interval" format="timeFormat"></fm-timepicker>
     </div>
     <div class="col-xs-1">
-        <span style="line-height: 28px;"> to </span>
+        <span style="line-height: 28px;"> {{ 'TO' | translate }} </span>
     </div>
     <div class="col-xs-2">
         <fm-timepicker ng-model="endTimeHelperModel" ng-change="changeEndTime()" start-time="defaultFMOptions.startOfTheDay" end-time="defaultFMOptions.endOfTheDay" interval="defaultFMOptions.interval" format="timeFormat"></fm-timepicker>

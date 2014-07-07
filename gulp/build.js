@@ -81,8 +81,16 @@ gulp.task('fonts', function () {
     .pipe($.size());
 });
 
+gulp.task('bootstrapFonts', function () {
+    return gulp.src('app/bower_components/bootstrap-sass-official/vendor/assets/fonts/bootstrap/*')
+        .pipe($.filter('**/*.{eot,svg,ttf,woff}'))
+        .pipe($.flatten())
+        .pipe(gulp.dest('dist/fonts'))
+        .pipe($.size());
+});
+
 gulp.task('clean', function () {
   return gulp.src(['.tmp', 'dist'], { read: false }).pipe($.clean());
 });
 
-gulp.task('build', ['html', 'partials', 'images', 'fonts']);
+gulp.task('build', ['html', 'partials', 'images', 'fonts','bootstrapFonts']);

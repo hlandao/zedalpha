@@ -48,11 +48,16 @@ zedAlphaDirectives
                                 if(shape.type=="seatShape") shape.setToStatic();
                                 else if(shape.type == 'line'){
                                     shape.selectable = false;
+                                }else if(shape.type == 'rect'){
+                                    shape.selectable = false;
+                                    shape.hasRotatingPoint = false;
+                                    shape.hasBorders = false;
                                 }
                             });
-                            console.log('canvas._objects',canvas._objects);
                             renderMapWithEvents(scope.$parent.events);
-                            canvas.calcOffset();
+                            $timeout(function(){
+                                canvas.calcOffset();
+                            },1);
                             canvas.renderAll();
                         });
                     }else{
@@ -82,10 +87,12 @@ zedAlphaDirectives
                 var setBGImageListeners = function(){
                     canvas.on('mouse:up', function(e){
                         var target = e.target;
-                        if(!isAddingNewEvent()){
-                            clickHandlerForNormalState(target,e);
-                        }else{
+                        if(isAddingNewEvent()){
                             clickHandlerForAddingNewEventState(target,e);
+                        } else if(isEditingEvent()){
+                            clickHandlerForEditingEventState(target,e);
+                        }else{
+                            clickHandlerForNormalState(target,e);
                         }
                     });
                 }
@@ -106,6 +113,22 @@ zedAlphaDirectives
                     canvas.renderAll();
                 };
 
+
+                var clickHandlerForEditingEventState = function (target, e){
+                    console.log('clickHandlerForEditingEventState');
+                    if(!target || target.type != 'seatShape') return;
+                    if(~selectedShapes.indexOf(target)){
+                        removeShapeFromShapes(target);
+                        updateEditedEventSeats();
+                    }else{
+                        target.selectNormal();
+                        addShapeToShapes(target);
+                        updateEditedEventSeats();
+                    }
+                    canvas.renderAll();
+                };
+
+
                 // click handler for normal state
                 var clickHandlerForNormalState = function(target, e){
                     if(target && !target.bgImage){
@@ -113,9 +136,13 @@ zedAlphaDirectives
                             if(isShapeInFilteredEvents(target)){
                                 return;
                             }
-                            target.selectNormal();
-                            showButtonsNearShape(target);
-                            addShapeToShapes(target);
+                            if(~selectedShapes.indexOf(target)){
+                                removeShapeFromShapes(target,true);
+                            }else{
+                                target.selectNormal();
+                                showButtonsNearShape(target);
+                                addShapeToShapes(target);
+                            }
                         }else if(target.type == 'button'){
                             newEventForSelectedShaped(target.name);
                         }
@@ -136,8 +163,14 @@ zedAlphaDirectives
 
 
                 var removeShapeFromShapes = function(shape, render){
+                    console.log('removeShapeFromShapes');
+                    var index = selectedShapes.indexOf(shape);
+                    var isLast = index == selectedShapes.length;
                     selectedShapes = _.without(selectedShapes, shape);
                     shape.backToNormalState();
+                    if(!selectedShapes.length || isLast){
+                        hideButtons();
+                    }
                     if(render) canvas.renderAll();
                 };
 
@@ -155,6 +188,7 @@ zedAlphaDirectives
                 };
 
                 var unSelectAllShapes = function(render){
+                    console.log('unSelectAllShapes');
                     angular.forEach(selectedShapes, function(shape){
                         shape.backToNormalState();
                     });
@@ -176,12 +210,22 @@ zedAlphaDirectives
                     return scope.$parent.newEvent;
                 }
 
+                var isEditingEvent = function(){
+                    return scope.$parent.editedEvent;
+                }
+
                 var updateNewEventSeats = function (){
                     $timeout(function(){
-                        console.log('here1 ?');
                         scope.$parent.newEvent.seats = shapesArrToSeatsDic();
                     });
                 }
+
+                var updateEditedEventSeats = function (){
+                    $timeout(function(){
+                        scope.$parent.editedEvent.seats = shapesArrToSeatsDic();
+                    });
+                }
+
 
                 var newEventForSelectedShaped = function(occasionalOrDestination){
                     scope.$apply(function(){
@@ -208,6 +252,12 @@ zedAlphaDirectives
                     }
                 });
 
+                var editEventWatcher = scope.$parent.$watch('editedEvent', function(newVal, oldVal){
+                    // new Event was closed -  unselect all shapes
+                    unSelectAllShapes(true);
+                });
+
+
 
                 var renderMapWithEvents = _.throttle(function(newVal){
                     if(!newVal) return;
@@ -225,10 +275,17 @@ zedAlphaDirectives
                             for(seatNumber  in  event.seats){
                                 for (var i = 0;i < canvas._objects.length; ++i){
                                     theShape = canvas._objects[i];
-                                    if(theShape.type == 'seatShape' && theShape.seatNumber == seatNumber){
+                                    if(theShape.type == 'seatShape'){
+                                        if(theShape.seatNumber == seatNumber){
+                                            theShape.setBackgroundColor(color);
+                                            if(event.helpers && event.helpers.isEditing){
+                                                theShape.selectNormal();
+                                                selectedShapes.push(theShape);
+                                            }
+                                        }
 
-                                        theShape.setBackgroundColor(color);
                                     }
+
                                 }
 
                             }
@@ -279,6 +336,11 @@ zedAlphaDirectives
                     return null;
                 }
 
+                $(window).on('resize', function(){
+                    canvas.calcOffset();
+                    canvas.renderAll();
+                });
+
 
                 // -------- locale changed ---------//
                 scope.$on('$localeStateChanged', function(){
@@ -289,6 +351,9 @@ zedAlphaDirectives
 
                 scope.$on('$destroy', function(){
                     newEventWatcher();
+                    editEventWatcher();
+                    canvas.off('mouse:up');
+                    $(window).off('resize');
                 });
             }
         };

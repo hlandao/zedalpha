@@ -4,7 +4,7 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('BodyCtrl', function($scope, $stateParams, $timeout,Localizer){
+    .controller('BodyCtrl', function($scope, $stateParams, $timeout,Localizer, loginService){
         // check if ID is available
         $scope.$on('$stateChangeSuccess', function(e, toState, toParams){
             if(toState.name.indexOf("dashboard.events.") === 0){
@@ -13,6 +13,10 @@ zedAlphaControllers
                 $scope.isEventsManagementViews = false;
             }
         });
+
+        $scope.logout = function(){
+            loginService.logout();
+        }
 
         Localizer.setLocale('en');
 

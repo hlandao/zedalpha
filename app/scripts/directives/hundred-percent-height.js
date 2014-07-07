@@ -9,7 +9,7 @@ zedAlphaDirectives.
            var setElmHeight = function(){
                if(heightVal >= 0){
                    var docHeight = $(document).height();
-                   element.height(docHeight-parseInt(val) + 'px');
+                   element.height(docHeight-parseInt(heightVal) + 'px');
                }
            }
            attrs.$observe('hundredPercentHeight', function(newVal){
@@ -17,11 +17,11 @@ zedAlphaDirectives.
                setElmHeight();
            });
 
-           window.on('resize', function(){
+           $(window).on('resize', function(){
                setElmHeight();
            })
            scope.$on('$destory', function(){
-               window.off('resize');
+               $(window).off('resize');
            });
        }
     });

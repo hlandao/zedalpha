@@ -6,7 +6,7 @@
                     {{ShiftsDayHolder.selected.name | translate}} <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li ng-repeat="shift in ShiftsDayHolder.current.shifts" ng-click="ShiftsDayHolder.selected = shift"><a href="#" dropdown-toggle>{{shift.name | translate}}</a></li>
+                    <li ng-repeat="shift in ShiftsDayHolder.current.shifts | activeShift" ng-click="ShiftsDayHolder.selected = shift"><a href="#" dropdown-toggle>{{shift.name | translate}}</a></li>
                 </ul>
             </div>
         </div>
@@ -48,7 +48,7 @@
         <button class=""> {{ 'REPLACE_BUTTON_LABEL' | translate }} </button>
     </div>
     <div class="col-xs-2 button-col">
-        <button class="">+ {{ 'ADD_BUTTON_LABEL' | translate }}</button>
+        <button class="" ng-click="newEventWithSeatsDic('destination')">+ {{ 'ADD_BUTTON_LABEL' | translate }}</button>
     </div>
 </div>
 
@@ -115,8 +115,15 @@
                    <tbody class="edited-event existing-event top-form" ng-class="{'is-editing' : event.helpers.isEditing}" ng-repeat-start="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter))">
                        <tr  class="events-table-row" ng-click="openEditedEvent(event)">
                            <td class="status-col"> <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event, $event)"></hl-status-selector> </td>
-                           <td class="name-col"> {{event.name}}</td>
-                           <td class="guests-col"> {{event.guests}} </td>
+                           <td class="name-col">
+                               <span ng-show="!event.helpers.isEditing"> {{event.name}} </span>
+                               <span ng-show="event.helpers.isEditing"> <input type="text" ng-model="event.name" placeholder="{{ 'NAME' | translate }}" class="">  </span>
+                           </td>
+                           <td class="guests-col">
+                               <span ng-show="!event.helpers.isEditing"> {{event.guests}} </span>
+                               <span ng-show="event.helpers.isEditing"> <input type="text" ng-model="event.guests" placeholder="0" class="">  </span>
+
+                           </td>
                            <td class="seats-col"> {{event.seats | seats}} </td>
                            <td class="time-col"> {{event.startTime | date : 'HH:mm'}} </td>
                        </tr>
@@ -149,7 +156,7 @@
                    <tr class="event-form-row">
                        <td colspan="5">
                            <button class="btn btn-default" ng-click="closeEditedEvent(event)"> {{ 'BACK' | translate }}</button>
-                           <button class="btn btn-danger" ng-click="deleteEvent(event)"> {{ 'DELETE' | translate }}</button>
+                           <button class="btn btn-danger"  ng-click="removeEvent(event)"> {{ 'DELETE' | translate }}</button>
                            <button class="btn btn-success" ng-click="saveEditedEvent(event)"> {{ 'SAVE' | translate }}</button>
                        </td>
                    </tr>
@@ -159,8 +166,10 @@
                    <tr class="separator-table-row"> <td colspan="5">{{"DEAD_EVENTS" | translate }}</td> </tr>
                    <tr ng-repeat="event in TimelyFilteredEvents.filteredEvents | statusesFilter:'DEAD'" class="events-table-row">
                        <td class="status-col"> <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector> </td>
-                       <td class="name-col"> {{event.name}}</td>
-                       <td class="guests-col"> {{event.guests}} </td>
+                       <td class="name-col">{{event.name}}</td>
+                       <td class="guests-col">
+                           {{event.guests}}
+                       </td>
                        <td class="seats-col"> {{event.seats | seats}} </td>
                        <td class="time-col"> {{event.startTime | date : 'HH:mm'}} </td>
                    </tr>

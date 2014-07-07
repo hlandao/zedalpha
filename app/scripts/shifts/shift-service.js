@@ -236,4 +236,17 @@ zedAlphaServices
             return new Shift(null,startTime, endTime, defaultTime, index, active);
         }
         return Shift;
-    });
+    })
+    .filter('activeShift', function(){
+        return function(shiftsArr){
+            if(!shiftsArr) return null;
+            var tempShift, output = [];
+            for(var i in shiftsArr){
+                tempShift = shiftsArr[i];
+                if(tempShift.active){
+                    output.push(tempShift);
+                }
+            }
+            return output;
+        }
+    })

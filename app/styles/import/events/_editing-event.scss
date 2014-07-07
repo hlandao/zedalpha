@@ -2,7 +2,19 @@
 tbody.edited-event.existing-event.top-form{
   &.is-editing{
     border:3px solid #8a8a8a;
-    border-bottom:0
+    border-bottom:0;
+    tr{
+      td{
+        input{
+          width:100%;
+          background: transparent;
+          border:0;
+          color:white;
+          outline: none;
+
+        }
+      }
+    }
   }
 }
 
@@ -29,8 +41,7 @@ tbody.edited-event.existing-event.bottom-form{
 
   &.is-editing{
     border:3px solid #8a8a8a;
-    border-top:0
-
+    border-top:0;
   }
 
 }
