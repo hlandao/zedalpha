@@ -30,14 +30,19 @@ zedAlphaServices
 
         return _businessHolder;
     })
-    .factory('Business', ['$rootScope','$q','UserHolder', '$location', function($rootScope,$q, UserHolder, $location){
+    .factory('Business', ['$rootScope','$q','UserHolder', '$location','BusinessMetaData', function($rootScope,$q, UserHolder, $location,BusinessMetaData){
         var validate = function(newBusiness){
 
         };
 
         var create = function(newBusiness){
             validate(newBusiness);
-            return UserHolder.$userProfile.$child('businesses').$add(newBusiness);
+
+            return UserHolder.$userProfile.$child('businesses').$add(newBusiness).then(function(ref){
+                var name = ref.name();
+                UserHolder.$userProfile.$child('businesses').$child(name).$child('eventsStatuses').$set(BusinessMetaData.$child('eventsStatuses'));
+                return ref;
+            });
         };
 
         var getBusinessWithId = function(id){

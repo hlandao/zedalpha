@@ -61,10 +61,23 @@
                 </tr>
                 </tbody>
             </table>
-            <p class="alert alert-success" ng-show="msg.val">{{msg.val}}</p>
-            <p class="alert alert-danger" ng-show="err">{{err}}</p>
         </div>
     </div>
 
+
+    <div class="row">
+        <div class="col-xs-12">
+            <h2> Guests per 15 Minutes </h2>
+            <form class="form-inline" role="form">
+                <div class="form-group">
+                    <input type="text" class="form-control" ng-model="guestsPer15.$value" placeholder="Enter guests">
+                </div>
+                <button class="btn btn-default" ng-click="saveGuestsPer15(newDurationForGuests)">Save</button>
+            </form>
+            <p class="alert alert-success" ng-show="msg.val">{{msg.val}}</p>
+            <p class="alert alert-danger" ng-show="err">{{err}}</p>
+
+        </div>
+    </div>
 
 </div>

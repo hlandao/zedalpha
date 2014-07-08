@@ -66,7 +66,11 @@ zedAlphaConfigModule
         "ERROR_EVENT_MSG_PHONE": "Please enter phone number",
         "ERROR_EVENT_MSG_STARTTIME": "Start time is invalid",
         "ERROR_EVENT_MSG_ENDTIME": "End time is invalid",
-        "ERROR_EVENT_MSG_COLLISION": "A Collision with another event was detected"
+        "ERROR_EVENT_MSG_COLLISION": "A Collision with another event was detected",
+
+        // WARNINGS
+
+        "INVALID_GUESTS_PER_15_WARNING" : "Amount of guests per 15 minutes limit was reached!"
 
 
 
@@ -134,8 +138,10 @@ zedAlphaConfigModule
                 "ERROR_EVENT_MSG_PHONE": "חובה למלא מספר טלפון",
                 "ERROR_EVENT_MSG_STARTTIME": "זמן התחלת הארוע לא קיים או לא תקין",
                 "ERROR_EVENT_MSG_ENDTIME": "זמן סיום הארוע לא קיים או לא תקין",
-                "ERROR_EVENT_MSG_COLLISION": "אותרה התנגשות עם ארוע נוסף, נא נסה שנית"
+                "ERROR_EVENT_MSG_COLLISION": "אותרה התנגשות עם ארוע נוסף, נא נסה שנית",
 
+                // WARNING
+                "INVALID_GUESTS_PER_15_WARNING" : "הגבלת מספר סועדים לרבע שעה נחצתה."
             }
         );
 

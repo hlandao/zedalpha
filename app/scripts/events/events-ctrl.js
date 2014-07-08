@@ -4,7 +4,7 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic,TimelyFilteredEvents, ShiftsDayHolder, Localizer, $filter, DateHelpers){
+    .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic,TimelyFilteredEvents, ShiftsDayHolder, Localizer, $filter, DateHelpers, areYouSureModalFactory){
         Localizer.setLocale('he');
 
         var OccasionalEvent = _.findWhere(EventsStatusesHolder, {status : 'OCCASIONAL'});
@@ -40,6 +40,8 @@ zedAlphaControllers
             }else{
                 newEvent.endTime = DateHelpers.resetDateSeconds(EventsLogic.endTimeForNewEventWithStartTimeAndMaxDuration(startTime, maxDuration));
             }
+
+
             $scope.newEvent = newEvent;
         };
 
@@ -50,13 +52,28 @@ zedAlphaControllers
                 console.error('error',error);
                 alert(localizedError);
             }else{
-                var cloned = angular.copy(eventToSave);
-                delete cloned.helpers;
-                EventsHolder.$allEvents.$add(cloned);
-                $scope.newEvent = null;
+                console.log('EventsLogic.isGuestsPer15Valid',EventsLogic.isGuestsPer15Valid);
+                console.log('EventsLogic.isGuestsPer15Valid',EventsLogic.isGuestsPer15Valid(eventToSave));
+                if(!EventsLogic.isGuestsPer15Valid(eventToSave)){
+                    var modal = areYouSureModalFactory(null, 'INVALID_GUESTS_PER_15_WARNING');
+                    modal.result.then(function () {
+                        saveEventAfterValidation(eventToSave);
+                    }, function () {
+                        console.debug('Modal dismissed at: ' + new Date());
+                    });
+                }else{
+                    saveEventAfterValidation(eventToSave);
+                }
             }
-
         };
+
+        var saveEventAfterValidation = function(eventToSave){
+            var cloned = angular.copy(eventToSave);
+            delete cloned.helpers;
+            EventsHolder.$allEvents.$add(cloned);
+            $scope.newEvent = null;
+
+        }
 
         $scope.closeNewEvent = function(){
             $scope.newEvent=null;

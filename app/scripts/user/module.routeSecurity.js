@@ -24,9 +24,7 @@
 
          // Set up a handler for all future route changes, so we can check
          // if authentication is required.
-          console.log('here!');
          self._rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams) {
-             console.log('stateChangeStart', event, toState);
             self._authRequiredRedirect(event, toState, toParams, fromState, fromParams, self._loginPath);
          });
 

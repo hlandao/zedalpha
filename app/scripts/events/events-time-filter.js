@@ -20,7 +20,6 @@ zedAlphaDirectives
                 var isStartingAfterCurrentDate = startTimeDiffInMinutes > 0;
                 var isEndingAfterCurrentDate = endTimeDiffInMinutes > 0;
                 var isEditingNow = event.helpers && event.helpers.isEditing;
-                console.log('filter by time ');
                 if(isEditingNow || (startTimeDiffInMinutes == 0) || (isStartingAfterCurrentDate &&  startTimeDiffInMinutes < EVENT_TIME_FRAME_IN_MINUTES) || (!isStartingAfterCurrentDate && isEndingAfterCurrentDate)){
                     event.$id = key;
                     filteredEventsArr.push(event);

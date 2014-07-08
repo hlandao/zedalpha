@@ -19,7 +19,7 @@ zedAlphaServices
 
         return $events;
 
-    }).factory('EventsLogic', function(EventsHolder, BusinessHolder, EventsDurationForGuestsHolder, FullDateFormat){
+    }).factory('EventsLogic', function(EventsHolder, BusinessHolder, EventsDurationForGuestsHolder, FullDateFormat,GuestsPer15){
         var DEFAULT_EVENT_DURATION = _.findWhere(EventsDurationForGuestsHolder, {guests : 'default'}).duration || 90;
         var checkCollisionsForEvent = function(event){
             var eventToCheck, sharedSeats;
@@ -138,12 +138,34 @@ zedAlphaServices
             return new Date(moment(startTime).add('minute', duration).format(FullDateFormat));
         };
 
+        var isGuestsPer15Valid = function(event){
+            var guestPer15Value = parseInt(GuestsPer15.$value);
+            if(!guestPer15Value || guestPer15Value === 0) return true;
+            if(!event || !event.startTime) return false;
+            var startTimeMoment = moment(event.startTime);
+            var guestsCount = _.reduce(EventsHolder.$allEvents, function(guestsCount, _event, key){
+                if(!_event || key == '$id' || typeof _event == "function") return guestsCount;
+                var eventStartTimeMoment = moment(_event.startTime);
+                var isOccasional = event.isOccasional;
+                var diff = startTimeMoment.diff(eventStartTimeMoment, 'minutes');
+                if(!isOccasional && diff == 0){
+                    return parseInt(guestsCount) + parseInt(event.guests);
+                }else{
+                    return guestsCount;
+                }
+            }, 0);
+            console.log('guestsCount',guestsCount,'GuestsPer15.$value',GuestsPer15.$value);
+            return guestsCount <= guestPer15Value;
+        };
+
+
         return {
             isInValidateEventBeforeSave : isInValidateEventBeforeSave,
             isInValidateEventWhileEdit : isInValidateEventWhileEdit,
             checkCollisionsForEvent : checkCollisionsForEvent,
             endTimeForNewEventWithStartTimeAndMaxDuration : endTimeForNewEventWithStartTimeAndMaxDuration,
-            maxDurationForEventInMinutes : maxDurationForEventInMinutes
+            maxDurationForEventInMinutes : maxDurationForEventInMinutes,
+            isGuestsPer15Valid : isGuestsPer15Valid
         }
 
     });

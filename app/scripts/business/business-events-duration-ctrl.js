@@ -14,6 +14,8 @@ zedAlphaControllers
         $scope.businessId = BusinessHolder.businessId;
         $scope.eventsDuration = $scope.business.$child('eventsDuration');
         $scope.eventsDurationForGuests = $scope.business.$child('eventsDurationForGuests');
+        $scope.guestsPer15 = $scope.business.$child('guestsPer15');
+
 
 
         $scope.msg = new Alert(4000);
@@ -63,6 +65,12 @@ zedAlphaControllers
                 }
             }
             $scope.err = "Error!"
+        };
+
+        $scope.saveGuestsPer15 = function(){
+            $scope.guestsPer15.$set($scope.guestsPer15.$value);
+            console.log('$scope.guestsPer15',$scope.guestsPer15);
+            $scope.msg.setMsg('Saved!');
         };
 
 
