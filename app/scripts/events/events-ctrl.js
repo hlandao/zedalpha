@@ -71,7 +71,7 @@ zedAlphaControllers
         }
 
         $scope.closeNewEvent = function(){
-            if(angular.isFunction(newEventWatcher)) newEventWatcher();
+            if(angular.isFunction(eventWatcher)) eventWatcher();
             $scope.newEvent=null;
         };
 
@@ -129,10 +129,11 @@ zedAlphaControllers
         };
 
         $scope.saveEditedEvent = function(eventToSave){
+            console.log('saveEditedEvent');
             var isInvalid = EventsLogic.isInvalidEventBeforeSave(eventToSave);
             if(isInvalid && isInvalid.error){
                 var localizedError = $filter('translate')(isInvalid.error);
-                alert(localizedError);
+                return alert(localizedError);
             }else if(isInvalid && isInvalid.warning){
                 var modal = areYouSureModalFactory(null, isInvalid.warning);
                 modal.result.then(function () {
@@ -146,6 +147,7 @@ zedAlphaControllers
 
 
         var saveEditedEventAfterValidation = function(eventToSave){
+            if(angular.isFunction(eventWatcher)) eventWatcher();
             delete eventToSave.helpers;
             var $event = EventsHolder.$allEvents.$child(eventToSave.$id);
             $event.$set(eventToSave);

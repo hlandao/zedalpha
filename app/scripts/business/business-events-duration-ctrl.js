@@ -69,7 +69,6 @@ zedAlphaControllers
 
         $scope.saveGuestsPer15 = function(){
             $scope.guestsPer15.$set($scope.guestsPer15.$value);
-            console.log('$scope.guestsPer15',$scope.guestsPer15);
             $scope.msg.setMsg('Saved!');
         };
 

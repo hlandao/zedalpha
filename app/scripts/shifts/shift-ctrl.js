@@ -5,7 +5,6 @@ var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.contro
 
 zedAlphaControllers
     .controller('ShiftCtrl', function($scope){
-        console.log('$scope.businessId',$scope.businessId);
         $scope.nextWeek = function(){
             $scope.weekNumber = moment().week($scope.weekNumber).add('weeks',1).week();
         };

@@ -7,7 +7,6 @@ zedAlphaServices
         var updateValue = function(){
             if(BusinessHolder.$business){
                 $guestsPer15 = BusinessHolder.$business.$child('guestsPer15');
-                console.log('$guestsPer15',$guestsPer15);
             }
         };
 

@@ -41,7 +41,6 @@ zedAlphaServices
         }
 
         ShiftsWeek.prototype.saveAllDays = function(){
-            console.log('saveAllDays');
             var day,
                 promises = [];
 

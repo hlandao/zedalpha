@@ -41,7 +41,7 @@
       },
 
       _login: function() {
-          console.log('_login');
+
          this._authenticated = true;
          if( this._redirectTo ) {
             this._redirect(this._redirectTo);

@@ -196,7 +196,6 @@ zedAlphaDirectives
                 });
 
                 canvas.on('object:selected', function(e){
-                    console.log('e',e);
                         scope.$apply(function(){
                            scope.selectedShape = e.target;
                         });

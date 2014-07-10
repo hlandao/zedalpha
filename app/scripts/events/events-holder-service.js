@@ -25,7 +25,6 @@ zedAlphaServices
             var eventToCheck, sharedSeats;
             for(var i in EventsHolder.$allEvents){
                 eventToCheck = EventsHolder.$allEvents[i];
-                console.log('eventToCheck === event',eventToCheck === event);
                 if(!eventToCheck || i == '$id' || typeof eventToCheck == "function" || eventToCheck === event) continue;
                 sharedSeats = checkIfTwoEventsShareTheSameSeats(event, eventToCheck);
                 if(sharedSeats){
@@ -73,7 +72,6 @@ zedAlphaServices
                     console.log('eventToCheckAgainst',eventToCheckAgainst);
 
                     tempMaxDuration =  maxDurationForEventInRegardToAnotherEvent(event, eventToCheckAgainst);
-                    console.log('tempMaxDuration',tempMaxDuration);
                     if(tempMaxDuration == 0){
                         return 0;
                     }else if(tempMaxDuration > 0){

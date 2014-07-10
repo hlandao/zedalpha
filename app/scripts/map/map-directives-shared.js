@@ -5,7 +5,6 @@ var sharedCanvasResources = {
 
     listenToContainerScrollWithCanvas : function(canvas){
         fabric.util.addListener(document.getElementById('map-container'), 'scroll', function () {
-            console.log('scroool');
             canvas.calcOffset();
         });
     },
