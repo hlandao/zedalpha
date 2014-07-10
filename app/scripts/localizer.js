@@ -8,6 +8,7 @@ zedAlphaServices
         var language = defaultLanguage;
 
         this.setLocale = function(langKey) {
+            console.log('setLocale');
             var isRTL;
             if (langKey === 'he')
                 isRTL = true;
@@ -16,6 +17,7 @@ zedAlphaServices
 
             setRTLDirection(isRTL);
             setLanguage(langKey);
+            console.log('here!');
             $rootScope.$broadcast('$localeStateChanged');
         }
 

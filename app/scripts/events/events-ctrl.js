@@ -7,8 +7,11 @@ zedAlphaControllers
     .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic,TimelyFilteredEvents, ShiftsDayHolder, Localizer, $filter, DateHelpers, areYouSureModalFactory){
         Localizer.setLocale('he');
 
-        var OccasionalEvent = _.findWhere(EventsStatusesHolder, {status : 'OCCASIONAL'});
-        var OrderedEvent = _.findWhere(EventsStatusesHolder, {status : 'ORDERED'});
+        var OccasionalEvent = _.findWhere(EventsStatusesHolder, {status : 'OCCASIONAL'}),
+            OrderedEvent = _.findWhere(EventsStatusesHolder, {status : 'ORDERED'}),
+            eventWatcher,
+            editedEvent,
+            justRevertedWhileEdit;
 
         $scope.EventsDurationHolder = EventsDurationHolder;
         $scope.DateHolder = DateHolder;
@@ -29,73 +32,71 @@ zedAlphaControllers
             });
             var maxDuration = EventsLogic.maxDurationForEventInMinutes(newEvent);
             if(maxDuration == 0){
-
-//                if(isOccasional && !specificStartTime){
-//                    $scope.newEventWithSeatsDic(occasionalOrDestination, dic, DateHolder.current);
-//                    return;
-//                }
-
                 alert('Error : cannot start event at ' + moment(startTime).format('HH:mm'));
                 return false;
             }else{
                 newEvent.endTime = DateHelpers.resetDateSeconds(EventsLogic.endTimeForNewEventWithStartTimeAndMaxDuration(startTime, maxDuration));
             }
 
-
+            justRevertedWhileEdit = false;
+            if(angular.isFunction(eventWatcher)) eventWatcher();
+            eventWatcher = $scope.$watch('newEvent', eventWatching,true);
             $scope.newEvent = newEvent;
         };
 
-        $scope.saveEvent = function(eventToSave){
-            var error = EventsLogic.isInValidateEventBeforeSave(eventToSave);
-            if(error){
-                var localizedError = $filter('translate')(error);
-                console.error('error',error);
+        $scope.saveNewEvent = function(eventToSave){
+            var isInvalid = EventsLogic.isInvalidEventBeforeSave(eventToSave);
+            if(isInvalid && isInvalid.error){
+                var localizedError = $filter('translate')(isInvalid.error);
+                console.error('error',isInvalid.error);
                 alert(localizedError);
+            }else if(isInvalid && isInvalid.warning){
+                var modal = areYouSureModalFactory(null, 'INVALID_GUESTS_PER_15_WARNING');
+                modal.result.then(function () {
+                    saveNewEventAfterValidation(eventToSave);
+                }, function () {
+                    console.debug('Modal dismissed at: ' + new Date());
+                });
             }else{
-                console.log('EventsLogic.isGuestsPer15Valid',EventsLogic.isGuestsPer15Valid);
-                console.log('EventsLogic.isGuestsPer15Valid',EventsLogic.isGuestsPer15Valid(eventToSave));
-                if(!EventsLogic.isGuestsPer15Valid(eventToSave)){
-                    var modal = areYouSureModalFactory(null, 'INVALID_GUESTS_PER_15_WARNING');
-                    modal.result.then(function () {
-                        saveEventAfterValidation(eventToSave);
-                    }, function () {
-                        console.debug('Modal dismissed at: ' + new Date());
-                    });
-                }else{
-                    saveEventAfterValidation(eventToSave);
-                }
+                saveNewEventAfterValidation(eventToSave);
             }
         };
 
-        var saveEventAfterValidation = function(eventToSave){
+        var saveNewEventAfterValidation = function(eventToSave){
+            if(angular.isFunction(eventWatcher)) eventWatcher();
             var cloned = angular.copy(eventToSave);
             delete cloned.helpers;
             EventsHolder.$allEvents.$add(cloned);
             $scope.newEvent = null;
-
         }
 
         $scope.closeNewEvent = function(){
+            if(angular.isFunction(newEventWatcher)) newEventWatcher();
             $scope.newEvent=null;
         };
 
-        $scope.$watch('newEvent', function(newVal, oldVal){
+        var eventWatching = function(newVal, oldVal){
+            if(justRevertedWhileEdit){
+                justRevertedWhileEdit = false;
+                return;
+            }
             if(newVal){
-                var error = EventsLogic.isInValidateEventWhileEdit(newVal);
-                if(error){
-                    var localizedError = $filter('translate')(error);
-                    console.error('[EventsCtrl]: error while edit event', error);
+                var isInvalid = EventsLogic.isInvalidEventWhileEdit(newVal);
+                if(isInvalid && isInvalid.error){
+                    console.error('[EventsCtrl]: error while edit event', isInvalid.error);
+                    var localizedError = $filter('translate')(isInvalid.error);
                     alert(localizedError);
-                    newVal.startTime=oldVal.startTime;
-                    newVal.endTime=oldVal.endTime;
+                    justRevertedWhileEdit = true;
+                    newVal.startTime =  oldVal.startTime;
+                    newVal.endTime =  oldVal.endTime;
+                    newVal.seats =  oldVal.seats;
                 }
             }
-        },true);
+        };
+
 
 
         // --------- Edit event ----------- //
-        var editedEvent;
-        var editedEventWatcher;
         $scope.openEditedEvent = function (event){
             if($scope.editedEvent == event){
                 return;
@@ -107,29 +108,11 @@ zedAlphaControllers
             editedEvent = angular.copy(event);
             $scope.isEditingEvent = true;
             $scope.editedEvent = event;
-            var justReverted = false;
-            editedEventWatcher = $scope.$watchCollection(function(){
-                return event;
-            }, function(newVal, oldVal){
-                if(justReverted){
-                    justReverted = false;
-                    return;
-                }
-                if(newVal){
-                    var error = EventsLogic.isInValidateEventWhileEdit(newVal);
-                    if(error){
-                        console.error('[EventsCtrl]: error while edit event', error);
-                        var localizedError = $filter('translate')(error);
-                        alert(localizedError);
-                        justReverted = true;
-                        event.startTime =  oldVal.startTime;
-                        event.endTime =  oldVal.endTime;
-                        event.seats =  oldVal.seats;
-                    }
-                }
-            },true);
-
+            justRevertedWhileEdit = false;
+            if(angular.isFunction(eventWatcher)) eventWatcher();
+            eventWatcher = $scope.$watchCollection(function(){ return event; },eventWatching,true);
         };
+
 
         $scope.closeEditedEvent = function(event){
             $scope.isEditingEvent = false;
@@ -138,7 +121,7 @@ zedAlphaControllers
             event.helpers = event.helpers || {};
             event.helpers.isEditing = false;
             $scope.editedEvent = null;
-            if(angular.isFunction(editedEventWatcher)) editedEventWatcher();
+            if(angular.isFunction(eventWatcher)) eventWatcher();
         };
 
         $scope.deleteEditedEvent = function(event){
@@ -146,28 +129,42 @@ zedAlphaControllers
         };
 
         $scope.saveEditedEvent = function(eventToSave){
-            var error = EventsLogic.isInValidateEventBeforeSave(eventToSave);
-            if(error){
-                var localizedError = $filter('translate')(error);
+            var isInvalid = EventsLogic.isInvalidEventBeforeSave(eventToSave);
+            if(isInvalid && isInvalid.error){
+                var localizedError = $filter('translate')(isInvalid.error);
                 alert(localizedError);
+            }else if(isInvalid && isInvalid.warning){
+                var modal = areYouSureModalFactory(null, isInvalid.warning);
+                modal.result.then(function () {
+                    saveEditedEventAfterValidation(eventToSave);
+                }, function () {
+                });
             }else{
-                delete eventToSave.helpers;
-                var $event = EventsHolder.$allEvents.$child(eventToSave.$id);
-                $event.$set(eventToSave);
-                if(eventToSave.helpers) eventToSave.helpers.isEditing = false;
-                $scope.isEditingEvent = false;
-                $scope.editedEvent = null;
+                saveEditedEventAfterValidation(eventToSave);
             }
-
         };
+
+
+        var saveEditedEventAfterValidation = function(eventToSave){
+            delete eventToSave.helpers;
+            var $event = EventsHolder.$allEvents.$child(eventToSave.$id);
+            $event.$set(eventToSave);
+            if(eventToSave.helpers) eventToSave.helpers.isEditing = false;
+            $scope.isEditingEvent = false;
+            $scope.editedEvent = null;
+
+        }
+
+
 
         $scope.eventStatusChanged = function(event){
             $scope.saveEditedEvent(event);
         };
 
         $scope.removeEvent = function(eventToRemove){
-            var $event = EventsHolder.$allEvents.$child(eventToRemove.$id);
-            $event.$remove();
+            EventsHolder.$allEvents.$remove(eventToRemove.$id);
+            $scope.isEditingEvent = false;
+            $scope.editedEvent = null;
         }
 
 
@@ -178,7 +175,6 @@ zedAlphaControllers
         $scope.selectFilter = function(filter){
             $scope.selectedFilter = filter;
         };
-
 
 
         $scope.events = {};

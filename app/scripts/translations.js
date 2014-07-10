@@ -42,6 +42,11 @@ zedAlphaConfigModule
         ALL: "All",
         SEATING: "Seating",
         SEATED: "Seating",
+        CONFIRMED: "Confirmed",
+        CHEQUE: "Cheque",
+        FINISHED: "Finished",
+        NO_SHOW: "No Show",
+
 
         ORDERED: "Orderd",
         // ERRORS
@@ -114,6 +119,10 @@ zedAlphaConfigModule
                 "SEATING": "יושבים",
                 "SEATED": "יושבים",
                 "ORDERED": "מוזמנים",
+                "CONFIRMED": "מאושר",
+                "CHEQUE": "חשבון",
+                "FINISHED": "הסתיים",
+                "NO_SHOW": "הבריז",
                 "ERROR_MSG_COLLISION": "תקלה: אירוע זה מתנגש עם אירוע אחר",
                 "TOTAL_ORDERS": "מספר הזמנות",
                 "TOTAL_GUESTS": "מספר אורחים ",
@@ -148,3 +157,4 @@ zedAlphaConfigModule
 
         $translateProvider.preferredLanguage('en');
 });
+

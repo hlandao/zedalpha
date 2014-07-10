@@ -19,12 +19,13 @@ zedAlphaServices
 
         return $events;
 
-    }).factory('EventsLogic', function(EventsHolder, BusinessHolder, EventsDurationForGuestsHolder, FullDateFormat,GuestsPer15){
+    }).factory('EventsLogic', function(EventsHolder, BusinessHolder, EventsDurationForGuestsHolder, FullDateFormat,GuestsPer15, $q){
         var DEFAULT_EVENT_DURATION = _.findWhere(EventsDurationForGuestsHolder, {guests : 'default'}).duration || 90;
         var checkCollisionsForEvent = function(event){
             var eventToCheck, sharedSeats;
             for(var i in EventsHolder.$allEvents){
                 eventToCheck = EventsHolder.$allEvents[i];
+                console.log('eventToCheck === event',eventToCheck === event);
                 if(!eventToCheck || i == '$id' || typeof eventToCheck == "function" || eventToCheck === event) continue;
                 sharedSeats = checkIfTwoEventsShareTheSameSeats(event, eventToCheck);
                 if(sharedSeats){
@@ -57,7 +58,7 @@ zedAlphaServices
         var checkIfTwoEventsShareTheSameSeats = function(e1,e2){
             if(!e1 || !e2) return false;
             for(var i  in e1.seats){
-                if(e2.seats[i]) return i;
+                if(e2.seats[i]) return true;
             }
             return false;
         }
@@ -69,7 +70,10 @@ zedAlphaServices
                 if(!eventToCheckAgainst || i == '$id' || typeof eventToCheckAgainst == "function" || eventToCheckAgainst === event) continue;
                 sharedSeats = checkIfTwoEventsShareTheSameSeats(event, eventToCheckAgainst);
                 if(sharedSeats){
+                    console.log('eventToCheckAgainst',eventToCheckAgainst);
+
                     tempMaxDuration =  maxDurationForEventInRegardToAnotherEvent(event, eventToCheckAgainst);
+                    console.log('tempMaxDuration',tempMaxDuration);
                     if(tempMaxDuration == 0){
                         return 0;
                     }else if(tempMaxDuration > 0){
@@ -100,33 +104,39 @@ zedAlphaServices
         };
 
 
-        var isInValidateEventWhileEdit = function(event){
+        var isInvalidEventWhileEdit = function(event){
             if(checkCollisionsForEvent(event)){
-                return "ERROR_EVENT_MSG_COLLISION";
+                return {error : "ERROR_EVENT_MSG_COLLISION"};
             }
+
+            return false;
         };
 
-        var isInValidateEventBeforeSave = function(event){
-
+        var isInvalidEventBeforeSave = function(event){
+            var defer = $q.defer();
             // Event has no name
             if(!event.name){
-                return "ERROR_EVENT_MSG_NAME";
+                return {error : "ERROR_EVENT_MSG_NAME"};
             // Event has no seat or it is an occasional one and the business type is Bar
             } else if(isEventWithNoSeats(event) && (BusinessHolder.businessType != 'Bar' || !event.isOccasional)){
-                return "ERROR_EVENT_MSG_SEATS";
+                return {error : "ERROR_EVENT_MSG_SEATS"};
             // Event has no phone and it isn't occasional
             }else if(!event.isOccasional && !event.phone){
-                return "ERROR_EVENT_MSG_PHONE";
+                return {error : "ERROR_EVENT_MSG_PHONE"};
             // Event has no start time
             }else if(!event.startTime){
-                return "ERROR_EVENT_MSG_STARTTIME";
+                return {error : "ERROR_EVENT_MSG_STARTTIME"};
             // Event has no end time
             }else if(!event.endTime){
-                return "ERROR_EVENT_MSG_ENDTIME";
+                return {error : "ERROR_EVENT_MSG_ENDTIME"};
             }else if(checkCollisionsForEvent(event)){
-                return "ERROR_EVENT_MSG_COLLISION";
+                return {error : "ERROR_EVENT_MSG_COLLISION"};
+            }else if(!isGuestsPer15Valid(event)){
+                return {warning : "INVALID_GUESTS_PER_15_WARNING"};
             }
+
             return false;
+
         };
 
         var isEventWithNoSeats = function(event){
@@ -146,22 +156,23 @@ zedAlphaServices
             var guestsCount = _.reduce(EventsHolder.$allEvents, function(guestsCount, _event, key){
                 if(!_event || key == '$id' || typeof _event == "function") return guestsCount;
                 var eventStartTimeMoment = moment(_event.startTime);
-                var isOccasional = event.isOccasional;
+                var isOccasional = _event.isOccasional;
                 var diff = startTimeMoment.diff(eventStartTimeMoment, 'minutes');
                 if(!isOccasional && diff == 0){
-                    return parseInt(guestsCount) + parseInt(event.guests);
+                    return parseInt(guestsCount) + parseInt(_event.guests);
                 }else{
                     return guestsCount;
                 }
             }, 0);
-            console.log('guestsCount',guestsCount,'GuestsPer15.$value',GuestsPer15.$value);
+            guestsCount += parseInt(event.guests);
+            console.log('guestsCount',guestsCount,guestPer15Value);
             return guestsCount <= guestPer15Value;
         };
 
 
         return {
-            isInValidateEventBeforeSave : isInValidateEventBeforeSave,
-            isInValidateEventWhileEdit : isInValidateEventWhileEdit,
+            isInvalidEventBeforeSave : isInvalidEventBeforeSave,
+            isInvalidEventWhileEdit : isInvalidEventWhileEdit,
             checkCollisionsForEvent : checkCollisionsForEvent,
             endTimeForNewEventWithStartTimeAndMaxDuration : endTimeForNewEventWithStartTimeAndMaxDuration,
             maxDurationForEventInMinutes : maxDurationForEventInMinutes,

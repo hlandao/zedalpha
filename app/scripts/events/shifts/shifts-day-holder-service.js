@@ -84,6 +84,7 @@ zedAlphaServices
         };
 
         var fetchShiftWithDate = function(date){
+            console.log('fetchShiftWithDate',date);
             $shiftsDays = $shiftsDays || BusinessHolder.$business.$child('shifts').$child('days');
             var dateMoment = moment(date);
             if(dateMoment){
@@ -111,7 +112,9 @@ zedAlphaServices
 
         return {
             basicShiftForDayOfWeek : function(date){
+
                 var dayOfWeek = moment(date).day();
+                console.log('basicShiftForDayOfWeek',dayOfWeek);
                 var output = new BasicShiftDay(null, $basic[dayOfWeek], date);
                 return output;
             }

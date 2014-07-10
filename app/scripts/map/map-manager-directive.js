@@ -115,6 +115,7 @@ zedAlphaDirectives
                 };
 
 
+                // click handler for editing state
                 var clickHandlerForEditingEventState = function (target, e){
                     if(!target || target.type != 'seatShape') return;
                     if(~selectedShapes.indexOf(target)){
@@ -191,9 +192,10 @@ zedAlphaDirectives
                         shape.backToNormalState();
                     });
 
-                    $timeout(function(){
-                        selectedShapes = [];
-                    });
+//                    $timeout(function(){
+//                        selectedShapes = [];
+//                    });
+                    selectedShapes = [];
                     if(render) canvas.renderAll();
                 };
 
@@ -242,30 +244,17 @@ zedAlphaDirectives
                     return output;
                 }
 
-                var newEventWatcher = scope.$parent.$watch('newEvent', function(newVal, oldVal){
-                    // new Event was closed -  unselect all shapes
-                    if(!newVal && oldVal){
-
-                        unSelectAllShapes(true);
-                    }
-                });
-
-                var editEventWatcher = scope.$parent.$watch('editedEvent', function(newVal, oldVal){
-                    // new Event was closed -  unselect all shapes
-                    unSelectAllShapes(true);
-                });
-
-
 
                 var renderMapWithEvents = _.throttle(function(newVal){
                     if(!newVal) return;
                     var events = newVal.events;
                     if(events){
                         setAllShapesToNormal();
+                        unSelectAllShapes();
+                        selectedShapes = [];
                         if(!events.length){
                             return canvas.renderAll();
                         }
-
                         var event, color, seatNumber, theShape;
                         for(var j = 0; j < events.length; ++j){
                             event = events[j];
@@ -294,7 +283,21 @@ zedAlphaDirectives
                     }
                 },10);
 
-                var filteredEventsWatcher = scope.$parent.$watch('events', renderMapWithEvents,true);
+
+                var renderMapForEvent = function(event){
+                    unSelectAllShapes();
+                    var shape;
+                    for(var i in event.seats){
+                        for(var j =0; j < canvas._objects.length; ++j){
+                            shape = canvas._objects[j];
+                            if(shape.type == 'seatShape'){
+                                if(shape.seatNumber == i){
+                                    shape.selectNormal();
+                                }
+                            }
+                        }
+                    }
+                }
 
 
                 var setAllShapesToNormal = function(){
@@ -306,6 +309,7 @@ zedAlphaDirectives
                         }
                     }
                 }
+
 
                 var isShapeInFilteredEvents = function(shape){
                     var event;
@@ -319,7 +323,6 @@ zedAlphaDirectives
                     }
                     return false;
                 }
-
 
 
                 var getEventStatusColor = function(status){
@@ -439,11 +442,38 @@ zedAlphaDirectives
                 });
 
 
+                var newEventWatcher = scope.$parent.$watch('newEvent', function(newVal, oldVal){
+                    // new Event was closed -  unselect all shapes
+                    if(!newVal && oldVal){
+                        unSelectAllShapes(true);
+                    }
+                });
+
+                var editEventWatcher = scope.$parent.$watch('editedEvent', function(newVal, oldVal){
+                    // new Event was closed -  unselect all shapes
+                    if(!newVal && oldVal){
+                        unSelectAllShapes(true);
+                    }
+
+                });
+
+                var editEventSeatsWatcher = scope.$parent.$watch('editedEvent.seats', function(newVal, oldVal){
+                    if(scope.$parent.editedEvent){
+//                        renderMapForEvent(scope.$parent.editedEvent);
+                    }
+                    // new Event was closed -  unselect all shapes
+                });
+
+                var filteredEventsWatcher = scope.$parent.$watch('events', renderMapWithEvents,true);
+
+
 
                 // -------- locale changed ---------//
                 scope.$on('$localeStateChanged', function(){
-                    canvas.calcOffset();
-                    canvas.renderAll();
+                    $timeout(function(){
+                        canvas.calcOffset();
+                        canvas.renderAll();
+                    });
                 });
                 // -------- $destory -------//
 
