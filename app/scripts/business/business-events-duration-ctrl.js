@@ -51,7 +51,7 @@ zedAlphaControllers
                 $scope.err = "Please enter duration as a number";
                 return;
             }
-            $scope.eventsDurationForGuests.$add(newDurationForGuests);
+            $scope.eventsDurationForGuests.$child(newDurationForGuests.guests).$set(newDurationForGuests.duration);
             newDurationForGuests = {};
             $scope.msg.setMsg('Saved!');
         };

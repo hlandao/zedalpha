@@ -74,7 +74,7 @@ fabric.SeatShape = fabric.util.createClass(fabric.Group, {
 
     selectNormal : function(){
         var shape = this.theShape();
-        shape.setStroke("#CD5C5C");
+        shape.setStroke("#bb62ff");
 //        shape.setStrokeWidth(3);
     },
 

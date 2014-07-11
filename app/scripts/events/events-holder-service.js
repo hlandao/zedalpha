@@ -20,7 +20,7 @@ zedAlphaServices
         return $events;
 
     }).factory('EventsLogic', function(EventsHolder, BusinessHolder, EventsDurationForGuestsHolder, FullDateFormat,GuestsPer15, $q){
-        var DEFAULT_EVENT_DURATION = _.findWhere(EventsDurationForGuestsHolder, {guests : 'default'}).duration || 90;
+        var DEFAULT_EVENT_DURATION = EventsDurationForGuestsHolder.default || 120;
         var checkCollisionsForEvent = function(event){
             var eventToCheck, sharedSeats;
             for(var i in EventsHolder.$allEvents){
@@ -69,8 +69,6 @@ zedAlphaServices
                 if(!eventToCheckAgainst || i == '$id' || typeof eventToCheckAgainst == "function" || eventToCheckAgainst === event) continue;
                 sharedSeats = checkIfTwoEventsShareTheSameSeats(event, eventToCheckAgainst);
                 if(sharedSeats){
-                    console.log('eventToCheckAgainst',eventToCheckAgainst);
-
                     tempMaxDuration =  maxDurationForEventInRegardToAnotherEvent(event, eventToCheckAgainst);
                     if(tempMaxDuration == 0){
                         return 0;

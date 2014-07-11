@@ -17,12 +17,16 @@ zedAlphaDirectives
                 ngModelWatcher = scope.$watch(function(){
                     return ngModel.$modelValue;
                 }, function(newVal){
-                   if(newVal && angular.isDate(newVal)){
+                    if(!newVal) return;
+                   var theDate = angular.isDate(newVal) ? newVal : new Date(newVal);
+
+                   if(theDate && angular.isDate(theDate)){
                        ngModelWatcher();
                        var defaultTime = moment(ngModel.$modelValue).format("HH:mm");
                        element.timepicker({
                            timeFormat : 'HH:mm',
                            interval : 15,
+                           dynamic : false,
                            change : function(time){
                                if(!initialized){
                                 return initialized = true;

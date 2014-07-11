@@ -75,7 +75,8 @@ zedAlphaConfigModule
         "ERROR_EVENT_MSG_COLLISION": "A Collision with another event was detected",
 
         // WARNINGS
-        "INVALID_GUESTS_PER_15_WARNING" : "Amount of guests per 15 minutes limit was reached!"
+        "INVALID_GUESTS_PER_15_WARNING" : "Amount of guests per 15 minutes limit was reached!",
+        "REMOVE_EVENT_WARNING" : "Removing event is irreversible. Are you sure you want to continue ?"
 
 
 
@@ -151,7 +152,8 @@ zedAlphaConfigModule
                 "ERROR_EVENT_MSG_COLLISION": "אותרה התנגשות עם ארוע נוסף, נא נסה שנית",
 
                 // WARNING
-                "INVALID_GUESTS_PER_15_WARNING" : "הגבלת מספר סועדים לרבע שעה נחצתה."
+                "INVALID_GUESTS_PER_15_WARNING" : "הגבלת מספר סועדים לרבע שעה נחצתה.",
+                "REMOVE_EVENT_WARNING" : "מחיקת אירוע הינה פעולת בלתי הפיכה. האם ברצונך להמשיך ?"
             }
         );
 

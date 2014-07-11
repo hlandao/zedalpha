@@ -2,33 +2,32 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 
 
 zedAlphaDirectives
-    .directive('hlEventDurationSelect', ['$timeout','FullDateFormat', 'EventsDurationForGuestsHolder','$rootScope','EventInterval','DateHelpers', function ($timeout, FullDateFormat, EventsDurationForGuestsHolder,$rootScope,EventInterval,DateHelpers) {
+    .directive('hlEventDurationSelect', ['$timeout','FullDateFormat', 'EventsDurationForGuestsHolder','$rootScope','EventInterval','DateHelpers','EventsDurationHolder', function ($timeout, FullDateFormat, EventsDurationForGuestsHolder,$rootScope,EventInterval,DateHelpers,EventsDurationHolder) {
 
         return {
             restrict: 'E',
             templateUrl : '/partials/directives/event-duration-select-directive.html',
-            scope : {
-                event : "=event",
-                durations : "=durations"
-            },
+//            scope : {
+//                event : "="
+//            },
             controller : function($scope){
+                $scope.$watch('event', function(newVal, oldVal){
+                   console.log('newVal',newVal);
+                });
                 // ---------- Init timepicker ---------//
                 $scope.timeFormat = 'HH:mm';
                 $scope.interval = EventInterval;
-
+                $scope.durations = EventsDurationHolder;
 
                 var setDurationLabel = function(){
+                    if(!$scope.event) return;
                     var startTimeMoment = moment( $scope.event.startTime);
                     var endTimeMoment = moment( $scope.event.endTime);
                     $scope.durationLabel = Math.ceil(endTimeMoment.diff(startTimeMoment) / 1000) / 60;
                 };
 
 
-                var updateAllViewInputs = function(){
-                    setDurationLabel();
-                }
-
-                updateAllViewInputs();
+                setDurationLabel();
                 // --------------- Init everything else --------------//
 
 
@@ -54,12 +53,10 @@ zedAlphaDirectives
                     var startTimeMoment = moment($scope.event.startTime);
                     var newEndTimeMoment = startTimeMoment.add($scope.durationLabel, 'minutes');
                     $scope.event.endTime = new Date(newEndTimeMoment.format(FullDateFormat));
-                    $timeout(updateAllViewInputs);
+                    $timeout(setDurationLabel);
                 }
 
 
-            },
-            link : function(scope, element, attrs) {
             }
         };
     }]);

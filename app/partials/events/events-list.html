@@ -29,48 +29,9 @@
                         <th class="time-col"> {{ 'TIME' | translate }} </th>
                     </tr>
                    </thead>
-                   <tbody class="edited-event new-event" ng-if="newEvent">
-                        <tr class="events-table-row">
-                            <td class="status-col"> <hl-status-selector ng-model="newEvent.status"></hl-status-selector> </td>
-                            <td class="name-col"> <input type="text" ng-model="newEvent.name" placeholder="{{ 'NAME' | translate }}" class=""> </td>
-                            <td class="guests-col"> <input type="text" ng-model="newEvent.guests" placeholder="0" class=""> </td>
-                            <td class="seats-col"> <input type="text" ng-model="newEvent.seats" hl-seats-input  class=""> </td>
-                            <td class="time-col"> {{newEvent.startTime  | date : 'HH:mm'}} </td>
-                        </tr>
-                        <tr class="event-form-row">
-                            <td colspan="5">
-                                <hl-event-duration-select event="newEvent" durations="EventsDurationHolder"></hl-event-duration-select>
-                            </td>
-                        </tr>
+                    <tbody hl-event-form event="newEvent" ng-if="newEvent"></tbody>
 
-                        <tr class="event-form-row" ng-show="!newEvent.isOccasional">
-                            <td colspan="3"> <input type="text" ng-model="newEvent.phone" placeholder="{{ 'PHONE' | translate }}" class=""></td>
-                            <td colspan="2"> <input type="text" ng-model="newEvent.email" placeholder="{{ 'EMAIL' | translate }}" class=""> </td>
-
-                        </tr>
-                        <tr class="event-form-row" ng-show="!newEvent.isOccasional">
-                            <td colspan="3"> <input type="text" ng-model="newEvent.contactPerson" placeholder="{{ 'CONTACT_PERSON' | translate }}" class=""> </td>
-                            <td colspan="2"> <select><option selected>Event Type</option></select> </td>
-
-                        </tr>
-                        <tr class="event-form-row" ng-show="!newEvent.isOccasional">
-                            <td colspan="5"> <input type="text" ng-model="newEvent.contactComment" placeholder="{{ 'CONTACT_COMMENT' | translate }}" class=""> </td>
-                        </tr>
-                        <tr class="event-form-row" ng-show="!newEvent.isOccasional">
-                            <td colspan="5"> <input type="text" ng-model="newEvent.comment" placeholder="{{ 'COMMENT' | translate }}" class=""> </td>
-                        </tr>
-                        <tr class="event-form-row">
-                            <td colspan="5"> <input type="text" ng-model="newEvent.hostess" placeholder="{{ 'HOSTESS' | translate }}" class=""> </td>
-                        </tr>
-                        <tr class="event-form-row">
-                            <td colspan="5">
-                                <button class="btn btn-default" ng-click="closeNewEvent()"> {{ 'BACK' | translate }}</button>
-                                <button class="btn btn-danger" ng-show=""> {{ 'DELETE' | translate }}</button>
-                                <button class="btn btn-success" ng-click="saveNewEvent(newEvent)"> {{ 'SAVE' | translate }}</button>
-                            </td>
-                        </tr>
-                   </tbody>
-                   <tbody class="edited-event existing-event top-form" ng-class="{'is-editing' : event.helpers.isEditing}" ng-repeat-start="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter))">
+                   <tbody class="edited-event existing-event top-form" ng-show="!event.helpers.isEditing" ng-repeat-start="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter))">
                        <tr  class="events-table-row" ng-click="openEditedEvent(event)">
                            <td class="status-col"> <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event, $event)"></hl-status-selector> </td>
                            <td class="name-col">
@@ -86,39 +47,7 @@
                            <td class="time-col"> {{event.startTime | date : 'HH:mm'}} </td>
                        </tr>
                    </tbody>
-                   <tbody class="edited-event existing-event bottom-form" ng-class="{'is-editing' : event.helpers.isEditing}" ng-if="event.helpers.isEditing" ng-repeat-end="">
-                   <tr class="event-form-row">
-                       <td colspan="5">
-                           <hl-event-duration-select event="event" durations="EventsDurationHolder"></hl-event-duration-select>
-                       </td>
-                   </tr>
-
-                   <tr class="event-form-row" ng-show="!event.isOccasional">
-                       <td colspan="3"> <input type="text" ng-model="event.phone" placeholder="{{ 'PHONE' | translate }}" class=""></td>
-                       <td colspan="2"> <input type="text" ng-model="event.email" placeholder="{{ 'EMAIL' | translate }}" class=""> </td>
-                   </tr>
-                   <tr class="event-form-row" ng-show="!event.isOccasional">
-                       <td colspan="3"> <input type="text" ng-model="event.contactPerson" placeholder="{{ 'CONTACT_PERSON' | translate }}" class=""> </td>
-                       <td colspan="2"> <select><option selected>Event Type</option></select> </td>
-
-                   </tr>
-                   <tr class="event-form-row" ng-show="!event.isOccasional">
-                       <td colspan="5"> <input type="text" ng-model="event.contactComment" placeholder="{{ 'CONTACT_COMMENT' | translate }}" class=""> </td>
-                   </tr>
-                   <tr class="event-form-row" ng-show="!event.isOccasional">
-                       <td colspan="5"> <input type="text" ng-model="event.comment" placeholder="{{ 'COMMENT' | translate }}" class=""> </td>
-                   </tr>
-                   <tr class="event-form-row">
-                       <td colspan="5"> <input type="text" ng-model="event.hostess" placeholder="{{ 'HOSTESS' | translate }}" class=""> </td>
-                   </tr>
-                   <tr class="event-form-row">
-                       <td colspan="5">
-                           <button class="btn btn-default" ng-click="closeEditedEvent(event)"> {{ 'BACK' | translate }}</button>
-                           <button class="btn btn-danger"  ng-click="removeEvent(event)"> {{ 'DELETE' | translate }}</button>
-                           <button class="btn btn-success" ng-click="saveEditedEvent(event)"> {{ 'SAVE' | translate }}</button>
-                       </td>
-                   </tr>
-                   </tbody>
+                   <tbody hl-event-form event="event" ng-if="event.helpers.isEditing" ng-repeat-end=""></tbody>
 
                    <tbody ng-show="selectedFilter == 'ALL'">
                    <tr class="separator-table-row"> <td colspan="5">{{"DEAD_EVENTS" | translate }}</td> </tr>

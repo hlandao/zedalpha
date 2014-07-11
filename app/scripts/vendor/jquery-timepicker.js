@@ -214,7 +214,7 @@ if (typeof jQuery !== 'undefined') {
                     parse: function(str) { return widget.parse(i, str) ;},
                     format: function(time, format) { return widget.format(i, time, format); },
                     getTime: function() { return widget.getTime(i) ;},
-                    setTime: function(time, silent) { console.log('setTime',time);return widget.setTime(i, time, silent); },
+                    setTime: function(time, silent) { return widget.setTime(i, time, silent); },
                     option: function(name, value) { return widget.option(i, name, value); }
                 });
 
@@ -624,7 +624,6 @@ if (typeof jQuery !== 'undefined') {
         };
 
         $.fn.timepicker = function(options) {
-            console.log('options',options);
             // support calling API methods using the following syntax:
             //   $(...).timepicker('parse', '11p');
             if (typeof options === 'string') {
@@ -664,7 +663,6 @@ if (typeof jQuery !== 'undefined') {
             }
 
             var globals = $.extend({}, $.TimePicker.defaults, options);
-            console.log('globals',globals);
 
             return this.each(function() {
                 $.TimePicker.instance().register(this, globals);

@@ -1,56 +1,7 @@
-/****** Existing Event ******/
-tbody.edited-event.existing-event.top-form{
-  &.is-editing{
-    border:3px solid #8a8a8a;
-    border-bottom:0;
-    tr{
-      td{
-        input{
-          width:100%;
-          background: transparent;
-          border:0;
-          color:white;
-          outline: none;
-
-        }
-      }
-    }
-  }
-}
-
-tbody.edited-event.existing-event.bottom-form{
-
-  > tr.event-form-row{
-    color:white;
-    > td{
-      padding: 5px;
-      input{
-        width:100%;
-        background: transparent;
-        border:0;
-        color:white;
-        outline: none;
-
-      }
-    }
-    &:hover{
-      background: inherit !important;
-    }
-  }
-
-
-  &.is-editing{
-    border:3px solid #8a8a8a;
-    border-top:0;
-  }
-
-}
-
-
 /****** New Event ******/
-tbody.edited-event.new-event{
+tbody.event-form{
   background: #414141;
-  border:3px solid #8a8a8a;
+  border:3px solid #bb62ff;
   > tr.event-form-row{
     color:white;
     > td{
@@ -86,4 +37,14 @@ tbody.edited-event.new-event{
     height: 28px;
 
   }
+
+
+}
+
+.ui-timepicker-container {
+  min-width: 120px !important;
+}
+
+.ui-timepicker {
+  min-width: 114px !important;
 }

@@ -42,8 +42,8 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="(key,val) in eventsDurationForGuests | orderBy:val.guests">
-                    <td class="status"> {{val.guests}}</td>
-                    <td class="status"> {{val.duration}}</td>
+                    <td class="status"> {{key}}</td>
+                    <td class="status"> {{val}}</td>
                     <td><button class="btn btn-danger" ng-click="removeDurationForGuests(key)">Remove</button></td>
                 </tr>
                 <tr>
