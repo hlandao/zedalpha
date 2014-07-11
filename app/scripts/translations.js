@@ -64,6 +64,7 @@ zedAlphaConfigModule
         "SHIFT" : "Shift",
         "DEAD_EVENTS" : "Dead Events",
         "TO" : 'To',
+        "MIN" : 'min',
 
         // ERRORS
         "ERROR_EVENT_MSG_NAME": "Please enter the event name",
@@ -74,7 +75,6 @@ zedAlphaConfigModule
         "ERROR_EVENT_MSG_COLLISION": "A Collision with another event was detected",
 
         // WARNINGS
-
         "INVALID_GUESTS_PER_15_WARNING" : "Amount of guests per 15 minutes limit was reached!"
 
 
@@ -140,6 +140,7 @@ zedAlphaConfigModule
                 "SHIFT" : "משמרת",
                 "DEAD_EVENTS" : "ארועים שהסתיימו",
                 "TO" : 'עד',
+                "MIN" : 'דקות',
 
                 // ERRORS
                 "ERROR_EVENT_MSG_NAME": "חובה למלא את שם הארוע",

@@ -2,7 +2,7 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 
 
 zedAlphaDirectives.
-    directive('hundredPercentHeight', function(){
+    directive('hlHundredPercentHeight', function(){
        return function(scope, element, attrs){
 
            var heightVal;
@@ -12,7 +12,7 @@ zedAlphaDirectives.
                    element.height(docHeight-parseInt(heightVal) + 'px');
                }
            }
-           attrs.$observe('hundredPercentHeight', function(newVal){
+           attrs.$observe('hlHundredPercentHeight', function(newVal){
                heightVal = newVal;
                setElmHeight();
            });

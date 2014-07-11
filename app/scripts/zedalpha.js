@@ -1,7 +1,7 @@
 //'use strict';
 
 // Declare app level module which depends on filters, and services
-var angularDependencies = ['angular.css.injector', 'angularSpectrumColorpicker','ui.bootstrap','pascalprecht.translate', 'ui.router','firebase','fm.components'];
+var angularDependencies = ['angular.css.injector', 'angularSpectrumColorpicker','ui.bootstrap','pascalprecht.translate', 'ui.router','firebase'];
 var myModules = ['zedalpha.services', 'zedalpha.config', 'zedalpha.routes',  'zedalpha.controllers',
     'waitForAuth','routeSecurity', 'zedalpha.directives'];
 var zedalphaModules = [].concat(angularDependencies,myModules);
