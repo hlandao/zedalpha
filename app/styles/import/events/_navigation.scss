@@ -27,17 +27,23 @@
     }
   }
   #date-col{
-    padding-top:20px;
-    .datepicker-input{
+    padding-top:10px;
+
+    .mini-centered-row{
+      width:100%;
+    }
+    .timepicker, .datepicker-input{
       border:0;
       background: transparent;
-      font-size: 30px;
+      font-size: 25px;
       color:white;
       outline:none;
-      height: 45px;
+      height: 35px;
       display: block;
       font-weight: lighter;
       text-align: center;
+      display:block;
+      margin:0 auto;
     }
     .dropdown-menu{
       .btn.btn-sm.btn-danger{
@@ -47,18 +53,26 @@
         color:black;
       }
     }
-    .hl-clockpicker{
-      text-align: center;
-      input{
-        color:white;
-        font-size: 22px;
-        text-align: center;
-        background: transparent;
-        outline: none;
-        border: 0;
-        font-weight: lighter;
+
+    .styled-shift-select{
+      border: 0px;
+      width: 100%;
+      color: white;
+      height: 40px;
+      padding: 5px;
+      .btn-group{
+        width: 100%;
+        max-width: 200px;
+        margin: 0 auto;
+        display: block;
+        button{
+          background: transparent;
+          border: 0;
+          width: 100%;
+        }
       }
     }
+
   }
   #summary-col{
     h3.shift-heading{

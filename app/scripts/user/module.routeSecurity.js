@@ -64,14 +64,12 @@
       },
 
       _redirect: function(newState) {
-          console.log('newState',newState);
           this._state.go(newState,null,{reload:true});
       },
 
       // A function to check whether the current path requires authentication,
       // and if so, whether a redirect to a login page is needed.
       _authRequiredRedirect: function(e, toState, toParams, fromState, fromParams, _loginPath) {
-          console.log('toState.authRequired',toState.authRequired,'this._authenticated',this._authenticated,'toState.name',toState.name);
           if(toState.abstract) return;
          if (toState.authRequired && !this._authenticated){
             if (toState.name === undefined) {

@@ -9,12 +9,15 @@ zedAlphaDirectives
             var EVENT_TIME_FRAME_IN_MINUTES = 120;
 
             var currentDateMoment = moment(DateHolder.current);
+            currentDateMoment.seconds(0);
             var filteredEventsArr = [];
 
             angular.forEach(events, function(event, key){
                 if(!event || key == '$id' || typeof event == "function") return;
-                var startTimeMoment = moment(event.startTime);
-                var endTimeMoment = moment(event.endTime);
+                var startTimeMoment = moment(event.startTime).seconds(0);
+                startTimeMoment.seconds(0);
+                var endTimeMoment = moment(event.endTime).seconds(0);
+                endTimeMoment.seconds(0);
                 var startTimeDiffInMinutes =  startTimeMoment.diff(currentDateMoment, 'minutes');
                 var endTimeDiffInMinutes =  endTimeMoment.diff(currentDateMoment, 'minutes');
                 var isStartingAfterCurrentDate = startTimeDiffInMinutes > 0;

@@ -84,17 +84,18 @@ zedAlphaServices
         };
 
         var fetchShiftWithDate = function(date){
-            console.log('fetchShiftWithDate',date);
             $shiftsDays = $shiftsDays || BusinessHolder.$business.$child('shifts').$child('days');
             var dateMoment = moment(date);
             if(dateMoment){
                 var dayOfYear = dateMoment.dayOfYear();
+                console.log('dayOfYear',dayOfYear);
                 $shiftsDays.$child(''+dayOfYear+'').$getRef().once('value', function(snapshot){
                     var val = snapshot.val();
-                    console.log('val',val);
                     if(val){
+                        console.log(1);
                         _shift.current = new ShiftDay(null, val);
                     }else{
+                        console.log(2);
                         _shift.current = BasicShift.basicShiftForDayOfWeek(date);
                     }
                     console.log('_shift.current',_shift.current);
@@ -116,7 +117,6 @@ zedAlphaServices
             basicShiftForDayOfWeek : function(date){
 
                 var dayOfWeek = moment(date).day();
-                console.log('basicShiftForDayOfWeek',dayOfWeek);
                 var output = new BasicShiftDay(null, $basic[dayOfWeek], date);
                 return output;
             }

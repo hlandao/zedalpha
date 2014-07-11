@@ -8,12 +8,12 @@ zedAlphaServices
         var now = moment(), newDate;
 
         if(now.hour() < 6){
-            newDate = new Date(now.subtract('days',1).hour(23).minute(0));
+            newDate = new Date(now.subtract('days',1).hour(23).minute(0).seconds(0));
         }else{
             newDate = new Date();
         }
 
-        newDate = new Date(moment(newDate).minute(DateHelpers.findClosestIntervalToDate(newDate)));
+        newDate = new Date(moment(newDate).minute(DateHelpers.findClosestIntervalToDate(newDate)).seconds(0));
 
         _date.current = newDate;
 
