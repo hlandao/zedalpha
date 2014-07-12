@@ -72,8 +72,32 @@ zedAlphaControllers
 
 
         $scope.eventStatusChanged = function(event){
-//            $scope.saveEditedEvent(event);
+            $scope.saveEvent(event);
         };
+
+        $scope.saveEvent = function(eventToSave, withWarnings){
+            var isInvalid = EventsLogic.isInvalidEventBeforeSave(eventToSave);
+            if(isInvalid && isInvalid.error){
+                var localizedError = $filter('translate')(isInvalid.error);
+                console.error('error',isInvalid.error);
+                alert(localizedError);
+            }else if(withWarnings && isInvalid && isInvalid.warning){
+                var modal = areYouSureModalFactory(null, 'INVALID_GUESTS_PER_15_WARNING');
+                modal.result.then(function () {
+                    saveAfterValidation(eventToSave);
+                }, function () {
+                });
+            }else{
+                saveAfterValidation(eventToSave);
+            }
+        };
+
+        var saveAfterValidation = function(eventToSave){
+            if(eventToSave.$id){
+                var $event = EventsHolder.$allEvents.$child(eventToSave.$id);
+                $event.$set(eventToSave);
+            }
+        }
 
 
         $scope.filters = ['ALL','SEATED','ORDERED','OCCASIONAL'];

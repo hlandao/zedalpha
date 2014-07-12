@@ -87,17 +87,13 @@ zedAlphaServices
             var dateMoment = moment(date);
             if(dateMoment){
                 var dayOfYear = dateMoment.dayOfYear();
-                console.log('dayOfYear',dayOfYear);
                 $shiftsDays.$child(''+dayOfYear+'').$getRef().once('value', function(snapshot){
                     var val = snapshot.val();
                     if(val){
-                        console.log(1);
                         _shift.current = new ShiftDay(null, val);
                     }else{
-                        console.log(2);
                         _shift.current = BasicShift.basicShiftForDayOfWeek(date);
                     }
-                    console.log('_shift.current',_shift.current);
                     selectDefaultShiftForShiftDay(_shift.current);
                 });
 

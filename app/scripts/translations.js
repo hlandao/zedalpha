@@ -135,10 +135,10 @@ zedAlphaConfigModule
                 "ADD_BUTTON_LABEL":"חדש",
                 "evening" : "ערב",
                 "morning" : "בוקר",
-                "noon" : "אחה\״צ",
+                "noon" : "צהריים",
                 "evening_SHIFT" : "משמרת ערב",
                 "morning_SHIFT" : "משמרת בוקר",
-                "noon_SHIFT" : "משמרת אחה\"צ",
+                "noon_SHIFT" : "משמרת צהריים",
                 "ENTIRE_DAY" : "כל היום",
                 "ENTIRE_DAY_SHIFT" : "כל היום",
 

@@ -1,6 +1,6 @@
 var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directives', []);
 
-
+var _e;
 zedAlphaDirectives
 
     .directive('hlTimepicker', ['$timeout','DateHelpers','FullDateFormat','$rootScope','$parse', function ($timeout,DateHelpers,FullDateFormat,$rootScope,$parse) {
@@ -13,10 +13,11 @@ zedAlphaDirectives
             templateUrl: '/partials/directives/timepicker-directive.html',
             link : function(scope, element, attrs, ctrls) {
                 var ngModel = ctrls[0];
-                var ngModelWatcher, initialized = false;
+                var initialized = false;
                 var minHour = 0, maxHour = 23;
 
                 var init = function(modelValue){
+                    _e = element;
                     element.timepicker({
                         timeFormat : 'HH:mm',
                         interval : 15,
@@ -24,7 +25,6 @@ zedAlphaDirectives
                         minHour : minHour,
                         maxHour : maxHour,
                         change : function(time){
-                            console.log('changed');
                             if(!initialized){
                                 return initialized = true;
                             }
@@ -33,8 +33,9 @@ zedAlphaDirectives
                             });
                         }
                     });
+
+
                     if(modelValue){
-                        console.log('here');
                         var defaultTime = moment(ngModel.$modelValue).format("HH:mm");
                         element.timepicker('setTime',defaultTime);
                     }
@@ -54,23 +55,19 @@ zedAlphaDirectives
                     scope.$parent.$watch($parse(attrs.maxHour), function(value) {
                         var theDate = moment(value);
                         maxHour = (theDate) ?theDate.hour() : maxHour;
-                        element.timepicker('option','minHour', minHour);
+                        element.timepicker('option','maxHour', maxHour);
                     });
                 }
 
 
 
                 ngModel.$formatters.push(function(modelValue){
-                    console.log('formatters',modelValue);
                     return moment(modelValue).format("HH:mm");
                 });
 
 
                 ngModel.$render = function(){
-                    console.log('ngModel.$render',ngModel.$viewValue,initialized);
-//                    if(initialized){
-                        element.timepicker('setTime', ngModel.$viewValue);
-//                    }
+                    element.timepicker('setTime', ngModel.$viewValue)
                 };
 
 
