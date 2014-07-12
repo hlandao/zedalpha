@@ -3,7 +3,7 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 
 zedAlphaDirectives
 
-    .directive('hlTimepicker', ['$timeout','DateHelpers','FullDateFormat','$rootScope', function ($timeout,DateHelpers,FullDateFormat,$rootScope) {
+    .directive('hlTimepicker', ['$timeout','DateHelpers','FullDateFormat','$rootScope','$parse', function ($timeout,DateHelpers,FullDateFormat,$rootScope,$parse) {
 
         return {
             restrict: 'E',
@@ -12,43 +12,65 @@ zedAlphaDirectives
             scope : {},
             templateUrl: '/partials/directives/timepicker-directive.html',
             link : function(scope, element, attrs, ctrls) {
-                var ngModel = ctrls[0], ngModelWatcher, initialized = false;
+                var ngModel = ctrls[0];
+                var ngModelWatcher, initialized = false;
+                var minHour = 0, maxHour = 23;
 
-                ngModelWatcher = scope.$watch(function(){
-                    return ngModel.$modelValue;
-                }, function(newVal){
-                    if(!newVal) return;
-                   var theDate = angular.isDate(newVal) ? newVal : new Date(newVal);
-
-                   if(theDate && angular.isDate(theDate)){
-                       ngModelWatcher();
-                       var defaultTime = moment(ngModel.$modelValue).format("HH:mm");
-                       element.timepicker({
-                           timeFormat : 'HH:mm',
-                           interval : 15,
-                           dynamic : false,
-                           change : function(time){
-                               if(!initialized){
+                var init = function(modelValue){
+                    element.timepicker({
+                        timeFormat : 'HH:mm',
+                        interval : 15,
+                        dynamic : false,
+                        minHour : minHour,
+                        maxHour : maxHour,
+                        change : function(time){
+                            console.log('changed');
+                            if(!initialized){
                                 return initialized = true;
-                               }
-                               $rootScope.safeApply(function(){
-                                   ngModel.$setViewValue(time);
-                               });
-                           }
-                       });
-                       element.timepicker('setTime',defaultTime);
-                   }
-                });
+                            }
+                            $rootScope.safeApply(function(){
+                                ngModel.$setViewValue(time);
+                            });
+                        }
+                    });
+                    if(modelValue){
+                        console.log('here');
+                        var defaultTime = moment(ngModel.$modelValue).format("HH:mm");
+                        element.timepicker('setTime',defaultTime);
+                    }
+                };
+                init(ngModel.$modelValue);
+
+
+                if (attrs.minHour) {
+                    scope.$parent.$watch($parse(attrs.minHour), function(value) {
+                        var theDate = moment(value);
+                        minHour = theDate ? theDate.hour() : minHour;
+                        element.timepicker('option','minHour', minHour);
+                    });
+                }
+
+                if (attrs.maxHour) {
+                    scope.$parent.$watch($parse(attrs.maxHour), function(value) {
+                        var theDate = moment(value);
+                        maxHour = (theDate) ?theDate.hour() : maxHour;
+                        element.timepicker('option','minHour', minHour);
+                    });
+                }
+
+
 
                 ngModel.$formatters.push(function(modelValue){
+                    console.log('formatters',modelValue);
                     return moment(modelValue).format("HH:mm");
                 });
 
 
                 ngModel.$render = function(){
-                    if(initialized){
+                    console.log('ngModel.$render',ngModel.$viewValue,initialized);
+//                    if(initialized){
                         element.timepicker('setTime', ngModel.$viewValue);
-                    }
+//                    }
                 };
 
 
