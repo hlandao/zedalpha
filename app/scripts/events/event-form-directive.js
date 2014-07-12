@@ -10,7 +10,7 @@ zedAlphaDirectives
             scope : {
               event : "="
             },
-            templateUrl : 'partials/events/event-form-directive.html',
+            templateUrl : '/partials/events/event-form-directive.html',
             controller : function($scope){
                var justRevertedWhileEditing,
                    eventWatcher,

@@ -14,6 +14,7 @@
                             {{ShiftsDayHolder.selected.name | translate}} <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
+                            <li ng-click="selectAllDayShift()"><a href="#" dropdown-toggle>{{ 'ENTIRE_DAY_SHIFT' | translate}}</a></li>
                             <li ng-repeat="shift in ShiftsDayHolder.current.shifts | activeShift" ng-click="ShiftsDayHolder.selected = shift"><a href="#" dropdown-toggle>{{shift.name | translate}}</a></li>
                         </ul>
                     </div>

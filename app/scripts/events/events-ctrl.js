@@ -4,7 +4,7 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic,TimelyFilteredEvents, ShiftsDayHolder, Localizer, $filter, DateHelpers, areYouSureModalFactory){
+    .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic,TimelyFilteredEvents, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift){
         Localizer.setLocale('he');
 
         var OccasionalEvent = _.findWhere(EventsStatusesHolder, {status : 'OCCASIONAL'}),
@@ -58,8 +58,6 @@ zedAlphaControllers
         });
 
 
-
-
         // --------- Edit event ----------- //
         $scope.openEditedEvent = function (event){
             if($scope.editedEvent == event){
@@ -84,6 +82,10 @@ zedAlphaControllers
         $scope.selectFilter = function(filter){
             $scope.selectedFilter = filter;
         };
+
+        $scope.selectAllDayShift = function(){
+            ShiftsDayHolder.selected = AllDayShift();
+        }
 
 
         $scope.events = {};
