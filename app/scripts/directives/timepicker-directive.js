@@ -26,7 +26,6 @@ zedAlphaDirectives
                         minHour : minHour,
                         maxHour : maxHour,
                         change : function(time){
-                            console.log('changed',time);
                             if(!initialized){
                                 return initialized = true;
                             }

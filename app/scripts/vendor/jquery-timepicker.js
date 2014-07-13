@@ -114,7 +114,6 @@ if (typeof jQuery !== 'undefined') {
                 end = new Date(time.getTime() + 24 * 60 * 60 * 1000);
 
                 var staticOptions = i.options && i.options.staticOptions;
-                console.log('staticOptions',staticOptions);
                 if(staticOptions){
                     var staticOption;
                     for(var l = 0 ; l < staticOptions.length ; ++l){
@@ -457,7 +456,6 @@ if (typeof jQuery !== 'undefined') {
                 // try to match input field's current value with an item in the
                 // dropdown
                 if (selectedTime) {
-                    console.log('selectedTime',selectedTime);
                     i.items.each(function() {
                         var item = $(this), time, staticVal;
 
@@ -554,7 +552,6 @@ if (typeof jQuery !== 'undefined') {
             },
 
             setTime: function(i, time, silent, isStaticVal) {
-                console.log('i, time, silent',i, time, silent);
                 var widget = this, previous = i.selectedTime;
 
                 if(isStaticVal){

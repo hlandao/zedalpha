@@ -94,6 +94,7 @@ zedAlphaServices
                     }else{
                         _shift.current = BasicShift.basicShiftForDayOfWeek(date);
                     }
+                    console.log('_shift.current',_shift.current);
                     selectDefaultShiftForShiftDay(_shift.current);
                 });
 
