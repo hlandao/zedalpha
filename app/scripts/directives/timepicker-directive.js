@@ -14,7 +14,8 @@ zedAlphaDirectives
             link : function(scope, element, attrs, ctrls) {
                 var ngModel = ctrls[0];
                 var initialized = false;
-                var minHour = 0, maxHour = 23;
+                var minHour = 0, maxHour = 23,
+                    staticCallback;
 
                 var init = function(modelValue){
                     _e = element;
@@ -25,12 +26,21 @@ zedAlphaDirectives
                         minHour : minHour,
                         maxHour : maxHour,
                         change : function(time){
+                            console.log('changed',time);
                             if(!initialized){
                                 return initialized = true;
                             }
-                            $rootScope.safeApply(function(){
-                                ngModel.$setViewValue(time);
-                            });
+                            if(angular.isDate(time)){
+                                $rootScope.safeApply(function(){
+                                    ngModel.$setViewValue(time);
+                                    staticCallback && staticCallback();
+                                });
+                            }else{
+                                $rootScope.safeApply(function(){
+                                    staticCallback && staticCallback(time);
+                                });
+                            }
+
                         }
                     });
 
@@ -59,7 +69,17 @@ zedAlphaDirectives
                     });
                 }
 
+                if (attrs.staticOptions) {
+                    scope.$parent.$watch($parse(attrs.staticOptions), function(value) {
+                        element.timepicker('option','staticOptions', value);
+                    });
+                }
 
+                if (attrs.staticCallback) {
+                    scope.$parent.$watch($parse(attrs.staticCallback), function(value) {
+                        staticCallback = value;
+                    });
+                }
 
                 ngModel.$formatters.push(function(modelValue){
                     return moment(modelValue).format("HH:mm");

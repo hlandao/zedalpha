@@ -19,7 +19,7 @@
                         </ul>
                     </div>
                 </div>
-                <hl-timepicker ng-model="DateHolder.current"  ng-hide="DateHolder.isEntireShift" min-hour="ShiftsDayHolder.selected.startTime" max-hour="ShiftsDayHolder.selected.endTime"></hl-timepicker>
+                <hl-timepicker ng-model="DateHolder.current" static-callback="dateHolderStaticCallback" static-options="timepickerStaticOptions" min-hour="ShiftsDayHolder.selected.startTime" max-hour="ShiftsDayHolder.selected.endTime"></hl-timepicker>
             </div>
             <div class="mini-centered-row">
             </div>

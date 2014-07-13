@@ -113,6 +113,18 @@ if (typeof jQuery !== 'undefined') {
 
                 end = new Date(time.getTime() + 24 * 60 * 60 * 1000);
 
+                var staticOptions = i.options && i.options.staticOptions;
+                console.log('staticOptions',staticOptions);
+                if(staticOptions){
+                    var staticOption;
+                    for(var l = 0 ; l < staticOptions.length ; ++l){
+                        staticOption = staticOptions[l];
+                        item = $('<li>').addClass('ui-menu-item').appendTo(ul);
+                        $('<a>').addClass('ui-corner-all').text(staticOption.label).appendTo(item);
+                        item.data('static-value', staticOption.value);
+
+                    }
+                }
                 while(time < end) {
                     if (widget._isValidTime(i, time)) {
                         item = $('<li>').addClass('ui-menu-item').appendTo(ul);
@@ -255,7 +267,11 @@ if (typeof jQuery !== 'undefined') {
             select: function(i, item) {
                 var widget = this, instance = i === false ? widget.instance : i;
                 clearTimeout(widget.closing);
-                widget.setTime(instance, $.fn.timepicker.parseTime(item.children('a').text()));
+                if(item.data('time-value')){
+                    widget.setTime(instance, $.fn.timepicker.parseTime(item.children('a').text()));
+                }else if(item.data('static-value')){
+                    widget.setTime(instance, item.data('static-value'),null, true);
+                }
                 widget.close(instance, true);
             },
 
@@ -441,8 +457,9 @@ if (typeof jQuery !== 'undefined') {
                 // try to match input field's current value with an item in the
                 // dropdown
                 if (selectedTime) {
+                    console.log('selectedTime',selectedTime);
                     i.items.each(function() {
-                        var item = $(this), time;
+                        var item = $(this), time, staticVal;
 
                         if ($.fn.jquery < '1.4.2') {
                             time = $.fn.timepicker.parseTime(item.find('a').text());
@@ -450,7 +467,15 @@ if (typeof jQuery !== 'undefined') {
                             time = item.data('time-value');
                         }
 
-                        if (time.getTime() === selectedTime.getTime()) {
+                        if(!time){
+                            staticVal = item.data('static-value');
+                        }
+
+
+                        if (time && time.getTime() === selectedTime.getTime()) {
+                            widget.activate(i, item);
+                            return false;
+                        }else if (staticVal &&  staticVal === selectedTime){
                             widget.activate(i, item);
                             return false;
                         }
@@ -528,8 +553,23 @@ if (typeof jQuery !== 'undefined') {
                 }
             },
 
-            setTime: function(i, time, silent) {
+            setTime: function(i, time, silent, isStaticVal) {
+                console.log('i, time, silent',i, time, silent);
                 var widget = this, previous = i.selectedTime;
+
+                if(isStaticVal){
+                    i.selectedTime = time;
+                    i.element.val(time);
+
+                    if (previous !== null || i.selectedTime !== null) {
+                        i.element.trigger('time-change', [time]);
+                        if ($.isFunction(i.options.change)) {
+                            i.options.change.apply(i.element, [time]);
+                        }
+                    }
+
+                    return i.element;
+                }
 
                 if (typeof time === 'string') {
                     time = i.parse(time);
