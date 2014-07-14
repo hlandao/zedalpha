@@ -43,7 +43,6 @@ zedAlphaServices
         ShiftsWeek.prototype.saveAllDays = function(){
 //            var defer = $q.defer();
 //            defer.resolve();
-            console.log('saveAllDays');
 //            return defer.promise;
 
             var day,
@@ -51,7 +50,7 @@ zedAlphaServices
 
             for (var i = 0; i < this.days.length; ++i){
                 day = this.days[i];
-                if(day.enableCustom || day.basic){
+                if(day.enableCustom || day.shifts.basic){
                     if(day.save) promises.push(day.save());
                 }else{
                     if(day.remove) promises.push(day.remove());
@@ -119,6 +118,14 @@ zedAlphaServices
             this.shifts.shifts = [];
             for(var i in ShiftsNames){
                 this.shifts.shifts[i] = Shift.defaultShiftForShiftIndex(i, null, true);
+            }
+        }
+
+        ShiftDay.prototype.wasChanged = function(){
+            if(this.enableCustom){
+                return this.save();
+            }else{
+                return this.remove();
             }
         }
 
@@ -200,6 +207,11 @@ zedAlphaServices
                 this.shifts.shifts[i] = Shift.defaultShiftForShiftIndex(i, null, true);
             }
         }
+
+        BasicShiftDay.prototype.wasChanged = function(){
+            return this.save();
+        }
+
 
         return BasicShiftDay;
     })

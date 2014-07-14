@@ -18,21 +18,26 @@ zedAlphaDirectives
 
                 var getShiftWeekWithNumber = function(weekNumber){
                     $scope.week = new ShiftsWeek(weekNumber);
-                    if(angular.isFunction(watcher)) watcher();
-                    firstWeekWatch = false;
-                    watcher = $scope.$watch('week', function(newVal, oldVal){
-                        if(!oldVal) return;
-                        if(firstWeekWatch){
-                            $scope.week.saveAllDays().then(function(){
-                                $scope.msg.setMsg("Changes Saved")
+//                    if(angular.isFunction(watcher)) watcher();
+//                    firstWeekWatch = false;
+//                    watcher = $scope.$watch('week', function(newVal, oldVal){
+//                        console.log('oldVal',oldVal);
+//                        if(!oldVal) return;
+//                        if(firstWeekWatch){
+//                            $scope.week.saveAllDays().then(function(){
+//                                $scope.msg.setMsg("Changes Saved")
+//                            });
+//                        }else{
+//                            firstWeekWatch = true;
+//                        }
+//                    }, true);
+                };
+
+                $scope.dayWasChanged = function(day){
+                    if(day.wasChanged) day.wasChanged().then(function(){
+                                $scope.msg.setMsg("Changes were Saved")
                             });
-                        }else{
-                            firstWeekWatch = true;
-                        }
-                    }, true);
                 }
-
-
             },
             require : 'shiftsEditor',
             scope :{
