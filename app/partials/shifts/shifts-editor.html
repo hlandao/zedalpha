@@ -5,14 +5,19 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-4 col-sx-6 day" ng-repeat="day in week.days">
+        <div class="col-lg-6 col-lg-offset-3 day" ng-repeat="day in week.days">
             <div class="panel panel-default">
-                <div class="panel-heading"><input type="checkbox" ng-model="day.shifts.active">
+                <div class="panel-heading">
                     <span ng-show="!day.shifts.basic"> {{day.shifts.date | date : 'EEEE dd/MM/yyyy'}} </span>
                     <span ng-show="day.shifts.basic"> {{day.shifts.date | date : 'EEEE'}} </span>
+                    <span class="pull-right" ng-show="!day.shifts.basic">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-model="day.enableCustom"> Enable Custom
+                        </label>
+                    </span>
                 </div>
                 <div class="panel-body">
-                    <div class="row shift" ng-repeat="shift in day.shifts.shifts" ng-show="day.shifts.active">
+                    <div class="row shift" ng-repeat="shift in day.shifts.shifts">
                         <div class="col-xs-12">
                             <div class="row">
                                 <div class="col-xs-4 shiftlabel"><input type="checkbox" ng-model="shift.active"> {{shift.name}}</div>

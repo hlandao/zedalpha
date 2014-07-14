@@ -41,12 +41,21 @@ zedAlphaServices
         }
 
         ShiftsWeek.prototype.saveAllDays = function(){
+//            var defer = $q.defer();
+//            defer.resolve();
+            console.log('saveAllDays');
+//            return defer.promise;
+
             var day,
                 promises = [];
 
             for (var i = 0; i < this.days.length; ++i){
                 day = this.days[i];
-                if(day.save) promises.push(day.save());
+                if(day.enableCustom || day.basic){
+                    if(day.save) promises.push(day.save());
+                }else{
+                    if(day.remove) promises.push(day.remove());
+                }
             }
 
             return $q.all(promises);
@@ -78,8 +87,9 @@ zedAlphaServices
         }
 
         ShiftDay.prototype.save = function(){
+            console.log('save!');
             var defer = $q.defer();
-            if(!this.shifts){
+            if(!this.shifts || (!this.enableCustom && !this.basic)){
                 defer.reject();
                 return defer.promise;
             }
@@ -93,11 +103,19 @@ zedAlphaServices
             return defer.promise;
         }
 
+        ShiftDay.prototype.remove = function(){
+            var ref = this.shifts.$getRef();
+            this.shifts.$off();
+            ref.remove();
+            var defer = $q.defer();
+            defer.resolve();
+            return defer.promise;
+        }
+
+
 
         ShiftDay.prototype.generateDefaultShifts = function(){
             this.shifts.date = this.date;
-            this.shifts.active = true;
-            this.shifts.setByUser = false;
             this.shifts.shifts = [];
             for(var i in ShiftsNames){
                 this.shifts.shifts[i] = Shift.defaultShiftForShiftIndex(i, null, true);
@@ -176,9 +194,7 @@ zedAlphaServices
         BasicShiftDay.prototype.generateDefaultShifts = function(){
 
             this.shifts.date = this.date;
-            this.shifts.active = true;
             this.shifts.basic = true;
-            this.shifts.setByUser = false;
             this.shifts.shifts = [];
             for(var i in ShiftsNames){
                 this.shifts.shifts[i] = Shift.defaultShiftForShiftIndex(i, null, true);

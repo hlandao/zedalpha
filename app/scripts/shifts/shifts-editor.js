@@ -7,7 +7,7 @@ zedAlphaDirectives
             restrict: 'E',
             templateUrl : '/partials/shifts/shifts-editor.html',
             controller : function($scope, BusinessHolder, ShiftsWeek, Alert){
-                var daysArray, weekDateMoment, watcher, firstWeekWatch = false;
+                var watcher, firstWeekWatch = false;
                 $scope.msg = new Alert(3000);
 
                 this.render = function(businessId, weekNumber){
