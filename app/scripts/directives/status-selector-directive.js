@@ -19,6 +19,8 @@ zedAlphaDirectives
                 e.stopPropagation();
                 $scope.showSelector = !$scope.showSelector
             }
+
+
             $scope.selectStatus = function(selectedStatus, e){
                 e.preventDefault();
                 e.stopPropagation();
@@ -31,6 +33,8 @@ zedAlphaDirectives
             };
 
             $scope.EventsStatusesHolder = EventsStatusesHolder;
+
+
         }
     })
     .directive('hlStatusSelector', ['$timeout', function ($timeout) {
@@ -52,6 +56,10 @@ zedAlphaDirectives
                 if ( ngModel ) {
                     ctrl.init( ngModel);
                 }
+
+                scope.$on('closeAllOpenControls', function(){
+                    scope.showSelector = false;
+                });
             }
         };
     }]);

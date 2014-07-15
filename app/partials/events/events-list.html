@@ -35,7 +35,7 @@
                    </thead>
                     <tbody hl-event-form event="newEvent" ng-if="newEvent"></tbody>
 
-                   <tbody class="edited-event existing-event top-form" ng-show="!event.helpers.isEditing" ng-repeat-start="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter))">
+                   <tbody class="edited-event existing-event top-form" ng-show="!event.helpers.isEditing" ng-repeat-start="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter | orderBy : 'startTime'))">
                        <tr  class="events-table-row" ng-click="openEditedEvent(event)">
                            <td class="status-col"> <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event, $event)"></hl-status-selector> </td>
                            <td class="name-col">
@@ -51,20 +51,35 @@
                            <td class="time-col"> {{event.startTime | date : 'HH:mm'}} </td>
                        </tr>
                    </tbody>
-                   <tbody hl-event-form event="event" ng-if="event.helpers.isEditing" ng-repeat-end=""></tbody>
+                   <tbody hl-event-form event="event" ng-if="event.helpers.isEditing"></tbody>
+                   <tbody ng-repeat-end="">
+                        <tr ng-if="$last" class="events-table-row">
+                            <td colspan="2">{{'TOTAL_EVENTS' | translate}} : {{$index + 1}}</td>
+                            <td colspan="1"></td>
+                            <td colspan="2">{{'TOTAL_GUESTS' | translate}} : {{countTotalGuestsForFilteredEvents()}}</td>
+                        </tr>
+                   </tbody>
 
-                   <tbody ng-show="selectedFilter == 'ALL'">
-                   <tr class="separator-table-row"> <td colspan="5">{{"DEAD_EVENTS" | translate }}</td> </tr>
-                   <tr ng-repeat="event in TimelyFilteredEvents.filteredEvents | statusesFilter:'DEAD'" class="events-table-row">
-                       <td class="status-col"> <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector> </td>
-                       <td class="name-col">{{event.name}}</td>
+
+                   <tr class="separator-table-row" ng-if="selectedFilter == 'ALL'"> <td colspan="5">{{"DEAD_EVENTS" | translate }}</td> </tr>
+
+                   <tbody class="edited-event existing-event top-form" ng-if="selectedFilter == 'ALL'" ng-show="!event.helpers.isEditing" ng-repeat-start="event in TimelyFilteredEvents.filteredEvents | statusesFilter:'DEAD'">
+                   <tr  class="events-table-row" ng-click="openEditedEvent(event)">
+                       <td class="status-col"> <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event, $event)"></hl-status-selector> </td>
+                       <td class="name-col">
+                           <span ng-show="!event.helpers.isEditing"> {{event.name}} </span>
+                           <span ng-show="event.helpers.isEditing"> <input type="text" ng-model="event.name" placeholder="{{ 'NAME' | translate }}" class="">  </span>
+                       </td>
                        <td class="guests-col">
-                           {{event.guests}}
+                           <span ng-show="!event.helpers.isEditing"> {{event.guests}} </span>
+                           <span ng-show="event.helpers.isEditing"> <input type="text" ng-model="event.guests" placeholder="0" class="">  </span>
+
                        </td>
                        <td class="seats-col"> {{event.seats | seats}} </td>
                        <td class="time-col"> {{event.startTime | date : 'HH:mm'}} </td>
                    </tr>
                    </tbody>
+                   <tbody hl-event-form event="event" ng-if="event.helpers.isEditing" ng-repeat-end=""></tbody>
 
 
                </table>

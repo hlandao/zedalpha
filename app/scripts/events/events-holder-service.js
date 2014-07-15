@@ -19,7 +19,7 @@ zedAlphaServices
 
         return $events;
 
-    }).factory('EventsLogic', function(EventsHolder, BusinessHolder, EventsDurationForGuestsHolder, FullDateFormat,GuestsPer15, $q, ShiftsDayHolder){
+    }).factory('EventsLogic', function(EventsHolder, BusinessHolder, EventsDurationForGuestsHolder, FullDateFormat,GuestsPer15, $q, ShiftsDayHolder, DateHelpers){
         var DEFAULT_EVENT_DURATION = EventsDurationForGuestsHolder.default || 120;
         var checkCollisionsForEvent = function(event){
             var eventToCheck, sharedSeats;
@@ -109,33 +109,7 @@ zedAlphaServices
         };
 
         var isInvalidEventBeforeSave = function(event){
-            // Event has no name
-//            if(!event.name){
-//                return {error : "ERROR_EVENT_MSG_NAME"};
-//            // Event has no seat or it is an occasional one and the business type is Bar
-//            } else if(isEventWithNoSeats(event) && (BusinessHolder.businessType != 'Bar' || !event.isOccasional)){
-//                return {error : "ERROR_EVENT_MSG_SEATS"};
-//            // Event has no host or it is an occasional one and the business type is Bar
-//            } else if(!event.host && (BusinessHolder.businessType != 'Bar' || !event.isOccasional)){
-//                return {error : "ERROR_EVENT_MSG_HOST"};
-//            // Event has no phone and it isn't occasional
-//            }else if(!event.isOccasional && !event.phone){
-//                return {error : "ERROR_EVENT_MSG_PHONE"};
-//            // Event has no start time
-//            }else if(!event.startTime){
-//                return {error : "ERROR_EVENT_MSG_STARTTIME"};
-//            // Event has no end time
-//            }else if(!event.endTime){
-//                return {error : "ERROR_EVENT_MSG_ENDTIME"};
-//            }else if(checkCollisionsForEvent(event)){
-//                return {error : "ERROR_EVENT_MSG_COLLISION"};
-//            }else if(!isGuestsPer15Valid(event)){
-//                return {warning : "INVALID_GUESTS_PER_15_WARNING"};
-//            }
-
-            return checkName(event).then(checkSeats).then(checkHost).then(checkPhone).then(checkStartTime).then(checkEndTime).then(checkCollision).then(checkGuestsPer15).then(checkEventWithinShifts);
-
-
+            return checkName(event).then(checkSeats).then(checkHost).then(checkPhone).then(checkStartTime).then(checkEndTime).then(checkCollision).then(checkEventWarnings);
         };
 
         var checkName = function(event){
@@ -162,7 +136,7 @@ zedAlphaServices
 
         var checkHost = function(event){
             var defer = $q.defer();
-            if(!event.hostess && (BusinessHolder.businessType != 'Bar' || !event.isOccasional)){
+            if(!event.hostess && BusinessHolder.businessType != 'Bar' && !event.isOccasional){
                 defer.reject({error : "ERROR_EVENT_MSG_HOST"});
             }else{
                 defer.resolve(event);
@@ -217,12 +191,25 @@ zedAlphaServices
         }
 
 
+        var checkEventWarnings = function(event){
+            var warnings = {warnings : []};
+            var promises = [checkGuestsPer15(event), checkEventWithinShifts(event)];
+
+            return $q.all(promises).then(function(result){
+                for (var i =0; i < result.length; ++i){
+                    if(result[i]) warnings.warnings.push(result[i]);
+                }
+                return warnings;
+            });
+        };
+
+
         var checkGuestsPer15 = function(event){
             var defer = $q.defer();
             if(!isGuestsPer15Valid(event)){
-                defer.reject({warning : "INVALID_GUESTS_PER_15_WARNING"});
+                defer.resolve({warning : "INVALID_GUESTS_PER_15_WARNING"});
             }else{
-                defer.resolve(event);
+                defer.resolve();
             }
             return defer.promise;
         }
@@ -233,9 +220,9 @@ zedAlphaServices
 
             isEventWithinTodayShifts(event).then(function(result){
                 if(result){
-                    defer.resolve(event);
+                    defer.resolve();
                 }else{
-                    defer.reject({warning : "WARNING_OUT_OF_SHIFTS"});
+                    defer.resolve({warning : "WARNING_OUT_OF_SHIFTS"});
                 }
             });
 
@@ -290,7 +277,7 @@ zedAlphaServices
 
         var isGuestsPer15Valid = function(event){
             var guestPer15Value = parseInt(GuestsPer15.$value);
-            if(!guestPer15Value || guestPer15Value === 0) return true;
+            if(!guestPer15Value || guestPer15Value === 0 || !event.guests) return true;
             if(!event || !event.startTime) return false;
             var startTimeMoment = moment(event.startTime);
             var guestsCount = _.reduce(EventsHolder.$allEvents, function(guestsCount, _event, key){
@@ -310,13 +297,21 @@ zedAlphaServices
         };
 
 
+        var startTimeAccordingToTimeInterval = function(event){
+            var startTimeMoment = moment(startTime);
+            var minutes = DateHelpers.findClosestIntervalToDate(startTime);
+            startTimeMoment.minutes(minutes);
+            return new Date(startTimeMoment.format(FullDateFormat));
+        }
+
         return {
             isInvalidEventBeforeSave : isInvalidEventBeforeSave,
             isInvalidEventWhileEdit : isInvalidEventWhileEdit,
             checkCollisionsForEvent : checkCollisionsForEvent,
             endTimeForNewEventWithStartTimeAndMaxDuration : endTimeForNewEventWithStartTimeAndMaxDuration,
             maxDurationForEventInMinutes : maxDurationForEventInMinutes,
-            isGuestsPer15Valid : isGuestsPer15Valid
+            isGuestsPer15Valid : isGuestsPer15Valid,
+            startTimeAccordingToTimeInterval : startTimeAccordingToTimeInterval
         }
 
     });

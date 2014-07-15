@@ -2,7 +2,7 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 
 
 zedAlphaDirectives
-    .directive('hlEventForm', function(EventsLogic,areYouSureModalFactory, $filter, EventsHolder,EventsDurationForGuestsHolder, FullDateFormat) {
+    .directive('hlEventForm', function(EventsLogic,areYouSureModalFactory, $filter, EventsHolder,EventsDurationForGuestsHolder, FullDateFormat, $q) {
         return {
             restrict: 'A',
             replace : true,
@@ -39,22 +39,26 @@ zedAlphaDirectives
                 $scope.save = function(eventToSave){
                     var isInvalidPromise = EventsLogic.isInvalidEventBeforeSave(eventToSave);
                     console.log('isInvalidPromise',isInvalidPromise);
-                    isInvalidPromise.then(function(){
-                        saveAfterValidation(eventToSave);
+                    isInvalidPromise.then(function(output){
+                        if(output && output.warnings && output.warnings.length){
+                            var promises = [];
+                            for (var i = 0; i < output.warnings.length; ++i){
+                                promises.push(areYouSureModalFactory(null, output.warnings[i].warning));
+                            }
+                            $q.all(promises).then(function(){
+                                saveAfterValidation(eventToSave);
+                            }, function(){
+
+                            });
+                        }else{
+                            saveAfterValidation(eventToSave);
+                        }
                     },function(output){
                         if(output && output.error){
                             var localizedError = $filter('translate')(output.error);
                             console.error('error',output.error);
                             alert(localizedError);
-                        }else if(output && output.warning){
-                            var modal = areYouSureModalFactory(null, output.warning);
-                            modal.result.then(function () {
-                                saveAfterValidation(eventToSave);
-                            }, function () {
-                                console.debug('Modal dismissed at: ' + new Date());
-                            });
                         }
-
                     });
                 };
 

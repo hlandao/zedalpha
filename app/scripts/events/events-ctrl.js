@@ -4,22 +4,22 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic,TimelyFilteredEvents, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift){
+    .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic,TimelyFilteredEvents, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls){
         Localizer.setLocale('he');
 
         var OccasionalEvent = _.findWhere(EventsStatusesHolder, {status : 'OCCASIONAL'}),
             OrderedEvent = _.findWhere(EventsStatusesHolder, {status : 'ORDERED'}),
-            eventWatcher,
-            editedEvent,
-            justRevertedWhileEdit;
+            editedEvent;
 
         $scope.DateHolder = DateHolder;
         $scope.ShiftsDayHolder = ShiftsDayHolder;
 
         // --------- New event ----------- //
         $scope.newEventWithSeatsDic = function(occasionalOrDestination, dic, specificStartTime){
+            CloseOpenControls();
             var isOccasional = occasionalOrDestination == 'occasional';
             var startTime = specificStartTime || (isOccasional ? new Date() : DateHolder.current);
+            if(!isOccasional) startTime = EventsLogic.startTimeAccordingToTimeInterval(startTime);
             startTime = DateHelpers.resetDateSeconds(startTime);
             var newEvent = new Event({
                 isOccasional : isOccasional,
@@ -60,6 +60,7 @@ zedAlphaControllers
 
         // --------- Edit event ----------- //
         $scope.openEditedEvent = function (event){
+            CloseOpenControls();
             if($scope.editedEvent == event){
                 return;
             }else if($scope.editedEvent){
@@ -134,6 +135,15 @@ zedAlphaControllers
 
         $scope.goToNow = function(){
             DateHolder.current =  new Date();
+        };
+
+        $scope.countTotalGuestsForFilteredEvents = function(){
+            if(!$scope.events || !$scope.events.events) return 0;
+            var output = 0;
+            for (var i in $scope.events.events){
+                output += parseInt($scope.events.events[i].guests) || 0;
+            }
+            return output;
         }
 
     });

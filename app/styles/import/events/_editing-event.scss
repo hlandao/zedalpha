@@ -35,7 +35,14 @@ tbody.event-form{
     color:white;
     outline: none;
     height: 28px;
-
+    &.contact-comment{
+      color:rgb(255, 214, 0);
+      text-decoration: underline;
+    }
+    &.comment{
+      color: rgb(255, 51, 49);
+      text-decoration: underline;
+    }
   }
 
 

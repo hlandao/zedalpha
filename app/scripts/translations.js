@@ -68,6 +68,8 @@ zedAlphaConfigModule
         "DEAD_EVENTS" : "Dead Events",
         "TO" : 'To',
         "MIN" : 'min',
+        "TOTAL_EVENTS": "Total Events",
+        "TOTAL_GUESTS": "Total Guests",
 
         // ERRORS
         "ERROR_EVENT_MSG_NAME": "Please enter the event name",
@@ -146,6 +148,8 @@ zedAlphaConfigModule
                 "ENTIRE_DAY_SHIFT" : "כל היום",
                 "ENTIRE_SHIFT" : "משמרת מלאה",
                 "NOW" : "עכשיו",
+                "TOTAL_EVENTS": "סה״כ אירועים",
+                "TOTAL_GUESTS": "סה״כ מוזמנים",
 
 
                 "SHIFT" : "משמרת",

@@ -33,6 +33,7 @@ zedAlphaDirectives
         }
     }).filter('eventsByEntireShift', function(DateHolder){
         return function(events,shift){
+            if(!shift || !events) return false;
             // include events that starts X minutes after the current time
 //            var EVENT_TIME_FRAME_IN_MINUTES = 120;
 

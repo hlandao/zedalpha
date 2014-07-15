@@ -80,7 +80,6 @@ zedAlphaDirectives
                 }
 
                 ngModel.$formatters.push(function(modelValue){
-                    console.log('modelValue',modelValue);
                     return moment(modelValue).format("HH:mm");
                 });
 
@@ -91,13 +90,17 @@ zedAlphaDirectives
 
 
                 ngModel.$parsers.push(function(viewValue){
-                    console.log('$parsers');
                     var viewValueMoment = moment(viewValue);
 
                     if(viewValueMoment){
                         var output = new Date(moment(ngModel.$modelValue).hour(viewValueMoment.hour()).minute(viewValueMoment.minute()).format(FullDateFormat));
                         return output;
                     }
+                });
+
+
+                scope.$on('closeAllOpenControls', function(){
+                    element.timepicker('close');
                 });
 
             }

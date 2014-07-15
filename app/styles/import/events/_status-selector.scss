@@ -11,6 +11,7 @@
     background: black;
     border:1px solid #333;
     position:absolute;
+    z-index:1000;
     -webkit-transform: translate(00px,10px);
     transform: translate(0px,10px);
 

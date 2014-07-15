@@ -254,7 +254,15 @@ if (typeof jQuery !== 'undefined') {
                             break;
                     }
                 }).bind('focus.timepicker', function() {
-                        i.open();
+//                        i.open();
+                    }).bind('click', function(){
+                        if(!i.closed()){
+                            i.close();
+                        }else{
+                            i.open();
+                        }
+
+
                     }).bind('blur.timepicker', function() {
                         i.close();
                     }).bind('change.timepicker', function() {
@@ -601,7 +609,6 @@ if (typeof jQuery !== 'undefined') {
                     return i.options[name];
                 }
 
-                console.log('_time',_time);
                 var time = _time ? _time : i.getTime(),
                     options, destructive;
 
