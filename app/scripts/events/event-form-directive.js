@@ -37,21 +37,25 @@ zedAlphaDirectives
                }
 
                 $scope.save = function(eventToSave){
-                    var isInvalid = EventsLogic.isInvalidEventBeforeSave(eventToSave);
-                    if(isInvalid && isInvalid.error){
-                        var localizedError = $filter('translate')(isInvalid.error);
-                        console.error('error',isInvalid.error);
-                        alert(localizedError);
-                    }else if(isInvalid && isInvalid.warning){
-                        var modal = areYouSureModalFactory(null, 'INVALID_GUESTS_PER_15_WARNING');
-                        modal.result.then(function () {
-                            saveAfterValidation(eventToSave);
-                        }, function () {
-                            console.debug('Modal dismissed at: ' + new Date());
-                        });
-                    }else{
+                    var isInvalidPromise = EventsLogic.isInvalidEventBeforeSave(eventToSave);
+                    console.log('isInvalidPromise',isInvalidPromise);
+                    isInvalidPromise.then(function(){
                         saveAfterValidation(eventToSave);
-                    }
+                    },function(output){
+                        if(output && output.error){
+                            var localizedError = $filter('translate')(output.error);
+                            console.error('error',output.error);
+                            alert(localizedError);
+                        }else if(output && output.warning){
+                            var modal = areYouSureModalFactory(null, output.warning);
+                            modal.result.then(function () {
+                                saveAfterValidation(eventToSave);
+                            }, function () {
+                                console.debug('Modal dismissed at: ' + new Date());
+                            });
+                        }
+
+                    });
                 };
 
 

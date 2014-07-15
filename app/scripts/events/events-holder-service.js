@@ -19,7 +19,7 @@ zedAlphaServices
 
         return $events;
 
-    }).factory('EventsLogic', function(EventsHolder, BusinessHolder, EventsDurationForGuestsHolder, FullDateFormat,GuestsPer15, $q){
+    }).factory('EventsLogic', function(EventsHolder, BusinessHolder, EventsDurationForGuestsHolder, FullDateFormat,GuestsPer15, $q, ShiftsDayHolder){
         var DEFAULT_EVENT_DURATION = EventsDurationForGuestsHolder.default || 120;
         var checkCollisionsForEvent = function(event){
             var eventToCheck, sharedSeats;
@@ -109,31 +109,143 @@ zedAlphaServices
         };
 
         var isInvalidEventBeforeSave = function(event){
-            var defer = $q.defer();
             // Event has no name
-            if(!event.name){
-                return {error : "ERROR_EVENT_MSG_NAME"};
-            // Event has no seat or it is an occasional one and the business type is Bar
-            } else if(isEventWithNoSeats(event) && (BusinessHolder.businessType != 'Bar' || !event.isOccasional)){
-                return {error : "ERROR_EVENT_MSG_SEATS"};
-            // Event has no phone and it isn't occasional
-            }else if(!event.isOccasional && !event.phone){
-                return {error : "ERROR_EVENT_MSG_PHONE"};
-            // Event has no start time
-            }else if(!event.startTime){
-                return {error : "ERROR_EVENT_MSG_STARTTIME"};
-            // Event has no end time
-            }else if(!event.endTime){
-                return {error : "ERROR_EVENT_MSG_ENDTIME"};
-            }else if(checkCollisionsForEvent(event)){
-                return {error : "ERROR_EVENT_MSG_COLLISION"};
-            }else if(!isGuestsPer15Valid(event)){
-                return {warning : "INVALID_GUESTS_PER_15_WARNING"};
-            }
+//            if(!event.name){
+//                return {error : "ERROR_EVENT_MSG_NAME"};
+//            // Event has no seat or it is an occasional one and the business type is Bar
+//            } else if(isEventWithNoSeats(event) && (BusinessHolder.businessType != 'Bar' || !event.isOccasional)){
+//                return {error : "ERROR_EVENT_MSG_SEATS"};
+//            // Event has no host or it is an occasional one and the business type is Bar
+//            } else if(!event.host && (BusinessHolder.businessType != 'Bar' || !event.isOccasional)){
+//                return {error : "ERROR_EVENT_MSG_HOST"};
+//            // Event has no phone and it isn't occasional
+//            }else if(!event.isOccasional && !event.phone){
+//                return {error : "ERROR_EVENT_MSG_PHONE"};
+//            // Event has no start time
+//            }else if(!event.startTime){
+//                return {error : "ERROR_EVENT_MSG_STARTTIME"};
+//            // Event has no end time
+//            }else if(!event.endTime){
+//                return {error : "ERROR_EVENT_MSG_ENDTIME"};
+//            }else if(checkCollisionsForEvent(event)){
+//                return {error : "ERROR_EVENT_MSG_COLLISION"};
+//            }else if(!isGuestsPer15Valid(event)){
+//                return {warning : "INVALID_GUESTS_PER_15_WARNING"};
+//            }
 
-            return false;
+            return checkName(event).then(checkSeats).then(checkHost).then(checkPhone).then(checkStartTime).then(checkEndTime).then(checkCollision).then(checkGuestsPer15).then(checkEventWithinShifts);
+
 
         };
+
+        var checkName = function(event){
+            var defer = $q.defer();
+            if(!event.name){
+                defer.reject({error : "ERROR_EVENT_MSG_NAME"});
+            }else{
+                defer.resolve(event);
+            }
+            return defer.promise;
+        }
+
+        var checkSeats = function(event){
+            var defer = $q.defer();
+
+            if(isEventWithNoSeats(event) && (BusinessHolder.businessType != 'Bar' || !event.isOccasional)){
+                defer.reject({error : "ERROR_EVENT_MSG_SEATS"});
+            }else{
+                defer.resolve(event);
+            }
+            return defer.promise;
+        }
+
+
+        var checkHost = function(event){
+            var defer = $q.defer();
+            if(!event.hostess && (BusinessHolder.businessType != 'Bar' || !event.isOccasional)){
+                defer.reject({error : "ERROR_EVENT_MSG_HOST"});
+            }else{
+                defer.resolve(event);
+            }
+            return defer.promise;
+        }
+
+
+        var checkPhone = function(event){
+            var defer = $q.defer();
+            if(!event.isOccasional && !event.phone){
+                defer.reject({error : "ERROR_EVENT_MSG_PHONE"});
+            }else{
+                defer.resolve(event);
+            }
+            return defer.promise;
+        }
+
+        var checkStartTime = function(event){
+            var defer = $q.defer();
+            if(!event.startTime){
+                defer.reject({error : "ERROR_EVENT_MSG_STARTTIME"});
+            }else{
+                defer.resolve(event);
+            }
+            return defer.promise;
+        }
+
+        var checkEndTime = function(event){
+            var defer = $q.defer();
+            var endTimeMoment = moment(event.endTime);
+            var startTimeMoment = moment(event.startTime);
+            if(!event.endTime){
+                defer.reject({error : "ERROR_EVENT_MSG_ENDTIME"});
+            } else if (endTimeMoment <= startTimeMoment){
+                defer.reject({error : "ERROR_EVENT_MSG_ENDTIME_LT_STARTTIME"});
+            }else{
+                defer.resolve(event);
+            }
+            return defer.promise;
+        }
+
+
+        var checkCollision = function(event){
+            var defer = $q.defer();
+            if(checkCollisionsForEvent(event)){
+                defer.reject({error : "ERROR_EVENT_MSG_COLLISION"});
+            }else{
+                defer.resolve(event);
+            }
+            return defer.promise;
+        }
+
+
+        var checkGuestsPer15 = function(event){
+            var defer = $q.defer();
+            if(!isGuestsPer15Valid(event)){
+                defer.reject({warning : "INVALID_GUESTS_PER_15_WARNING"});
+            }else{
+                defer.resolve(event);
+            }
+            return defer.promise;
+        }
+
+
+        var checkEventWithinShifts = function(event){
+            var defer = $q.defer();
+
+            isEventWithinTodayShifts(event).then(function(result){
+                if(result){
+                    defer.resolve(event);
+                }else{
+                    defer.reject({warning : "WARNING_OUT_OF_SHIFTS"});
+                }
+            });
+
+            return defer.promise;
+
+        }
+
+
+
+
 
         var isEventWithNoSeats = function(event){
             return isEmptyObject(event.seats)
@@ -143,6 +255,38 @@ zedAlphaServices
             var duration = maxDuration > 0 ? Math.min(maxDuration, DEFAULT_EVENT_DURATION) : DEFAULT_EVENT_DURATION ;
             return new Date(moment(startTime).add('minute', duration).format(FullDateFormat));
         };
+
+
+        var isEventWithinTodayShifts = function(event){
+            return dayShiftsForDate(event.startTime).then(function(dayShifts){
+                var shifts = dayShifts.shifts, currentShift,startDateMoment,endDateMoment, theDateMoment = moment(event.startTime);
+                for (var i = 0; i < shifts.length; ++i){
+                    currentShift = shifts[i];
+                    startDateMoment = moment(currentShift.startTime);
+                    endDateMoment = moment(currentShift.endTime);
+                    if(theDateMoment >= startDateMoment && theDateMoment <= endDateMoment){
+                        return true;
+                    }
+                }
+
+                return false;
+
+            });
+        };
+
+        var dayShiftsForDate = function(date){
+            var shiftDateMoment = moment(ShiftsDayHolder.current.date);
+            var theDateMoment = moment(date);
+            if(shiftDateMoment.dayOfYear() == theDateMoment.dayOfYear()){
+                var defer = $q.defer();
+                defer.resolve(ShiftsDayHolder.current)
+                return defer.promise;
+            }
+
+            return ShiftsDayHolder.fetchShiftWithDateFromDB(date);
+        }
+
+
 
         var isGuestsPer15Valid = function(event){
             var guestPer15Value = parseInt(GuestsPer15.$value);

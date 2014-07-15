@@ -2,7 +2,7 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory('ShiftsDayHolder', function($rootScope, DateHolder, BusinessHolder, BasicShift, ShiftDay, FullDateFormat,AllDayShift){
+    .factory('ShiftsDayHolder', function($rootScope, DateHolder, BusinessHolder, BasicShift, ShiftDay, FullDateFormat,AllDayShift, $q){
         var _shift = {};
         var $shiftsDays;
 
@@ -84,6 +84,15 @@ zedAlphaServices
         };
 
         var fetchShiftWithDate = function(date){
+            _shift.fetchShiftWithDateFromDB().then(function(_shiftResponse){
+                _shift.current = _shiftResponse;
+                selectDefaultShiftForShiftDay(_shift.current);
+                console.log('_shift.current',_shift.current);
+            });
+        }
+
+        _shift.fetchShiftWithDateFromDB = function(date){
+            var defer = $q.defer();
             $shiftsDays = $shiftsDays || BusinessHolder.$business.$child('shifts').$child('days');
             var dateMoment = moment(date);
             if(dateMoment){
@@ -91,16 +100,16 @@ zedAlphaServices
                 $shiftsDays.$child(''+dayOfYear+'').$getRef().once('value', function(snapshot){
                     var val = snapshot.val();
                     if(val){
-                        _shift.current = new ShiftDay(null, val);
+                        defer.resolve(new ShiftDay(null, val));
                     }else{
-                        _shift.current = BasicShift.basicShiftForDayOfWeek(date);
+                        defer.resolve(BasicShift.basicShiftForDayOfWeek(date));
                     }
-                    console.log('_shift.current',_shift.current);
-                    selectDefaultShiftForShiftDay(_shift.current);
                 });
 
             }
+            return defer.promise;
         }
+
 
         return _shift;
     }).factory('BasicShift', function($rootScope, BusinessHolder, BasicShiftDay){

@@ -76,8 +76,10 @@ zedAlphaConfigModule
         "ERROR_EVENT_MSG_STARTTIME": "Start time is invalid",
         "ERROR_EVENT_MSG_ENDTIME": "End time is invalid",
         "ERROR_EVENT_MSG_COLLISION": "A Collision with another event was detected",
+        "ERROR_EVENT_MSG_HOST" : "Please enter host name",
 
         // WARNINGS
+        "ARE_YOU_SURE" : "Are You Sure ? ",
         "INVALID_GUESTS_PER_15_WARNING" : "Amount of guests per 15 minutes limit was reached!",
         "REMOVE_EVENT_WARNING" : "Removing event is irreversible. Are you sure you want to continue ?"
 
@@ -145,6 +147,7 @@ zedAlphaConfigModule
                 "ENTIRE_SHIFT" : "משמרת מלאה",
                 "NOW" : "עכשיו",
 
+
                 "SHIFT" : "משמרת",
                 "DEAD_EVENTS" : "ארועים שהסתיימו",
                 "TO" : 'עד',
@@ -157,9 +160,12 @@ zedAlphaConfigModule
                 "ERROR_EVENT_MSG_STARTTIME": "זמן התחלת הארוע לא קיים או לא תקין",
                 "ERROR_EVENT_MSG_ENDTIME": "זמן סיום הארוע לא קיים או לא תקין",
                 "ERROR_EVENT_MSG_COLLISION": "אותרה התנגשות עם ארוע נוסף, נא נסה שנית",
+                "ERROR_EVENT_MSG_HOST" : "חובה למלא את שם המארחת",
 
                 // WARNING
+                "ARE_YOU_SURE" : "בעיה",
                 "INVALID_GUESTS_PER_15_WARNING" : "הגבלת מספר סועדים לרבע שעה נחצתה.",
+                "WARNING_OUT_OF_SHIFTS" : "הארוע אינו נכלל במשמרות, האם ברצונך להמשיך ?",
                 "REMOVE_EVENT_WARNING" : "מחיקת אירוע הינה פעולת בלתי הפיכה. האם ברצונך להמשיך ?"
             }
         );
