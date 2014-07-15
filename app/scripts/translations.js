@@ -48,6 +48,7 @@ zedAlphaConfigModule
         NO_SHOW: "No Show",
 
 
+
         ORDERED: "Orderd",
         // ERRORS
         ERROR_MSG_COLLISION: "Error : event collide with another event",
@@ -68,8 +69,10 @@ zedAlphaConfigModule
         "DEAD_EVENTS" : "Dead Events",
         "TO" : 'To',
         "MIN" : 'min',
+        "NOW" : "Now",
         "TOTAL_EVENTS": "Total Events",
         "TOTAL_GUESTS": "Total Guests",
+        "SEARCH" : "Search",
 
         // ERRORS
         "ERROR_EVENT_MSG_NAME": "Please enter the event name",
@@ -150,6 +153,7 @@ zedAlphaConfigModule
                 "NOW" : "עכשיו",
                 "TOTAL_EVENTS": "סה״כ אירועים",
                 "TOTAL_GUESTS": "סה״כ מוזמנים",
+                "SEARCH" : "חיפוש",
 
 
                 "SHIFT" : "משמרת",
