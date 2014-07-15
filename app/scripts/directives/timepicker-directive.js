@@ -13,8 +13,7 @@ zedAlphaDirectives
             templateUrl: '/partials/directives/timepicker-directive.html',
             link : function(scope, element, attrs, ctrls) {
                 var ngModel = ctrls[0];
-                var initialized = false;
-                var minHour = 0, maxHour = 23,
+                var initialized = false,
                     staticCallback;
 
                 var init = function(modelValue){
@@ -23,8 +22,6 @@ zedAlphaDirectives
                         timeFormat : 'HH:mm',
                         interval : 15,
                         dynamic : false,
-                        minHour : minHour,
-                        maxHour : maxHour,
                         change : function(time){
                             if(!initialized){
                                 return initialized = true;
@@ -52,19 +49,21 @@ zedAlphaDirectives
                 init(ngModel.$modelValue);
 
 
-                if (attrs.minHour) {
-                    scope.$parent.$watch($parse(attrs.minHour), function(value) {
-                        var theDate = moment(value);
-                        minHour = theDate ? theDate.hour() : minHour;
-                        element.timepicker('option','minHour', minHour);
+                var minTime, maxTime;
+
+                if (attrs.minTime) {
+                    scope.$parent.$watch($parse(attrs.minTime), function(value) {
+                        var theDate = moment(value).format('HH:mm');
+                        minTime = theDate ? theDate : minTime;
+                        element.timepicker('option','minTime', minTime,ngModel.$modelValue);
                     });
                 }
 
-                if (attrs.maxHour) {
-                    scope.$parent.$watch($parse(attrs.maxHour), function(value) {
-                        var theDate = moment(value);
-                        maxHour = (theDate) ?theDate.hour() : maxHour;
-                        element.timepicker('option','maxHour', maxHour);
+                if (attrs.maxTime) {
+                    scope.$parent.$watch($parse(attrs.maxTime), function(value) {
+                        var theDate = moment(value).format('HH:mm');
+                        maxTime = (theDate) ? theDate : maxTime;
+                        element.timepicker('option','maxTime', maxTime,ngModel.$modelValue);
                     });
                 }
 
@@ -81,6 +80,7 @@ zedAlphaDirectives
                 }
 
                 ngModel.$formatters.push(function(modelValue){
+                    console.log('modelValue',modelValue);
                     return moment(modelValue).format("HH:mm");
                 });
 
@@ -91,6 +91,7 @@ zedAlphaDirectives
 
 
                 ngModel.$parsers.push(function(viewValue){
+                    console.log('$parsers');
                     var viewValueMoment = moment(viewValue);
 
                     if(viewValueMoment){

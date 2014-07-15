@@ -35,6 +35,9 @@
       font-weight: lighter;
       border-left:1px solid #484347;
       outline:none;
+      &:hover{
+        color: #d1d1d1;
+      }
     }
   }
 }

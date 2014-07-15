@@ -2,7 +2,7 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory('ShiftsDayHolder', function($rootScope, DateHolder, BusinessHolder, BasicShift, ShiftDay, FullDateFormat){
+    .factory('ShiftsDayHolder', function($rootScope, DateHolder, BusinessHolder, BasicShift, ShiftDay, FullDateFormat,AllDayShift){
         var _shift = {};
         var $shiftsDays;
 
@@ -16,8 +16,8 @@ zedAlphaServices
                     return _shift.selected = currentShift;
                 }
             }
-            var l =_shiftDay.shifts.length;
-            if(l) _shift.selected = _shiftDay.shifts[l-1];
+
+            _shift.selected = AllDayShift();
         };
 
         var selectDefaultTimeForShift = function(shift){
@@ -61,8 +61,9 @@ zedAlphaServices
                 return;
             }
             isShiftJustChanged = true;
-
+            console.log('newVal.defaultTime',newVal.defaultTime);
             DateHolder.current = new Date(newVal.defaultTime || newVal.startTime);
+            console.log('DateHolder.current',DateHolder.current);
 
         });
 

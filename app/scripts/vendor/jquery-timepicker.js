@@ -120,7 +120,7 @@ if (typeof jQuery !== 'undefined') {
                         staticOption = staticOptions[l];
                         item = $('<li>').addClass('ui-menu-item').appendTo(ul);
                         $('<a>').addClass('ui-corner-all').text(staticOption.label).appendTo(item);
-                        item.data('static-value', staticOption.value);
+                        item.data('static-value', staticOption);
 
                     }
                 }
@@ -137,6 +137,7 @@ if (typeof jQuery !== 'undefined') {
             },
 
             _isValidTime: function(i, time) {
+
                 var min = null, max = null;
 
                 time = normalize(time);
@@ -226,7 +227,7 @@ if (typeof jQuery !== 'undefined') {
                     format: function(time, format) { return widget.format(i, time, format); },
                     getTime: function() { return widget.getTime(i) ;},
                     setTime: function(time, silent) { return widget.setTime(i, time, silent); },
-                    option: function(name, value) { return widget.option(i, name, value); }
+                    option: function(name, value, newTime) { return widget.option(i, name, value, newTime); }
                 });
 
                 i.element.bind('keydown.timepicker', function(event) {
@@ -555,13 +556,13 @@ if (typeof jQuery !== 'undefined') {
                 var widget = this, previous = i.selectedTime;
 
                 if(isStaticVal){
-                    i.selectedTime = time;
-                    i.element.val(time);
+                    i.selectedTime = time.value;
+                    i.element.val(time.label);
 
                     if (previous !== null || i.selectedTime !== null) {
-                        i.element.trigger('time-change', [time]);
+                        i.element.trigger('time-change', [time.value]);
                         if ($.isFunction(i.options.change)) {
-                            i.options.change.apply(i.element, [time]);
+                            i.options.change.apply(i.element, [time.value]);
                         }
                     }
 
@@ -595,12 +596,13 @@ if (typeof jQuery !== 'undefined') {
                 return i.element;
             },
 
-            option: function(i, name, value) {
+            option: function(i, name, value, _time) {
                 if (typeof value === 'undefined') {
                     return i.options[name];
                 }
 
-                var time = i.getTime(),
+                console.log('_time',_time);
+                var time = _time ? _time : i.getTime(),
                     options, destructive;
 
                 if (typeof name === 'string') {

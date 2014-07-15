@@ -1,11 +1,15 @@
 <div class="row" id="search-row">
-    <div class="col-xs-8 search-input-col">
+    <!--<div class="col-xs-3 search-input-col">-->
             <!--<input type="text" placeholder="Search">-->
+    <!--</div>-->
+    <div class="col-xs-4 button-col">
+        <button class="" ng-click="goToNow()"> {{ 'NOW' | translate }} </button>
     </div>
-    <div class="col-xs-2 button-col">
+
+    <div class="col-xs-4 button-col">
         <button class=""> {{ 'REPLACE_BUTTON_LABEL' | translate }} </button>
     </div>
-    <div class="col-xs-2 button-col">
+    <div class="col-xs-4 button-col">
         <button class="" ng-click="newEventWithSeatsDic('destination')">+ {{ 'ADD_BUTTON_LABEL' | translate }}</button>
     </div>
 </div>

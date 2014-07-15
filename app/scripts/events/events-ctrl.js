@@ -115,11 +115,10 @@ zedAlphaControllers
         $scope.events = {};
         $scope.TimelyFilteredEvents = TimelyFilteredEvents;
         $scope.timepickerStaticOptions = [
-            {label : 'ENTIRE_SHIFT', value : 'ENTIRE_SHIFT'}
+            {label : $filter('translate')('ENTIRE_SHIFT'), value : 'ENTIRE_SHIFT'}
         ]
 
         $scope.dateHolderStaticCallback = function(staticVal){
-            console.log('dateHolderStaticCallback',staticVal);
             if(staticVal){
                 if(staticVal === 'ENTIRE_SHIFT'){
                     DateHolder.isEntireShift = true;
@@ -127,6 +126,14 @@ zedAlphaControllers
             }else{
                 DateHolder.isEntireShift = false;
             }
+        };
+
+        $scope.goToEntireShift = function(){
+            DateHolder.isEntireShift = true;
+        };
+
+        $scope.goToNow = function(){
+            DateHolder.current =  new Date();
         }
 
     });

@@ -88,7 +88,7 @@ zedAlphaServices
         ShiftDay.prototype.save = function(){
             console.log('save!');
             var defer = $q.defer();
-            if(!this.shifts || (!this.enableCustom && !this.basic)){
+            if(!this.shifts || (!this.shifts.enableCustom && !this.basic)){
                 defer.reject();
                 return defer.promise;
             }
@@ -122,7 +122,8 @@ zedAlphaServices
         }
 
         ShiftDay.prototype.wasChanged = function(){
-            if(this.enableCustom){
+            console.log('this',this);
+            if(this.shifts.enableCustom){
                 return this.save();
             }else{
                 return this.remove();

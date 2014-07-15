@@ -63,6 +63,7 @@ zedAlphaConfigModule
         "noon_SHIFT" : "Afternoon Shift",
         "ENTIRE_DAY" : "Entire Day",
         "ENTIRE_DAY_SHIFT" : "Entire Day",
+        "ENTIRE_SHIFT": "Entire Shift",
         "SHIFT" : "Shift",
         "DEAD_EVENTS" : "Dead Events",
         "TO" : 'To',
@@ -141,6 +142,8 @@ zedAlphaConfigModule
                 "noon_SHIFT" : "משמרת צהריים",
                 "ENTIRE_DAY" : "כל היום",
                 "ENTIRE_DAY_SHIFT" : "כל היום",
+                "ENTIRE_SHIFT" : "משמרת מלאה",
+                "NOW" : "עכשיו",
 
                 "SHIFT" : "משמרת",
                 "DEAD_EVENTS" : "ארועים שהסתיימו",
