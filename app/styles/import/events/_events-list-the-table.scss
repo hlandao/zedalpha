@@ -12,6 +12,13 @@
         .name-col{
           width:30%;
           text-align: center;
+          span{
+            &.has-comment{
+              font-weight: bold;
+              text-decoration: underline;
+            }
+          }
+
         }
         .guests-col{
           width:15%;

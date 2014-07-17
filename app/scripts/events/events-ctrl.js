@@ -19,6 +19,7 @@ zedAlphaControllers
             CloseOpenControls();
             var isOccasional = occasionalOrDestination == 'occasional';
             var startTime = specificStartTime || (isOccasional ? new Date() : DateHolder.current);
+            console.log('isOccasional',isOccasional);
             if(!isOccasional) startTime = EventsLogic.startTimeAccordingToTimeInterval(startTime);
             startTime = DateHelpers.resetDateSeconds(startTime);
             var newEvent = new Event({
@@ -40,7 +41,7 @@ zedAlphaControllers
                 newEvent.endTime = DateHelpers.resetDateSeconds(EventsLogic.endTimeForNewEventWithStartTimeAndMaxDuration(startTime, maxDuration));
             }
             $scope.newEvent = newEvent;
-            console.log('$scope.newEvent',$scope.newEvent);
+            if(isOccasional) $scope.goToNow();
         };
 
 

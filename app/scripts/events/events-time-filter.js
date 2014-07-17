@@ -48,7 +48,7 @@ zedAlphaDirectives
                 var isStartingAtShift =  startTimeMoment >= shiftStartTimeMoment && startTimeMoment <= shiftEndTimeMoment  ;
                 var isEndingWithinShift = startTimeMoment < shiftStartTimeMoment && endTimeMoment >= shiftStartTimeMoment;
                 var isEditingNow = event.helpers && event.helpers.isEditing;
-                if(isEditingNow || isStartingAtShift || isEndingWithinShift){
+                if(isEditingNow || isStartingAtShift ){
                     event.$id = key;
                     filteredEventsArr.push(event);
                 }

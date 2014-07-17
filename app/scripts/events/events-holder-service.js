@@ -264,7 +264,7 @@ zedAlphaServices
         var dayShiftsForDate = function(date){
             var shiftDateMoment = moment(ShiftsDayHolder.current.date);
             var theDateMoment = moment(date);
-            if(shiftDateMoment.dayOfYear() == theDateMoment.dayOfYear()){
+            if(ShiftsDayHolder.current.name != "ENTIRE_DAY" && shiftDateMoment.dayOfYear() == theDateMoment.dayOfYear()){
                 var defer = $q.defer();
                 defer.resolve(ShiftsDayHolder.current)
                 return defer.promise;
@@ -297,7 +297,7 @@ zedAlphaServices
         };
 
 
-        var startTimeAccordingToTimeInterval = function(event){
+        var startTimeAccordingToTimeInterval = function(startTime){
             var startTimeMoment = moment(startTime);
             var minutes = DateHelpers.findClosestIntervalToDate(startTime);
             startTimeMoment.minutes(minutes);

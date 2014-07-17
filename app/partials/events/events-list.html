@@ -39,7 +39,7 @@
                        <tr  class="events-table-row" ng-click="openEditedEvent(event)">
                            <td class="status-col"> <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event, $event)"></hl-status-selector> </td>
                            <td class="name-col">
-                               <span ng-show="!event.helpers.isEditing"> {{event.name}} </span>
+                               <span ng-show="!event.helpers.isEditing" ng-class="{'has-comment' : (event.comment || event.contactComment)}"> {{event.name}} </span>
                                <span ng-show="event.helpers.isEditing"> <input type="text" ng-model="event.name" placeholder="{{ 'NAME' | translate }}" class="">  </span>
                            </td>
                            <td class="guests-col">
