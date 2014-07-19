@@ -1,51 +1,27 @@
-
-<tbody class="event-form">
-<tr class="events-table-row hadar!">
-    <td class="status-col">
-        <hl-status-selector ng-model="event.status"></hl-status-selector>
-    </td>
-    <td class="name-col"><input type="text" ng-model="event.name" placeholder="{{ 'NAME' | translate }}" class="">
-    </td>
-    <td class="guests-col"><input type="text" ng-model="event.guests" placeholder="0" class=""></td>
-    <td class="seats-col"><input type="text" ng-model="event.seats" hl-seats-input class=""></td>
-    <td class="time-col"> {{event.startTime | date : 'HH:mm'}}</td>
-</tr>
-<tr class="event-form-row">
+<tr class="event-form-row" ng-repeat-end="" ng-if="event.helpers.isEditing">
     <td colspan="5">
-        <hl-event-duration-select ng-model="event"></hl-event-duration-select>
+        <table class="table">
+            <tr>
+                <td> <input type="text" ng-model="event.phone" placeholder="{{ 'PHONE' | translate }}" class=""> </td>
+                <td> <input type="text" ng-model="event.email" placeholder="{{ 'EMAIL' | translate }}" class=""> </td>
+            </tr>
+            <tr>
+                <td> <input type="text" placeholder="{{ 'HOSTESS' | translate }}"  ng-model="event.hostess"> </td>
+                <td>Event Type</td>
+            </tr>
+            <tr>
+                <td colspan="2">  <input type="text" ng-model="event.contactComment" placeholder="{{ 'CONTACT_COMMENT' | translate }}" class=""> </td>
+            </tr>
+            <tr>
+                <td colspan="2"> <input type="text" ng-model="event.comment" placeholder="{{ 'COMMENT' | translate }}" class=""> </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button class="btn btn-default" ng-click="close(event)"> {{ 'BACK' | translate }}</button>
+                    <button class="btn btn-danger" ng-click="remove(event)" ng-show="event.$id"> {{ 'DELETE' | translate }}</button>
+                    <button class="btn btn-success" ng-click="save(event)"> {{ 'SAVE' | translate }}</button>
+                </td>
+            </tr>
+        </table>
     </td>
 </tr>
-
-<tr class="event-form-row" ng-show="!event.isOccasional">
-    <td colspan="3"><input type="text" ng-model="event.phone" placeholder="{{ 'PHONE' | translate }}" class=""></td>
-    <td colspan="2"><input type="text" ng-model="event.email" placeholder="{{ 'EMAIL' | translate }}" class=""></td>
-
-</tr>
-<tr class="event-form-row" ng-show="!event.isOccasional">
-    <td colspan="3"><input type="text" ng-model="event.contactPerson"
-                           placeholder="{{ 'CONTACT_PERSON' | translate }}" class=""></td>
-    <td colspan="2"><select>
-        <option selected>Event Type</option>
-    </select></td>
-
-</tr>
-<tr class="event-form-row" ng-show="!event.isOccasional">
-    <td colspan="5"><input type="text" ng-model="event.contactComment"
-                           placeholder="{{ 'CONTACT_COMMENT' | translate }}" class=""></td>
-</tr>
-<tr class="event-form-row" ng-show="!event.isOccasional">
-    <td colspan="5"><input type="text" ng-model="event.comment" placeholder="{{ 'COMMENT' | translate }}" class="">
-    </td>
-</tr>
-<tr class="event-form-row">
-    <td colspan="5"><input type="text" ng-model="event.hostess" placeholder="{{ 'HOSTESS' | translate }}" class="">
-    </td>
-</tr>
-<tr class="event-form-row">
-    <td colspan="5">
-        <button class="btn btn-default" ng-click="close(event)"> {{ 'BACK' | translate }}</button>
-        <button class="btn btn-danger" ng-click="remove(event)" ng-show="event.$id"> {{ 'DELETE' | translate }}</button>
-        <button class="btn btn-success" ng-click="save(event)"> {{ 'SAVE' | translate }}</button>
-    </td>
-</tr>
-</tbody>

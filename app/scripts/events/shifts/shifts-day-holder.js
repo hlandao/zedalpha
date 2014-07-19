@@ -32,7 +32,6 @@ zedAlphaServices
         $rootScope.$watch(function(){
             return DateHolder.current;
         }, function(newVal, oldVal){
-            console.log('newVal',newVal);
             // fetch current day shifts from server or use the basic shift
             // ONLY if the *date* was changed;
             // AND if the date is the next day only and the new *hour* is later than the current latest shift ending time
@@ -62,10 +61,7 @@ zedAlphaServices
                 return;
             }
             isShiftJustChanged = true;
-            console.log('newVal.defaultTime',newVal.defaultTime);
             DateHolder.current = new Date(newVal.defaultTime || newVal.startTime);
-            console.log('DateHolder.current',DateHolder.current);
-
         });
 
 
@@ -86,13 +82,14 @@ zedAlphaServices
 
         var fetchShiftWithDate = function(date){
             _shift.fetchShiftWithDateFromDB(date).then(function(_shiftResponse){
+                console.log('_shiftResponse',_shiftResponse);
                 _shift.current = _shiftResponse;
                 selectDefaultShiftForShiftDay(_shift.current);
-                console.log('_shift.current',_shift.current);
             });
         }
 
         _shift.fetchShiftWithDateFromDB = function(date){
+            console.log('fetchShiftWithDateFromDB',BusinessHolder);
             var defer = $q.defer();
 
             if(!BusinessHolder.$business){
@@ -101,7 +98,6 @@ zedAlphaServices
             }
             $shiftsDays = $shiftsDays || BusinessHolder.$business.$child('shifts').$child('days');
             var dateMoment = moment(date);
-            console.log('dateMoment',dateMoment);
             if(dateMoment){
                 var dayOfYear = dateMoment.dayOfYear();
                 $shiftsDays.$child(''+dayOfYear+'').$getRef().once('value', function(snapshot){

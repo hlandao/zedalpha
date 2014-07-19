@@ -23,7 +23,6 @@ zedAlphaServices
 
                 }
             }
-            console.log('_holder.filteredEvents',_holder.filteredEvents);
         };
 
         $rootScope.$watch(function(){

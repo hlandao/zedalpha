@@ -1,5 +1,5 @@
 //"use strict";
-var ISDEBUG = true;
+var ISDEBUG = false;
 angular.module('zedalpha.routes', [])
 
     // configure views; the authRequired parameter is used for specifying pages

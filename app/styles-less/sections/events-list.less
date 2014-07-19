@@ -39,8 +39,46 @@
     -webkit-overflow-scrolling: touch;
     -webkit-overflow-scrolling: -blackberry-touch;
   .panel-heading{
-    background-color: @nav_bg;
+    background-color: @link_active_bg;
     color:white;
     height: 40px;
   }
+
+  .event-row{
+    td{
+      input{
+        border:0;
+        background: transparent;
+        outline:none;
+        width:100%;
+      }
+    }
+  }
+
+
+  .event-form-row{
+    td{
+      table.table{
+        background:transparent;
+        tr{
+          &:first-child{
+            td{
+              border-top:0;
+            }
+          }
+          td{
+            input{
+              border:0;
+              background: transparent;
+              outline:none;
+              &::-webkit-input-placeholder {
+                //          color: #eeeeee;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
+

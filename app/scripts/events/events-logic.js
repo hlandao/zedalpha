@@ -84,6 +84,14 @@ zedAlphaServices
 
 
 
+        var isInvalidEventWhileEdit = function(event){
+            if(checkCollisionsForEvent(event)){
+                return {error : "ERROR_EVENT_MSG_COLLISION"};
+            }
+            return false;
+        };
+
+
         var isInvalidEventBeforeSave = function(event){
             return checkName(event).then(checkSeats).then(checkHost).then(checkPhone).then(checkStartTime).then(checkEndTime).then(checkCollision).then(checkEventWarnings);
         };
@@ -282,7 +290,7 @@ zedAlphaServices
 
         return {
             isInvalidEventBeforeSave : isInvalidEventBeforeSave,
-//            isInvalidEventWhileEdit : isInvalidEventWhileEdit,
+            isInvalidEventWhileEdit : isInvalidEventWhileEdit,
             checkCollisionsForEvent : checkCollisionsForEvent,
             endTimeForNewEventWithStartTimeAndMaxDuration : endTimeForNewEventWithStartTimeAndMaxDuration,
             maxDurationForEventInMinutes : maxDurationForEventInMinutes,
