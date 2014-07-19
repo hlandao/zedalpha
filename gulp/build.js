@@ -5,9 +5,8 @@ var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
 
 gulp.task('styles', function () {
-  return gulp.src('app/styles/main.scss')
-    .pipe($.rubySass({ style: 'expanded' }))
-    .pipe($.autoprefixer('last 1 version'))
+  return gulp.src('app/styles-less/main.less')
+    .pipe($.less({ }))
     .pipe(gulp.dest('.tmp/styles'))
     .pipe($.size());
 });

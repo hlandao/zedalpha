@@ -130,8 +130,8 @@ angular.module('zedalpha.routes', [])
         }).state('dashboard.events.show',{
                 url : '/events/:businessId',
                 views: {
-                    'navigation@dashboard.events' : {
-                        templateUrl: '/partials/events/nav.html',
+                    'header@dashboard.events' : {
+                        templateUrl: '/partials/events/header.html',
                         controller: 'EventsNavigationCtrl'
                     },
                     'map@dashboard.events': {
@@ -145,6 +145,32 @@ angular.module('zedalpha.routes', [])
                 },
                 resolve : {
                     businessResolver : businessResolver
+                }
+        }).state('eventstest', {
+                abstract : true,
+                views : {
+                    "navigation" : {
+                        template : ""
+                    },
+                    "main" : {
+                        templateUrl : "/partials/events/events.html"
+                    }
+                }
+        }).state('eventstest', {
+                url : 'eventstest/all',
+                views: {
+                    'header@dashboard.events' : {
+                        templateUrl: '/partials/events/header.html',
+                        controller: 'EventsNavigationCtrl'
+                    },
+                    'map@dashboard.events': {
+                        templateUrl: '/partials/events/map.html'
+//                        controller: 'MapCtrl'
+                    },
+                    'events-list@dashboard.events': {
+                        templateUrl: '/partials/events/events-list.html'
+//                        controller: 'EventsListCtrl'
+                    }
                 }
             });
 

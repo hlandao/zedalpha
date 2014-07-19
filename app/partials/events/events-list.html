@@ -1,89 +1,209 @@
-<div class="row" id="search-row">
-    <div class="col-xs-3 search-input-col">
-            <input type="text" placeholder="{{'SEARCH' | translate}}" ng-model="query">
-    </div>
-    <div class="col-xs-3 button-col">
-        <button class="" ng-click="goToNow()"> {{ 'NOW' | translate }} </button>
+
+<div id="events-list-wrapper">
+    <div class="panel panel-default" id="events-list">
+        <div class="panel-heading">
+            <div class="dropdown pull-left">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{selectedFilter | translate}} <b class="caret"></b></a>
+
+                <ul class="dropdown-menu" role="menu">
+                    <li ng-repeat="filter in filters" ng-click="selectFilter(filter)"><a href="#">{{filter | translate}}</a></li>
+                </ul>
+            </div>
+
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>{{ 'STATUS' | translate }}</th>
+                <th>{{ 'NAME' | translate }}</th>
+                <th>{{ 'GUESTS' | translate }}</th>
+                <th>{{ 'SEATS' | translate }}</th>
+                <th>{{ 'TIME' | translate }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter | filter : {name : query} | orderBy : 'startTime'))">
+                <td><span class="label label-info" style="background: {{event.status.color}};">{{ event.status.status | translate }}</span></td>
+                <td>{{event.name}}</td>
+                <td>{{event.guests}}</td>
+                <td><span class="color-success"><i class="fa fa-level-up"></i></span> {{event.seats | seats}}</td>
+                <td> {{event.startTime | date : 'HH:mm'}} </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
-    <div class="col-xs-3 button-col">
-        <button class=""> {{ 'REPLACE_BUTTON_LABEL' | translate }} </button>
-    </div>
-    <div class="col-xs-3 button-col">
-        <button class="" ng-click="newEventWithSeatsDic('destination')">+ {{ 'ADD_BUTTON_LABEL' | translate }}</button>
-    </div>
+    <!--<ul id="events-list"-->
+        <!--slim-scroll-->
+        <!--data-collapse-nav>-->
+        <!--<li class="active"><a href="#/dashboard"> <i class="fa fa-dashboard"></i><span>Dashboard</span> </a></li>-->
+        <!--<li>-->
+            <!--<a href="#/ui"><i class="fa fa-magic"></i><span data-i18n="UI Kit"></span></a>-->
+            <!--<ul>-->
+                <!--<li><a href="#/ui/buttons"><i class="fa fa-caret-right"></i><span data-i18n="Buttons"></span></a></li>-->
+                <!--<li><a href="#/ui/typography"><i class="fa fa-caret-right"></i><span data-i18n="Typography"></span></a></li>-->
+                <!--<li><a href="#/ui/widgets"><i class="fa fa-caret-right"></i><span data-i18n="Widgets"></span> <span class="badge badge-success">13</span></a></li>-->
+                <!--<li><a href="#/ui/grids"><i class="fa fa-caret-right"></i><span data-i18n="Grids"></span></a></li>-->
+                <!--<li><a href="#/ui/icons"><i class="fa fa-caret-right"></i><span data-i18n="Icons"></span></a></li>-->
+                <!--<li><a href="#/ui/components"><i class="fa fa-caret-right"></i><span data-i18n="Components"></span> <span class="badge badge-danger">17</span></a></li>-->
+                <!--<li><a href="#/ui/timeline"><i class="fa fa-caret-right"></i><span data-i18n="Timeline"></span></a></li>-->
+                <!--<li><a href="#/ui/nested-lists"><i class="fa fa-caret-right"></i><span data-i18n="Nested Lists"></span></a></li>-->
+                <!--<li><a href="#/ui/pricing-tables"><i class="fa fa-caret-right"></i><span data-i18n="Pricing Tables"></span></a></li>-->
+            <!--</ul>-->
+        <!--</li>-->
+        <!--<li>-->
+            <!--<a href="#/pages"><i class="fa fa-file-text-o"></i><span data-i18n="Pages"></span></a>-->
+            <!--<ul>-->
+                <!--<li><a href="#/pages/signin"><i class="fa fa-caret-right"></i><span data-i18n="Sign in"></span></a></li>-->
+                <!--<li><a href="#/pages/signup"><i class="fa fa-caret-right"></i><span data-i18n="Sign Up"></span></a></li>-->
+                <!--<li><a href="#/pages/forgot"><i class="fa fa-caret-right"></i><span data-i18n="Forgot Password"></span></a></li>-->
+                <!--<li><a href="#/pages/lock-screen"><i class="fa fa-caret-right"></i><span data-i18n="Lock Screen"></span></a></li>-->
+                <!--<li><a href="#/pages/profile"><i class="fa fa-caret-right"></i><span data-i18n="User Profile"></span></a></li>-->
+                <!--<li><a href="#/pages/404"><i class="fa fa-caret-right"></i>404 <span data-i18n="Error"></span></a></li>-->
+                <!--<li><a href="#/pages/500"><i class="fa fa-caret-right"></i>500 <span data-i18n="Error"></span></a></li>-->
+                <!--<li><a href="#/pages/blank"><i class="fa fa-caret-right"></i><span data-i18n="Blank Page"></span></a></li>-->
+                <!--<li><a href="#/pages/services"><i class="fa fa-caret-right"></i><span data-i18n="Services"></span></a></li>-->
+                <!--<li><a href="#/pages/about"><i class="fa fa-caret-right"></i><span data-i18n="About"></span></a></li>-->
+                <!--<li><a href="#/pages/contact"><i class="fa fa-caret-right"></i><span data-i18n="Contact"></span></a></li>-->
+                <!--<li><a href="#/pages/invoice"><i class="fa fa-caret-right"></i><span data-i18n="Invoice"></span></a></li>-->
+            <!--</ul>-->
+        <!--</li>-->
+        <!--<li>-->
+            <!--<a href="#/table"><i class="fa fa-table"></i><span data-i18n="Tables"></span></a>-->
+            <!--<ul>-->
+                <!--<li><a href="#/tables/static"><i class="fa fa-caret-right"></i><span data-i18n="Static Tables"></span></a></li>-->
+                <!--<li><a href="#/tables/responsive"><i class="fa fa-caret-right"></i><span data-i18n="Responsive Tables"></span></a></li>-->
+                <!--<li><a href="#/tables/dynamic"><i class="fa fa-caret-right"></i><span data-i18n="Dynamic Tables"></span></a></li>-->
+            <!--</ul>-->
+        <!--</li>-->
+        <!--<li>-->
+            <!--<a href="#/form"><i class="fa fa-pencil"></i><span data-i18n="Forms"></span></a>-->
+            <!--<ul>-->
+                <!--<li><a href="#/forms/elements"><i class="fa fa-caret-right"></i><span data-i18n="Form Elements"></span> <span class="badge badge-warning">14</span></a></li>-->
+                <!--<li><a href="#/forms/validation"><i class="fa fa-caret-right"></i><span data-i18n="Form Validation"></span></a></li>-->
+                <!--<li><a href="#/forms/wizard"><i class="fa fa-caret-right"></i><span data-i18n="Form Wizard"></span></a></li>-->
+                <!--<li><a href="#/forms/layouts"><i class="fa fa-caret-right"></i><span data-i18n="Form Layouts"></span></a></li>-->
+            <!--</ul>-->
+        <!--</li>-->
+        <!--<li>-->
+            <!--<a href="#/charts"><i class="fa fa-bar-chart-o"></i><span data-i18n="Charts"></span></a>-->
+            <!--<ul>-->
+                <!--<li><a href="#/charts/morris"><i class="fa fa-caret-right"></i>Morris <span data-i18n="Charts"></span></a></li>-->
+                <!--<li><a href="#/charts/flot"><i class="fa fa-caret-right"></i>Flot <span data-i18n="Charts"></span></a></li>-->
+                <!--<li><a href="#/charts/others"><i class="fa fa-caret-right"></i>Other <span data-i18n="Charts"></span></a></li>-->
+            <!--</ul>-->
+        <!--</li>-->
+        <!--<li>-->
+            <!--<a href="#/maps"><i class="fa fa-map-marker"></i><span data-i18n="Maps"></span></a>-->
+            <!--<ul>-->
+                <!--<li><a href="#/maps/gmap"><i class="fa fa-caret-right"></i><span data-i18n="Google Map"></span></a></li>-->
+                <!--<li><a href="#/maps/jqvmap"><i class="fa fa-caret-right"></i><span data-i18n="Vector Map"></span></a></li>-->
+            <!--</ul>-->
+        <!--</li>-->
+        <!--<li class="nav-task">-->
+            <!--<a href="#/tasks">-->
+                <!--<i class="fa fa-tasks"></i><span data-i18n="Tasks"></span>-->
+                <!--<span class="badge badge-info main-badge"-->
+                      <!--data-ng-show="taskRemainingCount > 0">{{taskRemainingCount}}</span>-->
+            <!--</a>-->
+        <!--</li>-->
+        <!--<li>-->
+            <!--<a href="#/mail"><i class="fa fa-envelope-o"></i><span data-i18n="Mail"></span></a>-->
+            <!--<ul>-->
+                <!--<li><a href="#/mail/inbox"><i class="fa fa-caret-right"></i><span data-i18n="Inbox"></span></a></li>-->
+                <!--<li><a href="#/mail/compose"><i class="fa fa-caret-right"></i><span data-i18n="Compose"></span></a></li>-->
+                <!--<li><a href="#/mail/single"><i class="fa fa-caret-right"></i><span data-i18n="Single Mail"></span></a></li>-->
+            <!--</ul>-->
+        <!--</li>-->
+    <!--</ul>-->
 </div>
 
-<div class="row" id="events-table-row">
-    <div class="col-xs-12">
-        <div class="row" id="events-lists-filter-buttons-row">
-            <div class="col-xs-3" ng-repeat="filter in filters" ng-click="selectFilter(filter)" ng-class="{selected : (selectedFilter == filter)}">
-                <span>{{filter | translate}}</span>
-            </div>
-        </div>
-        <div class="row" id="the-events-list-row">
-            <div class="col-xs-12">
-               <table id="events-table">
-                   <thead>
-                    <tr>
-                        <th class="status-col"> {{ 'STATUS' | translate }} </th>
-                        <th class="name-col"> {{ 'NAME' | translate }} </th>
-                        <th class="guests-col"> {{ 'GUESTS' | translate }} </th>
-                        <th class="seats-col"> {{ 'SEATS' | translate }} </th>
-                        <th class="time-col"> {{ 'TIME' | translate }} </th>
-                    </tr>
-                   </thead>
-                    <tbody hl-event-form event="newEvent" ng-if="newEvent"></tbody>
+<!--<div class="row" id="search-row">-->
+    <!--<div class="col-xs-3 search-input-col">-->
+            <!--<input type="text" placeholder="{{'SEARCH' | translate}}" ng-model="query">-->
+    <!--</div>-->
+    <!--<div class="col-xs-3 button-col">-->
+        <!--<button class="" ng-click="goToNow()"> {{ 'NOW' | translate }} </button>-->
+    <!--</div>-->
 
-                   <tbody class="edited-event existing-event top-form" ng-show="!event.helpers.isEditing" ng-repeat-start="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter | filter : {name : query} | orderBy : 'startTime'))">
-                       <tr  class="events-table-row" ng-click="openEditedEvent(event)">
-                           <td class="status-col"> <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event, $event)"></hl-status-selector> </td>
-                           <td class="name-col">
-                               <span ng-show="!event.helpers.isEditing" ng-class="{'has-comment' : (event.comment || event.contactComment)}"> {{event.name}} </span>
-                               <span ng-show="event.helpers.isEditing"> <input type="text" ng-model="event.name" placeholder="{{ 'NAME' | translate }}" class="">  </span>
-                           </td>
-                           <td class="guests-col">
-                               <span ng-show="!event.helpers.isEditing"> {{event.guests}} </span>
-                               <span ng-show="event.helpers.isEditing"> <input type="text" ng-model="event.guests" placeholder="0" class="">  </span>
+    <!--<div class="col-xs-3 button-col">-->
+        <!--<button class=""> {{ 'REPLACE_BUTTON_LABEL' | translate }} </button>-->
+    <!--</div>-->
+    <!--<div class="col-xs-3 button-col">-->
+        <!--<button class="" ng-click="newEventWithSeatsDic('destination')">+ {{ 'ADD_BUTTON_LABEL' | translate }}</button>-->
+    <!--</div>-->
+<!--</div>-->
 
-                           </td>
-                           <td class="seats-col"> {{event.seats | seats}} </td>
-                           <td class="time-col"> {{event.startTime | date : 'HH:mm'}} </td>
-                       </tr>
-                   </tbody>
-                   <tbody hl-event-form event="event" ng-if="event.helpers.isEditing"></tbody>
-                   <tbody ng-repeat-end="">
-                        <tr ng-if="$last" class="events-table-row">
-                            <td colspan="2">{{'TOTAL_EVENTS' | translate}} : {{$index + 1}}</td>
-                            <td colspan="1"></td>
-                            <td colspan="2">{{'TOTAL_GUESTS' | translate}} : {{countTotalGuestsForFilteredEvents()}}</td>
-                        </tr>
-                   </tbody>
+<!--<div class="row" id="events-table-row">-->
+    <!--<div class="col-xs-12">-->
+        <!--<div class="row" id="events-lists-filter-buttons-row">-->
+            <!--<div class="col-xs-3" ng-repeat="filter in filters" ng-click="selectFilter(filter)" ng-class="{selected : (selectedFilter == filter)}">-->
+                <!--<span>{{filter | translate}}</span>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="row" id="the-events-list-row">-->
+            <!--<div class="col-xs-12">-->
+               <!--<table id="events-table">-->
+                   <!--<thead>-->
+                    <!--<tr>-->
+                        <!--<th class="status-col"> {{ 'STATUS' | translate }} </th>-->
+                        <!--<th class="name-col"> {{ 'NAME' | translate }} </th>-->
+                        <!--<th class="guests-col"> {{ 'GUESTS' | translate }} </th>-->
+                        <!--<th class="seats-col"> {{ 'SEATS' | translate }} </th>-->
+                        <!--<th class="time-col"> {{ 'TIME' | translate }} </th>-->
+                    <!--</tr>-->
+                   <!--</thead>-->
+                    <!--<tbody hl-event-form event="newEvent" ng-if="newEvent"></tbody>-->
 
+                   <!--<tbody class="edited-event existing-event top-form" ng-show="!event.helpers.isEditing" ng-repeat-start="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter | filter : {name : query} | orderBy : 'startTime'))">-->
+                       <!--<tr  class="events-table-row" ng-click="openEditedEvent(event)">-->
+                           <!--<td class="status-col"> <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event, $event)"></hl-status-selector> </td>-->
+                           <!--<td class="name-col">-->
+                               <!--<span ng-show="!event.helpers.isEditing" ng-class="{'has-comment' : (event.comment || event.contactComment)}"> {{event.name}} </span>-->
+                               <!--<span ng-show="event.helpers.isEditing"> <input type="text" ng-model="event.name" placeholder="{{ 'NAME' | translate }}" class="">  </span>-->
+                           <!--</td>-->
+                           <!--<td class="guests-col">-->
+                               <!--<span ng-show="!event.helpers.isEditing"> {{event.guests}} </span>-->
+                               <!--<span ng-show="event.helpers.isEditing"> <input type="text" ng-model="event.guests" placeholder="0" class="">  </span>-->
 
-                   <tr class="separator-table-row" ng-if="selectedFilter == 'ALL'"> <td colspan="5">{{"DEAD_EVENTS" | translate }}</td> </tr>
-
-                   <tbody class="edited-event existing-event top-form" ng-if="selectedFilter == 'ALL'" ng-show="!event.helpers.isEditing" ng-repeat-start="event in TimelyFilteredEvents.filteredEvents | statusesFilter:'DEAD'">
-                   <tr  class="events-table-row" ng-click="openEditedEvent(event)">
-                       <td class="status-col"> <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event, $event)"></hl-status-selector> </td>
-                       <td class="name-col">
-                           <span ng-show="!event.helpers.isEditing"> {{event.name}} </span>
-                           <span ng-show="event.helpers.isEditing"> <input type="text" ng-model="event.name" placeholder="{{ 'NAME' | translate }}" class="">  </span>
-                       </td>
-                       <td class="guests-col">
-                           <span ng-show="!event.helpers.isEditing"> {{event.guests}} </span>
-                           <span ng-show="event.helpers.isEditing"> <input type="text" ng-model="event.guests" placeholder="0" class="">  </span>
-
-                       </td>
-                       <td class="seats-col"> {{event.seats | seats}} </td>
-                       <td class="time-col"> {{event.startTime | date : 'HH:mm'}} </td>
-                   </tr>
-                   </tbody>
-                   <tbody hl-event-form event="event" ng-if="event.helpers.isEditing" ng-repeat-end=""></tbody>
+                           <!--</td>-->
+                           <!--<td class="seats-col"> {{event.seats | seats}} </td>-->
+                           <!--<td class="time-col"> {{event.startTime | date : 'HH:mm'}} </td>-->
+                       <!--</tr>-->
+                   <!--</tbody>-->
+                   <!--<tbody hl-event-form event="event" ng-if="event.helpers.isEditing"></tbody>-->
+                   <!--<tbody ng-repeat-end="">-->
+                        <!--<tr ng-if="$last" class="events-table-row">-->
+                            <!--<td colspan="2">{{'TOTAL_EVENTS' | translate}} : {{$index + 1}}</td>-->
+                            <!--<td colspan="1"></td>-->
+                            <!--<td colspan="2">{{'TOTAL_GUESTS' | translate}} : {{countTotalGuestsForFilteredEvents()}}</td>-->
+                        <!--</tr>-->
+                   <!--</tbody>-->
 
 
-               </table>
-            </div>
-        </div>
-    </div>
-</div>
+                   <!--<tr class="separator-table-row" ng-if="selectedFilter == 'ALL'"> <td colspan="5">{{"DEAD_EVENTS" | translate }}</td> </tr>-->
+
+                   <!--<tbody class="edited-event existing-event top-form" ng-if="selectedFilter == 'ALL'" ng-show="!event.helpers.isEditing" ng-repeat-start="event in TimelyFilteredEvents.filteredEvents | statusesFilter:'DEAD'">-->
+                   <!--<tr  class="events-table-row" ng-click="openEditedEvent(event)">-->
+                       <!--<td class="status-col"> <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event, $event)"></hl-status-selector> </td>-->
+                       <!--<td class="name-col">-->
+                           <!--<span ng-show="!event.helpers.isEditing"> {{event.name}} </span>-->
+                           <!--<span ng-show="event.helpers.isEditing"> <input type="text" ng-model="event.name" placeholder="{{ 'NAME' | translate }}" class="">  </span>-->
+                       <!--</td>-->
+                       <!--<td class="guests-col">-->
+                           <!--<span ng-show="!event.helpers.isEditing"> {{event.guests}} </span>-->
+                           <!--<span ng-show="event.helpers.isEditing"> <input type="text" ng-model="event.guests" placeholder="0" class="">  </span>-->
+
+                       <!--</td>-->
+                       <!--<td class="seats-col"> {{event.seats | seats}} </td>-->
+                       <!--<td class="time-col"> {{event.startTime | date : 'HH:mm'}} </td>-->
+                   <!--</tr>-->
+                   <!--</tbody>-->
+                   <!--<tbody hl-event-form event="event" ng-if="event.helpers.isEditing" ng-repeat-end=""></tbody>-->
+
+
+               <!--</table>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->

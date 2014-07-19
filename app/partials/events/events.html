@@ -1,9 +1,4 @@
-<div ng-controller="EventsCtrl">
-    <div ui-view="navigation"></div>
-    <div class="container-fluid" id="events-main">
-        <div class="row">
-            <div class="col-xs-12 col-md-6 col-lg-4" ui-view="events-list" id="events-list"></div>
-            <div class="col-xs-12 col-md-6 col-lg-8" ui-view="map" id="map-col" hl-hundred-percent-height="130" ng-hide="DateHolder.isEntireShift"></div>
-        </div>
-    </div>
+<div ng-controller="EventsCtrl" id="event-ctrl">
+    <div ui-view="header" class="top-header"></div>
+    <aside ui-view="events-list" id="events-list-container"></aside>
 </div>
