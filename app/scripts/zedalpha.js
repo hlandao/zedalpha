@@ -16,7 +16,8 @@ var myModules = [
     'zedalpha.controllers',
     'waitForAuth',
     'routeSecurity',
-    'zedalpha.directives'
+    'zedalpha.directives',
+    'zedalpha.filters'
 ];
 
 var zedalphaModules = [].concat(angularDependencies,myModules);
@@ -35,7 +36,7 @@ angular.module('zedalpha',zedalphaModules)
                 } else {
                     this.$apply(fn);
                 }
-            };    }]);
+            };2    }]);
 
 
 Function.prototype.inheritsFrom = function( parentClassOrObject ){

@@ -94,6 +94,11 @@ zedAlphaServices
 
         _shift.fetchShiftWithDateFromDB = function(date){
             var defer = $q.defer();
+
+            if(!BusinessHolder.$business){
+                defer.reject();
+                return defer.promise;
+            }
             $shiftsDays = $shiftsDays || BusinessHolder.$business.$child('shifts').$child('days');
             var dateMoment = moment(date);
             console.log('dateMoment',dateMoment);
@@ -115,11 +120,15 @@ zedAlphaServices
 
         return _shift;
     }).factory('BasicShift', function($rootScope, BusinessHolder, BasicShiftDay){
-        var $basic = BusinessHolder.$business.$child('shifts').$child('basic');
+        var $basic;
 
-        $rootScope.$on('$businessHolderChanged', function(){
+        var update = function(){
             $basic = BusinessHolder.$business.$child('shifts').$child('basic');
-        });
+        }
+
+        $rootScope.$on('$businessHolderChanged', update);
+
+        if(BusinessHolder.$business) update();
 
         return {
             basicShiftForDayOfWeek : function(date){

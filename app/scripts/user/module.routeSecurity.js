@@ -34,8 +34,9 @@
       },
 
       _checkCurrent: function() {
+          console.log('_checkCurrent',this._state.current);
          // Check if the current page requires authentication.
-         if (this._state.current) {
+         if (this._state.current && this._state.current.authRequired) {
             this._authRequiredRedirect(null, this._state.current, null,null,null, this._loginPath);
          }
       },

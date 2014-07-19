@@ -1,7 +1,7 @@
-var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directives', []);
+var zedAlphaFilters = zedAlphaFilters || angular.module('zedalpha.filters', []);
 
 
-zedAlphaDirectives
+zedAlphaFilters
 
     .filter('eventsByTime', function(DateHolder){
         return function(events){

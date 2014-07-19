@@ -2,25 +2,8 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory('EventsHolder', function($rootScope,BusinessHolder, DateHolder){
-        var $events = {$allEvents : null};
-        var updateEvents = function(){
-            if(BusinessHolder.$business){
-                $events.$allEvents = BusinessHolder.$business.$child('events');
-            }
-        };
-
-        $rootScope.$on('$businessHolderChanged', updateEvents);
-        updateEvents();
-//        $rootScope.$watch(function(){
-//            return DateHolder.current;
-//        }, updateEvents);
-
-
-        return $events;
-
-    }).factory('EventsLogic', function(EventsHolder, BusinessHolder, EventsDurationForGuestsHolder, FullDateFormat,GuestsPer15, $q, ShiftsDayHolder, DateHelpers){
-        var DEFAULT_EVENT_DURATION = EventsDurationForGuestsHolder.default || 120;
+    .factory('EventsLogic', function(EventsHolder, BusinessHolder, EventsDurationForGuestsHolder, FullDateFormat,GuestsPer15, $q, ShiftsDayHolder, DateHelpers){
+        var DEFAULT_EVENT_DURATION = (EventsDurationForGuestsHolder && EventsDurationForGuestsHolder.default) || 120;
         var checkCollisionsForEvent = function(event){
             var eventToCheck, sharedSeats;
             for(var i in EventsHolder.$allEvents){
@@ -100,13 +83,6 @@ zedAlphaServices
         };
 
 
-        var isInvalidEventWhileEdit = function(event){
-            if(checkCollisionsForEvent(event)){
-                return {error : "ERROR_EVENT_MSG_COLLISION"};
-            }
-
-            return false;
-        };
 
         var isInvalidEventBeforeSave = function(event){
             return checkName(event).then(checkSeats).then(checkHost).then(checkPhone).then(checkStartTime).then(checkEndTime).then(checkCollision).then(checkEventWarnings);
@@ -306,7 +282,7 @@ zedAlphaServices
 
         return {
             isInvalidEventBeforeSave : isInvalidEventBeforeSave,
-            isInvalidEventWhileEdit : isInvalidEventWhileEdit,
+//            isInvalidEventWhileEdit : isInvalidEventWhileEdit,
             checkCollisionsForEvent : checkCollisionsForEvent,
             endTimeForNewEventWithStartTimeAndMaxDuration : endTimeForNewEventWithStartTimeAndMaxDuration,
             maxDurationForEventInMinutes : maxDurationForEventInMinutes,

@@ -1,24 +1,35 @@
 //"use strict";
-
+var ISDEBUG = true;
 angular.module('zedalpha.routes', [])
 
     // configure views; the authRequired parameter is used for specifying pages
     // which should only be available while logged in
     .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
 
-        var userHolderResolver = function(UserHolder){
-            return UserHolder.promise();
-        };
+        if(ISDEBUG){
+            var userHolderResolver = function(){
+                return true
+            };
 
-        var businessResolver = function(UserHolder, BusinessHolder, $stateParams, $q){
-            var defer = $q.defer();
-            return UserHolder.promise().then(function(){
-                return BusinessHolder.init($stateParams.businessId).then(function(){
-                    defer.resolve();
+            var businessResolver = function(){
+                return true;
+            };
+
+        }else{
+            var userHolderResolver = function(UserHolder){
+                return UserHolder.promise();
+            };
+
+            var businessResolver = function(UserHolder, BusinessHolder, $stateParams, $q){
+                var defer = $q.defer();
+                return UserHolder.promise().then(function(){
+                    return BusinessHolder.init($stateParams.businessId).then(function(){
+                        defer.resolve();
+                    });
                 });
-            });
-            return defer.promise;
-        };
+                return defer.promise;
+            };
+        }
 
 
 
@@ -148,26 +159,19 @@ angular.module('zedalpha.routes', [])
                 }
         }).state('eventstest', {
                 abstract : true,
-                views : {
-                    "navigation" : {
-                        template : ""
-                    },
-                    "main" : {
-                        templateUrl : "/partials/events/events.html"
-                    }
-                }
-        }).state('eventstest', {
-                url : 'eventstest/all',
+                templateUrl : "/partials/events/events.html"
+        }).state('eventstest.all', {
+                url : '/eventstest/all',
                 views: {
-                    'header@dashboard.events' : {
+                    'header@eventstest' : {
                         templateUrl: '/partials/events/header.html',
                         controller: 'EventsNavigationCtrl'
                     },
-                    'map@dashboard.events': {
+                    'map@eventstest': {
                         templateUrl: '/partials/events/map.html'
 //                        controller: 'MapCtrl'
                     },
-                    'events-list@dashboard.events': {
+                    'events-list@eventstest': {
                         templateUrl: '/partials/events/events-list.html'
 //                        controller: 'EventsListCtrl'
                     }

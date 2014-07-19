@@ -1,5 +1,5 @@
 
-var zedAlphaServices = zedAlphaControllers || angular.module('zedalpha.services', []);
+var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', []);
 zedAlphaServices
 // a simple utility to create references to Firebase paths
     .factory('firebaseRef', ['Firebase', 'FBURL', function(Firebase, FBURL) {
