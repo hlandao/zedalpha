@@ -20,21 +20,36 @@
             <li class="datepicker-col">
                 <input type="text" class="datepicker-input transparent-input" ng-click="openDatePicker($event)" datepicker-popup="dd/MM/yyyy" ng-model="DateHolder.current"  is-open="datePickerOpened" close-text=""/>
             </li>
-            <li class="shiftpicker-col dropdown text-normal">
+
+            <li class="shiftpicker-col dropdown">
                 <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
                     {{ShiftsDayHolder.selected.name | translate}} <span class="caret"></span>
                 </a>
-                <ul class="dropdown-menu dropdown-dark with-arrow">
-                    <li ng-repeat="shift in ShiftsDayHolder.current.shifts | activeShift">
-                        <a href="#" ng-click="ShiftsDayHolder.selected = shift">
-                            <span>{{shift.name | translate}}</span>
-                        </a>
-                    </li>
-                </ul>
+                <div class="dropdown-menu pull-right with-arrow panel panel-default">
+                    <div class="panel-heading">
+                        Select a shift
+                    </div>
+                    <ul class="list-group">
+                        <li class="list-group-item" ng-repeat="shift in ShiftsDayHolder.current.shifts | activeShift">
+                            <a href="javascript:;" class="media" ng-click="ShiftsDayHolder.selected = shift">
+                                <div class="media-body">
+                                    <span class="block">{{shift.name | translate}}</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
+
+
+
+
+
+
             <li class="timepicker-col">
                 <hl-timepicker class="transparent-input" ng-model="DateHolder.current" static-callback="dateHolderStaticCallback" static-options="timepickerStaticOptions" min-time="ShiftsDayHolder.selected.startTime" max-time="ShiftsDayHolder.selected.endTime"></hl-timepicker>
             </li>
+
 <!--             <li class="dropdown">
                 <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
                     <span class="fa fa-magic nav-icon"></span>
@@ -43,6 +58,7 @@
                     <li><a href="javascript:;" class="color-option color-some_color" data-style="some_color"></a></li>
                 </ul>
             </li> -->
+
 
         </ul> 
 

@@ -24,7 +24,7 @@
             <tbody>
             <tr class="event-row" ng-repeat-start="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter | filter : {name : query} | orderBy : 'startTime'))">
                 <td><span class="label label-info" style="background: {{event.status.color}};">{{ event.status.status | translate }}</span></td>
-                <td ng-click="openEditedEvent(event)">
+                <td ng-click="openEditedEvent(event)" class="name-col">
                     <input type="text" ng-model="event.name" placeholder="{{ 'NAME' | translate }}" ng-show="event.helpers.isEditing">
                     <span ng-show="!event.helpers.isEditing"> {{event.name}} </span>
                 </td>
