@@ -82,14 +82,12 @@ zedAlphaServices
 
         var fetchShiftWithDate = function(date){
             _shift.fetchShiftWithDateFromDB(date).then(function(_shiftResponse){
-                console.log('_shiftResponse',_shiftResponse);
                 _shift.current = _shiftResponse;
                 selectDefaultShiftForShiftDay(_shift.current);
             });
         }
 
         _shift.fetchShiftWithDateFromDB = function(date){
-            console.log('fetchShiftWithDateFromDB',BusinessHolder);
             var defer = $q.defer();
 
             if(!BusinessHolder.$business){

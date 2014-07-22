@@ -1,0 +1,18 @@
+<li class="timepicker-col dropdown timepicker-dropdown-header-directive" ng-click="setOffset()">
+    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+        {{selected | date : format}} <span class="caret"></span>
+    </a>
+    <div class="dropdown-menu pull-right with-arrow panel panel-default">
+        <ul class="list-group">
+            <li class="list-group-item" ng-repeat="time in times" ng-class="{active:  (time == selectedTime)}" ng-click="setNewTime(time)">
+                <a href="javascript:;" class="media" >
+                    <div class="media-body">
+                        <span class="block">{{time | date : 'HH:mm'}}</span>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+
