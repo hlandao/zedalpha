@@ -37,32 +37,28 @@ angular.module('zedalpha.routes', [])
             .state('home',{
                 url : '/',
                 views : {
-                    "" : {
+                    "header" : {
+                    },
+                    "nav" : {
+                    },
+                    "main" : {
                         templateUrl: '/partials/home/home.html',
                         controller: 'LoginCtrl'
-                    },
-                    "navigation@home" : {
-                        templateUrl: '/partials/nav-home.html'
                     }
                 },
+                isSpecificPage : true,
                 authRequired : false
             });
 
 
-        $stateProvider.state('dashboard', {
+        $stateProvider.state('dashboard',{
             authRequired: true,
-            resolve : {
-                userHolder : userHolderResolver
-            },
-            abstract : true,
-            templateUrl : "/partials/dashboard/dashboard.html"
-
-        }).state('dashboard.main',{
-            authRequired: true,
+            isSpecificPage : true,
             url : '/dashboard',
             views : {
-                "navigation" : {
-                    templateUrl : "/partials/nav-dashboard.html"
+                "header" : {
+                },
+                "nav" : {
                 },
                 "main" : {
                     templateUrl: '/partials/business/list-business.html',
@@ -72,11 +68,26 @@ angular.module('zedalpha.routes', [])
             resolve : {
                 userHolder : userHolderResolver
             }
-        }).state('dashboard.business',{
+        }).state('new-business', {
+                isSpecificPage : true,
+                authRequired: true,
+                url : '/business/new',
+                templateUrl: '/partials/business/new-business.html',
+                controller: 'BusinessCtrl',
+                resolve : {
+                    businessResolver : businessResolver
+                }
+
+        }).state('business',{
+                authRequired: true,
                 url : '/business',
                 abstract : true,
                 views : {
-                    "navigation" : {
+                    "header" : {
+                        templateUrl : "/partials/header-business.html",
+                        controller: "BusinessNavCtrl"
+                    },
+                    "nav" : {
                         templateUrl : "/partials/nav-business.html",
                         controller: "BusinessNavCtrl"
                     },
@@ -84,43 +95,35 @@ angular.module('zedalpha.routes', [])
                         template : "<ui-view/>"
                     }
                 }
-        }).state('dashboard.business.new', {
-            url : '/new',
-            templateUrl: '/partials/business/new-business.html',
-            controller: 'BusinessCtrl',
-            resolve : {
-                businessResolver : businessResolver
-            }
-
-        }).state('dashboard.business.show', {
+        }).state('business.show', {
             url : '/:businessId',
             templateUrl: '/partials/business/show-business.html',
             controller: 'BusinessCtrl',
             resolve : {
                 businessResolver : businessResolver
             }
-        }).state('dashboard.business.map', {
+        }).state('business.map', {
                 url : '/:businessId/map',
                 templateUrl: '/partials/business/map-business.html',
                 controller: 'BusinessCtrl',
                 resolve : {
                     businessResolver : businessResolver
                 }
-        }).state('dashboard.business.shifts',{
+        }).state('business.shifts',{
                 url : '/:businessId/shifts',
                 templateUrl: '/partials/business/shifts-business.html',
                 controller: 'BusinessCtrl',
                 resolve : {
                     businessResolver : businessResolver
                 }
-        }).state('dashboard.business.eventsStatuses',{
+        }).state('business.eventsStatuses',{
                 url : '/:businessId/eventsStatuses',
                 templateUrl: '/partials/business/events-statuses-business.html',
                 controller: 'EventsStatusesCtrl',
                 resolve : {
                     businessResolver : businessResolver
                 }
-        }).state('dashboard.business.eventsDuration',{
+        }).state('business.eventsDuration',{
             url : '/:businessId/eventsDuration',
             templateUrl: '/partials/business/events-duration-business.html',
             controller: 'EventsDurationCtrl',
@@ -128,8 +131,9 @@ angular.module('zedalpha.routes', [])
                 businessResolver : businessResolver
             }
 
-        }).state('dashboard.events', {
+        }).state('events', {
             abstract : true,
+            authRequired: true,
             views : {
                 "navigation" : {
                     template : ""
@@ -138,7 +142,7 @@ angular.module('zedalpha.routes', [])
                     templateUrl : "/partials/events/events.html"
                 }
             }
-        }).state('dashboard.events.show',{
+        }).state('events.show',{
                 url : '/events/:businessId',
                 views: {
                     'header@dashboard.events' : {

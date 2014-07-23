@@ -1,14 +1,25 @@
-<div class="container">
-    <div class="row marketing">
-        <div class="col-xs-6  col-xs-offset-2" ng-hide="createMode">
-            <h2>{{'YOUR_BUSINESSES' | translate}} {{user.businesses.length}}</h2>
-            <ul>
-                <li ng-repeat="(businessId, business) in businesses">
-                    <a ui-sref="dashboard.business.show({businessId : businessId})"> {{business.name}}</a>
-                </li>
-            </ul>
-            <a href="#/business/new"> {{'ADD_NEW_BUSINESS' | translate}}</a>
+<div class="page-forgot">
 
+    <div class="signin-header">
+        <div class="container text-center">
+            <section class="logo">
+                <a href="#/"> ZED </a>
+            </section>
         </div>
     </div>
+
+    <div class="info text-center">
+        <h2>{{'YOUR_BUSINESSES' | translate}} {{user.businesses.length}}</h2>
+
+        <ul style="list-style: none">
+            <li ng-repeat="(businessId, business) in businesses">
+                <a ui-sref="dashboard.business.show({businessId : businessId})"> {{business.name}}</a>
+            </li>
+        </ul>
+        <a href="#/business/new"> {{'ADD_NEW_BUSINESS' | translate}}</a>
+
+
+    </div>
+
 </div>
+

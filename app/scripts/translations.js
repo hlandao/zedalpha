@@ -10,6 +10,7 @@ zedAlphaConfigModule
         DONE_HAVE_ACCOUNT_LABEL: 'Don\'t have an account ? click here',
         REGISTER_ACCOUNT_LABEL: 'Register New Account',
         REGISTER: 'Register',
+        LOGIN : ' Login',
         ALREADY_REGISTERED_LABEL: 'Already registered ? click here',
         // DASHBOARD
         YOUR_BUSINESSES: 'Your Businesses',
@@ -101,6 +102,7 @@ zedAlphaConfigModule
                 "DONE_HAVE_ACCOUNT_LABEL": "אין לך חשבון? לחץ כאן",
                 "REGISTER_ACCOUNT_LABEL": "הרשמה לחשבון חדש",
                 "REGISTER": "הרשמה",
+                "LOGIN" : ' התחבר',
                 "ALREADY_REGISTERED_LABEL": "משתמש רשום? לחץ כאן",
                 "YOUR_BUSINESSES": "העסק שלך",
                 "ADD_NEW_BUSINESS": "הוספת עסק חדש",

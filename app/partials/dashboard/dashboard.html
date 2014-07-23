@@ -1,2 +1,15 @@
-<div ui-view="navigation"></div>
-<div ui-view="main"></div>
+<div ng-controller="DashboardCtrl">
+    <div ng-hide="isSpecificPage()"
+         ng-cloak
+         class="no-print">
+        <section  ui-view="header"
+                 id="header" class="top-header"></section>
+
+        <aside ui-view="nav"
+               id="nav-container"></aside>
+    </div>
+
+    <div class="view-container">
+        <section ui-view="main" id="content" class="animate-fade-up"></section>
+    </div>
+</div>

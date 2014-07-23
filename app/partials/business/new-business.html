@@ -1,33 +1,48 @@
-<div class="container">
-    <div class="row">
-        <div class="col-xs-6  col-xs-offset-2" ng-hide="createMode">
-            <h2>{{ 'ADD_NEW_BUSINESS_LABEL' | translate}}</h2>
-            <form role="form">
-                <div class="form-group">
-                    <label> {{ 'BUSINESS_NAME' | translate}} </label>
-                    <input type="text" class="form-control"  placeholder="{{ 'BUSINESS_NAME' | translate}}" ng-model="newBusiness.name  ">
-                </div>
-                <div class="form-group">
-                    <label> {{ 'BUSINESS_TYPE' | translate}} </label>
-                    <select class="form-control" ng-options="k as k for (k,v) in businessMetaData.businessTypes" ng-model="newBusiness.businessType">
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label> {{ 'BUSINESS_AREA' | translate}} </label>
-                    <select ng-options="k as k for (k,v) in businessMetaData.businessAreas" ng-model="newBusiness.businessAreas" class="form-control" ng-options="type in businessMetaData.businessAreas">
-                    </select>
-                </div>
+<div class="page-forgot">
 
-                <div class="form-group">
-                    <label> {{ 'BUSINESS_SIZE' | translate}} </label>
-                    <select ng-options="k as k for (k,v) in businessMetaData.businessSizes" ng-model="newBusiness.businessSizes" class="form-control" ng-options="type in businessMetaData.businessSizes">
-                    </select>
-                </div>
+    <div class="signin-header">
+        <div class="container text-center">
+            <section class="logo">
+                <a href="#/"> ZED </a>
+            </section>
+        </div>
+    </div>
 
-                <button type="submit" class="btn btn-default" ng-click="create(newBusiness)">{{'CREATE' | translate}}</button>
-            </form>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6  col-xs-offset-2" ng-hide="createMode">
+                <h2>{{ 'ADD_NEW_BUSINESS_LABEL' | translate}}</h2>
+                <form role="form">
+                    <div class="form-group">
+                        <label> {{ 'BUSINESS_NAME' | translate}} </label>
+                        <input type="text" class="form-control"  placeholder="{{ 'BUSINESS_NAME' | translate}}" ng-model="newBusiness.name  ">
+                    </div>
+                    <div class="form-group">
+                        <label> {{ 'BUSINESS_TYPE' | translate}} </label>
+                        <select class="form-control" ng-options="k as k for (k,v) in businessMetaData.businessTypes" ng-model="newBusiness.businessType">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label> {{ 'BUSINESS_AREA' | translate}} </label>
+                        <select ng-options="k as k for (k,v) in businessMetaData.businessAreas" ng-model="newBusiness.businessAreas" class="form-control" ng-options="type in businessMetaData.businessAreas">
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label> {{ 'BUSINESS_SIZE' | translate}} </label>
+                        <select ng-options="k as k for (k,v) in businessMetaData.businessSizes" ng-model="newBusiness.businessSizes" class="form-control" ng-options="type in businessMetaData.businessSizes">
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-default" ng-click="create(newBusiness)">{{'CREATE' | translate}}</button>
+                </form>
+
+            </div>
 
         </div>
-
     </div>
+
 </div>
+
+
+
