@@ -1,9 +1,24 @@
-<div class="status-selector">
-    <div class="status-box" ng-style="{backgroundColor : status.color}" ng-click="toggleSelector($event)"></div>
-    <div class="events-statuses-list" ng-show="showSelector">
-        <div class="events-status" ng-repeat="status in EventsStatusesHolder" ng-click="selectStatus(status,$event)">
-            <div class="status-box" ng-style="{backgroundColor : status.color}"></div>
-            <div class="status-title">{{status.status | translate}}</div>
-        </div>
+<div class="dropdown status-selector">
+    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+        <span class="label label-info" style="background: {{status.color}}"> {{status.status}} </span>
+    </a>
+
+    <div class="dropdown-menu  with-arrow">
+        <ul class="list-group">
+            <li class="list-group-item"  ng-repeat="status in EventsStatusesHolder" ng-click="selectStatus(status,$event)">
+                <a href="javascript:;">
+                    <span class="label label-info" style="background: {{status.color}}"> {{status.status}} </span>
+                </a>
+            </li>
+        </ul>
     </div>
+
+
+    <!--<div class="events-statuses-list" ng-show="showSelector">-->
+        <!--<div class="events-status" ng-repeat="status in EventsStatusesHolder" ng-click="selectStatus(status,$event)">-->
+            <!--<div class="status-box" ng-style="{backgroundColor : status.color}"></div>-->
+            <!--<div class="status-title">{{status.status | translate}}</div>-->
+        <!--</div>-->
+    <!--</div>-->
+
 </div>

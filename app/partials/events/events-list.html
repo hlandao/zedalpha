@@ -1,6 +1,6 @@
 
 <div id="events-list-wrapper">
-    <div class="panel panel-default" id="events-list">
+    <div class="panel panel-default" id="events-list" data-collapse-nav data-slim-scroll>
         <div class="panel-heading">
             <div class="dropdown pull-left">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{selectedFilter | translate}} <b class="caret"></b></a>
@@ -9,7 +9,10 @@
                     <li ng-repeat="filter in filters" ng-click="selectFilter(filter)"><a href="#">{{filter | translate}}</a></li>
                 </ul>
             </div>
-
+            <div class="pull-right search-events">
+                <i class="glyphicon glyphicon-search"></i>
+                <input type="text" placeholder="Search" ng-model="query">
+            </div>
         </div>
         <table class="table">
             <thead>
@@ -22,8 +25,25 @@
             </tr>
             </thead>
             <tbody>
+            <!--<tr class="event-row test">-->
+                <!--<td><hl-status-selector ng-init="testStatus = {status:'test', color:'blue'}" ng-model="testStatus"></hl-status-selector></td>-->
+                <!--<td ng-click="openEditedEvent(event)" class="name-col">-->
+                    <!--<input type="text" ng-model="event.name" placeholder="{{ 'NAME' | translate }}" ng-show="event.helpers.isEditing">-->
+                    <!--<span ng-show="!event.helpers.isEditing"> {{event.name}} </span>-->
+                <!--</td>-->
+                <!--<td>-->
+                    <!--<input type="text" ng-model="event.guests" placeholder="0" ng-show="event.helpers.isEditing">-->
+                    <!--<span ng-show="!event.helpers.isEditing">{{event.guests}}</span>-->
+                <!--</td>-->
+                <!--<td>-->
+                    <!--<input type="text" ng-model="event.seats" hl-seats-input ng-show="event.helpers.isEditing">-->
+                    <!--<span ng-show="!event.helpers.isEditing">{{event.seats | seats}}</span>-->
+                <!--</td>-->
+                <!--<td> {{event.startTime | date : 'HH:mm'}} </td>-->
+            <!--</tr>-->
+
             <tr class="event-row" ng-repeat-start="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter | filter : {name : query} | orderBy : 'startTime'))">
-                <td><span class="label label-info" style="background: {{event.status.color}};">{{ event.status.status | translate }}</span></td>
+                <td class="status-col"><hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
                 <td ng-click="openEditedEvent(event)" class="name-col">
                     <input type="text" ng-model="event.name" placeholder="{{ 'NAME' | translate }}" ng-show="event.helpers.isEditing">
                     <span ng-show="!event.helpers.isEditing"> {{event.name}} </span>

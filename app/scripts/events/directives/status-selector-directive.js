@@ -22,9 +22,6 @@ zedAlphaDirectives
 
 
             $scope.selectStatus = function(selectedStatus, e){
-                e.preventDefault();
-                e.stopPropagation();
-
                 ngModel.$setViewValue(selectedStatus);
                 $scope.status = selectedStatus;
                 $timeout(function(){
@@ -33,8 +30,6 @@ zedAlphaDirectives
             };
 
             $scope.EventsStatusesHolder = EventsStatusesHolder;
-
-
         }
     })
     .directive('hlStatusSelector', ['$timeout', function ($timeout) {

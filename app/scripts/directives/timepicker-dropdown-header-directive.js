@@ -3,7 +3,7 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 var _e;
 zedAlphaDirectives
 
-    .directive('hlTimepickerDropdownHeader', ['$timeout','DateHelpers','FullDateFormat','$rootScope','$parse', function ($timeout,DateHelpers,FullDateFormat,$rootScope,$parse) {
+    .directive('hlTimepickerDropdownHeader', ['$timeout','DateHelpers','FullDateFormat','$rootScope','$parse','DateHolder', function ($timeout,DateHelpers,FullDateFormat,$rootScope,$parse,DateHolder) {
 
         return {
             restrict: 'E',
@@ -19,7 +19,6 @@ zedAlphaDirectives
                 scope.format = 'HH:mm';
 
                 var calcHoursArr = function(date){
-                    console.log('date',date);
                     var originalDateMoment = moment(date).seconds(0),
                         dateMoment = moment(date).hours(0).minutes(0).seconds(0),
                         currentFormattedDate,
@@ -35,7 +34,6 @@ zedAlphaDirectives
                         currentFormattedDate = new Date(dateMoment.format(FullDateFormat));
                         scope.times.push(currentFormattedDate);
                         diff = originalDateMoment.diff(dateMoment, 'minutes');
-                        console.log('diff',diff);
                         if(diff == 0 || (diff > 0 && diff <= interval)){
                             selectedTime = currentFormattedDate;
                         }
@@ -51,11 +49,15 @@ zedAlphaDirectives
                 var calcOffset = function(){
                     if(!scope.times) return;
                     var index = scope.times.indexOf(scope.selectedTime);
-                    offset = Math.abs((index-2) * cellHeight);
+                    offset = Math.abs((index-0.5) * cellHeight);
                 }
 
                 scope.setOffset = function(){
-                    $ul.scrollTop(offset);
+                    if(scope.isEntireShift){
+
+                    }else{
+                        $ul.scrollTop(offset);
+                    }
                 };
 
 
@@ -65,16 +67,29 @@ zedAlphaDirectives
 
 
                 ngModel.$render = function(){
-                    calcHoursArr(ngModel.$modelValue);
-                    calcOffset();
-                    scope.selected = ngModel.$modelValue;
+                    if(scope.isEntireShift){
+                        calcHoursArr(ngModel.$modelValue);
+                        offset=0;
+                        scope.selected = null;
+                        scope.selectedTime = null;
+                    }else{
+                        calcHoursArr(ngModel.$modelValue);
+                        calcOffset();
+                        scope.selected = ngModel.$modelValue;
+                    }
                 };
 
 
-                scope.setNewTime = function(time){
-                    console.log('ngModel',ngModel);
-                    ngModel.$setViewValue(time);
-                    ngModel.$render();
+                scope.setNewTime = function(time, isEntireShift){
+                    if(time){
+                        ngModel.$setViewValue(time);
+                        scope.isEntireShift = false;
+                        ngModel.$render();
+                    }else if(isEntireShift){
+                        DateHolder.isEntireShift = true;
+                        scope.isEntireShift = true;
+                        ngModel.$render();
+                    }
                 };
 
                 ngModel.$parsers.push(function(viewValue){

@@ -1,9 +1,19 @@
 <li class="timepicker-col dropdown timepicker-dropdown-header-directive" ng-click="setOffset()">
     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
-        {{selected | date : format}} <span class="caret"></span>
+        <span ng-show="!isEntireShift">{{selected | date : format}}</span>
+        <span ng-show="isEntireShift">{{'ENTIRE_SHIFT' | translate}}</span>
+        <span class="caret"></span>
     </a>
     <div class="dropdown-menu pull-right with-arrow panel panel-default">
         <ul class="list-group">
+            <li class="list-group-item" ng-class="{active:  (isEntireShift)}" ng-click="setNewTime(null, true)">
+                <a href="javascript:;" class="media" >
+                    <div class="media-body">
+                        <span class="block">{{'ENTIRE_SHIFT' | translate}}</span>
+                    </div>
+                </a>
+            </li>
+
             <li class="list-group-item" ng-repeat="time in times" ng-class="{active:  (time == selectedTime)}" ng-click="setNewTime(time)">
                 <a href="javascript:;" class="media" >
                     <div class="media-body">

@@ -9,8 +9,8 @@
     position: absolute;
     top: @header_height;
     bottom: 0;
-    left: -437px;
-    width: 437px;
+    left: -458px;
+    width: 458px;
     padding: 0;
     background-color: @nav_bg;
     -webkit-overflow-scrolling: touch;
@@ -42,10 +42,34 @@
     background-color: @link_active_bg;
     color:white;
     height: 40px;
+    .pull-right{
+      &.search-events{
+        i.glyphicon{
+          color:#eee;
+          font-size: 12px;
+        }
+        input{
+          background: transparent;
+          border: 0;
+          outline: none;
+          color: white;
+          padding-left:3px;
+          width:80px;
+          &::-webkit-input-placeholder{
+            color:#eee;
+          }
+        }
+      }
+    }
   }
 
   .event-row{
     td{
+      &.status-col{
+        a{
+          text-decoration: none;
+        }
+      }
       &.name-col{
         cursor:pointer;
       }
