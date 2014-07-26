@@ -11,4 +11,22 @@ zedAlphaDirectives
                 });
             }
         }
+    }).directive('highlightActive', function($state){
+        return function(scope, element, attrs){
+            var $children = element.children();
+            scope.$on('$stateChangeSuccess', function(event, newState){
+                angular.forEach($children, function(child){
+                    var $child = $(child);
+                    var uiSref = $child.find('a').eq(0).attr('ui-sref');
+                   var childStateName =  getStateNameFromHref(uiSref);
+                    if(newState.name == childStateName) $child.addClass('active');
+                    else $child.removeClass('active');
+                });
+            });
+
+            var getStateNameFromHref = function(uiSref){
+                if(!uiSref) return null;
+                return uiSref.split('(')[0];
+            }
+        }
     });

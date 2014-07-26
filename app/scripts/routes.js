@@ -84,11 +84,11 @@ angular.module('zedalpha.routes', [])
                 abstract : true,
                 views : {
                     "header" : {
-                        templateUrl : "/partials/header-business.html",
+                        templateUrl : "/partials/business/header-business.html",
                         controller: "BusinessNavCtrl"
                     },
                     "nav" : {
-                        templateUrl : "/partials/nav-business.html",
+                        templateUrl : "/partials/business/nav-business.html",
                         controller: "BusinessNavCtrl"
                     },
                     "main" : {
@@ -134,6 +134,7 @@ angular.module('zedalpha.routes', [])
         }).state('events', {
             abstract : true,
             authRequired: true,
+            isSpecificPage : true,
             views : {
                 "navigation" : {
                     template : ""
@@ -141,19 +142,23 @@ angular.module('zedalpha.routes', [])
                 "main" : {
                     templateUrl : "/partials/events/events.html"
                 }
+            },
+            resolve : {
+                businessResolver : businessResolver
             }
         }).state('events.show',{
+                isSpecificPage : true,
                 url : '/events/:businessId',
                 views: {
-                    'header@dashboard.events' : {
-                        templateUrl: '/partials/events/header.html',
+                    'header@events' : {
+                        templateUrl: '/partials/events/events-header.html',
                         controller: 'EventsNavigationCtrl'
                     },
-                    'map@dashboard.events': {
+                    'map@events': {
                         templateUrl: '/partials/events/map.html'
 //                        controller: 'MapCtrl'
                     },
-                    'events-list@dashboard.events': {
+                    'events-list@events': {
                         templateUrl: '/partials/events/events-list.html'
 //                        controller: 'EventsListCtrl'
                     }
@@ -161,26 +166,7 @@ angular.module('zedalpha.routes', [])
                 resolve : {
                     businessResolver : businessResolver
                 }
-        }).state('eventstest', {
-                abstract : true,
-                templateUrl : "/partials/events/events.html"
-        }).state('eventstest.all', {
-                url : '/eventstest/all',
-                views: {
-                    'header@eventstest' : {
-                        templateUrl: '/partials/events/header.html',
-                        controller: 'EventsNavigationCtrl'
-                    },
-                    'map@eventstest': {
-                        templateUrl: '/partials/events/map.html'
-//                        controller: 'MapCtrl'
-                    },
-                    'events-list@eventstest': {
-                        templateUrl: '/partials/events/events-list.html'
-//                        controller: 'EventsListCtrl'
-                    }
-                }
-            });
+        });
 
 
 

@@ -47,7 +47,7 @@
             this._redirect(this._redirectTo);
             this._redirectTo = null;
          }else if(this._state.current.name == 'home'){
-             this._redirect('dashboard.main');
+             this._redirect('dashboard');
          }
       },
 

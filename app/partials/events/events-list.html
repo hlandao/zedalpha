@@ -6,7 +6,7 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{selectedFilter | translate}} <b class="caret"></b></a>
 
                 <ul class="dropdown-menu" role="menu">
-                    <li ng-repeat="filter in filters" ng-click="selectFilter(filter)"><a href="#">{{filter | translate}}</a></li>
+                    <li ng-repeat="filter in filters"><a href="#" ng-click="selectFilter(filter)">{{filter | translate}}</a></li>
                 </ul>
             </div>
             <div class="pull-right search-events">

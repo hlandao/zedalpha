@@ -14,7 +14,7 @@
                     <a href="javascript:;" ng-click="goToNow()"> Go To Now </a>
                 </li>
                 <li class="list-group-item">
-                    <a ui-sref="dashboard.business.show({businessId : $business.$id})"> {{$business.name}} </a>
+                    <a ui-sref="business.show({businessId : $business.$id})"> {{$business.name}} {{'HOME' | translate }}</a>
                 </li>
                 <li class="list-group-item">
                     <a ui-sref="dashboard"> Dashboard </a>

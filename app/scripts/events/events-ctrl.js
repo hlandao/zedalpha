@@ -6,7 +6,6 @@ var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.contro
 zedAlphaControllers
     .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic,TimelyFilteredEvents, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder){
 //        Localizer.setLocale('he');
-
         var OccasionalEvent = _.findWhere(EventsStatusesHolder, {status : 'OCCASIONAL'}),
             OrderedEvent = _.findWhere(EventsStatusesHolder, {status : 'ORDERED'}),
             editedEvent;

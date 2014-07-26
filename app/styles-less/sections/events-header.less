@@ -1,5 +1,7 @@
-.top-header {
-    z-index: 10;
+@logo-width: 100px;
+
+.top-events-header {
+    z-index: 12;
     position: absolute;
     top: 0;
     left: 0;
@@ -36,7 +38,7 @@
         text-align: center;
         @media (min-width: @screen-sm) {
             display: inline-block;
-            width: 220px;
+            width: @logo-width;
             background-color: @reverse;
             color: @text-color;
             border-right: 1px solid @state-default-border;
@@ -55,6 +57,12 @@
                 margin-right: 12px;
             }
         }
+
+      .dropdown-menu{
+        line-height: 22px;
+      }
+
+
     }
 
     // 
@@ -118,7 +126,7 @@
         width: 100%;
         padding: 50px 0 0;
         @media (min-width: @screen-sm) {
-            padding: 0 0 0 220px;
+            padding: 0 0 0 @logo-width;
         }
 
         // 
@@ -215,14 +223,47 @@
             > li {
                 border-right: 1px solid @state-default-border;
             }
+
+            input.transparent-input{
+              height: 100%;
+              line-height:100%;
+              border:0;
+              outline:0;
+            }
+
+            .datepicker-col{
+              height:50px;
+              padding: 0 15px;
+              input.transparent-input{
+                width:100px;
+              }
+            }
+
+            .shiftpicker-col{
+              width:135px;
+              text-overflow: ellipsis;
+              a{
+
+              }
+            }
+
+            .timepicker-col{
+              height:50px;
+              padding: 0 0px;
+              input.transparent-input{
+                width:60px;
+              }
+            }
         }
 
         // 
         .nav-right {
             padding: 0;
+            font-size:13px;
+            line-height: 15px;
             > li {
                 > a {
-                    width: 50px;
+                    width: 95px;
                     text-align: center;
                 }
             }
@@ -232,6 +273,8 @@
             }
         }
     }
+
+
 
     // 
     .langs {

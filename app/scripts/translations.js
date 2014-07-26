@@ -21,6 +21,15 @@ zedAlphaConfigModule
         BUSINESS_TYPE: 'Business Type',
         BUSINESS_AREA: 'Area',
         BUSINESS_SIZE: 'Business Size',
+        // Business Nav
+        HOME: 'Home',
+        EDIT_MAP: 'Edit Map',
+        EDIT_SHIFTS: 'Edit Shifts',
+        EDIT_EVENTS_STATUSES: 'Edit Events Statuses',
+        EVENTS_MANAGEMENT: 'Events',
+        EDIT_EVENTS_DURATION: 'Events Durations',
+
+
         // GENERAL
         CREATE: 'Create',
         // EVENTS
@@ -111,6 +120,13 @@ zedAlphaConfigModule
                 "BUSINESS_TYPE": "סוג העסק",
                 "BUSINESS_AREA": "מיקום העסק",
                 "BUSINESS_SIZE": "גודל העסק",
+                "HOME": "בית",
+                "EDIT_MAP": "ערוך מפה",
+                "EDIT_SHIFTS": "ערוך משמרות",
+                "EDIT_EVENTS_STATUSES": "סטטוסים",
+                "EVENTS_MANAGEMENT": 'ארועים',
+                "EDIT_EVENTS_DURATION": 'משכי אירוע',
+
                 "CREATE": "צור",
                 "STATUS": "מצב",
                 "NAME": "שם מלא",
