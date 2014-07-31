@@ -1,70 +1,55 @@
-<div id="map">
-    <div class="container">
+<div id="map-editor">
+    <div id="map-tools" class="container-fluid">
         <div class="row">
-            <div class="col-lg-12">
-                <div id="map-controls">
-                    <h3> Map Controls </h3>
-
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <h4>Add Elements</h4>
-                            <form class="form-inline" role="form">
-                                <div class="form-group">
-                                    <label> Seat Number </label>
-                                    <input type="text" class="form-control input-sm"  ng-model="newSeat.seatNumber" style="width:50px;">
-                                </div>
-                                <div class="form-group">
-                                    <label> Seat Type </label>
-                                    <select class="form-control input-sm" ng-options="v as k for (k,v) in seatConfigs" ng-model="newSeat.seatConfig">
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-default" ng-click="addSeat(newSeat)">Add</button>
-                            </form>
-
-                        </div>
-                        <div class="col-lg-6" style="height: 50px;">
-                            <div ng-show="selectedShape">
-                                <h4>Selected Seat : {{selectedShape.seatNumber}}</h4>
-                                <form class="form-inline" role="form">
-                                    <div class="form-group">
-                                        <label> Seat Number </label>
-                                        <input type="text" class="form-control input-sm"  ng-model="selectedShape.newSeatNumber" style="width:50px;">
-                                    </div>
-                                    <button class="btn btn-default" ng-click="updateShape(selectedShape)">Update</button>
-                                    <button class="btn btn-default" ng-click="removeShape(selectedShape)">Remove</button>
-
-                                </form>
-
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Add Seats
+                    </div>
+                    <div class="panel-body">
+                        <form class="form-inline" role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="seatNumber" placeholder="Seat Number" ng-model="seatNumber">
                             </div>
-                        </div>
+                            <div class="form-group">
+                                <div class="dropdown">
+                                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                                        {{selectedNewShape.shapeName}}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li ng-repeat="shape in shapes"><a href="javascript:;"  ng-click="selectNewShape(shape)"> {{ shape.shapeName | translate }}</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <button class="btn btn-default" ng-click="addShape()">Add</button>
+                        </form>
                     </div>
                 </div>
-
             </div>
-        </div>
-    </div>
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Selected Seats : <span class="alert-danger">{{selectedShape.seatString()}}</span>
+                    </div>
+                    <div class="panel-body">
+                        <form class="form-inline" role="form">
+                            <div class="form-group" ng-show="selectedShape.id">
+                                <input type="text" class="form-control" id="" placeholder="Seat Number" ng-model="selectedShape.seatNumber" ng-change="seatNumberChanged(selectedShape)">
+                            </div>
+                            <!--<button class="btn btn-default" ng-click="cloneShape(selectedShape)" ng-show="selectedShape.id">Clone</button>-->
+                            <button class="btn btn-danger" ng-click="removeShape(selectedShape)" ng-show="selectedShape">Remove</button>
+                        </form>
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-                <div id="map-container" class="editor">
-                    <canvas id="canvas"></canvas>
+
+
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <pre ng-show="err" class="alert alert-danger"> {{err}}</pre>
-                <pre ng-show="msg" class="alert alert-success"> {{msg}} </pre>
-            </div>
-        </div>
+    <div id="map-container">
+        <div id="map"></div>
+        <div id="map-controls"><a id="up" href="javascript:;"></a><a id="down" href="javascript:;"></a></div>
     </div>
-
-
-
-
 </div>
