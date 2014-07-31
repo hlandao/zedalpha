@@ -49,7 +49,6 @@ ShapeGroup.prototype.hideHandles = function(){
         this.shapesArr[i].isPartOfGroup = false;
         this.shapesArr[i].setFT();
     }
-
     this.ft.unplug();
     this.groupSet.clear();
 }
@@ -90,9 +89,14 @@ function SeatShape(paper, options){
     this.deselectCallback = options.deselectCallback;
     this.dragStartCallback = options.dragStartCallback;
     this.dragEndCallback = options.dragEndCallback
+    this.clickCallback = options.clickCallback;
+    this.FTEnabled = options.FTEnabled;
     this.id = this.generateId();
     this.defaultX = 100;
     this.defaultY = 100;
+    this.normalFillColor = "#eee";
+    this.textColor = "#E87352";
+    this.highlightFillColor = "#31C0BE";
 
     if(this.shapeObject){
         this.initFromObjectAndSeatNumber();
@@ -108,19 +112,27 @@ function SeatShape(paper, options){
         if(self.isPartOfGroup){
             return;
         }
-        if(self.isDragging){
-            self.isDragging = false;
-            return false;
-        }
-        if(!self.handlesOn){
-            self.handlesOn = true;
-            self.ft.showHandles();
-            self.selectCallback && self.selectCallback(self);
+
+        if(self.FTEnabled){
+            if(self.isDragging){
+                self.isDragging = false;
+                return false;
+            }
+            if(!self.handlesOn){
+                self.handlesOn = true;
+                self.ft.showHandles();
+                self.selectCallback && self.selectCallback(self);
+            }else{
+                self.handlesOn = false;
+                self.ft.hideHandles();
+                self.deselectCallback && self.deselectCallback(self);
+            }
+            return
         }else{
-            self.handlesOn = false;
-            self.ft.hideHandles();
-            self.deselectCallback && self.deselectCallback(self);
+            self.clickCallback(self);
         }
+
+
 
     });
 
@@ -128,6 +140,7 @@ function SeatShape(paper, options){
 
 
 SeatShape.prototype.setFT = function(){
+    if(!this.FTEnabled) return;
     var paper = this.paper, self = this;
     if(this.ft && this.ft.unplug) this.ft.unplug();
     this.ft = paper.freeTransformAdjusted(this.shapesSet, { keepRatio: true, scale : ['bboxCorners'], draw : ['bbox'], rotate : ['axisX'], drag : ['self']}, function(data,evetns){
@@ -160,13 +173,13 @@ SeatShape.prototype.initFromObjectAndSeatNumber = function(paper, shapeObject, s
     if(!shapeObject || !shapeObject){
         return;
     }else if(shapeObject.shapeType == 'circle'){
-        this.shape = this.paper.circle(defaultX, defaultY, shapeObject.r).attr({'fill' : '#eee', 'stroke-width' : 1, stroke : '#ddd'});
+        this.shape = this.paper.circle(defaultX, defaultY, shapeObject.r).attr({'fill' : this.normalFillColor, 'stroke-width' : 1, stroke : '#ddd'});
         this.text = this.setTextShape(defaultX, defaultY);
     }else if(shapeObject.shapeType === 'rect'){
-        this.shape = this.paper.rect(defaultX, defaultY, shapeObject.w, shapeObject.h).attr({'fill' : '#eee', 'stroke-width' : 1, stroke : '#ddd'});;
+        this.shape = this.paper.rect(defaultX, defaultY, shapeObject.w, shapeObject.h).attr({'fill' : this.normalFillColor, 'stroke-width' : 1, stroke : '#ddd'});;
         this.text = this.setTextShape((defaultX+shapeObject.w/2), (defaultY+shapeObject.h/2));
     }else if(shapeObject.shapeType == 'roundedRect'){
-        this.shape = this.paper.roundedRect(defaultX, defaultY, shapeObject.w, shapeObject.h, 5, 5, 0, 0).attr({'fill' : '#eee', 'stroke-width' : 1, stroke : '#ddd'});;
+        this.shape = this.paper.roundedRect(defaultX, defaultY, shapeObject.w, shapeObject.h, 5, 5, 0, 0).attr({'fill' : this.normalFillColor, 'stroke-width' : 1, stroke : '#ddd'});;
         this.text = this.setTextShape((defaultX+shapeObject.w/2), (defaultY+shapeObject.h/2));
     }
 
@@ -220,7 +233,7 @@ SeatShape.prototype.generateId = function ()
 
 
 SeatShape.prototype.setTextShape = function(x, y){
-    return this.paper.text(x, y, "" + this.seatNumber + "").attr({fill: '#ff0000'}).attr('isTransformable', 0);
+    return this.paper.text(x, y, "" + this.seatNumber + "").attr({fill: this.textColor}).attr('isTransformable', 0);
 };
 
 SeatShape.prototype.hideHandles = function(){
@@ -233,6 +246,9 @@ SeatShape.prototype.seatString = function(){
 }
 
 SeatShape.prototype.updateSeatNumber = function(){
+    this.shapesSet.data('seatNumber', this.seatNumber);
+    this.shapesSet[0].data('seatNumber', this.seatNumber);
+    this.shapesSet[1].data('seatNumber', this.seatNumber);
     this.shapesSet[1].attr({text : "" + this.seatNumber + ""});
 }
 
@@ -250,29 +266,228 @@ SeatShape.prototype.translate = function(x,y){
     this.ft.attrs.y = y;
     this.ft.apply();
     this.ft.updateHandles();
+};
+
+SeatShape.prototype.highlight = function(){
+    this.highlighted = true;
+    this.shape.attr({fill : this.highlightFillColor});
+};
+
+SeatShape.prototype.cancelHighlight = function(){
+    this.highlighted = false;
+    this.shape.attr({fill : this.normalFillColor});
+};
+
+SeatShape.prototype.toggleHighlight = function(){
+    if(this.highlighted){
+        this.cancelHighlight();
+    }else{
+        this.highlight();
+    }
+};
+
+SeatShape.prototype.normalState = function(){
+    this.cancelHighlight();
+};
+
+SeatShape.prototype.setBackgroundColor = function(color){
+    console.log('setBackgroundColor',color);
+    this.shape.attr({fill : color});
 }
 
+
+
+Raphael.fn.roundedRect = function (x, y, w, h, r1, r2, r3, r4){
+    var array = [];
+    array = array.concat(["M",x,r1+y, "Q",x,y, x+r1,y]); //A
+    array = array.concat(["L",x+w-r2,y, "Q",x+w,y, x+w,y+r2]); //B
+    array = array.concat(["L",x+w,y+h-r3, "Q",x+w,y+h, x+w-r3,y+h]); //C
+    array = array.concat(["L",x+r4,y+h, "Q",x,y+h, x,y+h-r4, "Z"]); //D
+    return this.path(array);
+};
+
+
 zedAlphaDirectives
-    .directive('mapEditor', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope) {
+    .directive('mapManager', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope, EventsStatusesHolder) {
+        return {
+            restrict: 'E',
+            replace : true,
+            templateUrl : '/partials/map/map-manager.html',
+            scope : {
+              business : "=",
+              businessId : "=",
+              filteredEvents : "="
+            },
+            link: function(scope, elem, attrs) {
+                var container = $("#map");
+                var paper = Raphael('map', container.width(), container.height());
+                var panZoom = paper.panzoom({ initialZoom: 4, initialPosition: { x: 0, y: 0} }),
+                    shapes = [],
+                    highlightedShapes = [];
+                panZoom.enable();
+                paper.safari();
+
+
+                container.click(function(){
+                    scope.$apply(function(){
+                        angular.forEach(highlightedShapes, function(shape){
+                            shape.cancelHighlight();
+                        });
+                        highlightedShapes = [];
+                    });
+                });
+
+
+                $("#map-container #up").click(function (e) {
+                    panZoom.zoomIn(1);
+                    e.preventDefault();
+                });
+
+                $("#map-container #down").click(function (e) {
+                    panZoom.zoomOut(1);
+                    e.preventDefault();
+                });
+
+                var clickCallback  = function(shape){
+                    scope.$apply(function(){
+                        console.log('shapeSeatIsAvailable(shape)',shapeSeatIsAvailable(shape));
+                        if(shapeSeatIsAvailable(shape)){
+                            shape.toggleHighlight();
+                            var index = highlightedShapes.indexOf(shape);
+                            if(shape.highlighted && index == -1){
+                                highlightedShapes.push(shape);
+                            }else if(index != -1){
+                                highlightedShapes.splice(index,1);
+                            }
+                        }else{
+                        }
+                    });
+                };
+
+                var shapeSeatIsAvailable = function(shape){
+                    var seatNumber = shape.seatNumber, event,seatNumberToCheck;
+                    for(var j = 0; j < scope.filteredEvents.events.length; ++j){
+                        event = scope.filteredEvents.events[j];
+                        for(seatNumberToCheck  in  event.seats){
+                            if(seatNumberToCheck == seatNumber) return false;
+                        }
+                    }
+                    return true;
+                }
+
+                var setAllShapesToNormal = function(){
+                    angular.forEach(shapes, function(shape){
+                        shape.normalState();
+                    });
+                };
+
+                var getEventStatusColor = function(status){
+                    var statusObj;
+
+                    for (var i in EventsStatusesHolder){
+                        statusObj = EventsStatusesHolder[i];
+                        if(statusObj.status == status.status){
+                            return statusObj.color;
+                        }
+                    }
+                    return null;
+                }
+
+
+                var renderMapWithEvents = _.throttle(function(newVal){
+                    if(!newVal) return;
+                    var events = newVal.events;
+                    if(events){
+                        setAllShapesToNormal();
+                        highlightedShapes = [];
+                        if(!events.length){
+                            return;
+                        }
+                        var event, color, seatNumber, theShape;
+                        for(var j = 0; j < events.length; ++j){
+                            event = events[j];
+                            color = getEventStatusColor(event.status);
+                            for(seatNumber  in  event.seats){
+                                for (var i = 0;i < shapes.length; ++i){
+                                    theShape = shapes[i];
+                                    if(theShape.id){
+                                        console.log('theShape.seatNumber, seatNumber',theShape.seatNumber, seatNumber);
+                                        if(theShape.seatNumber == seatNumber){
+                                            theShape.setBackgroundColor(color);
+                                            if(event.helpers && event.helpers.isEditing){
+                                                theShape.highlight();
+                                                highlightedShapes.push(theShape);
+                                            }
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+                    }
+                },10,{trailing : true});
+
+
+                var filteredEventsWatcher = scope.$watch('filteredEvents', renderMapWithEvents,true);
+
+
+                var $mapRef = BusinessHolder.$business.$child('map').$on('loaded', function(){
+                    $mapRef.$off('loaded');
+                    if($mapRef.$value){
+                        renderMapJson($mapRef.$value);
+                    }
+                });
+
+
+                var renderMapJson = function(map){
+
+                    paper.fromJSON(map, function(el, data){
+                        for(var i in data){
+                            el.data(i, data[i]);
+                        }
+                    });
+
+                    var sortedSeats = {};
+                    paper.forEach(function(el){
+                        var data = el.data();
+                        if(!data || !data.type){
+                            el.remove();
+                            return;
+                        }
+                        var seatId = el.data('seatId');
+                        if(seatId){
+                            sortedSeats[seatId] = sortedSeats[seatId] || [];
+                            sortedSeats[seatId].push(el);
+                        }
+                    });
+
+                    for(var i in sortedSeats){
+                        shapes.push(new SeatShape(paper, {
+                            shapeObject : null,
+                            seatNumber : null,
+                            shapesArr :  sortedSeats[i],
+                            clickCallback : clickCallback,
+                            FTEnabled : false
+                        }));
+                    }
+                };
+
+
+            }
+        };
+    }).directive('mapEditor', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope) {
         return {
             restrict: 'E',
             replace : true,
             templateUrl : '/partials/map/map-editor.html',
             scope : {
-              business : "=",
-              businessId : "="
+                business : "=",
+                businessId : "="
             },
             link: function(scope, elem, attrs) {
-
-                Raphael.fn.roundedRect = function (x, y, w, h, r1, r2, r3, r4){
-                    var array = [];
-                    array = array.concat(["M",x,r1+y, "Q",x,y, x+r1,y]); //A
-                    array = array.concat(["L",x+w-r2,y, "Q",x+w,y, x+w,y+r2]); //B
-                    array = array.concat(["L",x+w,y+h-r3, "Q",x+w,y+h, x+w-r3,y+h]); //C
-                    array = array.concat(["L",x+r4,y+h, "Q",x,y+h, x,y+h-r4, "Z"]); //D
-                    return this.path(array);
-                };
-
 
                 scope.shapes = [
                     {shapeName : 'BIG_CIRCLE', shapeType : 'circle', r  : 20},
@@ -296,27 +511,11 @@ zedAlphaDirectives
                         selectCallback : selectCallback,
                         deselectCallback : deselectCallback,
                         dragStartCallback : dragStartCallback,
-                        dragEndCallback : dragEndCallback
+                        dragEndCallback : dragEndCallback,
+                        FTEnabled : true
                     }));
                     scope.save();
                 };
-
-//                scope.cloneShape = function(shape){
-//                    if(!shape) return;
-//                    var cloned = new SeatShape(paper, {
-//                        shapeArr : null,
-//                        seatNumber : shape.seatNumber,
-//                        shapesArr : shape.generateShapesArr(),
-//                        changeCallback : changeCallback,
-//                        selectCallback : selectCallback,
-//                        deselectCallback : deselectCallback,
-//                        dragStartCallback : dragStartCallback,
-//                        dragEndCallback : dragEndCallback
-//                    });
-//                    cloned.translate(100,100);
-//                    shapes.push(cloned);
-//                    scope.save();
-//                };
 
 
                 scope.removeShape = function(shape){
@@ -456,7 +655,8 @@ zedAlphaDirectives
                             selectCallback : selectCallback,
                             deselectCallback : deselectCallback,
                             dragStartCallback : dragStartCallback,
-                            dragEndCallback : dragEndCallback
+                            dragEndCallback : dragEndCallback,
+                            FTEnabled : true
                         }));
                     }
                 };

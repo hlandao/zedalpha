@@ -82,6 +82,7 @@ zedAlphaDirectives
 
                 scope.setNewTime = function(time, isEntireShift){
                     if(time){
+                        DateHolder.isEntireShift = false;
                         ngModel.$setViewValue(time);
                         scope.isEntireShift = false;
                         ngModel.$render();
