@@ -102,9 +102,10 @@ zedAlphaConfigModule
         // WARNINGS
         "ARE_YOU_SURE" : "Are You Sure ? ",
         "INVALID_GUESTS_PER_15_WARNING" : "Amount of guests per 15 minutes limit was reached!",
-        "REMOVE_EVENT_WARNING" : "Removing event is irreversible. Are you sure you want to continue ?"
+        "REMOVE_EVENT_WARNING" : "Removing event is irreversible. Are you sure you want to continue ?",
 
 
+        "LOADING_TEXT" : "Loading Zed..."
 
 
     });
@@ -205,7 +206,9 @@ zedAlphaConfigModule
                 "ARE_YOU_SURE" : "בעיה",
                 "INVALID_GUESTS_PER_15_WARNING" : "הגבלת מספר סועדים לרבע שעה נחצתה.",
                 "WARNING_OUT_OF_SHIFTS" : "הארוע אינו נכלל במשמרות, האם ברצונך להמשיך ?",
-                "REMOVE_EVENT_WARNING" : "מחיקת אירוע הינה פעולת בלתי הפיכה. האם ברצונך להמשיך ?"
+                "REMOVE_EVENT_WARNING" : "מחיקת אירוע הינה פעולת בלתי הפיכה. האם ברצונך להמשיך ?",
+
+                "LOADING_TEXT" : "טוען..."
             }
         );
 

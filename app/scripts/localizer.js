@@ -2,13 +2,23 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .service('Localizer', function($translate, cssInjector, $rootScope) {
-
+    .service('Localizer', function($translate, cssInjector, $rootScope, $q, $timeout) {
+        var localStorageKey = 'LOCALE';
         var defaultLanguage = 'he';
         var language = defaultLanguage;
+        var defer = $q.defer();
+        this.initting = defer.promise;
+        var self = this;
+
+        this.init = function(){
+            var lang = localStorage.getItem('localStorageKey') || defaultLanguage;
+            self.setLocale(lang);
+            $timeout(function(){
+                defer.resolve();
+            });
+        };
 
         this.setLocale = function(langKey) {
-            console.log('setLocale',langKey);
             var isRTL;
             if (langKey === 'he'){
                 isRTL = true;
@@ -18,6 +28,7 @@ zedAlphaServices
                 $('body').removeClass('rtl');
             }
 
+            localStorage.setItem(localStorageKey, langKey);
 
             setRTLDirection(isRTL);
             setLanguage(langKey);

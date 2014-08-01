@@ -1,6 +1,8 @@
 body,html{
   height:100%;
 }
+
+
 // Bootstrap, Note: files that has CONTENT changed are "_variables.scss", "_grid.scss"
 // -------------------------
 @import "global/lesshat.less"; // Mixins
@@ -64,4 +66,8 @@ body,html{
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
 }

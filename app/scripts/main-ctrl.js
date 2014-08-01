@@ -6,7 +6,7 @@ var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.contro
 zedAlphaControllers
     .controller('BodyCtrl', function($scope, $stateParams,$state, $timeout,Localizer, loginService){
         // check if ID is available
-
+        $scope.showSpinner = true;
         $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
             if (toState.resolve) {
                 $scope.showSpinner = true;
@@ -32,7 +32,7 @@ zedAlphaControllers
         }
 
 
-        Localizer.setLocale('he');
+        Localizer.init();
 
     }).controller('HomeCtrl', function($scope, $stateParams,$state, $timeout,Localizer, loginService){
 
