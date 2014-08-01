@@ -1,4 +1,13 @@
 <div id="map-editor">
+    <ul class="dropdown-menu" id="seat-menu">
+        <li role="presentation"><a href="#">Seats : {{highlightedShapes | highlightedShapesSeats}}</a></li>
+        <li role="presentation" class="divider"></li>
+        <li role="presentation"><a href="#">Action</a></li>
+        <li role="presentation" class="divider"></li>
+        <li role="presentation"><a href="#">Add Destination</a></li>
+        <li role="presentation"><a href="#">Add Occasional</a></li>
+    </ul>
+
     <div id="map-container">
         <div id="map"></div>
         <div id="map-controls"><a id="up" href="javascript:;"></a><a id="down" href="javascript:;"></a></div>

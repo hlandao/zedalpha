@@ -16,11 +16,6 @@
 
     <!-- build:css({.tmp,app}) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/vendor/spectrum.css">
-    <link rel="stylesheet" href="styles/vendor/jquery-timepicker.css">
-      <!-- endbuild -->
-    <!-- build:js scripts/modernizr.js -->
-    <!--<script src="bower_components/modernizr/modernizr.js"></script>-->
     <!-- endbuild -->
   </head>
   <body ng-controller="BodyCtrl" ng-class="{'events-managment' : isEventsManagementViews,'body-special' : (isSpecificPage())}">
@@ -47,6 +42,7 @@
     <!-- build:js scripts/vendor.js -->
     <!-- bower:js -->
     <script src="bower_components/jquery/jquery.js"></script>
+    <script src="bower_components/modernizr/modernizr.js"></script>
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-animate/angular-animate.js"></script>
     <script src="bower_components/angular-touch/angular-touch.js"></script>
@@ -71,8 +67,6 @@
     <!-- endbuild -->
 
 
-    <!--<script src="scripts/vendor/ui-bootstrap-tpls-0.1.0.js"></script>-->
-   
 
     <!-- build:js({app,.tmp}) scripts/main.js -->
     <!-- HOME -->
@@ -98,10 +92,7 @@
     <script src="scripts/business/business-nav-ctrl.js"></script>
     <script src="scripts/business/business-events-duration-ctrl.js"></script>
     <!-- Map -->
-    <script src="scripts/map/map-shapes.js"></script>
-    <script src="scripts/map/map-manager-directive.js"></script>
     <script src="scripts/map/map-editor-directive.js"></script>
-    <script src="scripts/map/map-directives-shared.js"></script>
 
     <!-- Events statuses -->
     <script src="scripts/events-statuses/events-statuses-ctrl.js"></script>
@@ -157,15 +148,6 @@
 
     <script src="scripts/localizer.js"></script>
     <script src="scripts/modal/are-you-sure-modal.js"></script>
-
-
-
-
-
-
-
-
-
     <!-- inject:partials -->
     <!-- endinject -->
     <!-- endbuild -->

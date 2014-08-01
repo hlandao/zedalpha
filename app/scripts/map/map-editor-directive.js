@@ -95,8 +95,14 @@ function SeatShape(paper, options){
     this.defaultX = 100;
     this.defaultY = 100;
     this.normalFillColor = "#eee";
+    this.normalStrokeColor = "#ddd";
+    this.normalStateAttrs = {'fill' : this.normalFillColor, 'stroke-width' : 1, stroke : '#ddd'};
     this.textColor = "#E87352";
     this.highlightFillColor = "#31C0BE";
+    this.highlightStrokeColor = "#31C0BE";
+    this.highlightStateAttrs = {'stroke-width' : 2, stroke : this.highlightStrokeColor};
+
+
 
     if(this.shapeObject){
         this.initFromObjectAndSeatNumber();
@@ -173,13 +179,13 @@ SeatShape.prototype.initFromObjectAndSeatNumber = function(paper, shapeObject, s
     if(!shapeObject || !shapeObject){
         return;
     }else if(shapeObject.shapeType == 'circle'){
-        this.shape = this.paper.circle(defaultX, defaultY, shapeObject.r).attr({'fill' : this.normalFillColor, 'stroke-width' : 1, stroke : '#ddd'});
+        this.shape = this.paper.circle(defaultX, defaultY, shapeObject.r).attr(this.normalStateAttrs);
         this.text = this.setTextShape(defaultX, defaultY);
     }else if(shapeObject.shapeType === 'rect'){
-        this.shape = this.paper.rect(defaultX, defaultY, shapeObject.w, shapeObject.h).attr({'fill' : this.normalFillColor, 'stroke-width' : 1, stroke : '#ddd'});;
+        this.shape = this.paper.rect(defaultX, defaultY, shapeObject.w, shapeObject.h).attr(this.normalStateAttrs);
         this.text = this.setTextShape((defaultX+shapeObject.w/2), (defaultY+shapeObject.h/2));
     }else if(shapeObject.shapeType == 'roundedRect'){
-        this.shape = this.paper.roundedRect(defaultX, defaultY, shapeObject.w, shapeObject.h, 5, 5, 0, 0).attr({'fill' : this.normalFillColor, 'stroke-width' : 1, stroke : '#ddd'});;
+        this.shape = this.paper.roundedRect(defaultX, defaultY, shapeObject.w, shapeObject.h, 5, 5, 0, 0).attr(this.normalStateAttrs);
         this.text = this.setTextShape((defaultX+shapeObject.w/2), (defaultY+shapeObject.h/2));
     }
 
@@ -270,12 +276,12 @@ SeatShape.prototype.translate = function(x,y){
 
 SeatShape.prototype.highlight = function(){
     this.highlighted = true;
-    this.shape.attr({fill : this.highlightFillColor});
+    this.shape.attr(this.highlightStateAttrs);
 };
 
 SeatShape.prototype.cancelHighlight = function(){
     this.highlighted = false;
-    this.shape.attr({fill : this.normalFillColor});
+    this.shape.attr(this.normalStateAttrs);
 };
 
 SeatShape.prototype.toggleHighlight = function(){
@@ -291,11 +297,13 @@ SeatShape.prototype.normalState = function(){
 };
 
 SeatShape.prototype.setBackgroundColor = function(color){
-    console.log('setBackgroundColor',color);
     this.shape.attr({fill : color});
-}
+};
 
 
+SeatShape.prototype.getBBox = function(){
+    return this.shape.getBBox();
+};
 
 Raphael.fn.roundedRect = function (x, y, w, h, r1, r2, r3, r4){
     var array = [];
@@ -319,21 +327,23 @@ zedAlphaDirectives
               filteredEvents : "="
             },
             link: function(scope, elem, attrs) {
-                var container = $("#map");
+                var container = $("#map"),
+                    $seatMenu = $('#seat-menu');
                 var paper = Raphael('map', container.width(), container.height());
                 var panZoom = paper.panzoom({ initialZoom: 4, initialPosition: { x: 0, y: 0} }),
-                    shapes = [],
-                    highlightedShapes = [];
+                    shapes = [];
+                scope.highlightedShapes = [];
                 panZoom.enable();
                 paper.safari();
 
 
                 container.click(function(){
                     scope.$apply(function(){
-                        angular.forEach(highlightedShapes, function(shape){
+                        angular.forEach(scope.highlightedShapes, function(shape){
                             shape.cancelHighlight();
                         });
-                        highlightedShapes = [];
+                        scope.highlightedShapes = [];
+                        hideSeatMenu();
                     });
                 });
 
@@ -348,21 +358,46 @@ zedAlphaDirectives
                     e.preventDefault();
                 });
 
+
                 var clickCallback  = function(shape){
                     scope.$apply(function(){
-                        console.log('shapeSeatIsAvailable(shape)',shapeSeatIsAvailable(shape));
                         if(shapeSeatIsAvailable(shape)){
                             shape.toggleHighlight();
-                            var index = highlightedShapes.indexOf(shape);
+                            var index = scope.highlightedShapes.indexOf(shape);
                             if(shape.highlighted && index == -1){
-                                highlightedShapes.push(shape);
+                                scope.highlightedShapes.push(shape);
                             }else if(index != -1){
-                                highlightedShapes.splice(index,1);
+                                scope.highlightedShapes.splice(index,1);
                             }
+                            if(!scope.highlightedShapes.length){
+                                hideSeatMenu();
+                            }else{
+                                positionSeatMenu();
+                            }
+
                         }else{
                         }
                     });
                 };
+
+                var hideSeatMenu = function(){
+                    $seatMenu.hide();
+                }
+
+                var positionSeatMenu = function(){
+                    var l = scope.highlightedShapes.length;
+                    if(l){
+                        var lastShape = scope.highlightedShapes[l-1],
+                            bbox = lastShape.getBBox(),
+                            shape = lastShape.shapesSet[0],
+                            zoom = ((panZoom.getCurrentZoom() * 0.1) + 1.2),
+                            zoomPosition = panZoom.getCurrentPosition(),
+                            x = ((bbox.x+bbox.width - zoomPosition.x) * zoom) + 25,
+                            y = ((bbox.y - zoomPosition.y) * zoom);
+                        $seatMenu.css({top : y + 'px', left : x+'px', display:'block'});
+                    }
+
+                }
 
                 var shapeSeatIsAvailable = function(shape){
                     var seatNumber = shape.seatNumber, event,seatNumberToCheck;
@@ -399,7 +434,7 @@ zedAlphaDirectives
                     var events = newVal.events;
                     if(events){
                         setAllShapesToNormal();
-                        highlightedShapes = [];
+                        scope.highlightedShapes = [];
                         if(!events.length){
                             return;
                         }
@@ -416,7 +451,7 @@ zedAlphaDirectives
                                             theShape.setBackgroundColor(color);
                                             if(event.helpers && event.helpers.isEditing){
                                                 theShape.highlight();
-                                                highlightedShapes.push(theShape);
+                                                scope.highlightedShapes.push(theShape);
                                             }
                                         }
 
@@ -478,6 +513,15 @@ zedAlphaDirectives
 
             }
         };
+    }).filter('highlightedShapesSeats', function(){
+        return function(arr){
+            var output = "";
+            for (var i = 0; i < arr.length; ++i){
+                if(output) output += ", ";
+                output += arr[i].seatString();
+            }
+            return output;
+        }
     }).directive('mapEditor', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope) {
         return {
             restrict: 'E',
