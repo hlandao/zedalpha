@@ -4,7 +4,7 @@
   padding-top:20px;
 }
 #map-container { background: #fff; border: 0px; height: 100%; position: relative; width: 100%; overflow: hidden; }
-#map-container #map { height: 100%; width: 100%; background: url(http://subtlepatterns.com/images/transp_bg.png);min-height: 1000px;min-width:1000px;}
+#map-container #map { height: 100%; width: 100%; background: url(http://subtlepatterns.com/images/transp_bg.png);}
 #map-container #map-controls { position: absolute; left: 15px; top: 15px; width: 29px; }
 #map-container #map-controls #up { background: url(../images/iconUp.png) no-repeat center top; display: block; height: 26px; width: 29px; }
 #map-container #map-controls #down { background: url(../images/iconDown.png) no-repeat center top; display: block; height: 27px; width: 29px; }
@@ -13,13 +13,16 @@
 #seat-menu{
   background: white;
   border:1px solid #ddd;
-  width:240px;
+  width:260px;
   z-index: 1000;
   position: absolute;
   display: none;
   table{
     max-height: 120px;
     overflow:scroll;
+    td{
+      max-width: 140px;
+    }
   }
   .panel-heading{
     text-align: center;

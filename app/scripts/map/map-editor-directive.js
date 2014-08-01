@@ -241,7 +241,7 @@ SeatShape.prototype.initFromShapesArr = function(){
     this.shapesSet.data('seatId', seatId);
     this.shapesSet.data('type','SeatShape');
     this.shapesSet.data('seatNumber',seatNumber);
-
+    this.cancelHighlight();
 };
 
 SeatShape.prototype.generateId = function ()
@@ -525,7 +525,8 @@ zedAlphaDirectives
                 }
 
 
-                scope.newEventForSelectedShaped = function(occasionalOrDestination){
+                scope.newEventForSelectedShaped = function(occasionalOrDestination,e){
+                    e.preventDefault();
                     scope.$parent.newEventWithSeatsDic(occasionalOrDestination, shapesArrToSeatsDic());
                     hideSeatMenu();
                 };
@@ -639,6 +640,20 @@ zedAlphaDirectives
                         }));
                     }
                 };
+
+                var newEventWatcher = scope.$parent.$watch('newEvent', function(newVal, oldVal){
+                    if(!newVal && oldVal){
+                        renderMapWithEvents();
+                    }
+                });
+
+                var editEventWatcher = scope.$parent.$watch('editedEvent', function(newVal, oldVal){
+                    if(!newVal && oldVal){
+                        renderMapWithEvents();
+                    }
+
+                });
+
 
 
             }

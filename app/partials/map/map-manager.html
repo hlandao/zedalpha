@@ -6,18 +6,18 @@
         <table class="table">
             <tbody>
             <tr ng-repeat="event in highlightedEvents">
-                <td><span class="label label-info" style="background: {{event.status.color}}"> {{event.status.status}} </span></td>
-                <td>{{event.name}}</td>
-                <td>{{event.startTime | date : 'HH:mm'}}</td>
+                <td class="one-liner-text"><span class="label label-info" style="background: {{event.status.color}}"> {{event.status.status | translate}} </span></td>
+                <td class="one-liner-text">{{event.name}}</td>
+                <td class="one-liner-text">{{event.startTime | date : 'HH:mm'}}</td>
             </tr>
             <tr ng-show="highlightedEvents.length == 0">
-                <td colspan="3"> no recent events for this seat </td>
+                <td colspan="3"> {{'NO_RECENT_EVENTS_FOR_SEAT' | translate }} </td>
             </tr>
             </tbody>
         </table>
         <div class="panel-footer" ng-hide="highlightedIsntAvailable">
-            <a href="#" ng-click="newEventForSelectedShaped('destination')" class="btn btn-primary">Add Destination</a>
-            <a href="#" ng-click="newEventForSelectedShaped('occasional')" class="btn btn-success">Add Occasional</a>
+            <a href="#" ng-click="newEventForSelectedShaped('destination',$event)" class="btn btn-primary">Add Destination</a>
+            <a href="#" ng-click="newEventForSelectedShaped('occasional',$event)" class="btn btn-success">Add Occasional</a>
         </div>
     </div>
 

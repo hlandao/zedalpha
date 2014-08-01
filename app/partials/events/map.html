@@ -1,1 +1,3 @@
-<map-manager business="business" business-id="businessId" filtered-events="events"></map-manager>
+<map-manager business="business" business-id="businessId" filtered-events="events" ng-if="!DateHolder.isEntireShift"></map-manager>
+<shift-manager ng-if="DateHolder.isEntireShift"></shift-manager>
+

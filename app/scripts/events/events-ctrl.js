@@ -134,7 +134,8 @@ zedAlphaControllers
             DateHolder.isEntireShift = true;
         };
 
-        $scope.goToNow = function(){
+        $scope.goToNow = function(e){
+            if(e) e.preventDefault();
             DateHolder.current =  new Date();
         };
 

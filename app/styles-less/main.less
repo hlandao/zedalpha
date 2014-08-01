@@ -5,6 +5,7 @@ body,html{
 // -------------------------
 @import "global/lesshat.less"; // Mixins
 @import "global/var.less";
+@import "global/spinner.less";
 @import "global/mixins.less";
 @import "bootstrap-less/bootstrap.less";
 
@@ -58,3 +59,9 @@ body,html{
 @import "map/raphael.pan-zoom.less";
 @import "map/map.less";
 @import "rtl.less";
+
+.one-liner-text{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

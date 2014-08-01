@@ -26,7 +26,7 @@ zedAlphaServices
 
         function setRTLDirection(isRTL) {
             if (isRTL) {
-                cssInjector.add("/styles/vendor/bootstrap-rtl/bootstrap-rtl.css");
+                cssInjector.add("/vendor/bootstrap-rtl/bootstrap-rtl.css");
             }
             else {
                 cssInjector.removeAll();

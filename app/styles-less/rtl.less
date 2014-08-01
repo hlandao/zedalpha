@@ -1,14 +1,61 @@
 body.rtl{
+  .pull-left > .dropdown-menu{
+    right:0;
+  }
+  .top-nav{
+    padding: 0 100px 0 0;
+    .nav-left{
+      float:right;
+      direction: rtl;
+      li{
+        float:right;
+        &:last-child{
+          border-left: 1px solid #e9e9e9;
+        }
+      }
+
+      li.datepicker-col{
+        .dropdown-menu{
+          width:313px;
+          table{
+            outline:none;
+          }
+          li{
+            &:last-child{
+              width:200px;
+            }
+          }
+        }
+      }
+    }
+    .nav-right{
+      float:left !important;
+      li{
+        float:right;
+
+      }
+    }
+  }
   #events-list-container {
     right: 0px;
     left:auto;
     width: 458px;
+    #events-list.panel{
+        .panel-heading{
+          .filter-events{
+            float:right !important;
+          }
+          .search-events{
+            float:left !important;
+          }
+        }
+    }
   }
 
   &.body-special {
     #content.events{
       right: 458px;
-      left:auto;
+      left:0;
     }
   }
 

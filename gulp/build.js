@@ -11,6 +11,18 @@ gulp.task('styles', function () {
     .pipe($.size());
 });
 
+gulp.task('vendor', function () {
+    return gulp.src('app/vendor/**/*')
+        .pipe(gulp.dest('.tmp/vendor'))
+});
+
+gulp.task('vendorDist', function () {
+    return gulp.src('app/vendor/**/*')
+        .pipe(gulp.dest('dist/vendor'))
+});
+
+
+
 gulp.task('scripts', function () {
   return gulp.src('app/scripts/**/*.js')
 //    .pipe($.jshint())
@@ -92,4 +104,4 @@ gulp.task('clean', function () {
   return gulp.src(['.tmp', 'dist'], { read: false }).pipe($.clean());
 });
 
-gulp.task('build', ['html', 'partials', 'images', 'fonts','bootstrapFonts']);
+gulp.task('build', ['html', 'partials', 'images', 'fonts','bootstrapFonts','vendorDist']);

@@ -6,21 +6,25 @@
             <span>{{business.name||'Logo'}}</span>
         </a>
         <div class="dropdown-menu  with-arrow panel panel-default">
-            <div class="panel-heading">
-                Menu
-            </div>
-            <ul class="list-group">
+            <ul class="list-group" role="menu">
+                <!--<li class="list-group-item">-->
+                    <!--<a href="javascript:;" ng-click="goToNow()" class="dropdown-toggle" data-toggle="dropdown"> {{'GO_TO_NOW' | translate }} </a>-->
+                <!--</li>-->
                 <li class="list-group-item">
-                    <a href="javascript:;" ng-click="goToNow()"> Go To Now </a>
+                    <a ui-sref="business.show({businessId : $business.$id})"> {{$business.name}}</a>
                 </li>
                 <li class="list-group-item">
-                    <a ui-sref="business.show({businessId : $business.$id})"> {{$business.name}} {{'HOME' | translate }}</a>
+                    <a ui-sref="dashboard"> {{'DASHBOARD' | translate }} </a>
                 </li>
-                <li class="list-group-item">
-                    <a ui-sref="dashboard"> Dashboard </a>
+                <li class="list-group-item" ng-click="switchLang('he')">
+                    <a href="#"  class="dropdown-toggle" data-toggle="dropdown" > {{ 'SWITCH_TO_HEBREW' | translate }} </a>
                 </li>
+                <li class="list-group-item" ng-click="switchLang('en')">
+                    <a href="#"  class="dropdown-toggle" data-toggle="dropdown"> {{ 'SWITCH_TO_ENGLISH' | translate }} </a>
+                </li>
+
                 <li class="list-group-item">
-                    <a href="javascript:;" ng-click="logout()"> Logout </a>
+                    <a href="javascript:;" ng-click="logout()"> {{ 'LOGOUT' | translate }} </a>
                 </li>
             </ul>
         </div>
@@ -35,9 +39,9 @@
     </div>
 
     <div class="top-nav">
-        <ul class="nav-left list-unstyled">
-            <li class="datepicker-col">
-                <input type="text" class="datepicker-input transparent-input" ng-click="openDatePicker($event)" datepicker-popup="dd/MM/yyyy" ng-model="DateHolder.current"  is-open="datePickerOpened" close-text=""/>
+        <ul class="nav-left list-unstyled" dir="rtl">
+            <li class="datepicker-col dropdown-toggle" data-toggle="dropdown">
+                <input type="text" class="datepicker-input transparent-input" ng-click="openDatePicker($event)" datepicker-popup="dd/MM/yyyy" ng-model="DateHolder.current"  is-open="datePickerOpened" close-text="" close-dropdowns/>
             </li>
 
             <li class="shiftpicker-col dropdown">
@@ -46,7 +50,7 @@
                 </a>
                 <div class="dropdown-menu pull-right with-arrow panel panel-default">
                     <div class="panel-heading">
-                        Select a shift
+                        {{ 'SELECT_SHIFT' | translate }}
                     </div>
                     <ul class="list-group">
                         <li class="list-group-item"  ng-click="selectAllDayShift()">

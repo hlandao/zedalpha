@@ -28,7 +28,8 @@ zedAlphaConfigModule
         EDIT_EVENTS_STATUSES: 'Edit Events Statuses',
         EVENTS_MANAGEMENT: 'Events',
         EDIT_EVENTS_DURATION: 'Events Durations',
-
+        // MAP
+        NO_RECENT_EVENTS_FOR_SEAT : 'No recent events for seat',
 
         // GENERAL
         CREATE: 'Create',
@@ -56,7 +57,9 @@ zedAlphaConfigModule
         CHEQUE: "Cheque",
         FINISHED: "Finished",
         NO_SHOW: "No Show",
-
+        DASHBOARD : "Dashboard",
+        LOGOUT : "Logout",
+        SELECT_SHIFT : 'Select Shift',
 
 
         ORDERED: "Orderd",
@@ -80,9 +83,12 @@ zedAlphaConfigModule
         "TO" : 'To',
         "MIN" : 'min',
         "NOW" : "Now",
+        "GO_TO_NOW" : "Go To Now",
         "TOTAL_EVENTS": "Total Events",
         "TOTAL_GUESTS": "Total Guests",
         "SEARCH" : "Search",
+        "SWITCH_TO_HEBREW" : "עברית",
+        "SWITCH_TO_ENGLISH" : "English",
 
         // ERRORS
         "ERROR_EVENT_MSG_NAME": "Please enter the event name",
@@ -126,6 +132,7 @@ zedAlphaConfigModule
                 "EDIT_EVENTS_STATUSES": "סטטוסים",
                 "EVENTS_MANAGEMENT": 'ארועים',
                 "EDIT_EVENTS_DURATION": 'משכי אירוע',
+                "NO_RECENT_EVENTS_FOR_SEAT" : 'לא נמצאו הזמנות אחרונות לשולחן זה',
 
                 "CREATE": "צור",
                 "STATUS": "מצב",
@@ -169,10 +176,16 @@ zedAlphaConfigModule
                 "ENTIRE_DAY_SHIFT" : "כל היום",
                 "ENTIRE_SHIFT" : "משמרת מלאה",
                 "NOW" : "עכשיו",
+                "GO_TO_NOW" : "עבור לעכשיו",
                 "TOTAL_EVENTS": "סה״כ אירועים",
                 "TOTAL_GUESTS": "סה״כ מוזמנים",
                 "SEARCH" : "חיפוש",
+                "SWITCH_TO_HEBREW" : "עברית",
+                "SWITCH_TO_ENGLISH" : "English",
 
+                "DASHBOARD" : "דשבורד",
+                "LOGOUT" : "יציאה מהמערכת",
+                "SELECT_SHIFT" : 'בחירת משמרת',
 
                 "SHIFT" : "משמרת",
                 "DEAD_EVENTS" : "ארועים שהסתיימו",

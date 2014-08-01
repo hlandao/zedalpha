@@ -70,12 +70,19 @@ zedAlphaDirectives
                     if(eventToSave.$id){
                         delete cloned.helpers;
                         var $event = EventsHolder.$allEvents.$child(eventToSave.$id);
-                        $event.$set(cloned);
-                        delete eventToSave.helpers;
+                        $event.$set(cloned).then(function(){
+                            delete eventToSave.helpers;
+                        }, function(error){
+                            console.error('Error saving existing event child',error);
+                        });
                     }else{
                         delete cloned.helpers;
-                        EventsHolder.$allEvents.$add(cloned);
-                        delete eventToSave.helpers;
+                        EventsHolder.$allEvents.$add(cloned).then(function(){
+                            delete eventToSave.helpers;
+                        }, function(error){
+                            console.error('Error adding new event child',error);
+                        });
+
                     }
                 }
 
