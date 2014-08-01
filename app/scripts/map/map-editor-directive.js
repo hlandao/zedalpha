@@ -377,8 +377,6 @@ zedAlphaDirectives
 
                 var clickHandlerForAddingNewEventState = function(shape){
                     var index = scope.highlightedShapes.indexOf(shape);
-                    console.log('clickHandlerForAddingNewEventState',index);
-
                     if(index == -1){
                         if(shapeSeatIsAvailable(shape)){
                             scope.highlightedShapes.push(shape);
@@ -392,7 +390,17 @@ zedAlphaDirectives
                 }
 
                 var clickHandlerForEditingEventState = function(shape){
-
+                    var index = scope.highlightedShapes.indexOf(shape);
+                    if(index == -1){
+                        if(shapeSeatIsAvailable(shape)){
+                            scope.highlightedShapes.push(shape);
+                            shape.toggleHighlight();
+                        }
+                    }else if(index > -1){
+                        scope.highlightedShapes.splice(index,1);
+                        shape.toggleHighlight();
+                    }
+                    updateEditedEventSeats();
                 }
 
                 var clickHandlerForNormalState = function(shape){
@@ -493,6 +501,10 @@ zedAlphaDirectives
                     scope.$parent.newEvent.seats = shapesArrToSeatsDic();
                 }
 
+
+                var updateEditedEventSeats = function (){
+                    scope.$parent.editedEvent.seats = shapesArrToSeatsDic();
+                }
 
 
                 var renderMapWithEvents = _.throttle(function(newVal){
