@@ -10,11 +10,14 @@
                 <td>{{event.name}}</td>
                 <td>{{event.startTime | date : 'HH:mm'}}</td>
             </tr>
+            <tr ng-show="highlightedEvents.length == 0">
+                <td colspan="3"> no recent events for this seat </td>
+            </tr>
             </tbody>
         </table>
-        <div class="panel-footer">
-            <a href="#" ng-click="newEventForSelectedShaped('destination')">Add Destination</a>
-            <a href="#" ng-click="newEventForSelectedShaped('occasional')">Add Occasional</a>
+        <div class="panel-footer" ng-hide="highlightedIsntAvailable">
+            <a href="#" ng-click="newEventForSelectedShaped('destination')" class="btn btn-primary">Add Destination</a>
+            <a href="#" ng-click="newEventForSelectedShaped('occasional')" class="btn btn-success">Add Occasional</a>
         </div>
     </div>
 

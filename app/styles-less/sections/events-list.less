@@ -9,16 +9,13 @@
     position: absolute;
     top: @header_height;
     bottom: 0;
-    left: -458px;
+    left: 0px;
     width: 458px;
     padding: 0;
     background-color: @nav_bg;
     -webkit-overflow-scrolling: touch;
     -webkit-overflow-scrolling: -blackberry-touch;
     // .transition(all .3s ease-in-out);
-    @media (min-width:@screen-sm) {
-        left: 0;
-    }
 
     ul {
         padding-left: 0;
@@ -61,6 +58,10 @@
         }
       }
     }
+  }
+
+  .event-form{
+    background: #f3f3f3;
   }
 
   .event-row{

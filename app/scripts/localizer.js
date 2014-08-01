@@ -8,11 +8,16 @@ zedAlphaServices
         var language = defaultLanguage;
 
         this.setLocale = function(langKey) {
+            console.log('setLocale',langKey);
             var isRTL;
-            if (langKey === 'he')
+            if (langKey === 'he'){
                 isRTL = true;
-            else if (langKey === 'en')
+                $('body').addClass('rtl');
+            } else if (langKey === 'en'){
                 isRTL = false;
+                $('body').removeClass('rtl');
+            }
+
 
             setRTLDirection(isRTL);
             setLanguage(langKey);

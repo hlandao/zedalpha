@@ -90,6 +90,9 @@ function SeatShape(paper, options){
     this.dragStartCallback = options.dragStartCallback;
     this.dragEndCallback = options.dragEndCallback
     this.clickCallback = options.clickCallback;
+    this.mouseoverCallback = options.mouseoverCallback;
+    this.mouseoutCallback = options.mouseoutCallback;
+
     this.FTEnabled = options.FTEnabled;
     this.id = this.generateId();
     this.defaultX = 100;
@@ -101,6 +104,9 @@ function SeatShape(paper, options){
     this.highlightFillColor = "#31C0BE";
     this.highlightStrokeColor = "#31C0BE";
     this.highlightStateAttrs = {'stroke-width' : 2, stroke : this.highlightStrokeColor};
+    this.hpverStrokeColor = "#444";
+    this.hoverStateAttrs = {'stroke-width' : 2, stroke : this.hpverStrokeColor};
+
 
 
 
@@ -137,10 +143,22 @@ function SeatShape(paper, options){
         }else{
             self.clickCallback(self);
         }
-
-
-
     });
+
+    this.shapesSet.mouseover(function(e){
+        if(self.highlighted) return;
+        self.prevMouseoverAttrs = $.extend({},self.shape.attrs);
+        self.shape.attr(self.hoverStateAttrs);
+        self.mouseoverCallback && self.mouseoverCallback(self);
+    });
+
+    this.shapesSet.mouseout(function(e){
+        if(self.highlighted) return;
+        self.shape.attr(self.prevMouseoverAttrs);
+        self.prevMouseoverAttrs = null;
+        self.mouseoutCallback && self.mouseoutCallback(self);
+    });
+
 
 };
 
@@ -332,6 +350,9 @@ zedAlphaDirectives
                 var paper = Raphael('map', container.width(), container.height());
                 var panZoom = paper.panzoom({ initialZoom: 4, initialPosition: { x: 0, y: 0} }),
                     shapes = [];
+                var filteredEventsWatcher,
+                    events;
+
                 scope.highlightedShapes = [];
                 panZoom.enable();
                 paper.safari();
@@ -340,7 +361,7 @@ zedAlphaDirectives
                 container.click(function(){
                     scope.$apply(function(){
                         angular.forEach(scope.highlightedShapes, function(shape){
-                            shape.cancelHighlight();
+                            renderMapWithEvents();
                         });
                         scope.highlightedShapes = [];
                         hideSeatMenu();
@@ -404,19 +425,32 @@ zedAlphaDirectives
                 }
 
                 var clickHandlerForNormalState = function(shape){
-                    if(shapeSeatIsAvailable(shape)){
-                        shape.toggleHighlight();
-                        var index = scope.highlightedShapes.indexOf(shape);
-                        if(shape.highlighted && index == -1){
-                            scope.highlightedShapes.push(shape);
-                        }else if(index != -1){
-                            scope.highlightedShapes.splice(index,1);
-                        }
-                        if(!scope.highlightedShapes.length){
-                            hideSeatMenu();
+//                    shape.toggleHighlight();
+
+
+                    var index = scope.highlightedShapes.indexOf(shape);
+                    if(!shape.highlighted && index == -1){
+                        if(!shapeSeatIsAvailable(shape)){
+                            renderMapWithEvents();
+                            scope.highlightedShapes = [];
                         }else{
-                            positionSeatMenu();
+                            var l = scope.highlightedShapes.length;
+                            if(l > 0 && !shapeSeatIsAvailable(scope.highlightedShapes[l-1])){
+                                renderMapWithEvents();
+                                scope.highlightedShapes = [];
+                            }
                         }
+                        shape.toggleHighlight();
+                        scope.highlightedShapes.push(shape);
+                    }else if(index != -1){
+                        shape.toggleHighlight();
+                        scope.highlightedShapes.splice(index,1);
+                    }
+
+                    if(!scope.highlightedShapes.length){
+                        hideSeatMenu();
+                    }else{
+                        positionSeatMenu(shape);
                     }
                     eventsForHighlightedShapes();
                 }
@@ -441,7 +475,12 @@ zedAlphaDirectives
                     $seatMenu.hide();
                 }
 
-                var positionSeatMenu = function(){
+                var positionSeatMenu = function(shape){
+                    if(!shapeSeatIsAvailable(shape)){
+                        scope.highlightedIsntAvailable = true;
+                    }else{
+                        scope.highlightedIsntAvailable = false;
+                    }
                     var l = scope.highlightedShapes.length;
                     if(l){
                         var lastShape = scope.highlightedShapes[l-1],
@@ -521,30 +560,27 @@ zedAlphaDirectives
 
 
                 var renderMapWithEvents = _.throttle(function(newVal){
-                    if(!newVal) return;
-                    var events = newVal.events;
-                    if(events){
-                        setAllShapesToNormal();
-                        scope.highlightedShapes = [];
-                        if(!events.length){
-                            return;
-                        }
-                        var event, color, seatNumber, theShape;
-                        for(var j = 0; j < events.length; ++j){
-                            event = events[j];
-                            color = getEventStatusColor(event.status);
-                            for(seatNumber  in  event.seats){
-                                for (var i = 0;i < shapes.length; ++i){
-                                    theShape = shapes[i];
-                                    if(theShape.id){
-                                        if(theShape.seatNumber == seatNumber){
-                                            theShape.setBackgroundColor(color);
-                                            if(event.helpers && event.helpers.isEditing){
-                                                theShape.highlight();
-                                                scope.highlightedShapes.push(theShape);
-                                            }
+                    events = (newVal && newVal.events) ? newVal.events : events;
+                    if(!events) return;
+                    setAllShapesToNormal();
+                    scope.highlightedShapes = [];
+                    if(!events.length){
+                        return;
+                    }
+                    var event, color, seatNumber, theShape;
+                    for(var j = 0; j < events.length; ++j){
+                        event = events[j];
+                        color = getEventStatusColor(event.status);
+                        for(seatNumber  in  event.seats){
+                            for (var i = 0;i < shapes.length; ++i){
+                                theShape = shapes[i];
+                                if(theShape.id){
+                                    if(theShape.seatNumber == seatNumber){
+                                        theShape.setBackgroundColor(color);
+                                        if(event.helpers && event.helpers.isEditing){
+                                            theShape.highlight();
+                                            scope.highlightedShapes.push(theShape);
                                         }
-
                                     }
 
                                 }
@@ -552,18 +588,21 @@ zedAlphaDirectives
                             }
 
                         }
-                        hideSeatMenu();
+
                     }
+                    hideSeatMenu();
+
                 },10,{trailing : true});
 
 
-                var filteredEventsWatcher = scope.$watch('filteredEvents', renderMapWithEvents,true);
 
 
                 var $mapRef = BusinessHolder.$business.$child('map').$on('loaded', function(){
                     $mapRef.$off('loaded');
                     if($mapRef.$value){
                         renderMapJson($mapRef.$value);
+                        filteredEventsWatcher = scope.$watch('filteredEvents', renderMapWithEvents,true);
+
                     }
                 });
 

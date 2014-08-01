@@ -23,7 +23,7 @@ zedAlphaControllers
         }
 
 
-        Localizer.setLocale('en');
+        Localizer.setLocale('he');
 
     }).controller('HomeCtrl', function($scope, $stateParams,$state, $timeout,Localizer, loginService){
 
