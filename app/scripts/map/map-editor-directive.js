@@ -344,6 +344,9 @@ zedAlphaDirectives
                         });
                         scope.highlightedShapes = [];
                         hideSeatMenu();
+                        if(isAddingNewEvent()){
+                            updateNewEventSeats();
+                        }
                     });
                 });
 
@@ -361,24 +364,57 @@ zedAlphaDirectives
 
                 var clickCallback  = function(shape){
                     scope.$apply(function(){
-                        if(shapeSeatIsAvailable(shape)){
-                            shape.toggleHighlight();
-                            var index = scope.highlightedShapes.indexOf(shape);
-                            if(shape.highlighted && index == -1){
-                                scope.highlightedShapes.push(shape);
-                            }else if(index != -1){
-                                scope.highlightedShapes.splice(index,1);
-                            }
-                            if(!scope.highlightedShapes.length){
-                                hideSeatMenu();
-                            }else{
-                                positionSeatMenu();
-                            }
-
+                        if(isAddingNewEvent()){
+                            clickHandlerForAddingNewEventState(shape);
+                        } else if(isEditingEvent()){
+                            clickHandlerForEditingEventState(shape);
                         }else{
+                            clickHandlerForNormalState(shape);
                         }
                     });
                 };
+
+
+                var clickHandlerForAddingNewEventState = function(shape){
+                    var index = scope.highlightedShapes.indexOf(shape);
+                    console.log('clickHandlerForAddingNewEventState',index);
+
+                    if(index == -1){
+                        if(shapeSeatIsAvailable(shape)){
+                            scope.highlightedShapes.push(shape);
+                            shape.toggleHighlight();
+                        }
+                    }else if(index > -1){
+                        scope.highlightedShapes.splice(index,1);
+                        shape.toggleHighlight();
+                    }
+                    updateNewEventSeats();
+                }
+
+                var clickHandlerForEditingEventState = function(shape){
+
+                }
+
+                var clickHandlerForNormalState = function(shape){
+                    if(shapeSeatIsAvailable(shape)){
+                        shape.toggleHighlight();
+                        var index = scope.highlightedShapes.indexOf(shape);
+                        if(shape.highlighted && index == -1){
+                            scope.highlightedShapes.push(shape);
+                        }else if(index != -1){
+                            scope.highlightedShapes.splice(index,1);
+                        }
+                        if(!scope.highlightedShapes.length){
+                            hideSeatMenu();
+                        }else{
+                            positionSeatMenu();
+                        }
+
+                    }
+                }
+
+
+
 
                 var hideSeatMenu = function(){
                     $seatMenu.hide();
@@ -427,6 +463,36 @@ zedAlphaDirectives
                     }
                     return null;
                 }
+
+
+                scope.newEventForSelectedShaped = function(occasionalOrDestination){
+                    scope.$parent.newEventWithSeatsDic(occasionalOrDestination, shapesArrToSeatsDic());
+                    hideSeatMenu();
+                };
+
+                var shapesArrToSeatsDic = function(){
+                    var output = {};
+                    angular.forEach(scope.highlightedShapes, function(shape){
+                        output[shape.seatString()] = true;
+                    });
+                    return output;
+                }
+
+
+                // ------- Sync with Events Ctrl --------//
+                var isAddingNewEvent = function(){
+                    return scope.$parent.newEvent;
+                }
+
+                var isEditingEvent = function(){
+                    return scope.$parent.editedEvent;
+                }
+
+
+                var updateNewEventSeats = function (){
+                    scope.$parent.newEvent.seats = shapesArrToSeatsDic();
+                }
+
 
 
                 var renderMapWithEvents = _.throttle(function(newVal){

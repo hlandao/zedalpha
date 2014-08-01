@@ -24,6 +24,11 @@
                 <th>{{ 'TIME' | translate }}</th>
             </tr>
             </thead>
+
+            <tbody ng-if="newEvent" hl-event-form event="newEvent"></tbody>
+            <tbody ng-if="editedEvent" hl-event-form event="editedEvent"></tbody>
+
+
             <tbody>
             <!--<tr class="event-row test">-->
                 <!--<td><hl-status-selector ng-init="testStatus = {status:'test', color:'blue'}" ng-model="testStatus"></hl-status-selector></td>-->
@@ -42,7 +47,7 @@
                 <!--<td> {{event.startTime | date : 'HH:mm'}} </td>-->
             <!--</tr>-->
 
-            <tr class="event-row" ng-repeat-start="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter | filter : {name : query} | orderBy : 'startTime'))">
+            <tr class="event-row" ng-repeat="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter | filter : {name : query} | orderBy : 'startTime'))">
                 <td class="status-col"><hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
                 <td ng-click="openEditedEvent(event)" class="name-col">
                     <input type="text" ng-model="event.name" placeholder="{{ 'NAME' | translate }}" ng-show="event.helpers.isEditing">
@@ -58,7 +63,7 @@
                 </td>
                 <td> {{event.startTime | date : 'HH:mm'}} </td>
             </tr>
-            <tr ng-repeat-end="" ng-if="event.helpers.isEditing" hl-event-form event="event"></tr>
+            <!--<tr ng-repeat-end="" ng-if="event.helpers.isEditing" hl-event-form event="event"></tr>-->
             <!--<tr class="event-form-row" ng-repeat-end="" ng-if="event.helpers.isEditing">-->
                 <!--<td colspan="5">-->
                     <!--<table class="table">-->
