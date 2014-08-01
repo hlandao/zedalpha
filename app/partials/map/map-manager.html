@@ -1,12 +1,22 @@
 <div id="map-editor">
-    <ul class="dropdown-menu" id="seat-menu">
-        <li role="presentation"><a href="#">Seats : {{highlightedShapes | highlightedShapesSeats}}</a></li>
-        <li role="presentation" class="divider"></li>
-        <li role="presentation"><a href="#">Action</a></li>
-        <li role="presentation" class="divider"></li>
-        <li role="presentation"><a href="#" ng-click="newEventForSelectedShaped('destination')">Add Destination</a></li>
-        <li role="presentation"><a href="#" ng-click="newEventForSelectedShaped('occasional')">Add Occasional</a></li>
-    </ul>
+    <div class="panel panel-default" id="seat-menu">
+        <div class="panel-heading">
+            <span> {{highlightedShapes | highlightedShapesSeats}} </span>
+        </div>
+        <table class="table">
+            <tbody>
+            <tr ng-repeat="event in highlightedEvents">
+                <td><span class="label label-info" style="background: {{event.status.color}}"> {{event.status.status}} </span></td>
+                <td>{{event.name}}</td>
+                <td>{{event.startTime | date : 'HH:mm'}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="panel-footer">
+            <a href="#" ng-click="newEventForSelectedShaped('destination')">Add Destination</a>
+            <a href="#" ng-click="newEventForSelectedShaped('occasional')">Add Occasional</a>
+        </div>
+    </div>
 
     <div id="map-container">
         <div id="map"></div>

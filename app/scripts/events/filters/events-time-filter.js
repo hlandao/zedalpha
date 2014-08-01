@@ -56,5 +56,34 @@ zedAlphaFilters
 
             return filteredEventsArr;
         }
-    })
+    }).filter('eventsBySeatAndTime', function(EventsHolder, DateHolder){
+       return function(events, seatNumber, fromTime, toTime){
+           var fromTimeMoment,
+               toTimeMoment,
+               filteredEventsArr;
+
+           events = events || EventsHolder.$allEvents;
+
+           fromTimeMoment = moment(fromTime);
+           toTimeMoment = moment(toTime);
+
+
+           filteredEventsArr = [];
+
+           angular.forEach(events, function(event, key){
+               if(!event || key == '$id' || typeof event == "function") return;
+               var startTimeMoment = moment(event.startTime);
+               var endTimeMoment = moment(event.endTime);
+               var fromTimeCheck =  fromTime ? startTimeMoment >= fromTimeMoment : true;
+               var toTimeCheck = toTime ? startTimeMoment <= toTimeMoment : true;
+               var isStartingAtShift = fromTimeCheck && toTimeCheck;
+               if(isStartingAtShift && event.seats[seatNumber]){
+                   event.$id = key;
+                   filteredEventsArr.push(event);
+               }
+           });
+           return filteredEventsArr;
+
+       }
+    });
 

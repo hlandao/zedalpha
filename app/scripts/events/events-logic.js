@@ -276,7 +276,6 @@ zedAlphaServices
                 }
             }, 0);
             guestsCount += parseInt(event.guests);
-            console.log('guestsCount',guestsCount,guestPer15Value);
             return guestsCount <= guestPer15Value;
         };
 
@@ -287,6 +286,7 @@ zedAlphaServices
             startTimeMoment.minutes(minutes);
             return new Date(startTimeMoment.format(FullDateFormat));
         }
+
 
         return {
             isInvalidEventBeforeSave : isInvalidEventBeforeSave,

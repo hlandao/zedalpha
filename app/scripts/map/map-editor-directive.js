@@ -316,7 +316,7 @@ Raphael.fn.roundedRect = function (x, y, w, h, r1, r2, r3, r4){
 
 
 zedAlphaDirectives
-    .directive('mapManager', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope, EventsStatusesHolder) {
+    .directive('mapManager', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope, EventsStatusesHolder, $filter, DateHolder) {
         return {
             restrict: 'E',
             replace : true,
@@ -417,11 +417,24 @@ zedAlphaDirectives
                         }else{
                             positionSeatMenu();
                         }
-
                     }
+                    eventsForHighlightedShapes();
                 }
 
 
+                var eventsForHighlightedShapes = function(){
+                    if(scope.highlightedShapes.length == 1){
+                        var fromTime = moment(DateHolder.current).hour(0).minute(0);
+                        var toTime = moment(DateHolder.current).hour(23).minute(59);
+                        scope.highlightedEvents = $filter('eventsBySeatAndTime')(null,scope.highlightedShapes[0].seatString(),fromTime,toTime);
+                    }else{
+                        emptyEventsForHighlightedShapes();
+                    }
+                }
+
+                var emptyEventsForHighlightedShapes = function(){
+                    scope.highlightedEvents = null;
+                }
 
 
                 var hideSeatMenu = function(){
@@ -524,7 +537,6 @@ zedAlphaDirectives
                                 for (var i = 0;i < shapes.length; ++i){
                                     theShape = shapes[i];
                                     if(theShape.id){
-                                        console.log('theShape.seatNumber, seatNumber',theShape.seatNumber, seatNumber);
                                         if(theShape.seatNumber == seatNumber){
                                             theShape.setBackgroundColor(color);
                                             if(event.helpers && event.helpers.isEditing){
@@ -540,6 +552,7 @@ zedAlphaDirectives
                             }
 
                         }
+                        hideSeatMenu();
                     }
                 },10,{trailing : true});
 

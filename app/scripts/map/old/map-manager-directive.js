@@ -154,6 +154,9 @@ zedAlphaDirectives
                     canvas.renderAll();
                 }
 
+
+
+
                 // -------- Map Helpers -------//
                 var addShapeToShapes = function(shape, render){
                     $timeout(function(){
