@@ -1,0 +1,22 @@
+<div class="shift-organizer">
+    <div class="shift-organizer-inner">
+        <table class="table ">
+            <thead>
+            <tr>
+                <td> Seat </td>
+                <td ng-repeat="hour in hours"> {{hour}}:00</td>
+            </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="(seatNumber, events) in eventsBySeats">
+                    <td > {{seatNumber}}</td>
+                    <td colspan="{{hours.length}}">
+                        <div shift-organizer-event class="one-liner-text shift-organizer-event" ng-repeat="event in events">{{event.name}} - {{event.startTime | date : 'HH:mm'}}</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+
+    </div>
+</div>

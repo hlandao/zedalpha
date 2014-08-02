@@ -32,7 +32,7 @@ zedAlphaFilters
             return filteredEventsArr;
         }
     }).filter('eventsByEntireShift', function(DateHolder){
-        return function(events,shift){
+        return function(events,shift, includeEditingNow){
             if(!shift || !events) return false;
             // include events that starts X minutes after the current time
 //            var EVENT_TIME_FRAME_IN_MINUTES = 120;
@@ -47,8 +47,7 @@ zedAlphaFilters
                 var endTimeMoment = moment(event.endTime);
                 var isStartingAtShift =  startTimeMoment >= shiftStartTimeMoment && startTimeMoment <= shiftEndTimeMoment  ;
                 var isEndingWithinShift = startTimeMoment < shiftStartTimeMoment && endTimeMoment >= shiftStartTimeMoment;
-                var isEditingNow = event.helpers && event.helpers.isEditing;
-                if(isEditingNow || isStartingAtShift ){
+                if(isStartingAtShift ){
                     event.$id = key;
                     filteredEventsArr.push(event);
                 }
