@@ -66,12 +66,32 @@
     }
   }
 
+  tr.events-table-headers{
+    .th-status{
+
+    }
+    .th-name{
+
+    }
+    .th-guests{
+      width:65px;
+    }
+    .th-seats{
+      width:75px;
+    }
+    .th-time{
+
+    }
+  }
+
+
   .event-form{
     background: #F5FFE8;
   }
 
   .event-row{
-    td{
+
+  td{
       &.status-col{
         a{
           text-decoration: none;
@@ -94,18 +114,19 @@
     text-align: center;
     background: @brand-success;
     > td{
-      padding: 2px;
+      padding: 1px;
     }
     span{
-      font-weight: bold;
       color:white;
-      font-size:12px;
+      font-size:11px;
     }
   }
   .event-form-row{
-    td{
+    > td{
+      padding:0;
       table.table{
         background:transparent;
+        margin-bottom: 0;
         tr{
           &:first-child{
             td{
