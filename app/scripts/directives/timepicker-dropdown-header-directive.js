@@ -49,15 +49,18 @@ zedAlphaDirectives
                 var calcOffset = function(){
                     if(!scope.times) return;
                     var index = scope.times.indexOf(scope.selectedTime);
-                    offset = Math.abs((index-0.5) * cellHeight);
+                    if(index == -1) return 0;
+                    cellHeight = $ul.children().eq(0).outerHeight();
+                    console.log('cellHeight',cellHeight,'index',index);
+
+                    offset = Math.abs((index-2) * cellHeight);
                 }
 
                 scope.setOffset = function(){
-                    if(scope.isEntireShift){
-
-                    }else{
-                        $ul.scrollTop(offset);
-                    }
+                    calcOffset();
+                    console.log('offset',offset);
+                    $ul.slimScroll({ scrollTo: offset + 'px' });
+//                    $ul.scrollTop(offset);
                 };
 
 
@@ -74,7 +77,6 @@ zedAlphaDirectives
                         scope.selectedTime = null;
                     }else{
                         calcHoursArr(ngModel.$modelValue);
-                        calcOffset();
                         scope.selected = ngModel.$modelValue;
                     }
                 };

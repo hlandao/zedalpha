@@ -1,6 +1,15 @@
-.timepicker-dropdown-header-directive{
+.timepicker-dropdown{
   ul.list-group{
     max-height: 172px;
-    overflow-y: scroll;
+    width: 100%;
+  }
+}
+
+.timepicker-dropdown.timepicker-dropdown-header-directive{
+  ul.list-group{
+    max-height: 172px;
+    > li{
+      width: 100%;
+    }
   }
 }

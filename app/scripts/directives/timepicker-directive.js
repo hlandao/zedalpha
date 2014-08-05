@@ -3,104 +3,91 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 var _e;
 zedAlphaDirectives
 
-    .directive('hlTimepicker', ['$timeout','DateHelpers','FullDateFormat','$rootScope','$parse', function ($timeout,DateHelpers,FullDateFormat,$rootScope,$parse) {
+    .directive('hlTimepicker', ['$timeout','DateHelpers','FullDateFormat','$rootScope','$parse','DateHolder', function ($timeout,DateHelpers,FullDateFormat,$rootScope,$parse,DateHolder) {
 
         return {
             restrict: 'E',
             replace: true,
             require:['ngModel'],
             scope : {},
-            templateUrl: '/partials/directives/timepicker-directive.html',
+            templateUrl: '/partials/directives/timepicker-dropdown-directive.html',
             link : function(scope, element, attrs, ctrls) {
                 var ngModel = ctrls[0];
-                var initialized = false,
-                    staticCallback;
+                var interval = 15;
+                var cellHeight = 43;
+                var $ul = element.find('.list-group').eq(0);
+                scope.format = 'HH:mm';
 
-                var init = function(modelValue){
-                    _e = element;
-                    element.timepicker({
-                        timeFormat : 'HH:mm',
-                        interval : 15,
-                        dynamic : false,
-                        change : function(time){
-                            if(!initialized){
-                                return initialized = true;
-                            }
-                            if(angular.isDate(time)){
-                                $rootScope.safeApply(function(){
-                                    ngModel.$setViewValue(time);
-                                    staticCallback && staticCallback();
-                                });
-                            }else{
-                                $rootScope.safeApply(function(){
-                                    staticCallback && staticCallback(time);
-                                });
-                            }
+                var calcHoursArr = function(date){
+                    var originalDateMoment = moment(date).seconds(0),
+                        dateMoment = moment(date).hours(0).minutes(0).seconds(0),
+                        currentFormattedDate,
+                        selectedTime,
+                        nextDayMoment = dateMoment.clone().add('days', 1),
+                        offset;
 
+
+                    scope.times = [];
+                    var diff;
+
+                    while (nextDayMoment.diff(dateMoment, 'minutes') > 0){
+                        currentFormattedDate = new Date(dateMoment.format(FullDateFormat));
+                        scope.times.push(currentFormattedDate);
+                        diff = originalDateMoment.diff(dateMoment, 'minutes');
+                        if(diff == 0 || (diff > 0 && diff <= interval)){
+                            selectedTime = currentFormattedDate;
                         }
-                    });
 
-
-                    if(modelValue){
-                        var defaultTime = moment(ngModel.$modelValue).format("HH:mm");
-                        element.timepicker('setTime',defaultTime);
+                        dateMoment.add('minutes', interval);
                     }
+
+                    scope.selectedTime = selectedTime;
+                    return scope.times;
                 };
-                init(ngModel.$modelValue);
 
 
-                var minTime, maxTime;
+                var calcOffset = function(){
+                    if(!scope.times) return;
+                    var index = scope.times.indexOf(scope.selectedTime);
+                    cellHeight = $ul.children().eq(0).outerHeight();
+                    console.log('cellHeight',cellHeight,'index',index);
 
-                if (attrs.minTime) {
-                    scope.$parent.$watch($parse(attrs.minTime), function(value) {
-                        var theDate = moment(value).format('HH:mm');
-                        minTime = theDate ? theDate : minTime;
-                        element.timepicker('option','minTime', minTime,ngModel.$modelValue);
-                    });
+                    offset = Math.abs((index-2) * cellHeight);
                 }
 
-                if (attrs.maxTime) {
-                    scope.$parent.$watch($parse(attrs.maxTime), function(value) {
-                        var theDate = moment(value).format('HH:mm');
-                        maxTime = (theDate) ? theDate : maxTime;
-                        element.timepicker('option','maxTime', maxTime,ngModel.$modelValue);
-                    });
-                }
+                scope.setOffset = function(){
+                    calcOffset();
+                    console.log('offset',offset);
+                    $ul.slimScroll({ scrollTo: offset + 'px' });
+//                    $ul.scrollTop(offset);
+                };
 
-                if (attrs.staticOptions) {
-                    scope.$parent.$watch($parse(attrs.staticOptions), function(value) {
-                        element.timepicker('option','staticOptions', value);
-                    });
-                }
-
-                if (attrs.staticCallback) {
-                    scope.$parent.$watch($parse(attrs.staticCallback), function(value) {
-                        staticCallback = value;
-                    });
-                }
 
                 ngModel.$formatters.push(function(modelValue){
-                    return moment(modelValue).format("HH:mm");
+                    return modelValue;
                 });
 
 
                 ngModel.$render = function(){
-                    element.timepicker('setTime', ngModel.$viewValue)
+                    calcHoursArr(ngModel.$modelValue);
+                    scope.selected = ngModel.$modelValue;
                 };
 
 
-                ngModel.$parsers.push(function(viewValue){
-                    var viewValueMoment = moment(viewValue);
-
-                    if(viewValueMoment){
-                        var output = new Date(moment(ngModel.$modelValue).hour(viewValueMoment.hour()).minute(viewValueMoment.minute()).format(FullDateFormat));
-                        return output;
+                scope.setNewTime = function(time){
+                    if(time){
+                        ngModel.$setViewValue(time);
+                        ngModel.$render();
                     }
+                };
+
+                ngModel.$parsers.push(function(viewValue){
+                    return viewValue;
                 });
 
 
+
                 scope.$on('closeAllOpenControls', function(){
-                    element.timepicker('close');
                 });
 
             }

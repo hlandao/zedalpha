@@ -14,8 +14,9 @@ zedAlphaControllers
         });
 
         $scope.$on('$stateChangeSuccess', function(e, toState, toParams){
+            $scope.showSpinner = false;
             if (toState.resolve) {
-                $scope.showSpinner = false;
+
             }
         });
 

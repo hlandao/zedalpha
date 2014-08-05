@@ -6,8 +6,10 @@ zedAlphaDirectives
         return {
             restrict: 'A',
             link: function(scope, element, attrs){
+                console.log('attrs.wheelStep',attrs.wheelStep);
                 element.slimScroll({
-                    height: attrs.scrollHeight || '100%'
+                    height: attrs.scrollHeight || '100%',
+                    wheelStep : attrs.wheelStep || 15,
                 });
             }
         }

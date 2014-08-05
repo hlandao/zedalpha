@@ -1,4 +1,10 @@
 <tbody class="event-form">
+    <tr class="event-form-title">
+        <td colspan="5">
+            <span ng-show="!event.$id"> {{ 'NEW_EVENT' | translate }} </span>
+            <span ng-show="event.$id"> {{ 'EDITED_EVENT' | translate }} </span>
+        </td>
+    </tr>
     <tr class="event-row edited-event">
         <td class="status-col"><hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
         <td ng-click="openEditedEvent(event)" class="name-col">
@@ -22,6 +28,11 @@
                 <tr ng-if="!event.isOccasional">
                     <td> <input type="text" ng-model="event.phone" placeholder="{{ 'PHONE' | translate }}" class=""> </td>
                     <td> <input type="text" ng-model="event.email" placeholder="{{ 'EMAIL' | translate }}" class=""> </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <hl-event-duration-select></hl-event-duration-select>
+                    </td>
                 </tr>
                 <tr>
                     <td> <input type="text" placeholder="{{ 'HOSTESS' | translate }}"  ng-model="event.hostess"> </td>

@@ -1,4 +1,5 @@
 body.rtl{
+  direction:rtl;
   .pull-left > .dropdown-menu{
     right:0;
   }
@@ -52,6 +53,22 @@ body.rtl{
     }
   }
 
+
+  table.table-event-duration{
+    .the-date{
+      .dropdown-menu{
+        width:313px;
+        table{
+          outline:none;
+        }
+        li{
+          &:last-child{
+            width:200px;
+          }
+        }
+      }
+    }
+  }
   &.body-special {
     #content.events{
       right: 458px;

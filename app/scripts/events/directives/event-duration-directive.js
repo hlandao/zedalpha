@@ -2,7 +2,7 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 
 
 zedAlphaDirectives
-    .directive('hlEventDurationSelect', ['$timeout','FullDateFormat', 'EventsDurationForGuestsHolder','$rootScope','EventInterval','DateHelpers','EventsDurationHolder', function ($timeout, FullDateFormat, EventsDurationForGuestsHolder,$rootScope,EventInterval,DateHelpers,EventsDurationHolder) {
+        .directive('hlEventDurationSelect', ['$timeout','FullDateFormat', 'EventsDurationForGuestsHolder','$rootScope','EventInterval','DateHelpers','EventsDurationHolder', function ($timeout, FullDateFormat, EventsDurationForGuestsHolder,$rootScope,EventInterval,DateHelpers,EventsDurationHolder) {
 
         return {
             restrict: 'E',
@@ -10,9 +10,10 @@ zedAlphaDirectives
 //            scope : {
 //                event : "="
 //            },
+            replace : true,
             controller : function($scope){
                 $scope.$watch('event', function(newVal, oldVal){
-                   console.log('newVal',newVal);
+
                 });
                 // ---------- Init timepicker ---------//
                 $scope.timeFormat = 'HH:mm';

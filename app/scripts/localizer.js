@@ -30,6 +30,7 @@ zedAlphaServices
 
             localStorage.setItem(localStorageKey, langKey);
 
+
             setRTLDirection(isRTL);
             setLanguage(langKey);
             $rootScope.$broadcast('$localeStateChanged');
@@ -38,8 +39,10 @@ zedAlphaServices
         function setRTLDirection(isRTL) {
             if (isRTL) {
                 cssInjector.add("/vendor/bootstrap-rtl/bootstrap-rtl.css");
+                $('body').addClass('rtl');
             }
             else {
+                $('body').removeClass('rtl');
                 cssInjector.removeAll();
             }
         }
