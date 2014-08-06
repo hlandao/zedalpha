@@ -144,10 +144,12 @@ function SeatShape(paper, options){
             self.clickCallback(self);
         }
 
-        this.shapeSet.touchend(function(e){
-            console.log('e',e);
-        });
     });
+
+    this.shapesSet.touchend(function(e){
+        console.log('e',e);
+    });
+
 
     this.shapesSet.mouseover(function(e){
         if(self.highlighted) return;

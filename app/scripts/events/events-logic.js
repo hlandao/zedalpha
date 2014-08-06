@@ -4,13 +4,15 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 zedAlphaServices
     .factory('EventsLogic', function(EventsHolder, BusinessHolder, EventsDurationForGuestsHolder, FullDateFormat,GuestsPer15, $q, ShiftsDayHolder, DateHelpers){
         var DEFAULT_EVENT_DURATION = (EventsDurationForGuestsHolder && EventsDurationForGuestsHolder.default) || 120;
+        var notCollidingEventStatuses = ['NO_SHOW','FINISHED','CANCELED'];
         var checkCollisionsForEvent = function(event){
-            var eventToCheck, sharedSeats;
+            var eventToCheck, sharedSeats, isCollidingStatus;
             for(var i in EventsHolder.$allEvents){
                 eventToCheck = EventsHolder.$allEvents[i];
                 if(!eventToCheck || i == '$id' || typeof eventToCheck == "function" || eventToCheck === event) continue;
                 sharedSeats = checkIfTwoEventsShareTheSameSeats(event, eventToCheck);
-                if(sharedSeats){
+
+                if(sharedSeats && isEventShouldCollide(eventToCheck)){
                     if(checkIfTwoEventsCollideInTime(event, eventToCheck)){
                         return true;
                     }
@@ -51,7 +53,7 @@ zedAlphaServices
                 eventToCheckAgainst = EventsHolder.$allEvents[i];
                 if(!eventToCheckAgainst || i == '$id' || typeof eventToCheckAgainst == "function" || eventToCheckAgainst === event) continue;
                 sharedSeats = checkIfTwoEventsShareTheSameSeats(event, eventToCheckAgainst);
-                if(sharedSeats){
+                if(sharedSeats && isEventShouldCollide(eventToCheckAgainst)){
                     tempMaxDuration =  maxDurationForEventInRegardToAnotherEvent(event, eventToCheckAgainst);
                     if(tempMaxDuration == 0){
                         return 0;
@@ -63,6 +65,10 @@ zedAlphaServices
                 }
             }
             return maxDuration;
+        }
+
+        var isEventShouldCollide = function(event){
+            return (event && event.status && event.status.status) ? (notCollidingEventStatuses.indexOf(event.status.status) == -1) : false ;
         }
 
         var maxDurationForEventInRegardToAnotherEvent = function(eventToCheck, e2){
@@ -261,7 +267,6 @@ zedAlphaServices
 
         var isGuestsPer15Valid = function(event){
             var guestPer15Value = parseInt(GuestsPer15.$value);
-            console.log('guestPer15Value',guestPer15Value);
             if(!guestPer15Value || guestPer15Value === 0 || !event.guests) return true;
             if(!event || !event.startTime) return false;
             var startTimeMoment = moment(event.startTime);
@@ -289,6 +294,20 @@ zedAlphaServices
         }
 
 
+        var updateEventDuration = function(event, duration){
+            if(!duration) return;
+            var startTimeMoment = moment(event.startTime);
+            return event.endTime = startTimeMoment.add(duration, 'minutes').format(FullDateFormat);
+
+        };
+
+        console.log('EventsDurationForGuestsHolder',EventsDurationForGuestsHolder);
+        var eventDurationForGuestsNumber = function(guests){
+            console.log(guests, EventsDurationForGuestsHolder)
+            return EventsDurationForGuestsHolder[parseInt(guests)];
+        };
+
+
         return {
             isInvalidEventBeforeSave : isInvalidEventBeforeSave,
             isInvalidEventWhileEdit : isInvalidEventWhileEdit,
@@ -296,7 +315,9 @@ zedAlphaServices
             endTimeForNewEventWithStartTimeAndMaxDuration : endTimeForNewEventWithStartTimeAndMaxDuration,
             maxDurationForEventInMinutes : maxDurationForEventInMinutes,
             isGuestsPer15Valid : isGuestsPer15Valid,
-            startTimeAccordingToTimeInterval : startTimeAccordingToTimeInterval
+            startTimeAccordingToTimeInterval : startTimeAccordingToTimeInterval,
+            eventDurationForGuestsNumber : eventDurationForGuestsNumber,
+            updateEventDuration : updateEventDuration
         }
 
     });

@@ -52,7 +52,7 @@ zedAlphaDirectives
                 $scope.changeDuration = function(duration){
                     $scope.durationLabel = duration;
                     var startTimeMoment = moment($scope.event.startTime);
-                    var newEndTimeMoment = startTimeMoment.add($scope.durationLabel, 'minutes');
+                    var newEndTimeMoment = startTimeMoment.clone().add($scope.durationLabel, 'minutes');
                     $scope.event.endTime = new Date(newEndTimeMoment.format(FullDateFormat));
                     $timeout(setDurationLabel);
                 }

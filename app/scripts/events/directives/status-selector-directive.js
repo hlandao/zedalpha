@@ -22,6 +22,10 @@ zedAlphaDirectives
 
 
             $scope.selectStatus = function(selectedStatus, e){
+                if(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                }
                 ngModel.$setViewValue(selectedStatus);
                 $scope.status = selectedStatus;
                 $timeout(function(){

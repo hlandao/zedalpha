@@ -110,6 +110,14 @@ zedAlphaDirectives
                             newVal.startTime =  oldVal.startTime;
                             newVal.endTime =  oldVal.endTime;
                             newVal.seats =  oldVal.seats;
+                        }else{
+                            console.log('vals : ',newVal.guests,oldVal.guests);
+                            if(newVal.guests !== oldVal.guests){
+                                var newDuration = EventsLogic.eventDurationForGuestsNumber(newVal.guests);
+                                console.log('newDuration',newDuration);
+
+                                if(newDuration) EventsLogic.updateEventDuration(newVal, newDuration);
+                            }
                         }
                     }
                 };
