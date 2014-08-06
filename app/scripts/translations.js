@@ -81,6 +81,8 @@ zedAlphaConfigModule
         "ENTIRE_SHIFT": "Entire Shift",
         "SHIFT" : "Shift",
         "DEAD_EVENTS" : "Dead Events",
+        "SHOW_DEAD_EVENTS" : "Show Dead Events",
+        "HIDE_DEAD_EVENTS" : "Hide Dead Events",
         "TO" : 'To',
         "MIN" : 'min',
         "NOW" : "Now",
@@ -193,6 +195,9 @@ zedAlphaConfigModule
 
                 "SHIFT" : "משמרת",
                 "DEAD_EVENTS" : "ארועים שהסתיימו",
+                "SHOW_DEAD_EVENTS" : "הצג ארועים שהסתיימו",
+                "HIDE_DEAD_EVENTS" : "הסתדר ארועים שהסתיימו",
+
                 "TO" : 'עד',
                 "MIN" : 'דקות',
 
