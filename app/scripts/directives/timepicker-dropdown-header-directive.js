@@ -9,7 +9,9 @@ zedAlphaDirectives
             restrict: 'E',
             replace: true,
             require:['ngModel'],
-            scope : {},
+            scope : {
+                shift : "="
+            },
             templateUrl: '/partials/directives/timepicker-dropdown-header-directive.html',
             link : function(scope, element, attrs, ctrls) {
                 var ngModel = ctrls[0];
@@ -19,6 +21,7 @@ zedAlphaDirectives
                 scope.format = 'HH:mm';
 
                 var calcHoursArr = function(date){
+                    date = date || ngModel.$modelValue;
                     var originalDateMoment = moment(date).seconds(0),
                         dateMoment = moment(date).hours(0).minutes(0).seconds(0),
                         currentFormattedDate,
@@ -30,6 +33,14 @@ zedAlphaDirectives
                     scope.times = [];
                     var diff;
 
+                    if(scope.shift){
+                        if(scope.shift.startTime){
+                            dateMoment = moment(scope.shift.startTime).seconds(0);
+                        }
+                        if(scope.shift.endTime){
+                            nextDayMoment = moment(scope.shift.endTime).seconds(0);
+                        }
+                    }
                     while (nextDayMoment.diff(dateMoment, 'minutes') > 0){
                         currentFormattedDate = new Date(dateMoment.format(FullDateFormat));
                         scope.times.push(currentFormattedDate);
@@ -49,16 +60,13 @@ zedAlphaDirectives
                 var calcOffset = function(){
                     if(!scope.times) return;
                     var index = scope.times.indexOf(scope.selectedTime);
-                    if(index == -1) return 0;
+                    if(index == -1) return offset = 0;
                     cellHeight = $ul.children().eq(0).outerHeight();
-                    console.log('cellHeight',cellHeight,'index',index);
-
-                    offset = Math.abs((index-2) * cellHeight);
+                    offset = index == 0 ? 0 : Math.abs((index-2) * cellHeight);
                 }
 
                 scope.setOffset = function(){
                     calcOffset();
-                    console.log('offset',offset);
                     $ul.slimScroll({ scrollTo: offset + 'px' });
 //                    $ul.scrollTop(offset);
                 };
@@ -103,6 +111,8 @@ zedAlphaDirectives
 
                 scope.$on('closeAllOpenControls', function(){
                 });
+
+                scope.$watch('shift', calcHoursArr);
 
             }
         };
