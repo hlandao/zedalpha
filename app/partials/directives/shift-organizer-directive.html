@@ -3,15 +3,15 @@
         <table class="table ">
             <thead>
             <tr>
-                <td> Seat </td>
+                <td> {{ 'SEAT' | translate }} </td>
                 <td ng-repeat="hour in hours"> {{hour}}:00</td>
             </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="(seatNumber, events) in eventsBySeats">
-                    <td > {{seatNumber}}</td>
+                    <td > <span class="label label-default"> {{seatNumber}} </span> </td>
                     <td colspan="{{hours.length}}">
-                        <div shift-organizer-event class="one-liner-text shift-organizer-event" ng-repeat="event in events">{{event.name}} - {{event.startTime | date : 'HH:mm'}}</div>
+                        <div shift-organizer-event class="one-liner-text shift-organizer-event" ng-repeat="event in events"><span class="guests">{{event.guests}}</span>{{event.name}} {{event.startTime | date : 'HH:mm'}}</div>
                     </td>
                 </tr>
             </tbody>

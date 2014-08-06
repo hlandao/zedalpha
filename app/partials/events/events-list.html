@@ -4,14 +4,32 @@
         <div class="panel-heading">
             <div class="dropdown pull-left filter-events">
 
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{selectedFilter | translate}} <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"> {{selectedFilter | translate}} <b class="caret"></b></a>
                 <ul class="dropdown-menu" role="menu">
                     <li ng-repeat="filter in filters"><a href="#" ng-click="selectFilter(filter)" role="menuitem" tabindex="-1">{{filter | translate}}</a></li>
                 </ul>
             </div>
             <div class="pull-left filter-events">
-                <a href="#" ng-click="goToNow($event)"> {{'GO_TO_NOW' | translate }}</a>
+                <a href="#" ng-click="goToNow($event)"><i class="glyphicon glyphicon-time"></i> {{'GO_TO_NOW' | translate }}</a>
             </div>
+
+            <div class="dropdown pull-left filter-events">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-plus-sign"></i> {{'ADD_BUTTON_LABEL' | translate }}</a>
+                <ul class="dropdown-menu" role="menu">
+                    <li  ng-click="newEventWithSeatsDic('destination')"> <span>{{'DESTINATION' | translate}}</span></li>
+                    <li ng-click="newEventWithSeatsDic('occasional')" ><span>{{'OCCASIONAL' | translate}}</span></li>
+
+                </ul>
+            </div>
+
+            <div class="pull-left filter-events switch-button" ng-class="{active : (switchMode)}">
+                <a href="#" ng-click="toggleSwitchMode($event)"><i class="glyphicon glyphicon-refresh"></i> {{ 'SWITCH_TABLES' | translate }}</a>
+            </div>
+
+
+
+
+
 
             <div class="pull-right search-events">
                 <i class="glyphicon glyphicon-search"></i>
@@ -50,13 +68,15 @@
                 <!--</td>-->
                 <!--<td> {{event.startTime | date : 'HH:mm'}} </td>-->
             <!--</tr>-->
-
+            <tr class="events-switch-title" ng-if="switchMode">
+                <td colspan="5"> <span>{{'SWITCH_MODE_TITLE' | translate }}</span> </td>
+            </tr>
             <tr class="event-row" ng-repeat="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter | filter : {name : query} | orderBy : 'startTime'))" ng-hide="event === editedEvent">
                 <td class="status-col" prevent-default><hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
-                <td ng-click="openEditedEvent(event)"> {{event.startTime | date : 'HH:mm'}} </td>
-                <td ng-click="openEditedEvent(event)"> <span  class="badge">{{event.guests}}</span> </td>
-                <td ng-click="openEditedEvent(event)" class="name-col">  <span> {{event.name}} </span> </td>
-                <td ng-click="openEditedEvent(event)"> <span>{{event.seats | seats}}</span> <i class="glyphicon glyphicon-asterisk" style="color:#ffda5c;" ng-show="event.comment || event.contactComment"></i> </td>
+                <td ng-click="clickOnEvent(event)"> {{event.startTime | date : 'HH:mm'}} </td>
+                <td ng-click="clickOnEvent(event)"> <span  class="badge">{{event.guests}}</span> </td>
+                <td ng-click="clickOnEvent(event)" class="name-col">  <span> {{event.name}} </span> </td>
+                <td ng-click="clickOnEvent(event)"> <span>{{event.seats | seats}}</span> <i class="glyphicon glyphicon-asterisk" style="color:#ffda5c;" ng-show="event.comment || event.contactComment"></i> </td>
             </tr>
             <tr class="dead-events-title" ng-class="{showed : showDeadEvents}">
                 <td colspan="5">
@@ -66,10 +86,10 @@
             </tr>
             <tr class="dead-events-row event-row" ng-repeat="event in (deadEvents.events = TimelyFilteredEvents.filteredEvents | statusesFilter:'DEAD')" ng-hide="event === editedEvent" ng-if="showDeadEvents">
                 <td class="status-col"><hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
-                <td ng-click="openEditedEvent(event)" > {{event.startTime | date : 'HH:mm'}} </td>
-                <td ng-click="openEditedEvent(event)" > <span  class="badge">{{event.guests}}</span> </td>
-                <td ng-click="openEditedEvent(event)" class="name-col"> <span> {{event.name}} </span> </td>
-                <td ng-click="openEditedEvent(event)" > <span>{{event.seats | seats}}</span> <i class="glyphicon glyphicon-asterisk" style="color:#ffda5c;" ng-show="event.comment || event.contactComment"></i> </td>
+                <td ng-click="clickOnEvent(event)" > {{event.startTime | date : 'HH:mm'}} </td>
+                <td ng-click="clickOnEvent(event)" > <span  class="badge">{{event.guests}}</span> </td>
+                <td ng-click="clickOnEvent(event)" class="name-col"> <span> {{event.name}} </span> </td>
+                <td ng-click="clickOnEvent(event)" > <span>{{event.seats | seats}}</span> <i class="glyphicon glyphicon-asterisk" style="color:#ffda5c;" ng-show="event.comment || event.contactComment"></i> </td>
             </tr>
 
             <!--<tr ng-repeat-end="" ng-if="event.helpers.isEditing" hl-event-form event="event"></tr>-->

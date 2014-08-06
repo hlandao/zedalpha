@@ -40,10 +40,38 @@
     color:white;
     height: 40px;
     .pull-left{
-      a{
+     > a{
         padding: 10px;
         color:white;
+        text-decoration: none;
       }
+      &.switch-button{
+         > a{
+
+         }
+        &.active{
+          >a{
+            color : @brand-warning;
+          }
+        }
+      }
+     >ul.dropdown-menu{
+       li{
+         cursor:pointer;
+         span{
+           display: block;
+           padding: 3px 20px;
+           clear: both;
+           font-weight: normal;
+           line-height: 1.42857143;
+           color: #333333;
+           white-space: nowrap;
+         }
+         &:hover{
+           background: @skin-light;
+         }
+       }
+     }
     }
     .pull-right{
       &.search-events{
@@ -119,6 +147,20 @@
 
 
     }
+  }
+
+  tr.events-switch-title{
+    text-align: center;
+    background: @brand-warning;
+    > td{
+      padding: 1px;
+    }
+    span{
+      color:white;
+      font-size:11px;
+      text-decoration: none;
+    }
+
   }
 
 

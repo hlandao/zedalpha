@@ -685,8 +685,16 @@ zedAlphaDirectives
             link: function(scope, elem, attrs) {
 
                 scope.shapes = [
-                    {shapeName : 'BIG_CIRCLE', shapeType : 'circle', r  : 20},
-                    {shapeName : 'BIG_RECT', shapeType : 'rect', w  : 40, h : 40},
+                    {shapeName : 'CIRCLE_TABLE_2', shapeType : 'circle', r  : 20},
+                    {shapeName : 'CIRCLE_TABLE_4', shapeType : 'circle', r  : 30},
+                    {shapeName : 'CIRCLE_TABLE_6', shapeType : 'circle', r  : 40},
+                    {shapeName : 'CIRCLE_TABLE_8', shapeType : 'circle', r  : 50},
+                    {shapeName : 'CIRCLE_TABLE_10', shapeType : 'circle', r  : 60},
+
+                    {shapeName : 'SQUARE_TABLE_2', shapeType : 'rect', w  : 40, h : 40},
+                    {shapeName : 'SQUARE_TABLE_4', shapeType : 'rect', w  : 50, h : 50},
+                    {shapeName : 'RECT_TABLE_6', shapeType : 'rect', w  : 60, h : 40},
+                    {shapeName : 'RECT_TABLE_8', shapeType : 'rect', w  : 80, h : 60},
                     {shapeName : 'CHAIR', shapeType : 'roundedRect', w  : 20, h:20}
                 ];
 

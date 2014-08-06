@@ -19,7 +19,6 @@ zedAlphaControllers
             CloseOpenControls();
             var isOccasional = occasionalOrDestination == 'occasional';
             var startTime = specificStartTime || (isOccasional ? new Date() : DateHolder.current);
-            console.log('isOccasional',isOccasional);
             if(!isOccasional) startTime = EventsLogic.startTimeAccordingToTimeInterval(startTime);
             startTime = DateHelpers.resetDateSeconds(startTime);
             var newEvent = new Event({
@@ -58,6 +57,15 @@ zedAlphaControllers
             }
         });
 
+
+        // ----------Click on event ----------//
+        $scope.clickOnEvent = function(event){
+            if($scope.switchMode){
+
+            }else{
+
+            }
+        }
 
         // --------- Edit event ----------- //
         $scope.openEditedEvent = function (event){
@@ -148,6 +156,30 @@ zedAlphaControllers
                 output += parseInt($scope.events.events[i].guests) || 0;
             }
             return output;
+        };
+
+
+        // --------- switch mode -------//
+        $scope.toggleSwitchMode = function(){
+            if(!$scope.switchMode){
+                $scope.switchMode = true;
+                $scope.eventToSwitch = null;
+            }else{
+                $scope.switchMode = false;
+                $scope.eventToSwitch = null;
+
+            }
+        }
+
+        var addEventToSwitchMode = function(event){
+            if($scope.eventToSwitch){
+
+            } else if ($scope.eventToSwitch === event){
+                $scope.eventToSwitch = null;
+                $scope.switchMode = false;
+            }else{
+                $scope.eventToSwitch = event;
+            }
         }
 
 
