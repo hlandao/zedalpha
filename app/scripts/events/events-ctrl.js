@@ -115,6 +115,8 @@ zedAlphaControllers
 
 
         $scope.events = {};
+        $scope.deadEvents = {};
+
         $scope.TimelyFilteredEvents = TimelyFilteredEvents;
         $scope.timepickerStaticOptions = [
             {label : $filter('translate')('ENTIRE_SHIFT'), value : 'ENTIRE_SHIFT'}

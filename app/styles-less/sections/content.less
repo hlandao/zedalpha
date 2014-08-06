@@ -3,7 +3,7 @@
     position: relative;
 }
 
-#content {
+.content {
     position: absolute;
     top: (@header_height * 2);
     right: 0;
@@ -26,12 +26,12 @@
 
 // for special page, like 404, sign in, sign up
 .body-special {
-    #content {
+    .content {
         z-index: 2;
         top: 0;
         left: 0;
     }
-  #content.events{
+  .content.events{
     top: 50px;
     width: auto;
     left: @events_list_width;
@@ -39,7 +39,7 @@
 }
 // lock screen
 .body-lock {
-    #content {
+    .content {
         background: url('../images/background/3.jpg') no-repeat center center fixed; 
         -webkit-background-size: cover;
         -moz-background-size: cover;

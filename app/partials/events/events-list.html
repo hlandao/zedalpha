@@ -58,10 +58,13 @@
                 <td ng-click="openEditedEvent(event)" class="name-col"> <span> {{event.name}} </span> </td>
                 <td> <span>{{event.seats | seats}}</span> </td>
             </tr>
-            <tr class="dead-events-title">
-                <td colspan="5"><span> {{"DEAD_EVENTS" | translate }} </span></td>
+            <tr class="dead-events-title" ng-class="{showed : showDeadEvents}" ng-hide="!deadEvents.events || deadEvents.events.length">
+                <td colspan="5">
+                    <a href="#" ng-show="!showDeadEvents" ng-click="showDeadEvents = true"> {{"SHOW_DEAD_EVENTS" | translate }} </a>
+                    <a href="#" ng-show="showDeadEvents" ng-click="showDeadEvents = false"> {{"HIDE_DEAD_EVENTS" | translate }} </a>
+                </td>
             </tr>
-            <tr class="dead-events-row event-row" ng-repeat="event in TimelyFilteredEvents.filteredEvents | statusesFilter:'DEAD'" ng-hide="event === editedEvent">
+            <tr class="dead-events-row event-row" ng-repeat="event in (deadEvents.events = TimelyFilteredEvents.filteredEvents | statusesFilter:'DEAD')" ng-hide="event === editedEvent" ng-if="showDeadEvents">
                 <td class="status-col"><hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
                 <td> {{event.startTime | date : 'HH:mm'}} </td>
                 <td> <span  class="badge">{{event.guests}}</span> </td>

@@ -143,6 +143,10 @@ function SeatShape(paper, options){
         }else{
             self.clickCallback(self);
         }
+
+        this.shapeSet.touchend(function(e){
+            console.log('e',e);
+        });
     });
 
     this.shapesSet.mouseover(function(e){
