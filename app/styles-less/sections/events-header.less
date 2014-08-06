@@ -134,6 +134,11 @@
         .nav-right {
             font-size: 18px;
             line-height: 22px;
+            @media (max-width: @screen-sm) {
+                display: block;
+                width:100%;
+                margin:0;
+            }
 
             > li {
                 float: left;
@@ -265,12 +270,25 @@
                 > a {
                     width: 95px;
                     text-align: center;
+                  @media (max-width: @screen-md) {
+                    width: 75px;
+                  }
                 }
             }
 
             .badge-info {
                 background-color: transparent;
             }
+
+          @media (max-width: @screen-sm) {
+            display: -webkit-box;
+            > li {
+              -webkit-box-flex : 1;
+              >a{
+                width:100%;
+              }
+            }
+          }
         }
     }
 
@@ -300,4 +318,5 @@
 
 
 }
+
 

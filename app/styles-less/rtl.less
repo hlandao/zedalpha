@@ -4,7 +4,12 @@ body.rtl{
     right:0;
   }
   .top-nav{
-    padding: 0 100px 0 0;
+//    padding: 0 100px 0 0;
+    padding: 50px 0px 0;
+    @media (min-width: @screen-sm) {
+      padding: 0 100px 0 0;
+    }
+
     .nav-left{
       float:right;
       direction: rtl;
@@ -73,6 +78,12 @@ body.rtl{
     #content.events{
       right: 458px;
       left:0;
+      @media (max-width: @screen-xs) {
+        top:350px;
+        width:100%;
+        right:0;
+      }
+
     }
   }
 

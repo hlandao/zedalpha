@@ -7,19 +7,10 @@
     </tr>
     <tr class="event-row edited-event">
         <td class="status-col"><hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
-        <td ng-click="openEditedEvent(event)" class="name-col">
-            <input type="text" ng-model="event.name" placeholder="{{ 'NAME' | translate }}" ng-show="event.helpers.isEditing">
-            <span ng-show="!event.helpers.isEditing"> {{event.name}} </span>
-        </td>
-        <td>
-            <input type="text" ng-model="event.guests" placeholder="0" ng-show="event.helpers.isEditing">
-            <span ng-show="!event.helpers.isEditing">{{event.guests}}</span>
-        </td>
-        <td>
-            <input type="text" ng-model="event.seats" hl-seats-input ng-show="event.helpers.isEditing">
-            <span ng-show="!event.helpers.isEditing">{{event.seats | seats}}</span>
-        </td>
         <td> {{event.startTime | date : 'HH:mm'}} </td>
+        <td><input type="text" ng-model="event.guests" placeholder="0" class="input-badge"></td>
+        <td ng-click="openEditedEvent(event)" class="name-col"><input type="text" ng-model="event.name" placeholder="{{ 'NAME' | translate }}"></td>
+        <td><input type="text" ng-model="event.seats" hl-seats-input></td>
     </tr>
 
     <tr class="event-form-row" ng-if="event.helpers.isEditing">

@@ -93,7 +93,7 @@ zedAlphaServices
 
 
         var isInvalidEventBeforeSave = function(event){
-            return checkName(event).then(checkSeats).then(checkHost).then(checkPhone).then(checkStartTime).then(checkEndTime).then(checkCollision).then(checkEventWarnings);
+            return checkCollision(event).then(checkPhone).then(checkName).then(checkStartTime).then(checkEndTime).then(checkSeats).then(checkHost).then(checkEventWarnings);
         };
 
         var checkName = function(event){
@@ -261,11 +261,12 @@ zedAlphaServices
 
         var isGuestsPer15Valid = function(event){
             var guestPer15Value = parseInt(GuestsPer15.$value);
+            console.log('guestPer15Value',guestPer15Value);
             if(!guestPer15Value || guestPer15Value === 0 || !event.guests) return true;
             if(!event || !event.startTime) return false;
             var startTimeMoment = moment(event.startTime);
             var guestsCount = _.reduce(EventsHolder.$allEvents, function(guestsCount, _event, key){
-                if(!_event || key == '$id' || typeof _event == "function") return guestsCount;
+                if(!_event || key == '$id' || typeof _event == "function" || _event === event) return guestsCount;
                 var eventStartTimeMoment = moment(_event.startTime);
                 var isOccasional = _event.isOccasional;
                 var diff = startTimeMoment.diff(eventStartTimeMoment, 'minutes');

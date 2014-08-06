@@ -36,7 +36,7 @@ zedAlphaConfigModule
         // EVENTS
         STATUS: 'Status',
         NAME: 'Name',
-        GUESTS: 'Guests',
+        GUESTS_AMOUNT: '#',
         SEATS: 'Seats',
         TIME: 'Time',
         PHONE: 'Phone',
@@ -139,7 +139,7 @@ zedAlphaConfigModule
                 "CREATE": "צור",
                 "STATUS": "מצב",
                 "NAME": "שם מלא",
-                "GUESTS": "מוזמנים",
+                "GUESTS_AMOUNT": "#",
                 "SEATS": "שולחנות",
                 "TIME": "שעה",
                 "PHONE": "טלפון",
