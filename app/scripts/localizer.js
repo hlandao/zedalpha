@@ -11,7 +11,8 @@ zedAlphaServices
         var self = this;
 
         this.init = function(){
-            var lang = localStorage.getItem('localStorageKey') || defaultLanguage;
+            var lang = localStorage.getItem(localStorageKey) || defaultLanguage;
+            console.log('lang',lang);
             self.setLocale(lang);
             $timeout(function(){
                 defer.resolve();
@@ -34,6 +35,7 @@ zedAlphaServices
             setRTLDirection(isRTL);
             setLanguage(langKey);
             $rootScope.$broadcast('$localeStateChanged');
+            $('.hl-slim-scroll').slimScroll();
         }
 
         function setRTLDirection(isRTL) {

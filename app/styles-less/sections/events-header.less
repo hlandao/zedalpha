@@ -134,12 +134,6 @@
         .nav-right {
             font-size: 18px;
             line-height: 22px;
-            @media (max-width: @screen-sm) {
-                display: block;
-                width:100%;
-                margin:0;
-            }
-
             > li {
                 float: left;
                 &.nav-profile {
@@ -176,11 +170,14 @@
                     display: block;
 
                     height: 50px;
-                    padding: 14px 10px;
-                    @media (min-width:@screen-sm) {
-                        padding: 14px 15px;
-                    }
-
+                  &.event-counting{
+                    padding: 14px 24px;
+                  }
+                  padding: 14px 15px;
+//                    @media (min-width:@screen-sm) {
+//                        padding: 14px 15px;
+//                    }
+//
                     .badge {
                         position: absolute;
                         top: 6px;
@@ -245,7 +242,7 @@
             }
 
             .shiftpicker-col{
-              width:135px;
+              min-width:100px;
               text-overflow: ellipsis;
               a{
 
@@ -255,6 +252,10 @@
             .timepicker-col{
               height:50px;
               padding: 0 0px;
+              .dropdown-menu{
+                min-width:80px;
+                width: 100%;
+              }
               input.transparent-input{
                 width:60px;
               }
@@ -268,27 +269,15 @@
             line-height: 15px;
             > li {
                 > a {
-                    width: 95px;
-                    text-align: center;
-                  @media (max-width: @screen-md) {
+//                    width: 95px;
                     width: 75px;
-                  }
+                    text-align: center;
                 }
             }
 
             .badge-info {
                 background-color: transparent;
             }
-
-          @media (max-width: @screen-sm) {
-            display: -webkit-box;
-            > li {
-              -webkit-box-flex : 1;
-              >a{
-                width:100%;
-              }
-            }
-          }
         }
     }
 

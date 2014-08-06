@@ -7,7 +7,7 @@ zedAlphaDirectives
             restrict: 'A',
             link: function(scope, element, attrs){
                 console.log('attrs.wheelStep',attrs.wheelStep);
-                element.slimScroll({
+                element.addClass('hl-slim-scroll').slimScroll({
                     height: attrs.scrollHeight || '100%',
                     wheelStep : attrs.wheelStep || 15,
                 });

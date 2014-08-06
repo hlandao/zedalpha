@@ -7,19 +7,11 @@
     <div class="dropdown-menu pull-right with-arrow panel panel-default">
         <ul class="list-group" slim-scroll wheel-step="1">
             <li class="list-group-item" ng-class="{active:  (isEntireShift)}" ng-click="setNewTime(null, true)">
-                <a href="javascript:;" class="media" >
-                    <div class="media-body">
-                        <span class="block">{{'ENTIRE_SHIFT' | translate}}</span>
-                    </div>
-                </a>
+                <span>{{'ENTIRE_SHIFT' | translate}}</span>
             </li>
 
             <li class="list-group-item" ng-repeat="time in times" ng-class="{active:  (time == selectedTime)}" ng-click="setNewTime(time)">
-                <a href="javascript:;" class="media" >
-                    <div class="media-body">
-                        <span class="block">{{time | date : 'HH:mm'}}</span>
-                    </div>
-                </a>
+                <span>{{time | date : 'HH:mm'}}</span>
             </li>
         </ul>
     </div>

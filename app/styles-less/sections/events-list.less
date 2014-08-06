@@ -3,25 +3,18 @@
 @sub_nav_bg:            @nav_bg;
 @link_color:            @text-color;
 @link_active_bg:        @brand-primary;
-
 #events-list-container {
     z-index: 11; // should be highter than top header
     position: absolute;
     top: @header_height;
     bottom: 0;
     left: 0px;
-    width: 458px;
+    width: @events_list_width;
     padding: 0;
     background-color: @nav_bg;
     -webkit-overflow-scrolling: touch;
     -webkit-overflow-scrolling: -blackberry-touch;
     // .transition(all .3s ease-in-out);
-
-    @media (max-width: @screen-xs) {
-      top:150px;
-      width:100%;
-//      height:200px;
-    }
     ul {
         padding-left: 0;
         list-style: none;
@@ -146,6 +139,7 @@
       table.table{
         background:transparent;
         margin-bottom: 0;
+        border:0 !important;
         tr{
           &:first-child{
             td{

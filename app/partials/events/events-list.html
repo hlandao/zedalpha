@@ -51,7 +51,7 @@
                 <!--<td> {{event.startTime | date : 'HH:mm'}} </td>-->
             <!--</tr>-->
 
-            <tr class="event-row" ng-repeat="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter | filter : {name : query} | orderBy : 'startTime'))">
+            <tr class="event-row" ng-repeat="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter | filter : {name : query} | orderBy : 'startTime'))" ng-hide="event === editedEvent">
                 <td class="status-col"><hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
                 <td> {{event.startTime | date : 'HH:mm'}} </td>
                 <td> <span  class="badge">{{event.guests}}</span> </td>
@@ -61,7 +61,7 @@
             <tr class="dead-events-title">
                 <td colspan="5"><span> {{"DEAD_EVENTS" | translate }} </span></td>
             </tr>
-            <tr class="dead-events-row event-row" ng-repeat="event in TimelyFilteredEvents.filteredEvents | statusesFilter:'DEAD'">
+            <tr class="dead-events-row event-row" ng-repeat="event in TimelyFilteredEvents.filteredEvents | statusesFilter:'DEAD'" ng-hide="event === editedEvent">
                 <td class="status-col"><hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
                 <td> {{event.startTime | date : 'HH:mm'}} </td>
                 <td> <span  class="badge">{{event.guests}}</span> </td>
