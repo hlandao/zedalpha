@@ -147,7 +147,6 @@ function SeatShape(paper, options){
     });
 
     this.shapesSet.touchend(function(e){
-        console.log('e',e);
     });
 
 

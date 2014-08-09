@@ -4,8 +4,7 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('EventsCtrl', function($scope, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic,TimelyFilteredEvents, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder){
-//        Localizer.setLocale('he');
+    .controller('EventsCtrl', function($scope, $log, DateHolder, EventsHolder, Event, $filter, EventsStatusesHolder,EventsDurationHolder, EventsLogic,TimelyFilteredEvents, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder){
         var OccasionalEvent = _.findWhere(EventsStatusesHolder, {status : 'OCCASIONAL'}),
             OrderedEvent = _.findWhere(EventsStatusesHolder, {status : 'ORDERED'}),
             editedEvent;
@@ -34,7 +33,9 @@ zedAlphaControllers
             });
             var maxDuration = EventsLogic.maxDurationForEventInMinutes(newEvent);
             if(maxDuration == 0){
-                alert('Error : cannot start event at ' + moment(startTime).format('HH:mm'));
+                var errMsg = 'Error : cannot start event at ' + moment(startTime).format('HH:mm') + '(max duration = 0)';
+                $log.error('[EventsCtrl]' + errMsg + ', Business ID : ' + BusinessHolder.businessId);
+                alert(errMsg);
                 return false;
             }else{
                 newEvent.endTime = DateHelpers.resetDateSeconds(EventsLogic.endTimeForNewEventWithStartTimeAndMaxDuration(startTime, maxDuration));
@@ -89,7 +90,7 @@ zedAlphaControllers
             var isInvalid = EventsLogic.isInvalidEventBeforeSave(eventToSave);
             if(isInvalid && isInvalid.error){
                 var localizedError = $filter('translate')(isInvalid.error);
-                console.error('error',isInvalid.error);
+                $log.error('[EventsCtrl] error saving event',isInvalid.error);
                 alert(localizedError);
             }else if(withWarnings && isInvalid && isInvalid.warning){
                 var modal = areYouSureModalFactory(null, 'INVALID_GUESTS_PER_15_WARNING');

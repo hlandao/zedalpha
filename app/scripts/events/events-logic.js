@@ -12,7 +12,7 @@ zedAlphaServices
                 if(!eventToCheck || i == '$id' || typeof eventToCheck == "function" || eventToCheck === event) continue;
                 sharedSeats = checkIfTwoEventsShareTheSameSeats(event, eventToCheck);
 
-                if(sharedSeats && isEventShouldCollide(eventToCheck)){
+                if(sharedSeats && eventShouldCollide(eventToCheck)){
                     if(checkIfTwoEventsCollideInTime(event, eventToCheck)){
                         return true;
                     }
@@ -47,15 +47,21 @@ zedAlphaServices
             return false;
         }
 
+
+        /**
+         * returns the max duration in minutes we can apply to @event
+         * will return -1 if there's not limit.
+         * @param event, the *new* event we want to create
+         * @returns {number}
+         */
         var maxDurationForEventInMinutes = function(event){
-            var eventToCheckAgainst, sharedSeats, maxDuration = -1,tempMaxDuration;
+            var eventToCheckAgainst, maxDuration = -1,tempMaxDuration;
             for(var i in EventsHolder.$allEvents){
                 eventToCheckAgainst = EventsHolder.$allEvents[i];
                 if(!eventToCheckAgainst || i == '$id' || typeof eventToCheckAgainst == "function" || eventToCheckAgainst === event) continue;
-                sharedSeats = checkIfTwoEventsShareTheSameSeats(event, eventToCheckAgainst);
-                if(sharedSeats && isEventShouldCollide(eventToCheckAgainst)){
+                if(checkIfTwoEventsShareTheSameSeats(event, eventToCheckAgainst) && eventShouldCollide(eventToCheckAgainst)){
                     tempMaxDuration =  maxDurationForEventInRegardToAnotherEvent(event, eventToCheckAgainst);
-                    if(tempMaxDuration == 0){
+                    if(tempMaxDuration === 0){
                         return 0;
                     }else if(tempMaxDuration > 0){
                         maxDuration = (maxDuration == -1) ? tempMaxDuration : Math.min(tempMaxDuration, maxDuration);
@@ -67,7 +73,7 @@ zedAlphaServices
             return maxDuration;
         }
 
-        var isEventShouldCollide = function(event){
+        var eventShouldCollide = function(event){
             return (event && event.status && event.status.status) ? (notCollidingEventStatuses.indexOf(event.status.status) == -1) : false ;
         }
 
@@ -81,11 +87,15 @@ zedAlphaServices
             var e2StartTimeDiffEventToCheckStartTime = e2StartTimeMoment.diff(eventToCheckStartTimeMoment, 'minutes');
             var e2EndTimeDiffEventToCheckStartTime = e2EndTimeMoment.diff(eventToCheckStartTimeMoment, 'minutes');
 
-
-            var isE2StartBeforeAndEndAfter = e2StartTimeDiffEventToCheckStartTime <= 0 && e2EndTimeDiffEventToCheckStartTime > 0;
-
-
-            return isE2StartBeforeAndEndAfter ? 0 : Math.max(-1, e2StartTimeMoment.diff(eventToCheckStartTimeMoment, 'minutes')) ;
+            if(e2StartTimeDiffEventToCheckStartTime > 0){
+                // the event_to_check start before e2 begins
+                return e2StartTimeDiffEventToCheckStartTime;
+            }else if (e2EndTimeDiffEventToCheckStartTime < 0){
+                // the event_to_check start after e2 ends
+                return -1;
+            }else{
+                return 0;
+            }
         };
 
 
@@ -301,9 +311,7 @@ zedAlphaServices
 
         };
 
-        console.log('EventsDurationForGuestsHolder',EventsDurationForGuestsHolder);
         var eventDurationForGuestsNumber = function(guests){
-            console.log(guests, EventsDurationForGuestsHolder)
             return EventsDurationForGuestsHolder[parseInt(guests)];
         };
 

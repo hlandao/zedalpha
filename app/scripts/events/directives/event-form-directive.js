@@ -2,7 +2,7 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 
 
 zedAlphaDirectives
-    .directive('hlEventForm', function(EventsLogic,areYouSureModalFactory, $filter, EventsHolder,EventsDurationForGuestsHolder, FullDateFormat, $q) {
+    .directive('hlEventForm', function(EventsLogic,areYouSureModalFactory, $filter, EventsHolder,EventsDurationForGuestsHolder, FullDateFormat, $q, $log) {
         return {
             restrict: 'A',
             replace : true,
@@ -20,7 +20,6 @@ zedAlphaDirectives
                     justRevertedWhileEditing = false;
                     eventWatcher = $scope.$watch('event', eventWatching,true);
                     eventGuestsWatcher = $scope.$watch('event.guests', function(newVal){
-                        console.log('newVal',newVal);
                         if(newVal){
                             var newDuration = EventsDurationForGuestsHolder[newVal];
                             updateEventTimeWithNewDuration(newDuration);
@@ -38,7 +37,6 @@ zedAlphaDirectives
 
                 $scope.save = function(eventToSave){
                     var isInvalidPromise = EventsLogic.isInvalidEventBeforeSave(eventToSave);
-                    console.log('isInvalidPromise',isInvalidPromise);
                     isInvalidPromise.then(function(output){
                         if(output && output.warnings && output.warnings.length){
                             var promises = [];
@@ -56,7 +54,7 @@ zedAlphaDirectives
                     },function(output){
                         if(output && output.error){
                             var localizedError = $filter('translate')(output.error);
-                            console.error('error',output.error);
+                            $log.info('[EventFormDirective] error saving event',isInvalid.error);
                             alert(localizedError);
                         }
                     });
@@ -73,14 +71,14 @@ zedAlphaDirectives
                         $event.$set(cloned).then(function(){
                             delete eventToSave.helpers;
                         }, function(error){
-                            console.error('Error saving existing event child',error);
+                            $log.error('[EventForm] Error saving existing event child to Firebase',error);
                         });
                     }else{
                         delete cloned.helpers;
                         EventsHolder.$allEvents.$add(cloned).then(function(){
                             delete eventToSave.helpers;
                         }, function(error){
-                            console.error('Error adding new event child',error);
+                            $log.error('[EventForm] Error adding new event child to Firebase',error);
                         });
 
                     }
@@ -103,7 +101,7 @@ zedAlphaDirectives
                     if(newVal){
                         var isInvalid = EventsLogic.isInvalidEventWhileEdit(newVal);
                         if(isInvalid && isInvalid.error){
-                            console.error('[EventsCtrl]: error while edit event', isInvalid.error);
+                            $log.error('[EventForm]: error while edit event', isInvalid.error);
                             var localizedError = $filter('translate')(isInvalid.error);
                             alert(localizedError);
                             justRevertedWhileEditing = true;
@@ -111,11 +109,8 @@ zedAlphaDirectives
                             newVal.endTime =  oldVal.endTime;
                             newVal.seats =  oldVal.seats;
                         }else{
-                            console.log('vals : ',newVal.guests,oldVal.guests);
                             if(newVal.guests !== oldVal.guests){
                                 var newDuration = EventsLogic.eventDurationForGuestsNumber(newVal.guests);
-                                console.log('newDuration',newDuration);
-
                                 if(newDuration) EventsLogic.updateEventDuration(newVal, newDuration);
                             }
                         }
@@ -129,7 +124,6 @@ zedAlphaDirectives
                         EventsHolder.$allEvents.$remove(event.$id);
                         delete event.helpers;
                     }, function () {
-                        console.debug('Modal dismissed at: ' + new Date());
                     });
 
                 }

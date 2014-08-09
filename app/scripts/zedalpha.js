@@ -7,7 +7,9 @@ var angularDependencies = [
     'ui.bootstrap',
     'pascalprecht.translate',
     'ui.router',
-    'firebase'];
+    'firebase',
+    'ngLoggly'
+];
 
 var myModules = [
     'zedalpha.services',
@@ -36,7 +38,11 @@ angular.module('zedalpha',zedalphaModules)
                 } else {
                     this.$apply(fn);
                 }
-            };2    }]);
+            };
+    }])
+    .config( function( LogglyLoggerProvider, LOGGLY_KEY) {
+        LogglyLoggerProvider.inputToken(LOGGLY_KEY );
+    } );
 
 
 Function.prototype.inheritsFrom = function( parentClassOrObject ){

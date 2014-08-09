@@ -2,10 +2,12 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory('BusinessHolder', function($rootScope, $q, Business, $q){
+    .factory('BusinessHolder', function($rootScope, $q, Business, $q, $log){
         var _oldBusinessId;
         var _businessHolder = {
+
             init : function(businessId){
+                $log.info('[BusinessHolder] init business holder with business id :' + businessId);
                 var defer = $q.defer();
                 if(businessId && (businessId != _oldBusinessId || !_businessHolder.$business)){
                     Business.getBusinessWithId(businessId).then(function($business){

@@ -65,8 +65,6 @@ zedAlphaDirectives
             restrict: 'A',
             replace : true,
             link :function(scope, element, attrs){
-                console.log('here! event seats',scope.event.seats);
-
                 var $table =  $(element).parent().parent().parent().parent().eq(0),
                     $tr = $table.find('thead').find('td').eq(2);
 

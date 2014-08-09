@@ -67,7 +67,6 @@ zedAlphaServices
    .factory('profileCreator', ['firebaseRef', '$timeout', function(firebaseRef, $timeout) {
       return function(id, email, callback) {
          firebaseRef('users/'+id).set({email: email, name: firstPartOfEmail(email)}, function(err) {
-            //err && console.error(err);
             if( callback ) {
                $timeout(function() {
                   callback(err);

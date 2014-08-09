@@ -50,8 +50,6 @@ zedAlphaDirectives
                     if(!scope.times) return;
                     var index = scope.times.indexOf(scope.selectedTime);
                     cellHeight = $ul.children().eq(0).outerHeight();
-                    console.log('cellHeight',cellHeight,'index',index);
-
                     offset = Math.abs((index-2) * cellHeight);
                 }
 
