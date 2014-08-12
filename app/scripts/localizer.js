@@ -37,7 +37,7 @@ zedAlphaServices
             setRTLDirection(isRTL);
             setLanguage(langKey);
             $rootScope.$broadcast('$localeStateChanged');
-            $('.hl-slim-scroll').slimScroll();
+//            $('.hl-slim-scroll').slimScroll();
         }
 
         function setRTLDirection(isRTL) {

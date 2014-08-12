@@ -64,12 +64,13 @@ zedAlphaControllers
             if($scope.switchMode){
 
             }else{
-
+                $scope.openEditedEvent(event);
             }
         }
 
         // --------- Edit event ----------- //
         $scope.openEditedEvent = function (event){
+            console.log('$scope.openEditedEvent');
             CloseOpenControls();
             if($scope.editedEvent == event){
                 return;

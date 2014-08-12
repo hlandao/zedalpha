@@ -54,7 +54,7 @@ zedAlphaDirectives
                     },function(output){
                         if(output && output.error){
                             var localizedError = $filter('translate')(output.error);
-                            $log.info('[EventFormDirective] error saving event',isInvalid.error);
+                            $log.info('[EventFormDirective] error saving event',output.error);
                             alert(localizedError);
                         }
                     });
@@ -101,7 +101,7 @@ zedAlphaDirectives
                     if(newVal){
                         var isInvalid = EventsLogic.isInvalidEventWhileEdit(newVal);
                         if(isInvalid && isInvalid.error){
-                            $log.error('[EventForm]: error while edit event', isInvalid.error);
+                            $log.info('[EventForm]: error while edit event', isInvalid.error);
                             var localizedError = $filter('translate')(isInvalid.error);
                             alert(localizedError);
                             justRevertedWhileEditing = true;

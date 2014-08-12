@@ -1,6 +1,5 @@
 var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directives', []);
 
-var _e;
 zedAlphaDirectives
 
     .directive('hlTimepickerDropdownHeader', ['$timeout','DateHelpers','FullDateFormat','$rootScope','$parse','DateHolder', function ($timeout,DateHelpers,FullDateFormat,$rootScope,$parse,DateHolder) {
@@ -14,42 +13,46 @@ zedAlphaDirectives
             },
             templateUrl: '/partials/directives/timepicker-dropdown-header-directive.html',
             link : function(scope, element, attrs, ctrls) {
-                var ngModel = ctrls[0];
-                var interval = 15;
-                var cellHeight = 43;
-                var $ul = element.find('.list-group').eq(0);
+                var ngModel = ctrls[0],
+                    interval = 15,
+                    intervalMS = interval * 1000 * 60,
+                    cellHeight = 43,
+                    $ul = element.find('.list-group').eq(0),
+                    offest,
+                    intialized,
+                    oneMinute = 1000 * 60,
+                    oneDay = oneMinute * 60 * 24;
                 scope.format = 'HH:mm';
 
-                var calcHoursArr = function(date){
-                    date = date || ngModel.$modelValue;
-                    var originalDateMoment = moment(date).seconds(0),
-                        dateMoment = moment(date).hours(0).minutes(0).seconds(0),
-                        currentFormattedDate,
-                        selectedTime,
-                        nextDayMoment = dateMoment.clone().add('days', 1),
-                        offset;
+                var calcHoursArr = function(){
 
+                    var date = new Date(ngModel.$modelValue),
+                        startTimestamp = date.getTime(),
+                        endTimestamp = startTimestamp + oneDay,
+                        selectedTime;
 
+                    if(scope.times && scope.times.length){
+                        scope.times.length = 0;
+                    }
                     scope.times = [];
                     var diff;
 
                     if(scope.shift){
                         if(scope.shift.startTime){
-                            dateMoment = moment(scope.shift.startTime).seconds(0);
+                            startTimestamp = new Date(scope.shift.startTime).getTime();
                         }
                         if(scope.shift.endTime){
-                            nextDayMoment = moment(scope.shift.endTime).seconds(0);
+                            endTimestamp = new Date(scope.shift.endTime).getTime();
                         }
                     }
-                    while (nextDayMoment.diff(dateMoment, 'minutes') > 0){
-                        currentFormattedDate = new Date(dateMoment.format(FullDateFormat));
-                        scope.times.push(currentFormattedDate);
-                        diff = originalDateMoment.diff(dateMoment, 'minutes');
-                        if(diff == 0 || (diff > 0 && diff <= interval)){
-                            selectedTime = currentFormattedDate;
-                        }
 
-                        dateMoment.add('minutes', interval);
+
+                    while ((diff = endTimestamp - startTimestamp) > oneMinute){
+                        scope.times.push(startTimestamp);
+                        if(diff >= 0 && diff <= intervalMS){
+                            selectedTime = startTimestamp;
+                        }
+                        startTimestamp += intervalMS;
                     }
 
                     scope.selectedTime = selectedTime;
@@ -67,8 +70,8 @@ zedAlphaDirectives
 
                 scope.setOffset = function(){
                     calcOffset();
-                    $ul.slimScroll({ scrollTo: offset + 'px' });
-//                    $ul.scrollTop(offset);
+//                    $ul.slimScroll({ scrollTo: offset + 'px' });
+                    $ul.scrollTop(offset);
                 };
 
 
@@ -79,13 +82,16 @@ zedAlphaDirectives
 
                 ngModel.$render = function(){
                     if(scope.isEntireShift){
-                        calcHoursArr(ngModel.$modelValue);
                         offset=0;
                         scope.selected = null;
                         scope.selectedTime = null;
                     }else{
-                        calcHoursArr(ngModel.$modelValue);
                         scope.selected = ngModel.$modelValue;
+                    }
+
+                    if(!intialized){
+                        initialized = true;
+                        calcHoursArr();
                     }
                 };
 

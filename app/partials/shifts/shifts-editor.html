@@ -16,7 +16,7 @@
                         </label>
                     </span>
                 </div>
-                <div class="panel-body" ng-hide="!day.shifts.basic && !day.shifts.enableCustom">
+                <div class="panel-body" ng-if="day.shifts.basic || day.shifts.enableCustom">
                     <div class="row shift" ng-repeat="shift in day.shifts.shifts">
                         <div class="col-xs-12">
                             <div class="row">

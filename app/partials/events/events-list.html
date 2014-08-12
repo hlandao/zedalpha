@@ -23,7 +23,7 @@
             </div>
 
             <div class="pull-left filter-events switch-button" ng-class="{active : (switchMode)}">
-                <a href="#" ng-click="toggleSwitchMode($event)"><i class="glyphicon glyphicon-refresh"></i> {{ 'SWITCH_TABLES' | translate }}</a>
+                <a href="#" ng-click="toggleSwitchMode($event)"><i class="glyphicon glyphicon-refresh"></i> </a>
             </div>
 
 
@@ -36,6 +36,10 @@
                 <input type="text" placeholder="{{'SEARCH' | translate }}" ng-model="query">
             </div>
         </div>
+
+        <div ng-if="newEvent" hl-event-form event="newEvent"></div>
+        <div ng-if="editedEvent" hl-event-form event="editedEvent"></div>
+
         <table class="table">
             <thead>
             <tr class="events-table-headers">
@@ -46,10 +50,6 @@
                 <th class="th-seats">{{ 'SEATS' | translate }}</th>
             </tr>
             </thead>
-
-            <tbody ng-if="newEvent" hl-event-form event="newEvent"></tbody>
-            <tbody ng-if="editedEvent" hl-event-form event="editedEvent"></tbody>
-
 
             <tbody>
             <!--<tr class="event-row test">-->
