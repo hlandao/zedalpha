@@ -431,8 +431,6 @@ zedAlphaDirectives
 
                 var clickHandlerForNormalState = function(shape){
 //                    shape.toggleHighlight();
-
-
                     var index = scope.highlightedShapes.indexOf(shape);
                     if(!shape.highlighted && index == -1){
                         if(!shapeSeatIsAvailable(shape)){
@@ -568,34 +566,43 @@ zedAlphaDirectives
                 var renderMapWithEvents = _.throttle(function(newVal){
                     events = (newVal && newVal.events) ? newVal.events : events;
                     if(!events) return;
+                    var eventsCopy = angular.copy(events);
+                    if(scope.$parent.newEvent){
+                        eventsCopy.push(scope.$parent.newEvent);
+                    }
                     setAllShapesToNormal();
                     scope.highlightedShapes = [];
                     if(!events.length){
                         return;
                     }
-                    var event, color, seatNumber, theShape;
-                    for(var j = 0; j < events.length; ++j){
-                        event = events[j];
+                    var event, color, seatNumber, theShape, seatsWithBackground = {}, highlightedSeats = {};
+                    for(var j = 0; j < eventsCopy.length; ++j){
+                        event = eventsCopy[j];
                         color = getEventStatusColor(event.status);
                         for(seatNumber  in  event.seats){
-                            for (var i = 0;i < shapes.length; ++i){
-                                theShape = shapes[i];
-                                if(theShape.id){
-                                    if(theShape.seatNumber == seatNumber){
-                                        theShape.setBackgroundColor(color);
-                                        if(event.helpers && event.helpers.isEditing){
-                                            theShape.highlight();
-                                            scope.highlightedShapes.push(theShape);
-                                        }
-                                    }
-
-                                }
-
+                            seatsWithBackground[seatNumber] = color;
+                            if(event.helpers && event.helpers.isEditing){
+                                highlightedSeats[seatNumber] = true;
                             }
+                        }
+                    }
 
+                    for (var i = 0;i < shapes.length; ++i){
+                        theShape = shapes[i];
+                        if(theShape.id){
+                            seatNumber = theShape.seatNumber;
+                            color = seatsWithBackground[seatNumber];
+                            if(color){
+                                theShape.setBackgroundColor(color);
+                            }
+                            if(highlightedSeats[seatNumber]){
+                                theShape.highlight();
+                                scope.highlightedShapes.push(theShape);
+                            }
                         }
 
                     }
+
                     hideSeatMenu();
 
                 },10,{trailing : true});

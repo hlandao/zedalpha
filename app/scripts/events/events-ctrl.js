@@ -70,8 +70,8 @@ zedAlphaControllers
 
         // --------- Edit event ----------- //
         $scope.openEditedEvent = function (event){
-            console.log('$scope.openEditedEvent');
             CloseOpenControls();
+            $scope.newEvent = null;
             if($scope.editedEvent == event){
                 return;
             }else if($scope.editedEvent){
