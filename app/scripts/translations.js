@@ -105,12 +105,14 @@ zedAlphaConfigModule
         "ERROR_EVENT_MSG_ENDTIME": "End time is invalid",
         "ERROR_EVENT_MSG_COLLISION": "A Collision with another event was detected",
         "ERROR_EVENT_MSG_HOST" : "Please enter host name",
+        "ERROR_EVENT_SWITCH_COLLISION" : "Cannot perform this action because one of the events collide with another event. Please try again",
 
         // WARNINGS
         "ARE_YOU_SURE" : "Are You Sure ? ",
         "INVALID_GUESTS_PER_15_WARNING" : "Amount of guests per 15 minutes limit was reached!",
         "REMOVE_EVENT_WARNING" : "Removing event is irreversible. Are you sure you want to continue ?",
-
+        "SWITCH_EVENT_WARNING" : "Please finish or cancel events switching before continue",
+        "NEW_EVENT_WARNING" : "Please finish or cancel adding new event",
 
         "LOADING_TEXT" : "Loading Zed..."
 
@@ -219,13 +221,15 @@ zedAlphaConfigModule
                 "ERROR_EVENT_MSG_ENDTIME": "זמן סיום הארוע לא קיים או לא תקין",
                 "ERROR_EVENT_MSG_COLLISION": "אותרה התנגשות עם ארוע נוסף, נא נסה שנית",
                 "ERROR_EVENT_MSG_HOST" : "חובה למלא את שם המארחת",
-
+                "ERROR_EVENT_SWITCH_COLLISION" : "לא ניתן לבצע את ההחלפה, אחת מההזמנות מתנגשת עם הזמנה נוספת. נא נסה שנית.",
                 // WARNING
                 "ARE_YOU_SURE" : "בעיה",
                 "INVALID_GUESTS_PER_15_WARNING" : "הגבלת מספר סועדים לרבע שעה נחצתה.",
                 "WARNING_OUT_OF_SHIFTS" : "הארוע אינו נכלל במשמרות, האם ברצונך להמשיך ?",
                 "REMOVE_EVENT_WARNING" : "מחיקת אירוע הינה פעולת בלתי הפיכה. האם ברצונך להמשיך ?",
-
+                "SWITCH_EVENT_WARNING" : "יש לסיים החלפת שולחנות",
+                "EDIT_EVENT_WARNING" : "יש לסיים עריכת ארוע",
+                "NEW_EVENT_WARNING" : "יש לסיים הוספת ארוע",
                 "LOADING_TEXT" : "טוען..."
             }
         );

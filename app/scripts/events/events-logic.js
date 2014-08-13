@@ -316,9 +316,23 @@ zedAlphaServices
         };
 
 
+        var validateEventsSwitching = function(e1, e2){
+            var e1OriginalSeats = angular.copy(e1.seats),
+                e2OriginalSeats = angular.copy(e2.seats);
+            e1.seats = e2OriginalSeats;
+            e2.seats = e1OriginalSeats;
+            if(checkCollisionsForEvent(e1) || checkCollisionsForEvent(e2)){
+                e1.seats = e1OriginalSeats;
+                e2.seats = e2OriginalSeats;
+                return {error : "ERROR_EVENT_SWITCH_COLLISION"};
+            }
+
+        };
+
         return {
             isInvalidEventBeforeSave : isInvalidEventBeforeSave,
             isInvalidEventWhileEdit : isInvalidEventWhileEdit,
+            validateEventsSwitching : validateEventsSwitching,
             checkCollisionsForEvent : checkCollisionsForEvent,
             endTimeForNewEventWithStartTimeAndMaxDuration : endTimeForNewEventWithStartTimeAndMaxDuration,
             maxDurationForEventInMinutes : maxDurationForEventInMinutes,

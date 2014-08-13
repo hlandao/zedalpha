@@ -365,14 +365,16 @@ zedAlphaDirectives
 
                 container.click(function(){
                     scope.$apply(function(){
+                        if(isAddingNewEvent()){
+                           return;
+                        }
                         angular.forEach(scope.highlightedShapes, function(shape){
-                            renderMapWithEvents();
+                            shape.cancelHighlight();
                         });
+                        renderMapWithEvents();
                         scope.highlightedShapes = [];
                         hideSeatMenu();
-                        if(isAddingNewEvent()){
-                            updateNewEventSeats();
-                        }
+
                     });
                 });
 
@@ -413,6 +415,7 @@ zedAlphaDirectives
                         shape.toggleHighlight();
                     }
                     updateNewEventSeats();
+                    renderMapWithEvents();
                 }
 
                 var clickHandlerForEditingEventState = function(shape){
@@ -552,6 +555,11 @@ zedAlphaDirectives
                 var isEditingEvent = function(){
                     return scope.$parent.editedEvent;
                 }
+
+                var isSwitchingEvents = function(){
+                    return scope.$parent.switchMode;
+                }
+
 
 
                 var updateNewEventSeats = function (){

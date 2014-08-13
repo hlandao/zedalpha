@@ -15,6 +15,16 @@ zedAlphaControllers
 
         // --------- New event ----------- //
         $scope.newEventWithSeatsDic = function(occasionalOrDestination, dic, specificStartTime){
+            console.log('newEventWithSeatsDic');
+            if($scope.switchMode){
+                var localizedError = $filter('translate')('SWITCH_EVENT_WARNING');
+                alert(localizedError)
+                return;
+            }else if($scope.editedEvent){
+                var localizedError = $filter('translate')('EDIT_EVENT_WARNING');
+                alert(localizedError)
+                return;
+            }
             CloseOpenControls();
             var isOccasional = occasionalOrDestination == 'occasional';
             var startTime = specificStartTime || (isOccasional ? new Date() : DateHolder.current);
@@ -62,7 +72,7 @@ zedAlphaControllers
         // ----------Click on event ----------//
         $scope.clickOnEvent = function(event){
             if($scope.switchMode){
-
+                addEventToSwitchMode(event);
             }else{
                 $scope.openEditedEvent(event);
             }
@@ -164,22 +174,41 @@ zedAlphaControllers
         // --------- switch mode -------//
         $scope.toggleSwitchMode = function(){
             if(!$scope.switchMode){
+                if($scope.editedEvent){
+                    var localizedError = $filter('translate')('EDIT_EVENT_WARNING');
+                    alert(localizedError);
+                    return;
+                }else if($scope.newEvent){
+                    var localizedError = $filter('translate')('NEW_EVENT_WARNING');
+                    alert(localizedError);
+                    return;
+                }
                 $scope.switchMode = true;
                 $scope.eventToSwitch = null;
             }else{
                 $scope.switchMode = false;
                 $scope.eventToSwitch = null;
-
             }
+
         }
 
         var addEventToSwitchMode = function(event){
             if($scope.eventToSwitch){
-
-            } else if ($scope.eventToSwitch === event){
+                if ($scope.eventToSwitch === event){
+                    $scope.eventToSwitch = null;
+                    return;
+                }
+                var validationError = EventsLogic.validateEventsSwitching($scope.eventToSwitch, event);
+                if(validationError){
+                    alert(validationError);
+                    $scope.eventToSwitch = null;
+                }else{
+                    $scope.saveEvent($scope.eventToSwitch, true);
+                    $scope.saveEvent(event, true);
+                }
                 $scope.eventToSwitch = null;
                 $scope.switchMode = false;
-            }else{
+            } else{
                 $scope.eventToSwitch = event;
             }
         }

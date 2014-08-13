@@ -71,7 +71,7 @@
             <tr class="events-switch-title" ng-if="switchMode">
                 <td colspan="5"> <span>{{'SWITCH_MODE_TITLE' | translate }}</span> </td>
             </tr>
-            <tr class="event-row" ng-repeat="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter | filter : {name : query} | orderBy : 'startTime'))" ng-hide="event === editedEvent">
+            <tr class="event-row" ng-repeat="event in (events.events = (TimelyFilteredEvents.filteredEvents | statusesFilter:selectedFilter | filter : {name : query} | orderBy : 'startTime'))" ng-hide="event === editedEvent" ng-class="{switching : (event === eventToSwitch)}">
                 <td class="status-col" prevent-default><hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
                 <td ng-click="clickOnEvent(event)"> {{event.startTime | date : 'HH:mm'}} </td>
                 <td ng-click="clickOnEvent(event)"> <span  class="badge">{{event.guests}}</span> </td>
