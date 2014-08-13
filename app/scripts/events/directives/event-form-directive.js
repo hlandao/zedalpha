@@ -16,6 +16,7 @@ zedAlphaDirectives
                    eventWatcher,
                    eventGuestsWatcher;
 
+                console.log('EventsDurationForGuestsHolder',EventsDurationForGuestsHolder);
                 var init = function(){
                     justRevertedWhileEditing = false;
                     eventWatcher = $scope.$watch('event', eventWatching,true);
@@ -148,6 +149,9 @@ zedAlphaDirectives
                 init();
 
 
+            },
+            link : function(scope, element, attrs){
+                element.find('input').eq(0).focus();
             }
         };
     });

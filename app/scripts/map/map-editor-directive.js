@@ -351,7 +351,7 @@ zedAlphaDirectives
             },
             link: function(scope, elem, attrs) {
                 var container = $("#map"),
-                    $seatMenu = $('#seat-menu');
+                    $seatMenu = $('#seat-menu').appendTo('body');
                 var paper = Raphael('map', container.width(), container.height());
                 var panZoom = paper.panzoom({ initialZoom: 4, initialPosition: { x: 0, y: 0} }),
                     shapes = [];
