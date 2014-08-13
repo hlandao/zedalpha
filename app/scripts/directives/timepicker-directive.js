@@ -25,8 +25,6 @@ zedAlphaDirectives
                 scope.format = 'HH:mm';
 
                 var calcHoursArr = function(){
-                    console.log('calcHoursArr',ngModel.$modelValue, scope.shift.startTime);
-
                     var date = new Date(ngModel.$modelValue),
                         dateTimestamp = date.getTime(),
                         startTimestamp,
@@ -39,12 +37,11 @@ zedAlphaDirectives
                     scope.times = [];
                     var diff;
 
+                    startTimestamp = date.getTime();
+                    endTimestamp = startTimestamp + oneDay;
                     if(scope.shift){
-                        startTimestamp = new Date(scope.shift.startTime).getTime();
-                        endTimestamp = new Date(scope.shift.endTime).getTime();
-                    }else{
-                        startTimestamp = date.getTime();
-                        endTimestamp = startTimestamp + oneDay;
+                        if(scope.shift.startTime) startTimestamp = new Date(scope.shift.startTime).getTime();
+                        if(scope.shift.endTime) endTimestamp = new Date(scope.shift.endTime).getTime();
                     }
 
 

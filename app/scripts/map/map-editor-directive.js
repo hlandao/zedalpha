@@ -532,6 +532,7 @@ zedAlphaDirectives
                     e.preventDefault();
                     scope.$parent.newEventWithSeatsDic(occasionalOrDestination, shapesArrToSeatsDic());
                     hideSeatMenu();
+                    $timeout(renderMapWithEvents,10);
                 };
 
                 var shapesArrToSeatsDic = function(){
@@ -565,31 +566,31 @@ zedAlphaDirectives
 
                 var renderMapWithEvents = _.throttle(function(newVal){
                     events = (newVal && newVal.events) ? newVal.events : events;
-                    if(!events) return;
                     var eventsCopy = angular.copy(events);
                     if(scope.$parent.newEvent){
                         eventsCopy.push(scope.$parent.newEvent);
                     }
+                    if(!eventsCopy || !eventsCopy.length) return;
+
                     setAllShapesToNormal();
                     scope.highlightedShapes = [];
-                    if(!events.length){
-                        return;
-                    }
+
                     var event, color, seatNumber, theShape, seatsWithBackground = {}, highlightedSeats = {};
                     for(var j = 0; j < eventsCopy.length; ++j){
                         event = eventsCopy[j];
                         color = getEventStatusColor(event.status);
                         for(seatNumber  in  event.seats){
                             seatsWithBackground[seatNumber] = color;
-                            if(event.helpers && event.helpers.isEditing){
+                            if(event.helpers && event.helpers.isEditing || !event.$id){
                                 highlightedSeats[seatNumber] = true;
                             }
+
                         }
                     }
 
                     for (var i = 0;i < shapes.length; ++i){
                         theShape = shapes[i];
-                        if(theShape.id){
+                        if(theShape.seatNumber){
                             seatNumber = theShape.seatNumber;
                             color = seatsWithBackground[seatNumber];
                             if(color){
