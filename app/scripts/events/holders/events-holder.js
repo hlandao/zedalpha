@@ -13,10 +13,6 @@ zedAlphaServices
 
         $rootScope.$on('$businessHolderChanged', updateEvents);
         updateEvents();
-//        $rootScope.$watch(function(){
-//            return DateHolder.current;
-//        }, updateEvents);
-
 
         return $events;
 

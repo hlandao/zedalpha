@@ -88,6 +88,7 @@ zedAlphaDirectives
                             endTimestamp = startTimestamp +  oneDay;
                         }
                     } else if($scope.shift && $scope.shift.startTime && $scope.shift.endTime){
+
                         startTimestamp = new Date($scope.shift.startTime).setSeconds(0);
                         endTimestamp = new Date($scope.shift.endTime).setSeconds(0);
                     } else if(theDate){
@@ -102,7 +103,7 @@ zedAlphaDirectives
 
 
                     var timeObj;
-                    while ((endTimestamp - startTimestamp) > oneMinute){
+                    while ((endTimestamp - startTimestamp) >= 0){
                         timeObj = getTimeObject(startTimestamp);
                         diff = startTimestamp - dateTimestamp;
                         if(!placedSelected && diff >= 0 && diff <= oneMinute){
@@ -124,7 +125,6 @@ zedAlphaDirectives
 
 
                 var getTimeObject = function(time){
-                    console.log('time',time);
                     var timeString = $filter('date')(time, timeFormat);
                     var label = ($scope.showDurationMinTime && $scope.minTime) ? (timeString + " " +getDurationString($scope.minTime, time)) : timeString ;
                     return {
@@ -135,7 +135,6 @@ zedAlphaDirectives
 
                 var findAndSetSelected = function(){
                     var timeObj = getTimeObject(ngModel.$modelValue);
-                    console.log('timeObj',timeObj);
                     $scope.selectedTime = timeObj;
                 }
 
@@ -164,6 +163,8 @@ zedAlphaDirectives
 
                 $scope.setNewTime = function(time, isEntireShift){
                     if(time){
+                        var timeMomemnt = moment(time.time);
+                        console.log(timeMomemnt.date(), timeMomemnt);
                         DateHolder.isEntireShift = false;
                         ngModel.$setViewValue(new Date(time.time));
                         $scope.isEntireShift = false;

@@ -41,8 +41,9 @@ zedAlphaDirectives
                         if(output && output.warnings && output.warnings.length){
                             var promises = [];
                             for (var i = 0; i < output.warnings.length; ++i){
-                                promises.push(areYouSureModalFactory(null, output.warnings[i].warning));
+                                promises.push(areYouSureModalFactory(null, output.warnings[i].warning).result);
                             }
+
                             $q.all(promises).then(function(){
                                 saveAfterValidation(eventToSave);
                             }, function(){

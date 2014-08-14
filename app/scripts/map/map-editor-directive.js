@@ -671,8 +671,8 @@ zedAlphaDirectives
 
                 var eventsForHighlightedShapes = function(){
                     if(scope.highlightedShapes.length == 1){
-                        var fromTime = moment(DateHolder.current).hour(0).minute(0);
-                        var toTime = moment(DateHolder.current).hour(23).minute(59);
+                        var fromTime = moment(DateHolder.currentDate).hour(0).minute(0);
+                        var toTime = moment(DateHolder.currentDate).hour(23).minute(59);
                         scope.highlightedEvents = $filter('eventsBySeatAndTime')(null,scope.highlightedShapes[0].seatString(),fromTime,toTime);
                     }else{
                         emptyEventsForHighlightedShapes();

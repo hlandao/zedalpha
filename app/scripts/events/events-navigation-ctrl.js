@@ -4,8 +4,7 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('EventsNavigationCtrl', function($scope, DateHolder, TimelyFilteredEvents){
-        $scope.DateHolder = DateHolder;
+    .controller('EventsNavigationCtrl', function($scope, TimelyFilteredEvents){
         $scope.openDatePicker = function(e){
             e.preventDefault();
             e.stopPropagation();

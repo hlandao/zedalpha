@@ -6,18 +6,18 @@ zedAlphaServices
         return [
                 {
                     name : "morning",
-                    defaultStartTime : moment().hour(8).minute(0),
-                    defaultEndTime : moment().hour(12).minute(0)
+                    defaultStartTime : moment().hour(8).minute(0).seconds(0),
+                    defaultEndTime : moment().hour(12).minute(0).seconds(0)
                 },
                 {
                     name : "noon",
-                    defaultStartTime : moment().hour(12).minute(0),
-                    defaultEndTime : moment().hour(18).minute(0)
+                    defaultStartTime : moment().hour(12).minute(0).seconds(0),
+                    defaultEndTime : moment().hour(18).minute(0).seconds(0)
                 },
                 {
                     name : "evening",
-                    defaultStartTime : moment().hour(18).minute(0),
-                    defaultEndTime : moment().hour(23).minute(59)
+                    defaultStartTime : moment().hour(18).minute(0).seconds(0),
+                    defaultEndTime : moment().hour(23).minute(59).seconds(0)
                 }
             ]
     })
@@ -140,22 +140,26 @@ zedAlphaServices
                 angular.extend(this, data);
                 if(date){
                     var newStartTimeMoment = moment(date),
-                        newEndTimeMoment = moment(date),
-                        newDefaultTimeMoment = moment(date),
+                        newEndTimeMoment,
+                        newDefaultTimeMoment,
                         oldStartTimeMoment,
                         oldEndTimeMoment,
                         oldDefaultTimeMoment;
 
 
                     this.date = newStartTimeMoment.format(FullDateFormat);
+                    var oldStartTimeMoment, oldEndTimeMoment, oldEndMomentDiff, oldDefaultTimeMoment, oldDefaultTimeDiff;
+
                     for (var i = 0; i < this.shifts.length; ++i){
-                        var oldStartTimeMoment = moment(this.shifts[i].startTime);
-                        var oldEndTimeMoment = moment(this.shifts[i].endTime);
-                        var oldDefaultTimeMoment = moment(this.shifts[i].defaultTime);
+                        oldStartTimeMoment = moment(this.shifts[i].startTime).set('seconds', 0);
+                        oldEndTimeMoment = moment(this.shifts[i].endTime).set('seconds', 0);
+                        oldEndMomentDiff = oldEndTimeMoment.diff(oldStartTimeMoment, 'minutes');
+                        oldDefaultTimeMoment = moment(this.shifts[i].defaultTime).set('seconds', 0);
+                        oldDefaultTimeDiff = oldDefaultTimeMoment.diff(oldStartTimeMoment, 'minutes');
 
                         newStartTimeMoment.hour(oldStartTimeMoment.hour()).minute(oldStartTimeMoment.minute());
-                        newEndTimeMoment.hour(oldEndTimeMoment.hour()).minute(oldEndTimeMoment.minute());
-                        newDefaultTimeMoment.hour(oldDefaultTimeMoment.hour()).minute(oldDefaultTimeMoment.minute());
+                        newEndTimeMoment = newStartTimeMoment.clone().add(oldEndMomentDiff, 'minutes');
+                        newDefaultTimeMoment = newStartTimeMoment.clone().add(oldDefaultTimeDiff, 'minutes');;
 
 
                         this.shifts[i].startTime = newStartTimeMoment.format(FullDateFormat);

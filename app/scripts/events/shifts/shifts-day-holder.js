@@ -20,25 +20,14 @@ zedAlphaServices
             _shift.selected = AllDayShift();
         };
 
-        var selectDefaultTimeForShift = function(shift){
-            if(shift.defaultTime){
-                var currentMoment = moment(DateHolder.current);
-                var defaultTomeMoment = moment(shift.defaultTime);
-                currentMoment.hour(defaultTomeMoment.hour()).minute(defaultTomeMoment.minute());
-                DateHolder.current = new Date(currentMoment.format(FullDateFormat));
-            }
-        };
+
 
         $rootScope.$watch(function(){
-            return DateHolder.current;
+            return DateHolder.currentDate;
         }, function(newVal, oldVal){
             // fetch current day shifts from server or use the basic shift
             // ONLY if the *date* was changed;
             // AND if the date is the next day only and the new *hour* is later than the current latest shift ending time
-            if(isShiftJustChanged){
-                return isShiftJustChanged = false;
-            }
-            isDateHolderJustChanged = true;
 
             var newValMoment = moment(newVal),
                 newDayOfYear = newValMoment.dayOfYear(),
@@ -46,22 +35,15 @@ zedAlphaServices
                 oldDayOfYear = oldValMoment.dayOfYear();
             if(!_shift.current || (newDayOfYear != oldDayOfYear &&  ((newDayOfYear-oldDayOfYear) != 1 || checkIfMomentTimeIsLaterThanCurrentEndingTime(newValMoment)))){
                 fetchShiftWithDate(newVal);
-            }else{
-                isDateHolderJustChanged=false;
             }
 
         });
 
-        var  isShiftJustChanged = false, isDateHolderJustChanged = false;
+
         $rootScope.$watch(function(){
             return _shift.selected;
         },function(newVal){
-            if(isDateHolderJustChanged){
-                isDateHolderJustChanged = false;
-                return;
-            }
-            isShiftJustChanged = true;
-            DateHolder.current = new Date(newVal.defaultTime || newVal.startTime);
+            if(newVal) DateHolder.currentClock = new Date(newVal.defaultTime || newVal.startTime);
         });
 
 
@@ -140,8 +122,8 @@ zedAlphaServices
         return function(){
             var dateMoment;
 
-            if(DateHolder.current){
-                dateMoment = moment(DateHolder.current);
+            if(DateHolder.currentDate){
+                dateMoment = moment(DateHolder.currentDate);
             }else{
                 dateMoment = moment();
             }

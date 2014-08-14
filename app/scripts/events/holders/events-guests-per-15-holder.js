@@ -12,9 +12,6 @@ zedAlphaServices
 
         $rootScope.$on('$businessHolderChanged', updateValue);
         updateValue();
-//        $rootScope.$watch(function(){
-//            return DateHolder.current;
-//        }, updateEvents);
 
 
         return $guestsPer15;

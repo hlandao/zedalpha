@@ -55,6 +55,7 @@ zedAlphaServices
 
         var findClosestIntervalToDate = function(date){
             if(!date) return false;
+            date = new Date(date);
             var minutes = moment(date).minute();
             return parseInt(minutes/EventInterval) * EventInterval;
         }

@@ -1,7 +1,7 @@
 var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directives', []);
 
 zedAlphaDirectives
-    .directive('shiftOrganizer', function($timeout, BusinessHolder, $rootScope, EventsStatusesHolder, $filter, DateHolder, EventsSeatsHolder, TimelyFilteredEvents, ShiftsDayHolder) {
+    .directive('shiftOrganizer', function($timeout, BusinessHolder, $rootScope, EventsStatusesHolder, $filter, EventsSeatsHolder, TimelyFilteredEvents, ShiftsDayHolder) {
         return {
             restrict: 'E',
             replace : true,

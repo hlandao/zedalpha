@@ -250,8 +250,7 @@ zedAlphaServices
                 for (var i = 0; i < shifts.length; ++i){
                     currentShift = shifts[i];
                     startDateMoment = moment(currentShift.startTime);
-                    endDateMoment = moment(currentShift.endTime);
-                    if(theDateMoment >= startDateMoment && theDateMoment <= endDateMoment){
+                    if(theDateMoment.diff(startDateMoment, 'minutes') >= 0){ // && theDateMoment <= endDateMoment
                         return true;
                     }
                 }

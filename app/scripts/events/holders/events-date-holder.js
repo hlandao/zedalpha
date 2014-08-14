@@ -5,17 +5,26 @@ zedAlphaServices
     .factory('DateHolder', function($rootScope, DateHelpers){
         var _date = {};
 
-        var now = moment(), newDate;
+        var goToNow = function(){
+            var now = moment(), newDateMoment;
 
-        if(now.hour() < 6){
-            newDate = new Date(now.subtract('days',1).hour(23).minute(0).seconds(0));
-        }else{
-            newDate = new Date();
+            if(now.hour() < 6){
+                newDateMoment = now.subtract('days',1);
+            }else{
+                newDateMoment = moment().hour(0).minute(0);
+            }
+
+            newDateMoment.minute(DateHelpers.findClosestIntervalToDate(newDateMoment)).seconds(0);
+
+
+            _date.currentClock = new Date(newDateMoment);
+            _date.currentDate = new Date(newDateMoment.hour(0).minute(0));
+
+            newDateMoment = null;
         }
 
-        newDate = new Date(moment(newDate).minute(DateHelpers.findClosestIntervalToDate(newDate)).seconds(0));
-
-        _date.current = newDate;
+        _date.goToNow = goToNow;
+        goToNow();
 
         return _date;
     });

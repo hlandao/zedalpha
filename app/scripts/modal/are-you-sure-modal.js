@@ -11,7 +11,7 @@ zedAlphaControllers.controller('ModalInstanceCtrl', function ($scope, $modalInst
     $scope.cancel = function () {
         $modalInstance.dismiss();
     };
-}).factory('areYouSureModalFactory', function($modal){
+}).factory('areYouSureModalFactory', function($modal, $q){
 
         var factory = function(size, warningMsg){
             var modalInstance = $modal.open({
@@ -24,6 +24,7 @@ zedAlphaControllers.controller('ModalInstanceCtrl', function ($scope, $modalInst
                     }
                 }
             });
+
             return modalInstance;
 //            modalInstance.result.then(function (selectedItem) {
 //                $scope.selected = selectedItem;

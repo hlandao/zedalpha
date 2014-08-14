@@ -8,7 +8,7 @@ zedAlphaServices
 
 
         var filterEvents = function(){
-            var current = DateHolder.current;
+            var current = DateHolder.currentClock;
             var isEntireShift = DateHolder.isEntireShift;
 
             _holder.filteredEventsByShift = $filter('eventsByEntireShift')(EventsHolder.$allEvents,ShiftsDayHolder.selected);

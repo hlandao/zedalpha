@@ -27,7 +27,7 @@ zedAlphaControllers
             }
             CloseOpenControls();
             var isOccasional = occasionalOrDestination == 'occasional';
-            var startTime = specificStartTime || (isOccasional ? new Date() : DateHolder.current);
+            var startTime = specificStartTime || (isOccasional ? new Date() : DateHolder.currentClock);
             if(!isOccasional) startTime = EventsLogic.startTimeAccordingToTimeInterval(startTime);
             startTime = DateHelpers.resetDateSeconds(startTime);
             var newEvent = new Event({
@@ -158,7 +158,7 @@ zedAlphaControllers
 
         $scope.goToNow = function(e){
             if(e) e.preventDefault();
-            DateHolder.current =  new Date();
+            DateHolder.goToNow();
         };
 
         $scope.countTotalGuestsForFilteredEvents = function(){

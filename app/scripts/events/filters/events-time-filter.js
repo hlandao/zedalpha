@@ -8,7 +8,7 @@ zedAlphaFilters
             // include events that starts X minutes after the current time
             var EVENT_TIME_FRAME_IN_MINUTES = 120;
 
-            var currentDateMoment = moment(DateHolder.current);
+            var currentDateMoment = moment(DateHolder.currentClock);
             currentDateMoment.seconds(0);
             var filteredEventsArr = [];
 
@@ -31,7 +31,7 @@ zedAlphaFilters
 
             return filteredEventsArr;
         }
-    }).filter('eventsByEntireShift', function(DateHolder){
+    }).filter('eventsByEntireShift', function(){
         return function(events,shift, includeEditingNow){
             if(!shift || !events) return false;
             // include events that starts X minutes after the current time
@@ -55,7 +55,7 @@ zedAlphaFilters
 
             return filteredEventsArr;
         }
-    }).filter('eventsBySeatAndTime', function(EventsHolder, DateHolder){
+    }).filter('eventsBySeatAndTime', function(EventsHolder){
        return function(events, seatNumber, fromTime, toTime){
            var fromTimeMoment,
                toTimeMoment,
