@@ -34,7 +34,7 @@ gulp.task('deploy:staging',['build'], function(){
 });
 
 // aws staging1 deployment
-gulp.task('deploy:staging',['build'], function(){
+gulp.task('deploy:staging1',['build'], function(){
     return gulp.src('./dist/**')
         .pipe(awsPublisherStaging1.publish(awsHeaders))
         .pipe(awsPublisherStaging1.sync())  // sync local directory with bucket
