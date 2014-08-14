@@ -1,5 +1,15 @@
 var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directives', []);
 
+
+/**
+ * ShapeGroup
+ * used to move more a group of objects together.
+ * only in the map editor.
+ * @param paper
+ * @param options
+ * @returns {boolean}
+ * @constructor
+ */
 function ShapeGroup(paper, options){
     var self = this;
     this.paper = paper;
@@ -55,9 +65,11 @@ ShapeGroup.prototype.hideHandles = function(){
 
 ShapeGroup.prototype.addSet = function(newSet){
     newSet.hideHandles();
-    this.groupSet.push(newSet.shapesSet);
-    this.shapesArr.push(newSet);
-    this.setFT();
+    if(this.shapesArr.indexOf(newSet) == -1){
+        this.groupSet.push(newSet.shapesSet);
+        this.shapesArr.push(newSet);
+        this.setFT();
+    }
 }
 
 ShapeGroup.prototype.seatString = function(){
@@ -78,6 +90,13 @@ ShapeGroup.prototype.removeFromPaper = function(){
 }
 
 
+/**
+ * SeatShape
+ * used for all kind of seats shapes
+ * @param paper
+ * @param options
+ * @constructor
+ */
 function SeatShape(paper, options){
     var self = this;
     this.paper = paper;
@@ -328,6 +347,193 @@ SeatShape.prototype.getBBox = function(){
     return this.shape.getBBox();
 };
 
+
+/**
+ * DecorativeShape
+ * used for walls and other non-seats objects
+ * @param paper
+ * @param options
+ * @constructor
+ */
+function DecorativeShape(paper, options){
+    var self = this;
+    this.paper = paper;
+    this.shapeObject = options.shapeObject;
+    this.shapesArr = options.shapesArr;
+    this.changeCallback = options.changeCallback;
+    this.selectCallback = options.selectCallback;
+    this.deselectCallback = options.deselectCallback;
+    this.dragStartCallback = options.dragStartCallback;
+    this.dragEndCallback = options.dragEndCallback
+    this.clickCallback = options.clickCallback;
+    this.mouseoverCallback = options.mouseoverCallback;
+    this.mouseoutCallback = options.mouseoutCallback;
+
+    this.FTEnabled = options.FTEnabled;
+    this.id = this.generateId();
+    this.defaultX = 100;
+    this.defaultY = 100;
+
+
+
+
+    if(this.shapeObject){
+        this.initFromObject();
+    }else if(this.shapesArr){
+        this.initFromShapesArr();
+    }
+
+    this.setFT();
+
+    this.shapesSet.click(function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        if(self.isPartOfGroup){
+            return;
+        }
+
+        if(self.FTEnabled){
+            if(self.isDragging){
+                self.isDragging = false;
+                return false;
+            }
+            if(!self.handlesOn){
+                self.handlesOn = true;
+                self.ft.showHandles();
+                self.selectCallback && self.selectCallback(self);
+            }else{
+                self.handlesOn = false;
+                self.ft.hideHandles();
+                self.deselectCallback && self.deselectCallback(self);
+            }
+            return
+        }else{
+            self.clickCallback && self.clickCallback(self);
+        }
+
+    });
+
+    this.shapesSet.touchend(function(e){
+    });
+
+
+};
+
+
+DecorativeShape.prototype.setFT = function(){
+    if(!this.FTEnabled) return;
+    var paper = this.paper, self = this;
+    if(this.ft && this.ft.unplug) this.ft.unplug();
+    this.ft = paper.freeTransformAdjusted(this.shapesSet, { keepRatio: false, scale : ['bboxCorners'], draw : ['bbox'], rotate : ['axisX'], drag : ['self']}, function(data,evetns){
+        if(self.isPartOfGroup){
+            return;
+        }
+        self.throttledCallback(data, evetns);
+    }).hideHandles();
+
+}
+
+DecorativeShape.prototype.throttledCallback = _.throttle(function(data,events){
+    var self = this;
+    if(events.indexOf('drag start') > -1 || events.indexOf('rotate start') > -1 || events.indexOf('scale start') > -1){
+        this.isDragging = true;
+        self.dragStartCallback && self.dragStartCallback(self);
+    }else if(events.indexOf('drag end') > -1 || events.indexOf('rotate end') > -1 || events.indexOf('scale end') > -1){
+        this.changeCallback && this.changeCallback(this);
+        self.dragEndCallback && self.dragEndCallback(self);
+    }
+}, 100, {trailing : true});
+
+
+DecorativeShape.prototype.initFromObject = function(paper, shapeObject){
+    this.shapesSet = this.paper.set();
+    var shapeObject = this.shapeObject,
+        defaultX = this.defaultX,
+        defaultY = this.defaultY;
+
+    if(!shapeObject){
+        return;
+    }else if(shapeObject.shapeType == 'circle'){
+        this.shape = this.paper.circle(defaultX, defaultY, shapeObject.r).attr(shapeObject.attrs);
+    }else if(shapeObject.shapeType === 'rect'){
+        this.shape = this.paper.rect(defaultX, defaultY, shapeObject.w, shapeObject.h).attr(shapeObject.attrs);
+    }else if(shapeObject.shapeType == 'roundedRect'){
+        this.shape = this.paper.roundedRect(defaultX, defaultY, shapeObject.w, shapeObject.h, 5, 5, 0, 0).attr(shapeObject.attrs);
+    }
+
+    this.shape.data('seatId', this.id);
+    this.shape.data('type','DecorativeShapeTheShape');
+
+    this.shapesSet.push(this.shape);
+    this.shapesSet.data('seatId', this.id);
+    this.shapesSet.data('type','DecorativeShape');
+}
+
+DecorativeShape.prototype.initFromShapesArr = function(){
+    var seatId;
+    this.shapesSet = this.paper.set();
+    var arr = this.shapesArr;
+    for (var i = 0 ; i  <  arr.length; ++i){
+        seatId = seatId || arr[i].data('seatId');
+        this.shapesSet.push(arr[i]);
+    }
+    this.shape = this.shapesSet[0];
+    this.id = seatId;
+    this.shapesSet.data('seatId', seatId);
+    this.shapesSet.data('type','DecorativeShape');
+    this.normalState();
+};
+
+DecorativeShape.prototype.generateId = function ()
+{
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for( var i=0; i < 5; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+};
+
+
+
+DecorativeShape.prototype.hideHandles = function(){
+    this.handlesOn = false;
+    this.ft.hideHandles();
+}
+
+
+DecorativeShape.prototype.removeFromPaper = function(){
+    this.ft.unplug();
+    this.shapesSet.remove();
+}
+
+DecorativeShape.prototype.generateShapesArr = function(){
+    return [this.shape];
+}
+
+DecorativeShape.prototype.translate = function(x,y){
+    this.ft.attrs.x = x;
+    this.ft.attrs.y = y;
+    this.ft.apply();
+    this.ft.updateHandles();
+};
+
+
+DecorativeShape.prototype.normalState = function(){
+    this.shape.attr(this.normalStateAttrs);
+};
+
+DecorativeShape.prototype.setBackgroundColor = function(color){
+    this.shape.attr({fill : color});
+};
+
+DecorativeShape.prototype.getBBox = function(){
+    return this.shape.getBBox();
+};
+
+
+
 Raphael.fn.roundedRect = function (x, y, w, h, r1, r2, r3, r4){
     var array = [];
     array = array.concat(["M",x,r1+y, "Q",x,y, x+r1,y]); //A
@@ -391,6 +597,7 @@ zedAlphaDirectives
 
 
                 var clickCallback  = function(shape){
+                    if(!shape.seatNumber) return;
                     scope.$apply(function(){
                         if(isAddingNewEvent()){
                             clickHandlerForAddingNewEventState(shape);
@@ -630,14 +837,13 @@ zedAlphaDirectives
 
 
                 var renderMapJson = function(map){
-
                     paper.fromJSON(map, function(el, data){
                         for(var i in data){
                             el.data(i, data[i]);
                         }
                     });
-
                     var sortedSeats = {};
+                    var decorativeShapes = {};
                     paper.forEach(function(el){
                         var data = el.data();
                         if(!data || !data.type){
@@ -645,10 +851,17 @@ zedAlphaDirectives
                             return;
                         }
                         var seatId = el.data('seatId');
-                        if(seatId){
+                        var seatNumber = el.data('seatNumber');
+
+                        if(seatId && seatNumber){
                             sortedSeats[seatId] = sortedSeats[seatId] || [];
                             sortedSeats[seatId].push(el);
+                        }else if (seatId){
+                            decorativeShapes[seatId] = decorativeShapes[seatId] || [];
+                            decorativeShapes[seatId].push(el);
                         }
+
+
                     });
 
                     for(var i in sortedSeats){
@@ -660,7 +873,18 @@ zedAlphaDirectives
                             FTEnabled : false
                         }));
                     }
+
+                    for(var i in decorativeShapes){
+                        shapes.push(new DecorativeShape(paper, {
+                            shapeObject : null,
+                            seatNumber : null,
+                            shapesArr :  decorativeShapes[i],
+                            FTEnabled : false
+                        }));
+                    }
+
                 };
+
 
                 var newEventWatcher = scope.$parent.$watch('newEvent', function(newVal, oldVal){
                     if(!newVal && oldVal){
@@ -700,17 +924,18 @@ zedAlphaDirectives
             link: function(scope, elem, attrs) {
 
                 scope.shapes = [
-                    {shapeName : 'CIRCLE_TABLE_2', shapeType : 'circle', r  : 20},
-                    {shapeName : 'CIRCLE_TABLE_4', shapeType : 'circle', r  : 30},
-                    {shapeName : 'CIRCLE_TABLE_6', shapeType : 'circle', r  : 40},
-                    {shapeName : 'CIRCLE_TABLE_8', shapeType : 'circle', r  : 50},
-                    {shapeName : 'CIRCLE_TABLE_10', shapeType : 'circle', r  : 60},
+                    {shapeName : 'CIRCLE_TABLE_2', shapeType : 'circle', r  : 20, isSeat : true},
+                    {shapeName : 'CIRCLE_TABLE_4', shapeType : 'circle', r  : 30, isSeat : true},
+                    {shapeName : 'CIRCLE_TABLE_6', shapeType : 'circle', r  : 40, isSeat : true},
+                    {shapeName : 'CIRCLE_TABLE_8', shapeType : 'circle', r  : 50, isSeat : true},
+                    {shapeName : 'CIRCLE_TABLE_10', shapeType : 'circle', r  : 60, isSeat : true},
 
-                    {shapeName : 'SQUARE_TABLE_2', shapeType : 'rect', w  : 40, h : 40},
-                    {shapeName : 'SQUARE_TABLE_4', shapeType : 'rect', w  : 50, h : 50},
-                    {shapeName : 'RECT_TABLE_6', shapeType : 'rect', w  : 60, h : 40},
-                    {shapeName : 'RECT_TABLE_8', shapeType : 'rect', w  : 80, h : 60},
-                    {shapeName : 'CHAIR', shapeType : 'roundedRect', w  : 20, h:20}
+                    {shapeName : 'SQUARE_TABLE_2', shapeType : 'rect', w  : 40, h : 40, isSeat : true},
+                    {shapeName : 'SQUARE_TABLE_4', shapeType : 'rect', w  : 50, h : 50, isSeat : true},
+                    {shapeName : 'RECT_TABLE_6', shapeType : 'rect', w  : 60, h : 40, isSeat : true},
+                    {shapeName : 'RECT_TABLE_8', shapeType : 'rect', w  : 80, h : 60, isSeat : true},
+                    {shapeName : 'CHAIR', shapeType : 'roundedRect', w  : 20, h:20, isSeat : true},
+                    {shapeName : 'WALL', shapeType : 'rect', w  : 50, h:10, isSeat : false, attrs : {fill : '#e7d2bc', 'stroke-width' : '0'}}
                 ];
 
                 scope.selectNewShape = function(shape){
@@ -721,17 +946,31 @@ zedAlphaDirectives
 
                 scope.addShape = function(){
                     if(!scope.selectedNewShape) return;
-                    shapes.push(new SeatShape(paper, {
-                        shapeObject : scope.selectedNewShape,
-                        seatNumber : scope.seatNumber,
-                        shapesArr : null,
-                        changeCallback : changeCallback,
-                        selectCallback : selectCallback,
-                        deselectCallback : deselectCallback,
-                        dragStartCallback : dragStartCallback,
-                        dragEndCallback : dragEndCallback,
-                        FTEnabled : true
-                    }));
+                    if(scope.selectedNewShape.isSeat){
+                        shapes.push(new SeatShape(paper, {
+                            shapeObject : scope.selectedNewShape,
+                            seatNumber : scope.seatNumber,
+                            shapesArr : null,
+                            changeCallback : changeCallback,
+                            selectCallback : selectCallback,
+                            deselectCallback : deselectCallback,
+                            dragStartCallback : dragStartCallback,
+                            dragEndCallback : dragEndCallback,
+                            FTEnabled : true
+                        }));
+                    }else{
+                        shapes.push(new DecorativeShape(paper, {
+                            shapeObject : scope.selectedNewShape,
+                            shapesArr : null,
+                            changeCallback : changeCallback,
+                            selectCallback : selectCallback,
+                            deselectCallback : deselectCallback,
+                            dragStartCallback : dragStartCallback,
+                            dragEndCallback : dragEndCallback,
+                            FTEnabled : true
+                        }));
+                    }
+
                     scope.save();
                 };
 
@@ -851,6 +1090,7 @@ zedAlphaDirectives
                         }
                     });
                     var sortedSeats = {};
+                    var decorativeShapes = {};
                     paper.forEach(function(el){
                         var data = el.data();
                         if(!data || !data.type){
@@ -858,10 +1098,17 @@ zedAlphaDirectives
                             return;
                         }
                         var seatId = el.data('seatId');
-                        if(seatId){
+                        var seatNumber = el.data('seatNumber');
+
+                        if(seatId && seatNumber){
                             sortedSeats[seatId] = sortedSeats[seatId] || [];
                             sortedSeats[seatId].push(el);
+                        }else if (seatId){
+                            decorativeShapes[seatId] = decorativeShapes[seatId] || [];
+                            decorativeShapes[seatId].push(el);
                         }
+
+
                     });
 
                     for(var i in sortedSeats){
@@ -877,6 +1124,21 @@ zedAlphaDirectives
                             FTEnabled : true
                         }));
                     }
+
+                    for(var i in decorativeShapes){
+                        shapes.push(new DecorativeShape(paper, {
+                            shapeObject : null,
+                            seatNumber : null,
+                            shapesArr :  decorativeShapes[i],
+                            changeCallback : changeCallback,
+                            selectCallback : selectCallback,
+                            deselectCallback : deselectCallback,
+                            dragStartCallback : dragStartCallback,
+                            dragEndCallback : dragEndCallback,
+                            FTEnabled : true
+                        }));
+                    }
+
                 };
 
 
