@@ -2,7 +2,7 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 
 
 zedAlphaDirectives
-    .directive('hlEventForm', function(EventsLogic,areYouSureModalFactory, $filter, EventsHolder,EventsDurationForGuestsHolder, FullDateFormat, $q, $log) {
+    .directive('hlEventForm', function(EventsLogic,areYouSureModalFactory, $filter, EventsHolder,EventsDurationForGuestsHolder, FullDateFormat, $q, $log, ShiftsDayHolder) {
         return {
             restrict: 'A',
             replace : true,
@@ -16,7 +16,6 @@ zedAlphaDirectives
                    eventWatcher,
                    eventGuestsWatcher;
 
-                console.log('EventsDurationForGuestsHolder',EventsDurationForGuestsHolder);
                 var init = function(){
                     justRevertedWhileEditing = false;
                     eventWatcher = $scope.$watch('event', eventWatching,true);
@@ -140,9 +139,19 @@ zedAlphaDirectives
                 }
 
 
+                var shiftsWatcher = $scope.$watch(function(){
+                    return ShiftsDayHolder.selected;
+                }, function(newVal){
+                    if(newVal){
+                        $scope.minStartTime = newVal.startTime;
+                        $scope.maxStartTime = newVal.endTime;
+                    }
+                });
+
                 $scope.$on('$destroy', function(){
                     eventWatcher();
                     eventGuestsWatcher();
+                    shiftsWatcher();
                 });
 
 

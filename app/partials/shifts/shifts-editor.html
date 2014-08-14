@@ -28,7 +28,7 @@
                                 </div>
                                 <div class="col-xs-4"  ng-hide="!shift.active">
                                     <label>End Time</label>
-                                    <hl-timepicker ng-model="shift.endTime" ng-change="dayWasChanged(day)"></hl-timepicker>
+                                    <hl-timepicker ng-model="shift.endTime" ng-change="dayWasChanged(day)" min-time="shift.startTime" show-duration-min-time="true"></hl-timepicker>
 
                                     <!--<input type="time" step="900" placeholder="HH:MM">-->
                                 </div>

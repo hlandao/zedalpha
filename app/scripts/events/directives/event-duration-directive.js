@@ -6,18 +6,19 @@ zedAlphaDirectives
 
         return {
             restrict: 'E',
-            templateUrl : '/partials/directives/event-duration-select-directive.html',
-//            scope : {
-//                event : "="
-//            },
+            templateUrl : '/partials/directives/event-duration-directive.html',
+            scope : {
+                event : "=",
+                endTimeRange : "@",
+                minStartTime : "=",
+                maxStartTime : "="
+            },
             replace : true,
             controller : function($scope){
-                $scope.$watch('event', function(newVal, oldVal){
-
-                });
                 // ---------- Init timepicker ---------//
                 $scope.timeFormat = 'HH:mm';
                 $scope.interval = EventInterval;
+                $scope.endTimeRange = 1000 * 60 * 60 * 6;
                 $scope.durations = EventsDurationHolder;
 
                 var setDurationLabel = function(){
@@ -49,6 +50,8 @@ zedAlphaDirectives
                 });
 
 
+
+
                 $scope.changeDuration = function(duration){
                     $scope.durationLabel = duration;
                     var startTimeMoment = moment($scope.event.startTime);
@@ -58,6 +61,11 @@ zedAlphaDirectives
                 }
 
 
+            },
+            link : function(scope, element, attrs){
+                attrs.$observe('endTimeRange', function(newVal){
+                    if(newVal) scope.endTimeRange = newVal;
+                });
             }
         };
     }]);

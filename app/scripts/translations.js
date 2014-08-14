@@ -65,7 +65,9 @@ zedAlphaConfigModule
         SELECT_SHIFT : 'Select Shift',
         NEW_EVENT : 'New Event',
         EDITED_EVENT : 'Editing Event',
-        MINUTES_SHORT : 'min',
+        MINUTES_SHORT : 'mins',
+        HOURS_SHORT : 'hrs',
+
         ORDERED: "Orderd",
         // ERRORS
         ERROR_MSG_COLLISION: "Error : event collide with another event",
@@ -201,6 +203,7 @@ zedAlphaConfigModule
                 "NEW_EVENT" : 'הזמנה חדשה',
                 "EDITED_EVENT" : 'עריכת הזמנה',
                 "MINUTES_SHORT" : 'דק',
+                "HOURS_SHORT" : 'שעות',
                 "DASHBOARD" : "דשבורד",
                 "LOGOUT" : "יציאה מהמערכת",
                 "SELECT_SHIFT" : 'בחירת משמרת',

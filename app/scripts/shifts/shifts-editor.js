@@ -23,7 +23,7 @@ zedAlphaDirectives
                 $scope.dayWasChanged = function(day){
                     if(day.wasChanged) day.wasChanged().then(function(){
                                 $scope.msg.setMsg("Changes were Saved")
-                            });
+                        });
                 }
             },
             require : 'shiftsEditor',
