@@ -545,7 +545,7 @@ Raphael.fn.roundedRect = function (x, y, w, h, r1, r2, r3, r4){
 
 
 zedAlphaDirectives
-    .directive('mapManager', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope, EventsStatusesHolder, $filter, DateHolder) {
+    .directive('mapManager', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope, EventsStatusesHolder, $filter, DateHolder, ShiftsDayHolder) {
         return {
             restrict: 'E',
             replace : true,
@@ -671,9 +671,15 @@ zedAlphaDirectives
 
                 var eventsForHighlightedShapes = function(){
                     if(scope.highlightedShapes.length == 1){
-                        var fromTime = moment(DateHolder.currentDate).hour(0).minute(0);
-                        var toTime = moment(DateHolder.currentDate).hour(23).minute(59);
-                        scope.highlightedEvents = $filter('eventsBySeatAndTime')(null,scope.highlightedShapes[0].seatString(),fromTime,toTime);
+//                        var fromTime = moment(DateHolder.currentDate).hour(0).minute(0);
+//                        var toTime = moment(DateHolder.currentDate).hour(23).minute(59);
+//
+//                        var events = $filter('eventsBySeatAndTime')(null,scope.highlightedShapes[0].seatString(),fromTime,toTime);
+                        var events = $filter('eventsBySeatAndShiftsDay')(null,scope.highlightedShapes[0].seatString(),ShiftsDayHolder.current);
+
+                        scope.highlightedEvents = _.sortBy(events, function(event){
+                            return event.startTime;
+                        });
                     }else{
                         emptyEventsForHighlightedShapes();
                     }

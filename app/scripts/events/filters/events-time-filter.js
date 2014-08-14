@@ -84,5 +84,24 @@ zedAlphaFilters
            return filteredEventsArr;
 
        }
+    }).filter('eventsBySeatAndShiftsDay', function(EventsHolder, $filter){
+        return function(events, seatNumber, shiftsDay){
+            var fromTimeMoment,
+                toTimeMoment,
+                filteredEventsArr;
+
+            events = events || EventsHolder.$allEvents;
+
+
+
+            filteredEventsArr = [];
+
+            angular.forEach(shiftsDay.shifts, function(shift){
+                var moreEvents = $filter('eventsBySeatAndTime')(events, seatNumber, shift.startTime, shift.endTime);
+                filteredEventsArr  = filteredEventsArr.concat(moreEvents);
+            });
+
+            return filteredEventsArr;
+        }
     });
 

@@ -231,32 +231,34 @@ zedAlphaServices
         }
 
 
-
-
-
-        var isEventWithNoSeats = function(event){
-            return isEmptyObject(event.seats)
-        }
-
-        var endTimeForNewEventWithStartTimeAndMaxDuration = function(startTime, maxDuration){
-            var duration = maxDuration > 0 ? Math.min(maxDuration, DEFAULT_EVENT_DURATION) : DEFAULT_EVENT_DURATION ;
-            return new Date(moment(startTime).add('minute', duration).format(FullDateFormat));
-        };
-
-
         var isEventWithinTodayShifts = function(event){
             return dayShiftsForDate(event.startTime).then(function(dayShifts){
                 var shifts = dayShifts.shifts, currentShift,startDateMoment,endDateMoment, theDateMoment = moment(event.startTime);
                 for (var i = 0; i < shifts.length; ++i){
                     currentShift = shifts[i];
                     startDateMoment = moment(currentShift.startTime);
-                    if(theDateMoment.diff(startDateMoment, 'minutes') >= 0){ // && theDateMoment <= endDateMoment
-                        return true;
+                    endDateMoment = moment(currentShift.endTime);
+                    if(theDateMoment.diff(startDateMoment, 'minutes') >= 0 && endDateMoment.diff(theDateMoment, 'minutes') >= 0 ){
+                        return currentShift;
                     }
                 }
 
-                return false;
+                // check the day before
+                var theDayBefore = theDateMoment.subtract(1, 'days');
+                return dayShiftsForDate(theDayBefore).then(function(dayShifts){
+                    var shifts = dayShifts.shifts, currentShift,startDateMoment,endDateMoment, theDateMoment = moment(event.startTime);
+                    for (var i = 0; i < shifts.length; ++i){
+                        currentShift = shifts[i];
+                        startDateMoment = moment(currentShift.startTime);
+                        endDateMoment = moment(currentShift.endTime);
+                        if(theDateMoment.diff(startDateMoment, 'minutes') >= 0 && endDateMoment.diff(theDateMoment, 'minutes') >= 0 ){
+                            return currentShift;
+                        }
+                    }
 
+                    return false;
+
+                });
             });
         };
 
@@ -271,6 +273,20 @@ zedAlphaServices
 
             return ShiftsDayHolder.fetchShiftWithDateFromDB(date);
         }
+
+
+
+
+        var isEventWithNoSeats = function(event){
+            return isEmptyObject(event.seats)
+        }
+
+        var endTimeForNewEventWithStartTimeAndMaxDuration = function(startTime, maxDuration){
+            var duration = maxDuration > 0 ? Math.min(maxDuration, DEFAULT_EVENT_DURATION) : DEFAULT_EVENT_DURATION ;
+            return new Date(moment(startTime).add('minute', duration).format(FullDateFormat));
+        };
+
+
 
 
 
