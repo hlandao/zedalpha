@@ -1,5 +1,6 @@
 var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directives', []);
 
+var h = 1;
 zedAlphaDirectives
     .directive('hlTimepicker',function ($timeout,DateHelpers,FullDateFormat,$rootScope,$parse,DateHolder, $filter) {
         return{
@@ -45,13 +46,7 @@ zedAlphaDirectives
                             $scope.selected = null;
                             $scope.selectedTime = null;
                         }else{
-                            $scope.selected = ngModel.$modelValue;
-                        }
-
-                        if(!intialized){
-                            initialized = true;
-                            calcHoursArr();
-
+                            findAndSetSelected();
                         }
                     };
 
@@ -70,12 +65,12 @@ zedAlphaDirectives
                     $scope.times = [];
                 }
                 
-                var calcHoursArr = function(){
+                var calcHoursArr = this.calcHoursArr = function(){
                     var theDate = new Date(ngModel.$modelValue),
                         dateTimestamp = theDate.getTime(),
+                        placedSelected = false,
                         startTimestamp,
                         endTimestamp,
-                        selectedTime,
                         diff,
                         _intervalMS = $scope.intervalMs ? parseInt($scope.intervalMs) : intervalMS;
 
@@ -106,26 +101,43 @@ zedAlphaDirectives
                     }
 
 
-                    var timeObj, label, timeString;
+                    var timeObj;
                     while ((endTimestamp - startTimestamp) > oneMinute){
-                        timeString = $filter('date')(startTimestamp, timeFormat);
-                        label = ($scope.showDurationMinTime && $scope.minTime) ? (timeString + " " +getDurationString($scope.minTime, startTimestamp)) : timeString ;
-                        timeObj = {
-                            time : startTimestamp,
-                            label : label
-                        };
-                        $scope.times.push(timeObj);
+                        timeObj = getTimeObject(startTimestamp);
                         diff = startTimestamp - dateTimestamp;
-                        if(!selectedTime && diff >= 0 && diff <= _intervalMS){
-                            selectedTime = timeObj;
+                        if(!placedSelected && diff >= 0 && diff <= oneMinute){
+                            placedSelected = true;
+                            $scope.times.push($scope.selectedTime);
+                        }else if(!placedSelected && diff > 0 && diff < _intervalMS){
+                            placedSelected = true;
+                            $scope.times.push(timeObj);
+                            $scope.times.push($scope.selectedTime);
+                        }else {
+                            $scope.times.push(timeObj);
                         }
+
                         startTimestamp += _intervalMS;
                     }
 
-                    $scope.selectedTime = selectedTime;
                     return $scope.times;
                 };
 
+
+                var getTimeObject = function(time){
+                    console.log('time',time);
+                    var timeString = $filter('date')(time, timeFormat);
+                    var label = ($scope.showDurationMinTime && $scope.minTime) ? (timeString + " " +getDurationString($scope.minTime, time)) : timeString ;
+                    return {
+                        time : time,
+                        label : label
+                    };
+                }
+
+                var findAndSetSelected = function(){
+                    var timeObj = getTimeObject(ngModel.$modelValue);
+                    console.log('timeObj',timeObj);
+                    $scope.selectedTime = timeObj;
+                }
 
 
                 var getDurationString = function(minTimeReference, time){
@@ -134,7 +146,6 @@ zedAlphaDirectives
                     time = new Date(time).getTime();
 
                     var diff = time - minTimeReference;
-
                     var hours   = Math.floor(diff / oneHour);
                     var minutes = Math.floor((diff - (hours * oneHour)) / oneMinute);
 
@@ -166,10 +177,17 @@ zedAlphaDirectives
 
 
 
-                $scope.$watch('shift', calcHoursArr, true);
-                $scope.$watch('minTime', calcHoursArr);
-                $scope.$watch('maxTime', calcHoursArr);
-                $scope.$watch('timeRange', calcHoursArr);
+//                var shiftWatcher = $scope.$watch('shift', calcHoursArr, true);
+//                var minTimeWatcher = $scope.$watch('minTime', calcHoursArr);
+//                var maxtimeWatcher = $scope.$watch('maxTime', calcHoursArr);
+//                var timeRangeWatcher = $scope.$watch('timeRange', calcHoursArr);
+//
+//                $scope.$on('$destroy', function(){
+//                    shiftWatcher();
+//                    minTimeWatcher();
+//                    maxtimeWatcher();
+//                    timeRangeWatcher();
+//                });
 
             },
             link : function(scope, element, attrs, ctrls) {
@@ -190,8 +208,11 @@ zedAlphaDirectives
                 }
 
                 scope.setOffset = function(){
-                    var offset = getOffset();
-                    $ul.scrollTop(offset);
+                    ctrl.calcHoursArr();
+                    setTimeout(function(){
+                        var offset = getOffset();
+                        $ul.scrollTop(offset);
+                    },1);
                 };
 
             }

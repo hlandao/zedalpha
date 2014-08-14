@@ -116,8 +116,11 @@ zedAlphaConfigModule
         "SWITCH_EVENT_WARNING" : "Please finish or cancel events switching before continue",
         "NEW_EVENT_WARNING" : "Please finish or cancel adding new event",
 
-        "LOADING_TEXT" : "Loading Zed..."
+        "LOADING_TEXT" : "Loading Zed...",
 
+        //MAP
+        "ADD_DESTINATION_BUTTON" : "New Reservation",
+        "ADD_OCCASIONAL_BUTTON" : "Add Walkin"
 
     });
 
@@ -139,11 +142,11 @@ zedAlphaConfigModule
                 "BUSINESS_AREA": "מיקום העסק",
                 "BUSINESS_SIZE": "גודל העסק",
                 "HOME": "בית",
-                "EDIT_MAP": "עריכת מפה",
-                "EDIT_SHIFTS": "ערוך משמרות",
+                "EDIT_MAP": "עורך מפה",
+                "EDIT_SHIFTS": "עריכת משמרות",
                 "EDIT_EVENTS_STATUSES": "סטטוסים",
-                "EVENTS_MANAGEMENT": 'ארועים',
-                "EDIT_EVENTS_DURATION": 'משכי אירוע',
+                "EVENTS_MANAGEMENT": 'ניהול הזמנות',
+                "EDIT_EVENTS_DURATION": 'שעות וסועדים',
                 "NO_RECENT_EVENTS_FOR_SEAT" : 'לא נמצאו הזמנות אחרונות לשולחן זה',
 
                 "CREATE": "צור",
@@ -233,7 +236,11 @@ zedAlphaConfigModule
                 "SWITCH_EVENT_WARNING" : "יש לסיים החלפת שולחנות",
                 "EDIT_EVENT_WARNING" : "יש לסיים עריכת ארוע",
                 "NEW_EVENT_WARNING" : "יש לסיים הוספת ארוע",
-                "LOADING_TEXT" : "טוען..."
+                "LOADING_TEXT" : "טוען...",
+                //MAP
+                "ADD_DESTINATION_BUTTON" : "הזמנה חדשה",
+                "ADD_OCCASIONAL_BUTTON" : "הוסף מזדמן"
+
             }
         );
 
