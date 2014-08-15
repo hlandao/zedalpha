@@ -792,12 +792,14 @@ zedAlphaDirectives
                     if(scope.$parent.newEvent){
                         eventsCopy.push(scope.$parent.newEvent);
                     }
+
+                    setAllShapesToNormal();
+                    scope.highlightedShapes = [];
+
                     if(!eventsCopy || !eventsCopy.length){
-                        setAllShapesToNormal();
                         return;
                     }
 
-                    scope.highlightedShapes = [];
 
                     var event, color, seatNumber, theShape, seatsWithBackground = {}, highlightedSeats = {};
                     for(var j = 0; j < eventsCopy.length; ++j){
