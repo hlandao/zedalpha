@@ -166,6 +166,7 @@ function SeatShape(paper, options){
     });
 
     this.shapesSet.touchend(function(e){
+        alert(1);
     });
 
 
@@ -791,9 +792,11 @@ zedAlphaDirectives
                     if(scope.$parent.newEvent){
                         eventsCopy.push(scope.$parent.newEvent);
                     }
-                    if(!eventsCopy || !eventsCopy.length) return;
+                    if(!eventsCopy || !eventsCopy.length){
+                        setAllShapesToNormal();
+                        return;
+                    }
 
-                    setAllShapesToNormal();
                     scope.highlightedShapes = [];
 
                     var event, color, seatNumber, theShape, seatsWithBackground = {}, highlightedSeats = {};
@@ -812,6 +815,7 @@ zedAlphaDirectives
                     for (var i = 0;i < shapes.length; ++i){
                         theShape = shapes[i];
                         if(theShape.seatNumber){
+                            theShape.normalState();
                             seatNumber = theShape.seatNumber;
                             color = seatsWithBackground[seatNumber];
                             if(color){

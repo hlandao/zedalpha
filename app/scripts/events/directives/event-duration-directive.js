@@ -19,46 +19,47 @@ zedAlphaDirectives
                 $scope.timeFormat = 'HH:mm';
                 $scope.interval = EventInterval;
                 $scope.endTimeRange = 1000 * 60 * 60 * 6;
-                $scope.durations = EventsDurationHolder;
+//                $scope.durations = EventsDurationHolder;
 
-                var setDurationLabel = function(){
-                    if(!$scope.event) return;
-                    var startTimeMoment = moment( $scope.event.startTime);
-                    var endTimeMoment = moment( $scope.event.endTime);
-                    $scope.durationLabel = Math.ceil(endTimeMoment.diff(startTimeMoment) / 1000) / 60;
-                };
+//                var setDurationLabel = function(){
+//                    if(!$scope.event) return;
+//                    var startTimeMoment = moment( $scope.event.startTime);
+//                    var endTimeMoment = moment( $scope.event.endTime);
+//                    $scope.durationLabel = Math.ceil(endTimeMoment.diff(startTimeMoment) / 1000) / 60;
+//                };
 
 
-                setDurationLabel();
+//                setDurationLabel();
                 // --------------- Init everything else --------------//
 
 
-                $scope.$watch('event.startTime', function(newVal, oldVal){
-                    if(newVal){
-                        var startTimeMoment = moment(newVal);
-                        var newEndTimeMoment = startTimeMoment.clone().add($scope.durationLabel, 'minutes');
-                        $scope.event.endTime = new Date(newEndTimeMoment.format(FullDateFormat));
-                    }
-                });
+//                $scope.$watch('event.startTime', function(newVal, oldVal){
+//                    console.log(newVal, oldVal);
+//                    if(newVal){
+//                        var startTimeMoment = moment(newVal);
+//                        var newEndTimeMoment = startTimeMoment.clone().add($scope.durationLabel, 'minutes');
+//                        $scope.event.endTime = new Date(newEndTimeMoment.format(FullDateFormat));
+//                    }
+//                });
 
-                $scope.$watch('event.endTime', function(newVal, oldVal){
-                    if(newVal){
-                        var startTimeMoment = moment($scope.event.startTime);
-                        var endTimeMoment = moment(newVal);
-                        $scope.durationLabel = endTimeMoment.diff(startTimeMoment, 'minutes');
-                    }
-                });
+//                $scope.$watch('event.endTime', function(newVal, oldVal){
+//                    if(newVal){
+//                        var startTimeMoment = moment($scope.event.startTime);
+//                        var endTimeMoment = moment(newVal);
+//                        $scope.durationLabel = endTimeMoment.diff(startTimeMoment, 'minutes');
+//                    }
+//                });
 
 
 
 
-                $scope.changeDuration = function(duration){
-                    $scope.durationLabel = duration;
-                    var startTimeMoment = moment($scope.event.startTime);
-                    var newEndTimeMoment = startTimeMoment.clone().add($scope.durationLabel, 'minutes');
-                    $scope.event.endTime = new Date(newEndTimeMoment.format(FullDateFormat));
-                    $timeout(setDurationLabel);
-                }
+//                $scope.changeDuration = function(duration){
+//                    $scope.durationLabel = duration;
+//                    var startTimeMoment = moment($scope.event.startTime);
+//                    var newEndTimeMoment = startTimeMoment.clone().add($scope.durationLabel, 'minutes');
+//                    $scope.event.endTime = new Date(newEndTimeMoment.format(FullDateFormat));
+//                    $timeout(setDurationLabel);
+//                }
 
 
             },

@@ -99,6 +99,7 @@ zedAlphaConfigModule
         "SWITCH_TO_ENGLISH" : "English",
         "SWITCH_TABLES" : "Switch",
         "SWITCH_MODE_TITLE" : "Switch Mode - Pick 2 events",
+        "MAX_DURATION_FOR_EVENT_LABEL" : "Maximum duration for this seats",
         // ERRORS
         "ERROR_EVENT_MSG_NAME": "Please enter the event name",
         "ERROR_EVENT_MSG_SEATS": "Please pick at least one seat for the event",
@@ -210,7 +211,7 @@ zedAlphaConfigModule
                 "DASHBOARD" : "דשבורד",
                 "LOGOUT" : "יציאה מהמערכת",
                 "SELECT_SHIFT" : 'בחירת משמרת',
-
+                "MAX_DURATION_FOR_EVENT_LABEL" : "משך זמן מקסימלי לשולחנות שנבחרו",
                 "SHIFT" : "משמרת",
                 "DEAD_EVENTS" : "ארועים שהסתיימו",
                 "SHOW_DEAD_EVENTS" : "הצג ארועים שהסתיימו",

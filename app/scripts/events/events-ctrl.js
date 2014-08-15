@@ -50,6 +50,8 @@ zedAlphaControllers
             }else{
                 newEvent.endTime = DateHelpers.resetDateSeconds(EventsLogic.endTimeForNewEventWithStartTimeAndMaxDuration(startTime, maxDuration));
             }
+
+            newEvent.helpers.maxDuration = maxDuration;
             $scope.newEvent = newEvent;
             if(isOccasional) $scope.goToNow();
         };
@@ -87,7 +89,10 @@ zedAlphaControllers
             }else if($scope.editedEvent){
                 delete $scope.editedEvent.helpers
             }
+
+            var maxDuration = EventsLogic.maxDurationForEventInMinutes(event);
             event.helpers = event.helpers || {};
+            event.helpers.maxDuration = maxDuration;
             event.helpers.isEditing = true;
             $scope.editedEvent = event;
         };

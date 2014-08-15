@@ -35,13 +35,15 @@ zedAlphaDirectives
                     $scope.eventsBySeats = null;
                     $timeout(function(){
                         angular.forEach(EventsSeatsHolder.seats, function(seatId, seatNumer){
+                            if(!seatNumer || seatNumer == 'undefined') return;
+                            output[seatNumer] = output[seatNumer] || [];
                             angular.forEach(TimelyFilteredEvents.filteredEvents, function(event){
-                                output[seatNumer] = output[seatNumer] || [];
                                 if(event.seats[seatNumer]){
                                     output[seatNumer].push(event);
                                 }
                             });
                         });
+
                         $scope.eventsBySeats = output;
                     });
                 };

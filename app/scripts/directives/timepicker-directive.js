@@ -68,7 +68,7 @@ zedAlphaDirectives
                 var calcHoursArr = this.calcHoursArr = function(){
                     var theDate = new Date(ngModel.$modelValue),
                         dateTimestamp = theDate.getTime(),
-                        placedSelected = false,
+                        placedSelected = $scope.isEntireShift ? true : false,
                         startTimestamp,
                         endTimestamp,
                         diff,
@@ -164,7 +164,6 @@ zedAlphaDirectives
                 $scope.setNewTime = function(time, isEntireShift){
                     if(time){
                         var timeMomemnt = moment(time.time);
-                        console.log(timeMomemnt.date(), timeMomemnt);
                         DateHolder.isEntireShift = false;
                         ngModel.$setViewValue(new Date(time.time));
                         $scope.isEntireShift = false;
@@ -179,7 +178,9 @@ zedAlphaDirectives
 
 
 //                var shiftWatcher = $scope.$watch('shift', calcHoursArr, true);
-//                var minTimeWatcher = $scope.$watch('minTime', calcHoursArr);
+                var minTimeWatcher = $scope.$watch('minTime', function(newVal){
+                    findAndSetSelected();
+                });
 //                var maxtimeWatcher = $scope.$watch('maxTime', calcHoursArr);
 //                var timeRangeWatcher = $scope.$watch('timeRange', calcHoursArr);
 //

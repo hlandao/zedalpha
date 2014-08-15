@@ -22,8 +22,9 @@ zedAlphaFilters
                 var endTimeDiffInMinutes =  endTimeMoment.diff(currentDateMoment, 'minutes');
                 var isStartingAfterCurrentDate = startTimeDiffInMinutes > 0;
                 var isEndingAfterCurrentDate = endTimeDiffInMinutes > 0;
-                var isEditingNow = event.helpers && event.helpers.isEditing;
-                if(isEditingNow || (startTimeDiffInMinutes == 0) || (isStartingAfterCurrentDate &&  startTimeDiffInMinutes < EVENT_TIME_FRAME_IN_MINUTES) || (!isStartingAfterCurrentDate && isEndingAfterCurrentDate)){
+//                var isEditingNow = event.helpers && event.helpers.isEditing;
+//                if(isEditingNow || (startTimeDiffInMinutes == 0) || (isStartingAfterCurrentDate &&  startTimeDiffInMinutes < EVENT_TIME_FRAME_IN_MINUTES) || (!isStartingAfterCurrentDate && isEndingAfterCurrentDate)){
+                if((startTimeDiffInMinutes == 0) || (!isStartingAfterCurrentDate && isEndingAfterCurrentDate)){
                     event.$id = key;
                     filteredEventsArr.push(event);
                 }

@@ -14,19 +14,14 @@ zedAlphaDirectives
             controller : function($scope){
                var justRevertedWhileEditing,
                    eventWatcher,
-                   eventGuestsWatcher;
+                   eventGuestsWatcher,
+                   eventClone;
 
                 var init = function(){
                     justRevertedWhileEditing = false;
                     eventWatcher = $scope.$watch('event', eventWatching,true);
-                    eventGuestsWatcher = $scope.$watch('event.guests', function(newVal){
-                        if(newVal){
-                            var newDuration = EventsDurationForGuestsHolder[newVal];
-                            updateEventTimeWithNewDuration(newDuration);
-                        }
-
-                    })
                     $scope.event.helpers = $scope.event.helpers || {};
+                    eventClone = angular.copy($scope.event);
                 }
 
 
@@ -55,7 +50,7 @@ zedAlphaDirectives
                     },function(output){
                         if(output && output.error){
                             var localizedError = $filter('translate')(output.error);
-                            $log.info('[EventFormDirective] error saving event',output.error);
+                            $log.info('[EventForm] error saving event',output.error);
                             alert(localizedError);
                         }
                     });
@@ -89,34 +84,61 @@ zedAlphaDirectives
 
 
                 $scope.close = function(event){
+                    if(event.$id) revertEventToOriginal();
                     if(!event) return false;
                     delete event.helpers;
                 };
 
+                var revertEventToOriginal = function(){
+                    angular.extend($scope.event, eventClone);
+                }
 
                 var eventWatching = function(newVal, oldVal){
+
+                    var maxDuration;
                     if(justRevertedWhileEditing){
                         justRevertedWhileEditing = false;
                         return;
                     }
+
+                    if(newVal && newVal.startTime !== oldVal.startTime){
+                        var startTimeMoment = moment(newVal.startTime);
+                        var newDuration = moment(oldVal.endTime).diff(moment(oldVal.startTime),'minutes');
+                        maxDuration  = EventsLogic.maxDurationForEventInMinutes(newVal);
+                        newDuration = Math.min(newDuration, maxDuration);
+                        var newEndTimeMoment = startTimeMoment.clone().add(newDuration, 'minutes');
+                        $scope.event.endTime = new Date(newEndTimeMoment.format(FullDateFormat));
+                        justRevertedWhileEditing = true;
+                    }
+
+                    if(newVal && newVal.guests !== oldVal.guests){
+                        var newDuration = EventsLogic.eventDurationForGuestsNumber(newVal.guests);
+                        maxDuration  = EventsLogic.maxDurationForEventInMinutes(newVal);
+                        if(newDuration && newDuration <= maxDuration){
+                            EventsLogic.updateEventDuration(newVal, newDuration);
+                        }else{
+                            alert('Maximum duration for these seats is ' + maxDuration + ' minutes');
+                        }
+                    }
+
+
                     if(newVal){
                         var isInvalid = EventsLogic.isInvalidEventWhileEdit(newVal);
                         if(isInvalid && isInvalid.error){
                             $log.info('[EventForm]: error while edit event', isInvalid.error);
                             var localizedError = $filter('translate')(isInvalid.error);
-                            alert(localizedError);
-                            justRevertedWhileEditing = true;
+
                             newVal.startTime =  oldVal.startTime;
                             newVal.endTime =  oldVal.endTime;
                             newVal.seats =  oldVal.seats;
-                        }else{
-                            if(newVal.guests !== oldVal.guests){
-                                var newDuration = EventsLogic.eventDurationForGuestsNumber(newVal.guests);
-                                if(newDuration) EventsLogic.updateEventDuration(newVal, newDuration);
-                            }
+                            alert(localizedError);
+                            justRevertedWhileEditing = true;
                         }
                     }
+                    $scope.event.helpers.maxDuration = maxDuration || EventsLogic.maxDurationForEventInMinutes(newVal);
+
                 };
+
 
                 $scope.remove = function(event){
                     if(!event || !event.$id) return false;
@@ -135,7 +157,6 @@ zedAlphaDirectives
                         var startTimeMoment = moment($scope.event.startTime);
                         var newEndTimeMoment = startTimeMoment.add(parseInt(newDuration), 'minutes');
                         $scope.event.endTime = new Date(newEndTimeMoment.format(FullDateFormat));
-
                     }
                 }
 
@@ -150,9 +171,10 @@ zedAlphaDirectives
                 });
 
                 $scope.$on('$destroy', function(){
+                    console.log('$destroy');
                     eventWatcher();
-                    eventGuestsWatcher();
                     shiftsWatcher();
+                    eventClone = null;
                 });
 
 
