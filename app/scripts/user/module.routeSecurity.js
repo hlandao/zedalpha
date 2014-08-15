@@ -53,7 +53,7 @@
 
       _logout: function() {
          this._authenticated = false;
-         this._checkCurrent();
+         this._redirect('home');
       },
 
       _error: function() {

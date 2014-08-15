@@ -117,6 +117,7 @@ zedAlphaConfigModule
         "SWITCH_EVENT_WARNING" : "Please finish or cancel events switching before continue",
         "NEW_EVENT_WARNING" : "Please finish or cancel adding new event",
 
+
         "LOADING_TEXT" : "Loading Zed...",
 
         //MAP

@@ -101,6 +101,8 @@ zedAlphaDirectives
                         return;
                     }
 
+
+                    // check start time
                     if(newVal && newVal.startTime !== oldVal.startTime){
                         var startTimeMoment = moment(newVal.startTime);
                         var newDuration = moment(oldVal.endTime).diff(moment(oldVal.startTime),'minutes');
@@ -111,17 +113,30 @@ zedAlphaDirectives
                         justRevertedWhileEditing = true;
                     }
 
+
+                    // check guests
                     if(newVal && newVal.guests !== oldVal.guests){
                         var newDuration = EventsLogic.eventDurationForGuestsNumber(newVal.guests);
                         maxDuration  = EventsLogic.maxDurationForEventInMinutes(newVal);
-                        if(newDuration && newDuration <= maxDuration){
-                            EventsLogic.updateEventDuration(newVal, newDuration);
-                        }else{
+                        console.log('newDuration',newDuration,'maxDuration',maxDuration, typeof newDuration);
+
+                        if(newDuration && newDuration > maxDuration){
                             alert('Maximum duration for these seats is ' + maxDuration + ' minutes');
+                        }else if(newDuration){
+                            EventsLogic.updateEventDuration(newVal, newDuration);
                         }
                     }
 
 
+                    // check guests per 15
+                    if(!EventsLogic.isGuestsPer15Valid(newVal)){
+                        newVal.helpers.guestsPer15Invalid = true;
+                    }else{
+                        newVal.helpers.guestsPer15Invalid = false;
+                    }
+
+
+                    // validate
                     if(newVal){
                         var isInvalid = EventsLogic.isInvalidEventWhileEdit(newVal);
                         if(isInvalid && isInvalid.error){
