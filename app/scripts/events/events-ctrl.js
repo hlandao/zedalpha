@@ -15,7 +15,6 @@ zedAlphaControllers
 
         // --------- New event ----------- //
         $scope.newEventWithSeatsDic = function(occasionalOrDestination, dic, specificStartTime){
-            console.log('newEventWithSeatsDic');
             if($scope.switchMode){
                 var localizedError = $filter('translate')('SWITCH_EVENT_WARNING');
                 alert(localizedError)

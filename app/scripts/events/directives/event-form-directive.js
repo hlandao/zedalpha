@@ -94,7 +94,6 @@ zedAlphaDirectives
                 }
 
                 var eventWatching = function(newVal, oldVal){
-
                     var maxDuration;
                     if(justRevertedWhileEditing){
                         justRevertedWhileEditing = false;
@@ -107,10 +106,12 @@ zedAlphaDirectives
                         var startTimeMoment = moment(newVal.startTime);
                         var newDuration = moment(oldVal.endTime).diff(moment(oldVal.startTime),'minutes');
                         maxDuration  = EventsLogic.maxDurationForEventInMinutes(newVal);
-                        newDuration = Math.min(newDuration, maxDuration);
-                        var newEndTimeMoment = startTimeMoment.clone().add(newDuration, 'minutes');
-                        $scope.event.endTime = new Date(newEndTimeMoment.format(FullDateFormat));
-                        justRevertedWhileEditing = true;
+                        if(maxDuration > 0){
+                            newDuration =  Math.min(newDuration, maxDuration);
+                            var newEndTimeMoment = startTimeMoment.clone().add(newDuration, 'minutes');
+                            $scope.event.endTime = new Date(newEndTimeMoment.format(FullDateFormat));
+                            justRevertedWhileEditing = true;
+                        }
                     }
 
 
@@ -118,8 +119,6 @@ zedAlphaDirectives
                     if(newVal && newVal.guests !== oldVal.guests){
                         var newDuration = EventsLogic.eventDurationForGuestsNumber(newVal.guests);
                         maxDuration  = EventsLogic.maxDurationForEventInMinutes(newVal);
-                        console.log('newDuration',newDuration,'maxDuration',maxDuration, typeof newDuration);
-
                         if(newDuration && newDuration > maxDuration){
                             alert('Maximum duration for these seats is ' + maxDuration + ' minutes');
                         }else if(newDuration){
@@ -134,6 +133,8 @@ zedAlphaDirectives
                     }else{
                         newVal.helpers.guestsPer15Invalid = false;
                     }
+
+                    $scope.event.helpers.maxDuration = maxDuration || EventsLogic.maxDurationForEventInMinutes(newVal);
 
 
                     // validate
@@ -150,7 +151,6 @@ zedAlphaDirectives
                             justRevertedWhileEditing = true;
                         }
                     }
-                    $scope.event.helpers.maxDuration = maxDuration || EventsLogic.maxDurationForEventInMinutes(newVal);
 
                 };
 
