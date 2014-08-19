@@ -121,7 +121,6 @@ zedAlphaServices
         }
 
         ShiftDay.prototype.wasChanged = function(){
-            console.log('this',this);
             if(this.shifts.enableCustom){
                 return this.save();
             }else{
@@ -151,6 +150,10 @@ zedAlphaServices
                     var oldStartTimeMoment, oldEndTimeMoment, oldEndMomentDiff, oldDefaultTimeMoment, oldDefaultTimeDiff;
 
                     for (var i = 0; i < this.shifts.length; ++i){
+                        if(!this.shifts[i].active){
+                            this.shifts.splice(i--,1);
+                            continue;
+                        }
                         oldStartTimeMoment = moment(this.shifts[i].startTime).set('seconds', 0);
                         oldEndTimeMoment = moment(this.shifts[i].endTime).set('seconds', 0);
                         oldEndMomentDiff = oldEndTimeMoment.diff(oldStartTimeMoment, 'minutes');

@@ -8,6 +8,9 @@ zedAlphaServices
 
         var selectDefaultShiftForShiftDay = function(_shiftDay){
             var now = moment(), currentShift, startDateMoment, endDateMoment;
+            if(keepClockAfterChangingDate){
+                now = moment(DateHolder.currentClock);
+            }
             for (var i = 0; i < _shiftDay.shifts.length; ++i){
                 currentShift = _shiftDay.shifts[i];
                 startDateMoment = moment(currentShift.startTime);
@@ -22,7 +25,7 @@ zedAlphaServices
         };
 
 
-
+        var keepClockAfterChangingDate = false;
         $rootScope.$watch(function(){
             return DateHolder.currentDate;
         }, function(newVal, oldVal){
@@ -30,11 +33,20 @@ zedAlphaServices
             // ONLY if the *date* was changed;
             // AND if the date is the next day only and the new *hour* is later than the current latest shift ending time
 
-            DateHolder.currentClock = newVal;
             var newValMoment = moment(newVal),
                 newDayOfYear = newValMoment.dayOfYear(),
                 oldValMoment = moment(oldVal),
-                oldDayOfYear = oldValMoment.dayOfYear();
+                oldDayOfYear = oldValMoment.dayOfYear(),
+                currentClockMoment = moment(DateHolder.currentClock);
+
+            if(currentClockMoment){
+                keepClockAfterChangingDate = true;
+                DateHolder.currentClock = new Date(newValMoment.hour(currentClockMoment.hour()).minutes(currentClockMoment.minutes()).seconds(0).format(FullDateFormat));
+            }else{
+                DateHolder.currentClock = new Date(newVal);
+            }
+
+
             if(!_shift.current || (newDayOfYear != oldDayOfYear &&  ((newDayOfYear-oldDayOfYear) != 1 || checkIfMomentTimeIsLaterThanCurrentEndingTime(newValMoment)))){
                 fetchShiftWithDate(newVal);
             }
@@ -45,8 +57,10 @@ zedAlphaServices
         $rootScope.$watch(function(){
             return _shift.selected;
         },function(newVal){
-            if(newVal){
+            if(newVal && !keepClockAfterChangingDate){
                 DateHolder.currentClock = new Date(newVal.defaultTime || newVal.startTime);
+            }else{
+                keepClockAfterChangingDate = false;
             }
 
         });
@@ -63,12 +77,12 @@ zedAlphaServices
                 thisEndingTimeMoment = moment(_shift.current.shifts[i].endTime);
                 latestEndingTimeMoment = (latestEndingTimeMoment >= thisEndingTimeMoment) ? latestEndingTimeMoment : thisEndingTimeMoment;
             }
-
             return (dateMoment > latestEndingTimeMoment);
         };
 
         var fetchShiftWithDate = function(date){
             _shift.fetchShiftWithDateFromDB(date).then(function(_shiftResponse){
+                console.log('_shiftResponse',_shiftResponse);
                 _shift.current = _shiftResponse;
                 selectDefaultShiftForShiftDay(_shift.current);
             });
@@ -113,8 +127,8 @@ zedAlphaServices
 
         return {
             basicShiftForDayOfWeek : function(date){
-
                 var dayOfWeek = moment(date).day();
+                console.log('date',date,'dayOfWeek',dayOfWeek,'$basic[dayOfWeek]',$basic[dayOfWeek]);
                 var output = new BasicShiftDay(null, $basic[dayOfWeek], date);
                 return output;
             }

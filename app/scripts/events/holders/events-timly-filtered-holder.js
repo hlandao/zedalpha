@@ -18,7 +18,10 @@ zedAlphaServices
                 _holder.filteredEvents = _holder.filteredEventsByShift;
             }else{
                 if(angular.isDate(current)){
-                    _holder.filteredEvents = $filter('eventsByTime')(EventsHolder.$allEvents);
+                    var eventsByTime =  $filter('eventsByTime')(EventsHolder.$allEvents);
+                    _holder.filteredEvents = eventsByTime.filteredEvents;
+                    _holder.upcomingEvents = eventsByTime.upcomingEvents;
+
                 }else{
 
                 }

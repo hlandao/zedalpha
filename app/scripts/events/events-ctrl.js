@@ -140,6 +140,8 @@ zedAlphaControllers
 
         $scope.events = {};
         $scope.deadEvents = {};
+        $scope.upcomingEvents = {};
+
 
         $scope.TimelyFilteredEvents = TimelyFilteredEvents;
         $scope.timepickerStaticOptions = [

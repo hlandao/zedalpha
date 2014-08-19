@@ -80,6 +80,19 @@
                 <td ng-click="clickOnEvent(event)" class="name-col">  <span> {{event.name}} </span> </td>
                 <td ng-click="clickOnEvent(event)"> <span>{{event.seats | seats}}</span> <i class="glyphicon glyphicon-asterisk" style="color:#ffda5c;" ng-show="event.comment || event.contactComment"></i> </td>
             </tr>
+            <tr class="upcoming-events-title" ng-class="{active : upcomingEvents.events.length}">
+                <td colspan="5">
+                    <span> {{"UPCOMING_EVENTS_TITLE" | translate }} </span>
+                </td>
+            </tr>
+            <tr class="upcoming-events-row event-row" ng-repeat="event in (upcomingEvents.events = TimelyFilteredEvents.upcomingEvents | statusesFilter:selectedFilter)" ng-hide="event === editedEvent"  ng-class="{switching : (event === eventToSwitch)}">
+                <td class="status-col"><hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
+                <td ng-click="clickOnEvent(event)" > {{event.startTime | date : 'HH:mm'}} </td>
+                <td ng-click="clickOnEvent(event)" > <span  class="badge">{{event.guests}}</span> </td>
+                <td ng-click="clickOnEvent(event)" class="name-col"> <span> {{event.name}} </span> </td>
+                <td ng-click="clickOnEvent(event)" > <span>{{event.seats | seats}}</span> <i class="glyphicon glyphicon-asterisk" style="color:#ffda5c;" ng-show="event.comment || event.contactComment"></i> </td>
+            </tr>
+
             <tr class="dead-events-title" ng-class="{showed : showDeadEvents}">
                 <td colspan="5">
                     <a href="#" ng-show="!showDeadEvents" ng-click="showDeadEvents = true"> {{"SHOW_DEAD_EVENTS" | translate }} </a>

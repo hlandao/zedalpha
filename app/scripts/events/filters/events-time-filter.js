@@ -10,7 +10,8 @@ zedAlphaFilters
 
             var currentDateMoment = moment(DateHolder.currentClock);
             currentDateMoment.seconds(0);
-            var filteredEventsArr = [];
+            var filteredEvents = [],
+                upcomingEvents = [];
 
             angular.forEach(events, function(event, key){
                 if(!event || key == '$id' || typeof event == "function") return;
@@ -18,19 +19,26 @@ zedAlphaFilters
                 startTimeMoment.seconds(0);
                 var endTimeMoment = moment(event.endTime).seconds(0);
                 endTimeMoment.seconds(0);
+
+                var isStartTimeSameAsCurrent = startTimeMoment.isSame(currentDateMoment,'minute');
+                var isStartingBefore = startTimeMoment.isBefore(currentDateMoment, 'minute');
                 var startTimeDiffInMinutes =  startTimeMoment.diff(currentDateMoment, 'minutes');
-                var endTimeDiffInMinutes =  endTimeMoment.diff(currentDateMoment, 'minutes');
-                var isStartingAfterCurrentDate = startTimeDiffInMinutes > 0;
-                var isEndingAfterCurrentDate = endTimeDiffInMinutes > 0;
-//                var isEditingNow = event.helpers && event.helpers.isEditing;
-//                if(isEditingNow || (startTimeDiffInMinutes == 0) || (isStartingAfterCurrentDate &&  startTimeDiffInMinutes < EVENT_TIME_FRAME_IN_MINUTES) || (!isStartingAfterCurrentDate && isEndingAfterCurrentDate)){
-                if((startTimeDiffInMinutes == 0) || (!isStartingAfterCurrentDate && isEndingAfterCurrentDate)){
+
+                var isEndingAfterCurrentDate = currentDateMoment.isBefore(endTimeMoment, 'minute');
+
+                if(isStartTimeSameAsCurrent || (isStartingBefore && isEndingAfterCurrentDate)){
                     event.$id = key;
-                    filteredEventsArr.push(event);
+                    filteredEvents.push(event);
+                }else if(startTimeDiffInMinutes >= -EVENT_TIME_FRAME_IN_MINUTES && startTimeDiffInMinutes <= EVENT_TIME_FRAME_IN_MINUTES){
+                    event.$id = key;
+                    upcomingEvents.push(event);
                 }
             });
 
-            return filteredEventsArr;
+            return {
+                filteredEvents : filteredEvents,
+                upcomingEvents : upcomingEvents
+            }
         }
     }).filter('eventsByEntireShift', function(){
         return function(events,shift, includeEditingNow){
@@ -74,9 +82,10 @@ zedAlphaFilters
                if(!event || key == '$id' || typeof event == "function") return;
                var startTimeMoment = moment(event.startTime);
                var endTimeMoment = moment(event.endTime);
-               var fromTimeCheck =  fromTime ? startTimeMoment >= fromTimeMoment : true;
-               var toTimeCheck = toTime ? startTimeMoment <= toTimeMoment : true;
+               var fromTimeCheck =  fromTime ? startTimeMoment.diff(fromTimeMoment, 'minutes') >= 0 : true;
+               var toTimeCheck = toTime ? toTimeMoment.diff(startTimeMoment, 'minutes') >= 0 : true;
                var isStartingAtShift = fromTimeCheck && toTimeCheck;
+
                if(isStartingAtShift && event.seats[seatNumber]){
                    event.$id = key;
                    filteredEventsArr.push(event);
@@ -93,12 +102,11 @@ zedAlphaFilters
 
             events = events || EventsHolder.$allEvents;
 
-
-
             filteredEventsArr = [];
 
             angular.forEach(shiftsDay.shifts, function(shift){
                 var moreEvents = $filter('eventsBySeatAndTime')(events, seatNumber, shift.startTime, shift.endTime);
+
                 filteredEventsArr  = filteredEventsArr.concat(moreEvents);
             });
 

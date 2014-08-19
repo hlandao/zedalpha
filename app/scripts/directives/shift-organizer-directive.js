@@ -85,7 +85,6 @@ zedAlphaDirectives
                 var setLeft = function(){
                     var startTimeDiffMinutes = eventStartTimeMoment.diff(shiftStartTimeMoment, 'minutes');
                     var left = startTimeDiffMinutes/shiftLengthInMinutes * scope.hours.length * cellWidth;
-                    console.log('startTimeDiffMinutes',startTimeDiffMinutes,'shiftLengthInMinutes',shiftLengthInMinutes,scope.event.seats,startTimeDiffMinutes/shiftLengthInMinutes,cellWidth);
                     element.css({right : left + 'px'});
                 }
 

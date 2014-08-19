@@ -343,6 +343,9 @@ SeatShape.prototype.setBackgroundColor = function(color){
     this.shape.attr({fill : color});
 };
 
+SeatShape.prototype.setBackgroundColorWithOpacity = function(color, opacity){
+    this.shape.attr({'fill' : color, 'fill-opacity' : opacity});
+};
 
 SeatShape.prototype.getBBox = function(){
     return this.shape.getBBox();
@@ -554,7 +557,8 @@ zedAlphaDirectives
             scope : {
               business : "=",
               businessId : "=",
-              filteredEvents : "="
+              filteredEvents : "=",
+              upcomingEvents : "="
             },
             link: function(scope, elem, attrs) {
                 var container = $("#map"),
@@ -678,6 +682,7 @@ zedAlphaDirectives
 //                        var events = $filter('eventsBySeatAndTime')(null,scope.highlightedShapes[0].seatString(),fromTime,toTime);
                         var events = $filter('eventsBySeatAndShiftsDay')(null,scope.highlightedShapes[0].seatString(),ShiftsDayHolder.current);
 
+
                         var pastEvents = [], nowEvents = [], futureEvents =[];
                         var currentClockTimestampSeconds = Math.floor(new Date(DateHolder.currentClock).getTime()/1000);
                         angular.forEach(events, function(event){
@@ -699,14 +704,12 @@ zedAlphaDirectives
                             return event.startTime;
                         });
 
-                        console.log('scope.highlightedNowEvents',scope.highlightedNowEvents);
                         scope.highlightedFutureEvents = _.sortBy(futureEvents, function(event){
                             return event.startTime;
                         });
 
                         if(!scope.highlightedNowEvents.length && scope.highlightedFutureEvents.length){
                             scope.nextEventInXMinutes = moment(scope.highlightedFutureEvents[0].startTime).diff(moment(DateHolder.currentClock), 'seconds');
-                            console.log('scope.nextEventInXMinutes',scope.nextEventInXMinutes);
                             if(scope.nextEventInXMinutes >  3600 * 6){
                                 scope.nextEventInXMinutes = null;
                             }
@@ -821,23 +824,25 @@ zedAlphaDirectives
 
 
                 var renderMapWithEvents = _.throttle(function(newVal){
-                    events = (newVal && newVal.events) ? newVal.events : events;
-                    var eventsCopy = angular.copy(events);
+                    var filteredEvents = scope.filteredEvents.events,
+                        upcomingEvents = scope.upcomingEvents.events;
+
+
                     if(scope.$parent.newEvent){
-                        eventsCopy.push(scope.$parent.newEvent);
+                        filteredEvents = filteredEvents || [];
+                        filteredEvents.push(scope.$parent.newEvent);
                     }
 
                     setAllShapesToNormal();
                     scope.highlightedShapes = [];
 
-                    if(!eventsCopy || !eventsCopy.length){
+                    if((!filteredEvents || !filteredEvents.length) && (!upcomingEvents || !upcomingEvents.length)){
                         return;
                     }
 
 
-                    var event, color, seatNumber, theShape, seatsWithBackground = {}, highlightedSeats = {};
-                    for(var j = 0; j < eventsCopy.length; ++j){
-                        event = eventsCopy[j];
+                    var event, color, seatNumber, theShape, seatsWithBackground = {},seatsWithUpcomingBackground = {}, highlightedSeats = {}, upcomingHighlightedShapes = {};
+                    angular.forEach(filteredEvents, function(event){
                         color = getEventStatusColor(event.status);
                         for(seatNumber  in  event.seats){
                             seatsWithBackground[seatNumber] = color;
@@ -846,7 +851,15 @@ zedAlphaDirectives
                             }
 
                         }
-                    }
+                    });
+
+                    angular.forEach(upcomingEvents, function(event){
+                        color = getEventStatusColor(event.status);
+                        for(seatNumber  in  event.seats){
+                            if(!seatsWithBackground[seatNumber])
+                                seatsWithUpcomingBackground[seatNumber] = color;
+                        }
+                    });
 
                     for (var i = 0;i < shapes.length; ++i){
                         theShape = shapes[i];
@@ -856,6 +869,10 @@ zedAlphaDirectives
                             color = seatsWithBackground[seatNumber];
                             if(color){
                                 theShape.setBackgroundColor(color);
+                            }
+                            color = seatsWithUpcomingBackground[seatNumber];
+                            if(color){
+                                theShape.setBackgroundColorWithOpacity(color, 0.4);
                             }
                             if(highlightedSeats[seatNumber]){
                                 theShape.highlight();
@@ -867,7 +884,7 @@ zedAlphaDirectives
 
                     hideSeatMenu();
 
-                },10,{trailing : true});
+                },5,{trailing : true});
 
 
 
@@ -876,7 +893,8 @@ zedAlphaDirectives
                     $mapRef.$off('loaded');
                     if($mapRef.$value){
                         renderMapJson($mapRef.$value);
-                        filteredEventsWatcher = scope.$watch('filteredEvents', renderMapWithEvents,true);
+                        filteredEventsWatcher = scope.$watch('filteredEvents.events', renderMapWithEvents,true);
+                        upcomingEventsWatcher = scope.$watch('upcomingEvents.events', renderMapWithEvents,true);
 
                     }
                 });

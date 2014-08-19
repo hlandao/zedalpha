@@ -88,6 +88,7 @@ zedAlphaConfigModule
         "DEAD_EVENTS" : "Dead Events",
         "SHOW_DEAD_EVENTS" : "Show Dead Events",
         "HIDE_DEAD_EVENTS" : "Hide Dead Events",
+        "UPCOMING_EVENTS_TITLE" : "Upcoming Events",
         "TO" : 'To',
         "MIN" : 'min',
         "NOW" : "Now",
@@ -222,6 +223,7 @@ zedAlphaConfigModule
                 "DEAD_EVENTS" : "ארועים שהסתיימו",
                 "SHOW_DEAD_EVENTS" : "הצג ארועים שהסתיימו",
                 "HIDE_DEAD_EVENTS" : "הסתר ארועים שהסתיימו",
+                "UPCOMING_EVENTS_TITLE" : "ארועים קרובים",
 
                 "TO" : 'עד',
                 "MIN" : 'דקות',
