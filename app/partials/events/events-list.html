@@ -85,7 +85,7 @@
                     <span> {{"UPCOMING_EVENTS_TITLE" | translate }} </span>
                 </td>
             </tr>
-            <tr class="upcoming-events-row event-row" ng-repeat="event in (upcomingEvents.events = TimelyFilteredEvents.upcomingEvents | statusesFilter:selectedFilter)" ng-hide="event === editedEvent"  ng-class="{switching : (event === eventToSwitch)}">
+            <tr class="upcoming-events-row event-row" ng-repeat="event in (upcomingEvents.events = TimelyFilteredEvents.upcomingEvents | statusesFilter:selectedFilter | filter : {name : query} | orderBy : 'startTime')" ng-hide="event === editedEvent"  ng-class="{switching : (event === eventToSwitch)}">
                 <td class="status-col"><hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
                 <td ng-click="clickOnEvent(event)" > {{event.startTime | date : 'HH:mm'}} </td>
                 <td ng-click="clickOnEvent(event)" > <span  class="badge">{{event.guests}}</span> </td>
