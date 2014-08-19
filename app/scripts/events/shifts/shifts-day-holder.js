@@ -17,6 +17,7 @@ zedAlphaServices
                 }
             }
 
+
             _shift.selected = AllDayShift();
         };
 
@@ -29,6 +30,7 @@ zedAlphaServices
             // ONLY if the *date* was changed;
             // AND if the date is the next day only and the new *hour* is later than the current latest shift ending time
 
+            DateHolder.currentClock = newVal;
             var newValMoment = moment(newVal),
                 newDayOfYear = newValMoment.dayOfYear(),
                 oldValMoment = moment(oldVal),
@@ -43,7 +45,10 @@ zedAlphaServices
         $rootScope.$watch(function(){
             return _shift.selected;
         },function(newVal){
-            if(newVal) DateHolder.currentClock = new Date(newVal.defaultTime || newVal.startTime);
+            if(newVal){
+                DateHolder.currentClock = new Date(newVal.defaultTime || newVal.startTime);
+            }
+
         });
 
 

@@ -678,16 +678,50 @@ zedAlphaDirectives
 //                        var events = $filter('eventsBySeatAndTime')(null,scope.highlightedShapes[0].seatString(),fromTime,toTime);
                         var events = $filter('eventsBySeatAndShiftsDay')(null,scope.highlightedShapes[0].seatString(),ShiftsDayHolder.current);
 
-                        scope.highlightedEvents = _.sortBy(events, function(event){
+                        var pastEvents = [], nowEvents = [], futureEvents =[];
+                        var currentClockTimestampSeconds = Math.floor(new Date(DateHolder.currentClock).getTime()/1000);
+                        angular.forEach(events, function(event){
+                            var startTimestampSeconds = Math.floor(new Date(event.startTime).getTime() / 1000);
+                            var endTimestampSeconds = Math.floor(new Date(event.endTime).getTime()/1000);
+
+                            if(startTimestampSeconds < currentClockTimestampSeconds && endTimestampSeconds <= currentClockTimestampSeconds){
+                                if(pastEvents.indexOf(event) == -1)pastEvents.push(event);
+                            } else if (startTimestampSeconds == currentClockTimestampSeconds || (startTimestampSeconds < currentClockTimestampSeconds && endTimestampSeconds > currentClockTimestampSeconds)){
+                                if(nowEvents.indexOf(event) == -1) nowEvents.push(event);
+                            }else{
+                                if(futureEvents.indexOf(event) == -1) futureEvents.push(event);
+                            }
+                        });
+                        scope.highlightedPastEvents = _.sortBy(pastEvents, function(event){
                             return event.startTime;
                         });
+                        scope.highlightedNowEvents = _.sortBy(nowEvents, function(event){
+                            return event.startTime;
+                        });
+
+                        console.log('scope.highlightedNowEvents',scope.highlightedNowEvents);
+                        scope.highlightedFutureEvents = _.sortBy(futureEvents, function(event){
+                            return event.startTime;
+                        });
+
+                        if(!scope.highlightedNowEvents.length && scope.highlightedFutureEvents.length){
+                            scope.nextEventInXMinutes = moment(scope.highlightedFutureEvents[0].startTime).diff(moment(DateHolder.currentClock), 'seconds');
+                            console.log('scope.nextEventInXMinutes',scope.nextEventInXMinutes);
+                            if(scope.nextEventInXMinutes >  3600 * 6){
+                                scope.nextEventInXMinutes = null;
+                            }
+                        }
+
                     }else{
                         emptyEventsForHighlightedShapes();
                     }
                 }
 
                 var emptyEventsForHighlightedShapes = function(){
-                    scope.highlightedEvents = null;
+                    scope.highlightedPastEvents = null;
+                    scope.highlightedNowEvents = null;
+                    scope.highlightedFutureEvents = null;
+                    scope.nextEventInXMinutes = null;
                 }
 
 

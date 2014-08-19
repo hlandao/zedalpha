@@ -122,7 +122,12 @@ zedAlphaConfigModule
 
         //MAP
         "ADD_DESTINATION_BUTTON" : "New Reservation",
-        "ADD_OCCASIONAL_BUTTON" : "Add Walkin"
+        "ADD_OCCASIONAL_BUTTON" : "Add Walkin",
+        "PAST_EVENTS" : "Past Reservations",
+        "NOW_EVENTS" : "Current Reservations",
+        "FUTURE_EVENTS" : "Upcoming Reservations",
+        "NEXT_EVENT" : "Next Reservation in"
+
 
     });
 
@@ -241,7 +246,12 @@ zedAlphaConfigModule
                 "LOADING_TEXT" : "טוען...",
                 //MAP
                 "ADD_DESTINATION_BUTTON" : "הזמנה חדשה",
-                "ADD_OCCASIONAL_BUTTON" : "הוסף מזדמן"
+                "ADD_OCCASIONAL_BUTTON" : "הוסף מזדמן",
+                "PAST_EVENTS" : "הזמנות בעבר",
+                "NOW_EVENTS" : "הזמנות כעת",
+                "FUTURE_EVENTS" : "הזמנות עתידיות",
+                "NEXT_EVENT" : "ההזמנה הקרובה בעוד"
+
 
             }
         );
