@@ -2,7 +2,7 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory('ShiftsDayHolder', function($rootScope, DateHolder, BusinessHolder, BasicShift, ShiftDay, FullDateFormat,AllDayShift, $q){
+    .factory('ShiftsDayHolder', function($rootScope, DateHolder, BusinessHolder, BasicShift, ShiftDay, FullDateFormat,AllDayShift, $q, $log){
         var _shift = {};
         var $shiftsDays;
 
@@ -33,6 +33,7 @@ zedAlphaServices
             // ONLY if the *date* was changed;
             // AND if the date is the next day only and the new *hour* is later than the current latest shift ending time
 
+            $log.info('[ShiftsDayHolder] currentDate was changed to ', moment(newVal).format(FullDateFormat));
             var newValMoment = moment(newVal),
                 newDayOfYear = newValMoment.dayOfYear(),
                 oldValMoment = moment(oldVal),
@@ -42,7 +43,9 @@ zedAlphaServices
             if(currentClockMoment){
                 keepClockAfterChangingDate = true;
                 DateHolder.currentClock = new Date(newValMoment.hour(currentClockMoment.hour()).minutes(currentClockMoment.minutes()).seconds(0).format(FullDateFormat));
+                $log.info('[ShiftsDayHolder] changing currentClock  to ', moment(DateHolder.currentClock).format(FullDateFormat));
             }else{
+                $log.info('[ShiftsDayHolder] changing currentClock  to ', moment(newVal).format(FullDateFormat));
                 DateHolder.currentClock = new Date(newVal);
             }
 
@@ -58,7 +61,10 @@ zedAlphaServices
             return _shift.selected;
         },function(newVal){
             if(newVal && !keepClockAfterChangingDate){
+                console.log('here : ',newVal);
                 DateHolder.currentClock = new Date(newVal.defaultTime || newVal.startTime);
+                $log.info('[ShiftsDayHolder] changing currentClock after _shift.selected change to ', moment(DateHolder.currentClock).format(FullDateFormat));
+
             }else{
                 keepClockAfterChangingDate = false;
             }

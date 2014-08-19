@@ -142,7 +142,7 @@ zedAlphaConfigModule
                 "REGISTER": "הרשמה",
                 "LOGIN" : ' התחבר',
                 "ALREADY_REGISTERED_LABEL": "משתמש רשום? לחץ כאן",
-                "YOUR_BUSINESSES": "העסק שלך",
+                "YOUR_BUSINESSES": "העסקים שלי",
                 "ADD_NEW_BUSINESS": "הוספת עסק חדש",
                 "ADD_NEW_BUSINESS_LABEL": "add new business",
                 "BUSINESS_NAME": "שם העסק",

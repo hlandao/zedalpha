@@ -118,7 +118,7 @@ function SeatShape(paper, options){
     this.defaultY = 100;
     this.normalFillColor = "#eee";
     this.normalStrokeColor = "#ddd";
-    this.normalStateAttrs = {'fill' : this.normalFillColor, 'stroke-width' : 1, stroke : '#ddd'};
+    this.normalStateAttrs = {'fill' : this.normalFillColor, 'fill-opacity' : 1.0, 'stroke-width' : 1, stroke : '#ddd'};
     this.textColor = "#E87352";
     this.highlightFillColor = "#31C0BE";
     this.highlightStrokeColor = "#31C0BE";
@@ -680,18 +680,19 @@ zedAlphaDirectives
 //                        var toTime = moment(DateHolder.currentDate).hour(23).minute(59);
 //
 //                        var events = $filter('eventsBySeatAndTime')(null,scope.highlightedShapes[0].seatString(),fromTime,toTime);
+                        console.log('scope.highlightedShapes[0].seatString()',scope.highlightedShapes[0].seatString());
                         var events = $filter('eventsBySeatAndShiftsDay')(null,scope.highlightedShapes[0].seatString(),ShiftsDayHolder.current);
 
 
                         var pastEvents = [], nowEvents = [], futureEvents =[];
-                        var currentClockTimestampSeconds = Math.floor(new Date(DateHolder.currentClock).getTime()/1000);
+                        var currentClockMoment = moment(DateHolder.currentClock);
                         angular.forEach(events, function(event){
-                            var startTimestampSeconds = Math.floor(new Date(event.startTime).getTime() / 1000);
-                            var endTimestampSeconds = Math.floor(new Date(event.endTime).getTime()/1000);
+                            var startTimeMoment = moment(event.startTime);
+                            var endTimeMoment = moment(event.endTime);
 
-                            if(startTimestampSeconds < currentClockTimestampSeconds && endTimestampSeconds <= currentClockTimestampSeconds){
+                            if(startTimeMoment.isBefore(currentClockMoment, 'minutes') && (endTimeMoment.isBefore(currentClockMoment, 'minutes') || endTimeMoment.isSame(currentClockMoment, 'minutes'))){
                                 if(pastEvents.indexOf(event) == -1)pastEvents.push(event);
-                            } else if (startTimestampSeconds == currentClockTimestampSeconds || (startTimestampSeconds < currentClockTimestampSeconds && endTimestampSeconds > currentClockTimestampSeconds)){
+                            } else if (startTimeMoment.isSame(currentClockMoment, 'minutes') || (startTimeMoment.isBefore(currentClockMoment, 'minutes') && endTimeMoment.isAfter(currentClockMoment, 'minutes'))){
                                 if(nowEvents.indexOf(event) == -1) nowEvents.push(event);
                             }else{
                                 if(futureEvents.indexOf(event) == -1) futureEvents.push(event);
@@ -856,8 +857,7 @@ zedAlphaDirectives
                     angular.forEach(upcomingEvents, function(event){
                         color = getEventStatusColor(event.status);
                         for(seatNumber  in  event.seats){
-                            if(!seatsWithBackground[seatNumber])
-                                seatsWithUpcomingBackground[seatNumber] = color;
+                            if(!seatsWithBackground[seatNumber]) seatsWithUpcomingBackground[seatNumber] = color;
                         }
                     });
 

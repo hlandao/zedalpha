@@ -10,6 +10,9 @@
         <li><a ui-sref="business.eventsStatuses({businessId : business.$id})"> <i class="fa fa-dashboard"></i><span>{{'EDIT_EVENTS_STATUSES'| translate }}</span> </a></li>
         <li><a ui-sref="business.eventsDuration({businessId : business.$id})"> <i class="fa fa-dashboard"></i><span>{{'EDIT_EVENTS_DURATION'| translate }}</span> </a></li>
         <li><a ui-sref="events.show({businessId : business.$id})"> <i class="fa fa-dashboard"></i><span>{{'EVENTS_MANAGEMENT'| translate }}</span> </a></li>
+        <li><a ui-sref="dashboard"> <i class="fa fa-dashboard"></i><span>{{'YOUR_BUSINESSES'| translate }}</span> </a></li>
+        <li><a href="#" ng-click="logout()"> <span>{{'LOGOUT'| translate }}</span> </a></li>
+
     </ul>
 </div>
 

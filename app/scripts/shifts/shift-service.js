@@ -140,7 +140,7 @@ zedAlphaServices
                 if(date){
                     var newStartTimeMoment = moment(date),
                         newEndTimeMoment,
-                        newDefaultTimeMoment,
+                        newDefaultTimeMoment =  moment(date),
                         oldStartTimeMoment,
                         oldEndTimeMoment,
                         oldDefaultTimeMoment;
@@ -162,7 +162,8 @@ zedAlphaServices
 
                         newStartTimeMoment.hour(oldStartTimeMoment.hour()).minute(oldStartTimeMoment.minute());
                         newEndTimeMoment = newStartTimeMoment.clone().add(oldEndMomentDiff, 'minutes');
-                        newDefaultTimeMoment = newStartTimeMoment.clone().add(oldDefaultTimeDiff, 'minutes');;
+
+                        newDefaultTimeMoment.hour(oldDefaultTimeMoment.hour()).minute(oldDefaultTimeMoment.minute());
 
 
                         this.shifts[i].startTime = newStartTimeMoment.format(FullDateFormat);
