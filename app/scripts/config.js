@@ -15,7 +15,7 @@ var zedAlphaConfigModule = zedAlphaConfigModule || angular.module('zedalpha.conf
     .constant('FBURL', 'https://zed2alpha.firebaseio.com')
 
     // Loggly key
-        .constant('LOGGLY_KEY', '7bec49fa-7dc7-45a5-b7fb-d5137c2cca9a')
+    .constant('LOGGLY_KEY', '7bec49fa-7dc7-45a5-b7fb-d5137c2cca9a')
 
 
 //you can use this one to try out a demo of the seed
