@@ -93,7 +93,7 @@ zedAlphaDirectives
                     angular.extend($scope.event, eventClone);
                 }
 
-                var eventWatching = function(newVal, oldVal){
+                var eventWatching = _.throttle(function(newVal, oldVal){
                     var maxDuration;
                     if(justRevertedWhileEditing){
                         justRevertedWhileEditing = false;
@@ -102,12 +102,13 @@ zedAlphaDirectives
 
 
                     // check start time
-                    if(newVal && newVal.startTime !== oldVal.startTime){
+                    if(newVal && newVal.startTime != oldVal.startTime){
                         var startTimeMoment = moment(newVal.startTime);
                         var newDuration = moment(oldVal.endTime).diff(moment(oldVal.startTime),'minutes');
+
                         maxDuration  = EventsLogic.maxDurationForEventInMinutes(newVal);
-                        if(maxDuration > 0){
-                            newDuration =  Math.min(newDuration, maxDuration);
+                        if(maxDuration == -1 || maxDuration > 0){
+                            if(maxDuration != -1) newDuration =  Math.min(newDuration, maxDuration);
                             var newEndTimeMoment = startTimeMoment.clone().add(newDuration, 'minutes');
                             $scope.event.endTime = new Date(newEndTimeMoment.format(FullDateFormat));
                             justRevertedWhileEditing = true;
@@ -119,7 +120,7 @@ zedAlphaDirectives
                     if(newVal && newVal.guests !== oldVal.guests){
                         var newDuration = EventsLogic.eventDurationForGuestsNumber(newVal.guests);
                         maxDuration  = EventsLogic.maxDurationForEventInMinutes(newVal);
-                        if(newDuration && newDuration > maxDuration){
+                        if(newDuration && maxDuration > -1 && newDuration > maxDuration){
                             alert('Maximum duration for these seats is ' + maxDuration + ' minutes');
                         }else if(newDuration){
                             EventsLogic.updateEventDuration(newVal, newDuration);
@@ -152,7 +153,8 @@ zedAlphaDirectives
                         }
                     }
 
-                };
+                    console.log('justRevertedWhileEditing',justRevertedWhileEditing);
+                },10);
 
 
                 $scope.remove = function(event){

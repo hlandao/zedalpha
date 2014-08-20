@@ -59,6 +59,7 @@ zedAlphaServices
         var checkSeats = function(event){
             var defer = $q.defer();
 
+
             if(isEventWithNoSeats(event) && (BusinessHolder.businessType != 'Bar' || !event.isOccasional)){
                 defer.reject({error : "ERROR_EVENT_MSG_SEATS"});
             }else{
@@ -406,12 +407,11 @@ zedAlphaServices
             var e2EndTimeMoment = moment(e2.endTime);
 
             var e2StartTimeDiffEventToCheckStartTime = e2StartTimeMoment.diff(eventToCheckStartTimeMoment, 'minutes');
-            var e2EndTimeDiffEventToCheckStartTime = e2EndTimeMoment.diff(eventToCheckStartTimeMoment, 'minutes');
 
             if(e2StartTimeDiffEventToCheckStartTime > 0){
                 // the event_to_check start before e2 begins
                 return e2StartTimeDiffEventToCheckStartTime;
-            }else if (e2EndTimeDiffEventToCheckStartTime < 0){
+            }else if (eventToCheckStartTimeMoment.isAfter(e2EndTimeMoment,'minutes') || eventToCheckStartTimeMoment.isSame(e2EndTimeMoment,'minutes')){
                 // the event_to_check start after e2 ends
                 return -1;
             }else{
@@ -460,7 +460,7 @@ zedAlphaServices
         var updateEventDuration = function(event, duration){
             if(!duration) return;
             var startTimeMoment = moment(event.startTime);
-            return event.endTime = startTimeMoment.add(duration, 'minutes').format(FullDateFormat);
+            return event.endTime = new Date(startTimeMoment.add(duration, 'minutes').format(FullDateFormat));
 
         };
 
