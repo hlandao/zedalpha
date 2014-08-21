@@ -2,7 +2,7 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory('BusinessHolder', function($rootScope, $q, Business, $q, $log){
+    .factory('BusinessHolder', function($rootScope, Business, $q, $log){
         var _oldBusinessId;
         var _businessHolder = {
 

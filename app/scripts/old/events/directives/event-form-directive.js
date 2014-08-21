@@ -26,7 +26,7 @@ zedAlphaDirectives
 
 
 
-               $scope.isNew = function(){
+               $scope.$isNew = function(){
                    return !$scope.event.$id;
                }
 

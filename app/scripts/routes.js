@@ -1,35 +1,20 @@
 //"use strict";
-var ISDEBUG = false;
 angular.module('zedalpha.routes', [])
 
     // configure views; the authRequired parameter is used for specifying pages
     // which should only be available while logged in
     .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
 
-        if(ISDEBUG){
-            var userHolderResolver = function(){
-                return true
-            };
+        var userHolderResolver = function(UserHolder){
+            return UserHolder.promise();
+        };
 
-            var businessResolver = function(){
-                return true;
-            };
-
-        }else{
-            var userHolderResolver = function(UserHolder){
-                return UserHolder.promise();
-            };
-
-            var businessResolver = function(UserHolder, BusinessHolder, $stateParams, $q){
-                var defer = $q.defer();
-                return UserHolder.promise().then(function(){
-                    return BusinessHolder.init($stateParams.businessId).then(function(){
-                        defer.resolve();
-                    });
+        var businessResolver = function(UserHolder, BusinessHolder, $stateParams, $q){
+            return UserHolder.promise().then(function(){
+                return BusinessHolder.init($stateParams.businessId).then(function(){
                 });
-                return defer.promise;
-            };
-        }
+            });
+        };
 
 
 
