@@ -39,16 +39,17 @@ zedAlphaServices
             }
         }
     })
-    .factory('ShiftsDay', function($firebaseObject, ShiftsDayPrototypeHelpers){
+    .factory('ShiftsDay', function($FirebaseObject, ShiftsDayPrototypeHelpers){
 
 
         var initShift = function(shift){
             shift.startTime = moment(shift.startTime);
+            shift.defaultTime = moment(shift.defaultTime);
             shift.duration = parseInt(shift.duration);
         };
 
         function ShiftsDay(firebase, destroyFunction, readyPromise){
-            $firebaseObject.call(this, $firebase, destroyFunction, readyPromise);
+            $FirebaseObject.call(this, firebase, destroyFunction, readyPromise);
             this.$init();
             angular.extend(this, ShiftsDayPrototypeHelpers)
         };
@@ -148,7 +149,7 @@ zedAlphaServices
             cloned.date = date.clone();
             cloned.basic = false;
             angular.forEach(cloned.shifts, function(shift){
-                shift.startTime = shift.startTime.dayOfYear(date.dayOfYear());
+                shift.startTime = moment(shift.startTime).dayOfYear(date.dayOfYear());
             });
             return cloned;
         }
@@ -228,16 +229,21 @@ zedAlphaServices
         }
 
         EditableShiftsDay.$disable = function(){
-            self.shiftsDay = null;
-            self.shiftsDay.$inst().$set();
-            self.shiftsDay.$destroy();
-            self.readOnlyCopy = ReadOnlyShiftsDayGenerator.byDate(self.date);
-            self.isEnabled = false;
+            this.shiftsDay = null;
+            this.shiftsDay.$inst().$set();
+            this.shiftsDay.$destroy();
+            this.readOnlyCopy = ReadOnlyShiftsDayGenerator.byDate(this.date);
+            this.isEnabled = false;
         }
 
         EditableShiftsDay.$destroy = function(){
-            self.shiftsDay.$destroy();
+            this.shiftsDay.$destroy();
         }
+
+        EditableShiftsDay.$save = function(){
+            return this.shiftsDay.$save();
+        }
+
 
 
         return EditableShiftsDay;

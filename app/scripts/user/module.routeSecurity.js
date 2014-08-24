@@ -73,16 +73,16 @@
           if(toState.abstract) return;
          if (toState.authRequired && !this._authenticated){
             if (toState.name === undefined) {
-               this._redirectTo = 'dashboard.main';
+               this._redirectTo = 'main';
             } else {
                this._redirectTo = toState.name;
             }
              if(e) e.preventDefault();
              return this._redirect(_loginPath);
          }
-         else if( this._authenticated && this.toState && this.toState.name === this._loginPath ) {
+         else if( this._authenticated && toState && toState.name === this._loginPath ) {
              if(e) e.preventDefault();
-             return this._redirect('dashboard.main');
+             return this._redirect('dashboard');
          }
 
       }

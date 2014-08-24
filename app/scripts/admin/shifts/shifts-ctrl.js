@@ -4,7 +4,7 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('ShiftCtrl', function($scope){
+    .controller('ShiftsCtrl', function($scope){
         $scope.nextWeek = function(){
             $scope.weekNumber = moment().week($scope.weekNumber).add('weeks',1).week();
         };

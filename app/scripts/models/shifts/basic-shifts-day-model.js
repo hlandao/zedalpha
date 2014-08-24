@@ -5,6 +5,13 @@ zedAlphaServices
 
     .service("BasicShiftsDayGenerator", function(BusinessHolder, ShiftsDayObject,ShiftsDay, ReadOnlyShiftsDayGenerator){
 
+    var initShift = function(shift){
+        console.log('shift',shift);
+        shift.startTime = moment(shift.startTime);
+        shift.defaultTime = moment(shift.defaultTime);
+        shift.duration = parseInt(shift.duration);
+    };
+
     this.rawObjectByDate = function(dayOfWeek){
         var ref = BusinessHolder.business.$inst().$ref().child('shifts/basic').child(dayOfWeek);
         return ShiftsDayObject(ref);
@@ -18,6 +25,8 @@ zedAlphaServices
                 readOnlyShiftForDate.date = null;
                 basicShiftsDay.$inst().$set(readOnlyShiftForDate);
             }
+
+            angular.forEach(basicShiftsDay.shifts, initShift);
 
             return basicShiftsDay;
         });

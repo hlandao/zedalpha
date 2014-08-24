@@ -1,4 +1,4 @@
-<div class="container-fluid" ng-controller="ShiftCtrl">
+<div class="container-fluid" ng-controller="ShiftsCtrl">
     <div class="row">
         <div class="col-xs-12">
             <h2> Edit Shifts for {{business.name}}</h2>
@@ -10,7 +10,7 @@
         <div class="col-lg-12">
             <tabset>
                 <tab heading="Basic Shifts">
-                    <shifts-editor week="basic" business-id="{{businessId}}"></shifts-editor>
+                    <shifts-editor week="basic" business-id="{{business.$id}}"></shifts-editor>
                 </tab>
                 <tab heading="Shifts by Date">
                     <div class="row">
@@ -20,7 +20,7 @@
                             <button class="btn btn-default" ng-click="nextWeek()"> >> </button>
                         </div>
                     </div>
-                    <shifts-editor week="{{weekNumber}}" business-id="{{businessId}}"></shifts-editor>
+                    <shifts-editor week="{{weekNumber}}" business-id="{{business.$id}}"></shifts-editor>
                 </tab>
             </tabset>
         </div>

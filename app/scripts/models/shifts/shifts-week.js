@@ -2,19 +2,23 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory('ShiftsWeek', function (EditableShiftsDay, BasicShiftsDayGenerator, $q) {
+    .factory('ShiftsWeek', function (EditableShiftsDay, BasicShiftsDayGenerator) {
         function ShiftsWeek(weekNumber) {
+            var self = this;
             this.days = [];
             if (weekNumber != 'basic') {
                 var dateMoment = moment().week(weekNumber).day(0).seconds(0);
                 for (var i = 0; i < 7; ++i) {
-                    this.days.push(EditableShiftsDay.byDate(dateMoment));
+                    this.days.push(new EditableShiftsDay(dateMoment));
                     dateMoment.add('days', 1);
                 }
 
             } else {
                 for (var i = 0; i < 7; ++i) {
-                    this.days.push(BasicShiftsDayGenerator.byDate(i));
+                    BasicShiftsDayGenerator.byDate(i).then(function(_day){
+                        self.days.push(_day);
+                    });
+
                 }
             }
 

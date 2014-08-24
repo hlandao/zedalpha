@@ -19,8 +19,8 @@
                         </strong>
                     </div>
                     <table class="table">
-                        <tr ng-repeat="(businessId, business) in businesses">
-                            <td> <a ui-sref="business.show({businessId : businessId})"> {{business.name}}</a> </td>
+                        <tr ng-repeat="business in businesses">
+                            <td> <a ui-sref="business.show({businessId : business.$id})"> {{business.name}}</a> </td>
                             <td> <button class="btn btn-primary"> {{ 'EDIT' | translate }}</button> </td>
                         </tr>
                         <tr>

@@ -54,7 +54,7 @@
     <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="bower_components/firebase/firebase.js"></script>
     <script src="bower_components/firebase-simple-login/firebase-simple-login.js"></script>
-    <script src="bower_components/angularfire/angularfire.js"></script>
+    <script src="bower_components/angularfire/dist/angularfire.min.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/angular-translate/angular-translate.js"></script>
     <script src="bower_components/fabric/dist/fabric.min.js"></script>
@@ -67,6 +67,7 @@
     <script src="bower_components/jquery.slimscroll/jquery.slimscroll.js"></script>
     <script src="bower_components/raphael/raphael.js"></script>
     <script src="bower_components/raphael.free_transform/raphael.free_transform.js"></script>
+    <script src="bower_components/pickadate/lib/picker.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -86,77 +87,78 @@
     <script src="scripts/zedalpha.js"></script>
 
     <!-- USER -->
-    <script src="scripts/user/user-service.js"></script>
+    <script src="scripts/user/user-model.js"></script>
     <script src="scripts/user/login-ctrl.js"></script>
     <script src="scripts/user/module.routeSecurity.js"></script>
     <script src="scripts/user/module.waitForAuth.js"></script>
     <script src="scripts/user/login-service.js"></script>
-    <!-- Business -->
-    <script src="scripts/business/businesses-ctrl.js"></script>
-    <script src="scripts/business/business-service.js"></script>
-    <script src="scripts/business/business-ctrl.js"></script>
-    <script src="scripts/business/business-nav-ctrl.js"></script>
-    <script src="scripts/business/business-events-duration-ctrl.js"></script>
-    <!-- Map -->
-    <script src="scripts/map/map-editor-directive.js"></script>
+    <!-- Models -->
+    <script src="scripts/models/business/business-model.js"></script>
+    <script src="scripts/models/business/business-meta-data-model.js"></script>
+    <script src="scripts/models/shifts/shifts-week.js"></script>
+    <script src="scripts/models/shifts/shifts-day-model.js"></script>
+    <script src="scripts/models/shifts/basic-shifts-day-model.js"></script>
+    <!-- Admin -->
+    <script src="scripts/admin/controllers/businesses-ctrl.js"></script>
+    <script src="scripts/admin/controllers/business-ctrl.js"></script>
+    <script src="scripts/admin/controllers/business-nav-ctrl.js"></script>
+    <script src="scripts/admin/controllers/business-events-duration-ctrl.js"></script>
+    <script src="scripts/admin/controllers/business-events-statuses-ctrl.js"></script>
+    <script src="scripts/admin/controllers/business-events-duration-ctrl.js"></script>
 
-    <!-- Events statuses -->
-    <script src="scripts/events-statuses/events-statuses-ctrl.js"></script>
-    <!-- shifts -->
-    <script src="scripts/shifts/shift-ctrl.js"></script>
-    <script src="scripts/shifts/shift-filters.js"></script>
-    <script src="scripts/shifts/shift-service.js"></script>
-    <script src="scripts/shifts/shifts-service.js"></script>
-    <script src="scripts/shifts/shifts-editor.js"></script>
+    <!-- Shifts -->
+    <script src="scripts/admin/shifts/shifts-ctrl.js"></script>
+    <script src="scripts/admin/shifts/shifts-editor.js"></script>
     <!-- Events -->
-    <script src="scripts/events/events-ctrl.js"></script>
-    <script src="scripts/events/events-navigation-ctrl.js"></script>
-    <script src="scripts/events/shifts/shift-selector-ctrl.js"></script>
-    <script src="scripts/events/event.js"></script>
-    <script src="scripts/events/events-logic.js"></script>
+    <!--<script src="scripts/events/events-ctrl.js"></script>-->
+    <!--<script src="scripts/events/events-navigation-ctrl.js"></script>-->
+    <!--<script src="scripts/events/shifts/shift-selector-ctrl.js"></script>-->
+    <!--<script src="scripts/events/event.js"></script>-->
+    <!--<script src="scripts/events/events-logic.js"></script>-->
 
 
-    <script src="scripts/events/holders/events-holder.js"></script>
-    <script src="scripts/events/shifts/shifts-day-holder.js"></script>
-    <script src="scripts/events/holders/events-statuses-holder.js"></script>
-    <script src="scripts/events/holders/events-duration-holder.js"></script>
-    <script src="scripts/events/holders/events-timly-filtered-holder.js"></script>
-    <script src="scripts/events/holders/events-guests-per-15-holder.js"></script>
-    <script src="scripts/events/holders/events-date-holder.js"></script>
-    <script src="scripts/events/holders/events-seats-holder.js"></script>
+    <!--<script src="scripts/events/holders/events-holder.js"></script>-->
+    <!--<script src="scripts/events/shifts/shifts-day-holder.js"></script>-->
+    <!--<script src="scripts/events/holders/events-statuses-holder.js"></script>-->
+    <!--<script src="scripts/events/holders/events-duration-holder.js"></script>-->
+    <!--<script src="scripts/events/holders/events-timly-filtered-holder.js"></script>-->
+    <!--<script src="scripts/events/holders/events-guests-per-15-holder.js"></script>-->
+    <!--<script src="scripts/events/holders/events-date-holder.js"></script>-->
+    <!--<script src="scripts/events/holders/events-seats-holder.js"></script>-->
 
 
-    <script src="scripts/events/directives/event-form-directive.js"></script>
-    <script src="scripts/events/directives/event-duration-directive.js"></script>
-    <script src="scripts/events/directives/status-selector-directive.js"></script>
-    <script src="scripts/directives/shift-organizer-directive.js"></script>
+    <!--<script src="scripts/events/directives/event-form-directive.js"></script>-->
+    <!--<script src="scripts/events/directives/event-duration-directive.js"></script>-->
+    <!--<script src="scripts/events/directives/status-selector-directive.js"></script>-->
+    <!--<script src="scripts/directives/shift-organizer-directive.js"></script>-->
 
 
-    <script src="scripts/events/filters/events-statuses-filter.js"></script>
-    <script src="scripts/events/filters/events-time-filter.js"></script>
+    <!--<script src="scripts/events/filters/events-statuses-filter.js"></script>-->
+    <!--<script src="scripts/events/filters/events-time-filter.js"></script>-->
 
     <!-- GENERAL -->
-    <script src="scripts/vendor/jquery-timepicker.js"></script>
-    <script src="scripts/directives/html-directives.js"></script>
-    <script src="scripts/directives/seats-directive.js"></script>
-    <script src="scripts/directives/clockpicker-directive.js"></script>
-    <script src="scripts/directives/timepicker-directive.js"></script>
+    <!--<script src="scripts/vendor/jquery-timepicker.js"></script>-->
+    <!--<script src="scripts/directives/html-directives.js"></script>-->
+    <!--<script src="scripts/directives/seats-directive.js"></script>-->
+    <!--<script src="scripts/directives/clockpicker-directive.js"></script>-->
+    <!--<script src="scripts/directives/timepicker-directive.js"></script>-->
 
-    <script src="scripts/directives/square-diretives.js"></script>
+    <!--<script src="scripts/directives/square-diretives.js"></script>-->
 
     <script src="scripts/config.js"></script>
     <script src="scripts/translations.js"></script>
     <script src="scripts/firebase-service.js"></script>
     <script src="scripts/routes.js"></script>
     <script src="scripts/main-ctrl.js"></script>
+    <script src="scripts/filters/filters.js"></script>
+    <script src="scripts/localizer.js"></script>
+
     <script src="scripts/general/alert-factory.js"></script>
     <script src="scripts/general/close-all-open-controls.js"></script>
     <script src="scripts/general/datetime-helpers.js"></script>
-    <script src="scripts/directives/hundred-percent-height-directive.js"></script>
-    <script src="scripts/filters/filters.js"></script>
+    <script src="scripts/general/are-you-sure-modal.js"></script>
 
-    <script src="scripts/localizer.js"></script>
-    <script src="scripts/modal/are-you-sure-modal.js"></script>
+    <!--<script src="scripts/directives/hundred-percent-height-directive.js"></script>-->
     <!-- inject:partials -->
     <!-- endinject -->
     <!-- endbuild -->

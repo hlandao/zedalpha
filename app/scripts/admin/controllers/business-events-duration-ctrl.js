@@ -14,6 +14,8 @@ zedAlphaControllers
         $scope.eventsDuration = $scope.business.eventsDuration;
         $scope.eventsDurationForGuests = $scope.business.eventsDurationForGuests;
 
+        console.log($scope.business);
+
         $scope.msg = new Alert(4000);
 
         $scope.addDuration = function(newDuration){
@@ -50,6 +52,9 @@ zedAlphaControllers
             if(!newDurationForGuests || !newDurationForGuests.guests || !newDurationForGuests.duration){
                 return $scope.err = "Please enter duration as a number";
             }
+            if(!$scope.eventsDurationForGuests){
+                $scope.eventsDurationForGuests = $scope.business.eventsDurationForGuests = {};
+            }
             $scope.eventsDurationForGuests[newDurationForGuests.guests] = newDurationForGuests.duration;
             return $scope.business.$save().then(function(){
                 $scope.msg.setMsg('Saved!');
@@ -66,8 +71,7 @@ zedAlphaControllers
             $scope.err = "Error!"
         };
 
-        $scope.setGuestsPer15 = function(newGuestsPer15){
-            $scope.business.guestsPer15 = newGuestsPer15;
+        $scope.saveGuestsPer15 = function(){
             return $scope.business.$save().then(function(){
                 $scope.msg.setMsg('Guests per 15 minutes was saved!');
             });

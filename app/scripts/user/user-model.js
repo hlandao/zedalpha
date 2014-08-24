@@ -6,6 +6,13 @@ zedAlphaServices
         var initting = $q.defer();
         var initialized = false;
 
+        var _userHolder = {
+            readyPromise : function(){
+                return initting.promise
+            }
+        };
+
+
         $rootScope.$on('$firebaseSimpleLogin:login', function(e, user){
             $log.debug('[UserHolder] : user is logged in');
 
@@ -34,11 +41,6 @@ zedAlphaServices
             }
         });
 
-        var _userHolder = {
-            readyPromise : function(){
-                return initting.promise
-            }
-        };
 
         return _userHolder;
     }]);

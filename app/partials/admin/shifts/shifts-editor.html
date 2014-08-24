@@ -8,16 +8,16 @@
         <div class="col-lg-6 col-lg-offset-3 day" ng-repeat="day in week.days">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <span ng-show="!day.shifts.basic"> {{day.shifts.date | date : 'EEEE dd/MM/yyyy'}} </span>
-                    <span ng-show="day.shifts.basic"> {{day.shifts.date | date : 'EEEE'}} </span>
-                    <span class="pull-right" ng-show="!day.shifts.basic">
+                    <span ng-show="!day.basic"> {{day.shifts.date | date : 'EEEE dd/MM/yyyy'}} </span>
+                    <span ng-show="day.basic"> {{day.shifts.date | date : 'EEEE'}} </span>
+                    <span class="pull-right" ng-show="!day.basic">
                         <label class="checkbox-inline">
-                            <input type="checkbox" ng-model="day.shifts.enableCustom" ng-change="dayWasChanged(day)"> Enable Custom
+                            <input type="checkbox" ng-model="day.isEnabled" ng-change="dayWasChanged(day)"> Enable Custom
                         </label>
                     </span>
                 </div>
-                <div class="panel-body" ng-if="day.shifts.basic || day.shifts.enableCustom">
-                    <div class="row shift" ng-repeat="shift in day.shifts.shifts">
+                <div class="panel-body" ng-if="day.basic || day.isEnabled">
+                    <div class="row shift" ng-repeat="shift in day.shifts">
                         <div class="col-xs-12">
                             <div class="row">
                                 <div class="col-xs-4 shiftlabel"><input type="checkbox" ng-model="shift.active"  ng-change="dayWasChanged(day)"> {{shift.name}}</div>

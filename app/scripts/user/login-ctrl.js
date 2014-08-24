@@ -11,7 +11,7 @@ zedAlphaControllers
     $scope.createMode = false;
 
     $scope.login = function(cb) {
-
+        console.log('login');
         $scope.err = null;
         if( !$scope.email ) {
             $scope.err = 'Please enter an email address';
@@ -20,7 +20,9 @@ zedAlphaControllers
             $scope.err = 'Please enter a password';
         }
         else {
+            $scope.showSpinner  = true;
             loginService.login($scope.email, $scope.pass, function(err, user) {
+                $scope.showSpinner  = false;
                 $scope.err = err? err + '' : null;
                 if( !err ) {
                     cb && cb(user);

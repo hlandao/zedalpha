@@ -1,10 +1,8 @@
 var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', []);
-
-
 zedAlphaServices
-    .factory('Business', function($firebaseObject){
+    .factory('Business', function($FirebaseObject){
         function Business(firebase, destroyFunction, readyPromise){
-            $firebaseObject.call(this, $firebase, destroyFunction, readyPromise);
+            $FirebaseObject.call(this, firebase, destroyFunction, readyPromise);
         }
         return Business;
     })
@@ -15,28 +13,26 @@ zedAlphaServices
             return $firebase(ref, {objectFactory: BusinessFactory}).$asObject();
         }
     })
-    .factory("BusinessesCollection",function ($firebase, UserHolder, firebaseRef, $rootScope) {
-        var readyPromise = UserHolder.readyPromise().then(function(){
+    .service("BusinessesCollection",function ($firebase, UserHolder) {
+        var self = this;
+        this.readyPromise = UserHolder.readyPromise().then(function(){
             var ref = UserHolder.userProfileRef.child('businesses');
-            return $firebase(ref).$asArray();
+            self.collection = $firebase(ref).$asArray();
+            return self.collection.$loaded();
         });
-
-        return readyPromise;
     })
-    .service("BusinessHolder", function (UserHolder, BusinessObject, UserHolder) {
-        this.init = function (businessId) {
+    .service("BusinessHolder", function (UserHolder, BusinessObject, $rootScope) {
+        var self = this;
+        self.init = function (businessId) {
             if (businessId) {
                 var ref = UserHolder.userProfileRef.child('businesses').child(businessId);
-                this.business = BusinessObject(businessId)
-                return this.business.$loaded();
+                self.business = BusinessObject(ref)
+                return self.business.$loaded();
             }else{
-                return this.business && this.business.$loaded()
+                return self.business && self.business.$loaded()
             }
         };
 
-        $rootScope.$on('$businessHolderChanged', updateObject);
-        updateObject();
+        $rootScope.$on('$businessHolderChanged', self.init);
     });
-
-
 

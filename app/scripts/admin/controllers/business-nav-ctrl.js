@@ -9,7 +9,7 @@ zedAlphaControllers
         $scope.$on('$stateChangeSuccess', function(e, toState, toParams){
             if(toParams.businessId){
                 // get business data from business holder
-                $scope.business = BusinessHolder.$business;
+                $scope.business = BusinessHolder.business;
                 $scope.businessId = BusinessHolder.businessId;
             }
         })
