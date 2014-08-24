@@ -4,19 +4,16 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('BusinessCtrl', function($scope, Business, BusinessHolder ,BusinessMetaData, $state){
+    .controller('BusinessCtrl', function($scope, Business, BusinessHolder ,BusinessMetaData, $state, BusinessCollection){
 
         // get business meta data
         $scope.businessMetaData = BusinessMetaData;
         // get business data from business holder
-        $scope.business = BusinessHolder.$business;
-        $scope.businessId = BusinessHolder.businessId;
-
-
+        $scope.business = BusinessHolder.business;
 
         $scope.create = function(newBusiness){
-            Business.create(newBusiness).then(function(ref){
-                $state.go('dashboard.business.show', {businessId : ref.name()});
+            BusinessCollection.$add(newBusiness).then(function(ref){
+                $state.go('business.show', {businessId : ref.name()});
             }, function(){
 
             });

@@ -35,7 +35,7 @@ zedAlphaServices
         });
 
         var _userHolder = {
-            promise : function(){
+            readyPromise : function(){
                 return initting.promise
             }
         };

@@ -6,7 +6,6 @@ zedAlphaServices
         function Business(firebase, destroyFunction, readyPromise){
             $firebaseObject.call(this, $firebase, destroyFunction, readyPromise);
         }
-
         return Business;
     })
     .factory("BusinessFactory",function ($FirebaseObject, Business) {
@@ -15,12 +14,23 @@ zedAlphaServices
         return function (ref) {
             return $firebase(ref, {objectFactory: BusinessFactory}).$asObject();
         }
-    }).service("BusinessHolder", function (UserHolder, BusinessObject, UserHolder) {
+    })
+    .factory("BusinessesCollection",function ($firebase, UserHolder, firebaseRef, $rootScope) {
+        var readyPromise = UserHolder.readyPromise().then(function(){
+            var ref = UserHolder.userProfileRef.child('businesses');
+            return $firebase(ref).$asArray();
+        });
+
+        return readyPromise;
+    })
+    .service("BusinessHolder", function (UserHolder, BusinessObject, UserHolder) {
         this.init = function (businessId) {
             if (businessId) {
                 var ref = UserHolder.userProfileRef.child('businesses').child(businessId);
                 this.business = BusinessObject(businessId)
                 return this.business.$loaded();
+            }else{
+                return this.business && this.business.$loaded()
             }
         };
 

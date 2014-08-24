@@ -6,11 +6,11 @@ angular.module('zedalpha.routes', [])
     .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
 
         var userHolderResolver = function(UserHolder){
-            return UserHolder.promise();
+            return UserHolder.readyPromise();
         };
 
         var businessResolver = function(UserHolder, BusinessHolder, $stateParams, $q){
-            return UserHolder.promise().then(function(){
+            return UserHolder.readyPromise().then(function(){
                 return BusinessHolder.init($stateParams.businessId).then(function(){
                 });
             });

@@ -11,12 +11,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="(id,status) in eventsStatuses">
-                        <td class="status"> <input class="borderless-input" type="text" ng-model="status.status" ng-change="changed(id, status)"></td>
+                    <tr ng-repeat="(statusId,statusObject) in eventsStatuses">
+                        <td class="status"> <span> {{ statusId }}</span></td>
                         <td class="color">
-                            <spectrum-colorpicker ng-model="status.color" options="{preferredFormat: 'hex'}" ng-change="changed(id, status)"></spectrum-colorpicker>
+                            <spectrum-colorpicker ng-model="statusObject.color" options="{preferredFormat: 'hex'}" ng-change="changed(statusId, statusObject)"></spectrum-colorpicker>
                         </td>
-                        <td> <button class="btn btn-danger" ng-click="remove(id)">Remove</button> </td>
+                        <td> <button class="btn btn-danger" ng-click="remove(statusId)">Remove</button> </td>
                     </tr>
                 <tr>
                     <td colspan="3">

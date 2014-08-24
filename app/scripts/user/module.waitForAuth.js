@@ -3,7 +3,7 @@
  *
  * See usage examples here: https://gist.github.com/katowulf/7328023
  */
-angular.module('waitForAuth', [])
+angular.module('zedalpha.waitForAuth', [])
 
 /**
  * A service that returns a promise object, which is resolved once $firebaseSimpleLogin

@@ -16,8 +16,8 @@ var myModules = [
     'zedalpha.config',
     'zedalpha.routes',
     'zedalpha.controllers',
-    'waitForAuth',
-    'routeSecurity',
+    'zedalpha.waitForAuth',
+    'zedalpha.routeSecurity',
     'zedalpha.directives',
     'zedalpha.filters'
 ];

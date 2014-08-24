@@ -1,5 +1,5 @@
 (function(angular) {
-   angular.module('routeSecurity', [])
+   angular.module('zedalpha.routeSecurity', [])
       .run(['$injector', '$location', '$rootScope', 'loginRedirectPath','$urlRouter', function($injector, $location, $rootScope, loginRedirectPath, $urlRouter) {
          if( $injector.has('$state') ) {
             new RouteSecurityManager($location, $rootScope, $injector.get('$state'), loginRedirectPath, $urlRouter);
