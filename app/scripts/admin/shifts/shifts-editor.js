@@ -23,13 +23,19 @@ zedAlphaDirectives
 
                 var getShiftWeekWithNumber = function(weekNumber){
                     $scope.week = new ShiftsWeek(weekNumber);
+                    console.log('$scope.week',$scope.week);
                 };
 
                 $scope.dayWasChanged = function(day){
-                    console.log('was changed : ',day);
-                    if(day.$save) day.$saveWithValidation().then(function(){
+                    console.log('day',day);
+                    var shiftsDay = day.shiftsDay ? day.shiftsDay : day;
+                    if(shiftsDay.$save) shiftsDay.$saveWithValidation().then(function(){
                                 $scope.msg.setMsg("Changes were Saved")
                         });
+                }
+
+                $scope.toggle = function(day){
+                    day.$toggleEnabled();
                 }
             },
             require : 'shiftsEditor',

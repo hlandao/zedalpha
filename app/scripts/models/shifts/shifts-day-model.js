@@ -56,11 +56,18 @@ zedAlphaServices
 
         ShiftsDay.prototype.$$updated = function(snap){
             this.$init(snap.val());
+        };
+
+        ShiftsDay.prototype.$populate = function(data){
+            this.$init(data);
         }
+
+
 
         ShiftsDay.prototype.$init = function(val){
             angular.extend(this,val);
             if(this.basic){
+                this.dayOfWeek = this.$id;
                 delete this.date;
                 delete this.isEnabled;
                 delete this.active;
@@ -144,6 +151,8 @@ zedAlphaServices
             if(!this.basic){
                 output.date = moment(this.date).toJSON();
                 output.isEnabled = !!this.isEnabled;
+            }else{
+                output.dayOfWeek = this.dayOfWeek;
             }
             output.shifts = this.shiftsToObject();
 
@@ -169,7 +178,7 @@ zedAlphaServices
         this.byDate = function(date, shiftsData){
             return this.rawObjectByDate(date).$loaded().then(function(shiftsDay){
                if(shiftsData){
-                   shiftsDay.$inst().$set(shiftsData);
+                   shiftsDay.$populate(shiftsData);
                }else{
                    if(!shiftsDay.shifts){
                        var readOnlyShiftForDate = ReadOnlyShiftsDayGenerator.byDate(date);
@@ -240,23 +249,25 @@ zedAlphaServices
             var self = this;
 
             self.dayOfYear = date.dayOfYear();
-            self.date = date;
+            self.date = date.clone();
             self.isEnabled = false;
 
             if(BusinessHolder.business.shifts[self.dayOfYear]){
                 self.readyPromise = ShiftsDayGenerator.byDate(date).then(function(shiftsDay){
+                    self.isEnabled = true;
                     self.shiftsDay = shiftsDay;
                     return self.shiftsDay;
                 });
             }else{
                 var defer = $q.defer();
                 self.readyPromise = defer.promise;
-                this.readOnlyCopy = ReadOnlyShiftsDayGenerator.byDate(date);
-                defer.resolve(this.readOnlyCopy);
+                self.readOnlyCopy = ReadOnlyShiftsDayGenerator.byDate(date);
+                defer.resolve(self.readOnlyCopy);
             }
         }
 
-        EditableShiftsDay.$enable = function(){
+        EditableShiftsDay.prototype.$enable = function(){
+            console.log('$enable');
             var self = this;
 
             if(!self.readOnlyCopy){
@@ -267,22 +278,31 @@ zedAlphaServices
                 self.isEnabled = true;
                 self.shiftsDay = shiftsDay;
                 self.readOnlyCopy = null;
+                console.log('self',self);
             });
         }
 
-        EditableShiftsDay.$disable = function(){
-            this.shiftsDay = null;
+        EditableShiftsDay.prototype.$disable = function(){
             this.shiftsDay.$inst().$set();
             this.shiftsDay.$destroy();
+            this.shiftsDay = null;
             this.readOnlyCopy = ReadOnlyShiftsDayGenerator.byDate(this.date);
             this.isEnabled = false;
         }
 
-        EditableShiftsDay.$destroy = function(){
+        EditableShiftsDay.prototype.$destroy = function(){
             this.shiftsDay.$destroy();
         }
 
-        EditableShiftsDay.$save = function(){
+        EditableShiftsDay.prototype.$toggleEnabled = function(){
+            if(this.isEnabled){
+                this.$enable();
+            }else{
+                this.$disable();
+            }
+        }
+
+        EditableShiftsDay.prototype.$save = function(){
             return this.shiftsDay.$save();
         }
 

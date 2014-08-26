@@ -8,15 +8,15 @@
         <div class="col-lg-6 col-lg-offset-3 day" ng-repeat="day in week.days">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <span ng-show="!day.basic"> {{day.date | date : 'EEEE dd/MM/yyyy'}} </span>
-                    <span ng-show="day.basic"> {{day.date | date : 'EEEE'}} </span>
-                    <span class="pull-right" ng-show="!day.basic">
+                    <span ng-show="!day.basic">
                         <label class="checkbox-inline">
-                            <input type="checkbox" ng-model="day.isEnabled" ng-change="dayWasChanged(day)"> Enable Custom
+                            {{day.$toggleEnabled}}
+                            <input type="checkbox" ng-model="day.isEnabled" ng-change="toggle(day)">
                         </label>
-                    </span>
+                        {{day.date | momentFilter : 'dddd DD/MM/YYYY'}} </span>
+                    <span ng-show="day.basic"> {{day.dayOfWeek | dayOfWeekFilter | translate}} </span>
                 </div>
-                <div class="panel-body" ng-if="day.basic || day.isEnabled">
+                <div class="panel-body" ng-if="day.basic">
                     <div class="row shift" ng-repeat="shift in day.shifts">
                         <div class="col-xs-12">
                             <div class="row">
@@ -27,7 +27,7 @@
                                 </div>
                                 <div class="col-xs-4"  ng-hide="!shift.active">
                                     <label>End Time {{shift.duration}}</label>
-                                    <input shift-duration="shift">
+                                    <input hl-shift-duration shift="shift" on-change="dayWasChanged(day)">
 
                                 </div>
                             </div>
@@ -44,6 +44,38 @@
                     </div>
 
                 </div>
+
+                <div class="panel-body" ng-if="day.isEnabled">
+                    <div class="row shift" ng-repeat="shift in day.shiftsDay.shifts">
+                        <div class="col-xs-12">
+                            <div class="row">
+                                <div class="col-xs-4 shiftlabel"><input type="checkbox" ng-model="shift.active"> {{shift.name}}</div>
+                                <div class="col-xs-4" ng-hide="!shift.active">
+                                    <label>Start Time</label>
+                                    <input pick-a-time="shift.startTime" on-change="dayWasChanged(day)">
+                                </div>
+                                <div class="col-xs-4"  ng-hide="!shift.active">
+                                    <label>End Time {{shift.duration}}</label>
+                                    <input hl-shift-duration shift="shift" on-change="dayWasChanged(day)">
+
+                                </div>
+                            </div>
+                            <div class="row"  ng-hide="!shift.active">
+                                <div class="col-xs-4 col-xs-offset-8">
+                                    <label>Default Time</label>
+                                    <!--<input hl-timepicker ng-model="shift.defaultTime" ng-change="dayWasChanged(day)">-->
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+
             </div>
 
         </div>

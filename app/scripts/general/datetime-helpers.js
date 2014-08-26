@@ -155,4 +155,15 @@ zedAlphaServices
 
             return words.join(' ');
         };
-    }]);;
+    }]).filter('dayOfWeekFilter', function(){
+        return function(input){
+            if(!input) return;
+            var days = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+            return days[input];
+        }
+    }).filter('momentFilter', function(){
+        return function(input, format){
+            if(!input) return;
+            return input.format(format);
+        }
+    })
