@@ -1,33 +1,91 @@
 var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directives', []);
 
 zedAlphaDirectives
-    .directive('hlShiftDuration', function ($timeout, DateHelpers, FullDateFormat, $rootScope, $parse, $filter) {
+    .directive('hlTimepicker', function ($timeout, DateHelpers, FullDateFormat, $rootScope, $parse, $filter) {
         return{
             restrict: 'A',
             replace: true,
-            require: ['hlShiftDuration'],
+            require: ['ngModel','hlTimepicker'],
             scope: {
-                shift: "=",
-                settings: "="
+                settings: "=",
+                ngModel: "="
             },
-            templateUrl: "/partials/directives/shift-duration-directive.html",
+            templateUrl: "/partials/directives/timepicker-directive.html",
             controller: function ($scope) {
                 var timeFormat = 'HH:mm',
                     intialized,
+                    ngModel,
                     linkFN,
-                    attrs;
+                    attrs,
+                    defaultSettings = {
+                        min: null,
+                        max: null,
+                        range : null,
+                        intervalInMinutes : 15
+                    },
+                    settings = defaultSettings;
 
 
-                var settings = angular.extend({
-                    rangeInHours: 10,
-                    intervalInMintues: 15
-                }, $scope.settings);
+                var setNgModelWatcher = function(){
+                    var ngModelWatcher = $scope.$watch('ngModel', function(){
+                        init();
+                        ngModelWatcher();
+                    });
+                }
+                var init = this.init = function (_ngModel, _linkFN, _attrs) {
+                    ngModel = ngModel || _ngModel;
+                    linkFN =  linkFN || _linkFN;
+                    attrs = attrs || _attrs;
+                    settings = angular.extend(defaultSettings, $scope.settings);
+
+                    if(!ngModel || !ngModel.$modelValue){
+                        setNgModelWatcher();
+                        return;
+                    }else{
+                        initialized = true;
+                    }
+
+                    if(!ngModel.$modelValue || !ngModel.$modelValue.isValid || !ngModel.$modelValue.isValid()){
+                        if(settings.alternateValue && settings.alternateValue.isValid && settings.alternateValue.isValid()){
+                            console.log('load alternate value');
+                            $scope.ngModel = settings.alternateValue.clone();
+                        }else{
+                            throw new TypeError("Cannot iniate timepicker");
+                            return;
+                        }
+                    }
 
 
-                this.init = function (_linkFN, _attrs) {
-                    linkFN = _linkFN;
-                    attrs = _attrs;
-                    $scope.$watch('shift.startTime', generateTimesArray);
+//                    generateTimesArray();
+
+                    $scope.$watch('settings', function(){
+                        settings = angular.extend(defaultSettings, $scope.settings);
+                        generateTimesArray();
+                    });
+
+
+                    ngModel.$render = function(){
+                        if(!initialized){
+                            init();
+                        }else{
+                            generateTimesArray();
+                        }
+                    };
+
+                    ngModel.$parsers.push(function(viewValue){
+                        if(viewValue){
+                            return moment(viewValue.time);
+                        }
+                    });
+
+                    $scope.setNewTime = function(timeObj, e){
+                        e.stopPropagation();
+                        ngModel.$setViewValue(timeObj);
+                        generateTimesArray();
+                        $scope.opened = false;
+                        attrs.onChange && $scope.$parent.$eval(attrs.onChange);
+                    }
+
                 };
 
 
@@ -40,37 +98,35 @@ zedAlphaDirectives
 
                 var generateTimesArray  = function () {
                     var currentMoment,
-                        diff,
-                        interval = settings.intervalInMintues,
-                        rangeInMinutes = settings.rangeInHours * 60,
-                        duration = $scope.shift.duration;
+                        interval = settings.intervalInMinutes,
+                        max = settings.max || ngModel.$modelValue.clone().hour(23).minute(59).seconds(0),
+                        min = settings.min || ngModel.$modelValue.clone().hour(0).minute(0).seconds(0),
+                        currentMoment = min.clone(),
+                        v = min,
+                        rangeInMinutes = settings.range || max.diff(min, 'minutes');
+
 
                     resetTimesArray();
 
-                    if ($scope.shift && $scope.shift.startTime) {
-                        currentMoment = $scope.shift.startTime.clone().add(interval, 'minutes');
-                    } else {
-                        return;
-                    }
 
 
                     var timeObj;
-
-                    while ((rangeInMinutes -= interval) >= 0) {
+                    do{
                         timeObj = getTimeObject(currentMoment);
-                        diff = currentMoment.diff($scope.shift.startTime, 'minutes');
-                        if (diff == duration) {
+                        if (currentMoment.isSame(ngModel.$modelValue, 'minutes')) {
                             $scope.selected = timeObj;
                         }
                         $scope.times.push(timeObj);
                         currentMoment.add(interval, 'minutes');
-                    }
+
+                    }while((rangeInMinutes -= interval) >= 0)
                 };
 
 
                 var getTimeObject = function (m) {
                     var timeString = m.format(timeFormat);
-                    var label = timeString + " " + getDurationString($scope.shift.startTime, m)
+                    var label = timeString;
+                    label += (settings.showDurationFromDate) ? (" " + getDurationString(settings.showDurationFromDate, m)) : "" ;
                     return {
                         time: m.toISOString(),
                         label: label
@@ -109,26 +165,19 @@ zedAlphaDirectives
                     $scope.opened = false;
                 }
 
-
-                $scope.setNewDuration = function(timeObject, e){
-                    e.stopPropagation();
-                    if(timeObject){
-                        var minutes = moment(timeObject.time).diff($scope.shift.startTime, 'minutes');
-                        $scope.selected = timeObject;
-                        $scope.shift.duration = minutes;
-                        if(attrs.onChange) $scope.$parent.$eval(attrs.onChange);
-                    }
-                    $scope.opened = false;
-                };
-
             },
             link: function (scope, element, attrs, ctrls) {
-                var ctrl = ctrls[0],
+                var ngModel = ctrls[0],
+                    ctrl = ctrls[1],
                     $html = $('html'),
                     $window = $(window),
                     $pickerHolder = element.find('.picker__holder').eq(0);
 
-                ctrl.init(this, attrs);
+                var init = function(){
+                    ctrl.init(ngModel, this, attrs);
+                }
+
+                init();
 
                 scope.open = function(){
                     ctrl.open();
@@ -139,6 +188,7 @@ zedAlphaDirectives
                             css( 'padding-right', '+=' + getScrollbarWidth() )
 
                         var index = scope.times.indexOf(scope.selected);
+                        console.log('index',index);
                         var $child = $ul.children().eq(index);
                         var top = $child.position().top;
                         var height = $child[0].clientHeight;

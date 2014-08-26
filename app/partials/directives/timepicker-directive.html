@@ -1,15 +1,16 @@
-<div class="timepicker-col dropdown timepicker-dropdown" ng-click="setOffset()">
-    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
-        <span>{{selectedTime.label}}</span>
-        <span class="caret"></span>
-    </a>
-    <div class="dropdown-menu pull-right with-arrow panel panel-default">
-        <ul class="list-group nice-scrollbar">
-            <li class="list-group-item" ng-repeat="time in times" ng-class="{active:  (time == selectedTime)}" ng-click="setNewTime(time)">
-                <span>{{time.label}}</span>
-            </li>
-        </ul>
+<div class="shift-duration-directive">
+    <input type="text" ng-click="open($event)" ng-model="selected.label"  style="width:100%;">
+    <div class="picker picker--time picker--focused picker--opened" ng-show="opened">
+        <div class="picker__holder" ng-click="close()">
+            <div class="picker__frame">
+                <div class="picker__wrap">
+                    <div class="picker__box">
+                        <ul class="picker__list">
+                            <li class="picker__list-item" ng-repeat="time in times" ng-click="setNewTime(time, $event)" ng-class="{'picker__list-item--selected picker__list-item--highlighted picker__list-item--viewset' : (time === selected)}">{{time.label}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
-
