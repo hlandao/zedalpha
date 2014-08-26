@@ -12,12 +12,12 @@ zedAlphaServices
             {
                 name : "noon",
                 defaultStartTime : moment().hour(12).minute(0).seconds(0),
-                defaultEndTime : 4 * 60
+                defaultDuration : 4 * 60
             },
             {
                 name : "evening",
                 defaultStartTime : moment().hour(18).minute(0).seconds(0),
-                defaultEndTime : 4 * 60
+                defaultDuration : 4 * 60
             }
         ]
     })
@@ -39,35 +39,50 @@ zedAlphaServices
             }
         }
     })
-    .factory('ShiftsDay', function($FirebaseObject, ShiftsDayPrototypeHelpers){
+    .factory('ShiftsDay', function($FirebaseObject, ShiftsDayPrototypeHelpers, $q){
 
 
         var initShift = function(shift){
             shift.startTime = moment(shift.startTime);
             shift.defaultTime = moment(shift.defaultTime);
             shift.duration = parseInt(shift.duration);
+            delete shift.endTime;
         };
 
         function ShiftsDay(firebase, destroyFunction, readyPromise){
             $FirebaseObject.call(this, firebase, destroyFunction, readyPromise);
-            this.$init();
             angular.extend(this, ShiftsDayPrototypeHelpers)
         };
 
-        ShiftsDay.prototype.$init = function(){
-            this.date = moment(this.date);
+        ShiftsDay.prototype.$$updated = function(snap){
+            this.$init(snap.val());
+        }
+
+        ShiftsDay.prototype.$init = function(val){
+            angular.extend(this,val);
+            if(this.basic){
+                delete this.date;
+                delete this.isEnabled;
+                delete this.active;
+            }else{
+                this.date = moment(this.date);
+                if(!this.date.isValid || !this.date.isValid()){
+                    this.date = moment();
+                }
+            }
             angular.forEach(this.shifts, initShift);
         };
 
         ShiftsDay.prototype.$saveWithValidation = function(){
             var self = this;
+            return self.$save();;
             return self.$beforeSave(function(){
                 self.$save();
             })
         };
 
         ShiftsDay.prototype.$beforeSave = function(){
-            return this.$validateDate().then($validateShifts);
+            return this.$validateDate().then(this.$validateShifts());
         };
 
         ShiftsDay.prototype.$validateDate = function(){
@@ -90,11 +105,11 @@ zedAlphaServices
                 var currentShift, rejected = false;
                 for (var i = 0;i < this.shifts.length; ++i){
                     currentShift = this.shifts[i];
-                    if(!shift.startTime){
+                    if(!currentShift.startTime){
                         defer.reject({error : "ERROR_DAY_SHIFTS_INVALID_SHIFTS_NO_START_TIME"})
                         rejected = true;
                         break;
-                    }else if(!shift.name){
+                    }else if(!currentShift.name){
                         defer.reject({error : "ERROR_DAY_SHIFTS_INVALID_SHIFTS_NO_NAME"})
                         rejected = true;
                         break;
@@ -107,6 +122,33 @@ zedAlphaServices
             return defer.promise;
         }
 
+        ShiftsDay.prototype.shiftsToObject = function(){
+            var output = [];
+            angular.forEach(this.shifts, function(shift){
+               var _shift = {};
+                _shift.startTime = moment(shift.startTime).toJSON();
+                _shift.defaultTime = moment(shift.defaultTime).toJSON();
+                _shift.duration = shift.duration > 0 ?  parseInt(shift.duration) : 0 ;
+                _shift.name = shift.name;
+                _shift.active = !!shift.active;
+                 output.push(_shift);
+            });
+
+            return output;
+        }
+
+
+        ShiftsDay.prototype.toJSON = function(){
+            var output = {};
+            output.basic = !!this.basic;
+            if(!this.basic){
+                output.date = moment(this.date).toJSON();
+                output.isEnabled = !!this.isEnabled;
+            }
+            output.shifts = this.shiftsToObject();
+
+            return output;
+        }
         return ShiftsDay;
     })
     .factory("ShiftsDayFactory",function ($FirebaseObject, ShiftsDay) {
@@ -158,7 +200,7 @@ zedAlphaServices
             var shiftsDay = {
                 date : date.clone(),
                 basic : false,
-                active : true,
+                isEnabled : true,
                 shifts : []
             };
 
@@ -174,23 +216,23 @@ zedAlphaServices
             return shiftsDay;
         }
 
-        this.byDate = function(date){
+        this.byDate = function(date, extendProto, tryBasicShifts){
             var dayOfYear = date.dayOfYear(),
                 dayOfWeek,
                 dayShifts;
 
-            if(BusinessHolder.business.shifts[dayOfYear]){
+            if(BusinessHolder.business.shifts && BusinessHolder.business.shifts[dayOfYear]){
                 dayShifts = BusinessHolder.business.shifts[dayOfYear];
             }else{
                 dayOfWeek = date.day();
-                if(BusinessHolder.business.shifts.basic[dayOfWeek]){
+                if(tryBasicShifts && BusinessHolder.business.shifts.basic[dayOfWeek]){
                     dayShifts = basicShiftsDayForDate(BusinessHolder.business.shifts.basic[dayOfWeek], date);
                 }else{
                     dayShifts = defaultShiftsDayForDate(date);
                 }
             }
 
-            angular.extend(dayShifts, ShiftsDayPrototypeHelpers);
+            if(extendProto) angular.extend(dayShifts, ShiftsDayPrototypeHelpers);
             return dayShifts;
         };
     }).factory('EditableShiftsDay', function(ShiftsDayGenerator, ReadOnlyShiftsDayGenerator, BusinessHolder, $q){

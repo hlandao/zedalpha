@@ -8,8 +8,8 @@
         <div class="col-lg-6 col-lg-offset-3 day" ng-repeat="day in week.days">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <span ng-show="!day.basic"> {{day.shifts.date | date : 'EEEE dd/MM/yyyy'}} </span>
-                    <span ng-show="day.basic"> {{day.shifts.date | date : 'EEEE'}} </span>
+                    <span ng-show="!day.basic"> {{day.date | date : 'EEEE dd/MM/yyyy'}} </span>
+                    <span ng-show="day.basic"> {{day.date | date : 'EEEE'}} </span>
                     <span class="pull-right" ng-show="!day.basic">
                         <label class="checkbox-inline">
                             <input type="checkbox" ng-model="day.isEnabled" ng-change="dayWasChanged(day)"> Enable Custom
@@ -20,25 +20,22 @@
                     <div class="row shift" ng-repeat="shift in day.shifts">
                         <div class="col-xs-12">
                             <div class="row">
-                                <div class="col-xs-4 shiftlabel"><input type="checkbox" ng-model="shift.active"  ng-change="dayWasChanged(day)"> {{shift.name}}</div>
+                                <div class="col-xs-4 shiftlabel"><input type="checkbox" ng-model="shift.active"> {{shift.name}}</div>
                                 <div class="col-xs-4" ng-hide="!shift.active">
                                     <label>Start Time</label>
-                                    <hl-timepicker ng-model="shift.startTime" ng-change="dayWasChanged(day)"></hl-timepicker>
-                                    <!--<input type="time" step="900" placeholder="HH:MM" ng-model="day.shifts[k].startTimeHour()">-->
+                                    <input pick-a-time="shift.startTime" on-change="dayWasChanged(day)">
                                 </div>
                                 <div class="col-xs-4"  ng-hide="!shift.active">
-                                    <label>End Time</label>
-                                    <hl-timepicker ng-model="shift.endTime" ng-change="dayWasChanged(day)" min-time="shift.startTime" show-duration-min-time="true"></hl-timepicker>
+                                    <label>End Time {{shift.duration}}</label>
+                                    <input shift-duration="shift">
 
-                                    <!--<input type="time" step="900" placeholder="HH:MM">-->
                                 </div>
                             </div>
                             <div class="row"  ng-hide="!shift.active">
                                 <div class="col-xs-4 col-xs-offset-8">
                                     <label>Default Time</label>
-                                    <hl-timepicker ng-model="shift.defaultTime" ng-change="dayWasChanged(day)"></hl-timepicker>
+                                    <!--<input hl-timepicker ng-model="shift.defaultTime" ng-change="dayWasChanged(day)">-->
 
-                                    <!--<input type="time" step="900" placeholder="HH:MM">-->
                                 </div>
 
                             </div>

@@ -15,6 +15,11 @@
     <!-- endbuild -->
 
     <!-- build:css({.tmp,app}) styles/main.css -->
+    <link rel="stylesheet" href="bower_components/pickadate/lib/themes/default.css" />
+
+    <link rel="stylesheet" href="bower_components/pickadate/lib/themes/default.time.css" />
+    <link rel="stylesheet" href="bower_components/pickadate/lib/themes/default.date.css" />
+
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
@@ -75,6 +80,9 @@
 
     <!-- build:js({app,.tmp}) scripts/main.js -->
     <!-- HOME -->
+    <script src="bower_components/pickadate/lib/picker.date.js"></script>
+    <script src="bower_components/pickadate/lib/picker.time.js"></script>
+
     <script src="scripts/raphael/raphael.free_transform.adjusted.js"></script>
     <script src="bower_components/raphael.json/raphael.json.js"></script>
     <script src="scripts/vendor/spectrum.js"></script>
@@ -109,6 +117,12 @@
     <!-- Shifts -->
     <script src="scripts/admin/shifts/shifts-ctrl.js"></script>
     <script src="scripts/admin/shifts/shifts-editor.js"></script>
+    <!-- Directives -->
+    <script src="scripts/directives/pickadate-directive.js"></script>
+    <script src="scripts/directives/shift-duration-directive.js"></script>
+
+
+
     <!-- Events -->
     <!--<script src="scripts/events/events-ctrl.js"></script>-->
     <!--<script src="scripts/events/events-navigation-ctrl.js"></script>-->

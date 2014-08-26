@@ -16,7 +16,6 @@ zedAlphaDirectives
                 $scope.msg = new Alert(3000);
 
                 this.render = function(businessId, weekNumber){
-                    console.log('businessId, weekNumber',businessId, weekNumber);
                     if(!businessId || !weekNumber) return;
                     $scope.business = BusinessHolder.business;
                     getShiftWeekWithNumber(weekNumber);
@@ -24,11 +23,11 @@ zedAlphaDirectives
 
                 var getShiftWeekWithNumber = function(weekNumber){
                     $scope.week = new ShiftsWeek(weekNumber);
-                    console.log('$scope.week',$scope.week);
                 };
 
                 $scope.dayWasChanged = function(day){
-                    if(day.$save) day.$save().then(function(){
+                    console.log('was changed : ',day);
+                    if(day.$save) day.$saveWithValidation().then(function(){
                                 $scope.msg.setMsg("Changes were Saved")
                         });
                 }
