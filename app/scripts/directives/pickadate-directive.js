@@ -78,7 +78,8 @@ zedAlphaDirectives
                     },
                     onClose: function () {
                         element[0].blur();
-                    }
+                    },
+                    format : 'HH:i'
                 });
 
                 picker = element.pickatime('picker');

@@ -102,11 +102,11 @@ zedAlphaDirectives
                     }
                 }
 
-                $scope.open = function(){
+                this.open = function(){
                     $scope.opened = true;
                 }
 
-                $scope.close = function(){
+                this.close = function(){
                     $scope.opened = false;
                 }
 
@@ -125,9 +125,63 @@ zedAlphaDirectives
             },
             link: function (scope, element, attrs, ctrls) {
                 var ctrl = ctrls[0],
-                    $ul = element.find('.picker__list').eq(0);
+                    $html = $('html'),
+                    $window = $(window),
+                    $pickerHolder = element.find('.picker__holder').eq(0);
 
                 ctrl.init(this, attrs);
+
+                scope.open = function(){
+                    ctrl.open();
+                    setTimeout(function(){
+                        var $ul = element.find('ul').eq(0);
+                        $html.
+                            css( 'overflow', 'hidden' ).
+                            css( 'padding-right', '+=' + getScrollbarWidth() )
+
+                        var index = scope.times.indexOf(scope.selected);
+                        var $child = $ul.children().eq(index);
+                        var top = $child.position().top;
+                        var height = $child[0].clientHeight;
+                        $pickerHolder.scrollTop(top - height * 2);
+                    },1);
+                };
+
+                scope.close = function(){
+                    $html.
+                        css( 'overflow', '' ).
+                        css( 'padding-right', '-=' + getScrollbarWidth() )
+
+                    ctrl.close();
+                }
+
+                function getScrollbarWidth() {
+
+                    if ( $html.height() <= $window.height() ) {
+                        return 0
+                    }
+
+                    var $outer = $( '<div style="visibility:hidden;width:100px" />' ).
+                        appendTo( 'body' )
+
+                    // Get the width without scrollbars.
+                    var widthWithoutScroll = $outer[0].offsetWidth
+
+                    // Force adding scrollbars.
+                    $outer.css( 'overflow', 'scroll' )
+
+                    // Add the inner div.
+                    var $inner = $( '<div style="width:100%" />' ).appendTo( $outer )
+
+                    // Get the width with scrollbars.
+                    var widthWithScroll = $inner[0].offsetWidth
+
+                    // Remove the divs.
+                    $outer.remove()
+
+                    // Return the difference between the widths.
+                    return widthWithoutScroll - widthWithScroll
+                }
 
 //                var getOffset = function(){
 //                    var offset;
