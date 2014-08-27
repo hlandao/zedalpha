@@ -16,26 +16,41 @@ zedAlphaServices
                 event.$update(snap);
             }
         });
-    }).factory("EventsCollection",function ($firebase, EventsFactory) {
-        return function (ref) {
-            return $firebase(ref, {arrayFactory: MessageFactory}).$asArray();
+    }).factory("EventsCollection",function ($firebase, EventsFactory, $log) {
+        return function (ref, date) {
+            if(date){
+                var dayOfYear = moment(date).dayOfYear();
+                ref = ref.child(dayOfYear);
+            }
+            console.log('ref',ref);
+            return $firebase(ref, {arrayFactory: EventsFactory}).$asArray();
         }
-    }).service("EventsHolder", function (BusinessHolder, EventsCollection, GuestsPer15, firebaseRef) {
+    }).service("EventsHolder", function (BusinessHolder, EventsCollection, firebaseRef, DateHolder, $rootScope, $log, $filter) {
+        var self = this;
+
         var updateEvents = function () {
             if (BusinessHolder.business) {
                 var businessId = BusinessHolder.business.$id;
                 var ref = firebaseRef('events/' + businessId);
-                this.collection = EventsCollection(ref).$loaded().then(function () {
-                    $log.info('[EventsHolder] Loaded ' + this.collection.length + ' events for business id : ' + businessId);
+                self.collection = EventsCollection(ref, DateHolder.currentDate).$loaded().then(function (col) {
+                    console.log('collection',col)
+                    $log.info('[EventsHolder] Loaded ' + self.collection.length + ' events for business id : ' + businessId);
+                    sortEvents();
                 }, function(){
                     $log.error('[EventsHolder] Failed loaded events for business id : ' + businessId);
                 });
             }
         };
 
+
+        var sortEvents = this.sortEvents = function(statusFilter, query){
+            var sorted = $filter('sortDayEvents')(self.collection, DateHolder.currentClock, statusFilter, query);
+            self.sorted = sorted;
+        };
+
         this.maxEventDurationForStartTime = function (event) {
             var maxDuration = -1, tempMaxDuration, currentEvent;
-            for (var key in this.collection) {
+            for (var i = 0; i< this.collection.length; ++i) {
                 currentEvent = this.collection.$getRecord(key);
 
                 if (currentEvent.$shouldCollide() && event.$sharingTheSameSeatsWithAnotherEvent(currentEvent)) {
@@ -46,11 +61,8 @@ zedAlphaServices
                         maxDuration = (maxDuration == -1) ? tempMaxDuration : Math.min(tempMaxDuration, maxDuration);
                     }
                 }
-
             }
-
             return maxDuration;
-
         };
 
         this.isGuestsPer15ValidForNewEvent = function (newEvent) {
@@ -69,6 +81,8 @@ zedAlphaServices
         };
 
         $rootScope.$on('$businessHolderChanged', updateEvents);
+        $rootScope.$on('$dateWasChanged', updateEvents);
+        $rootScope.$on('$clockWasChanged', sortEvents);
         updateEvents();
     });
 

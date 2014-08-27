@@ -549,7 +549,7 @@ Raphael.fn.roundedRect = function (x, y, w, h, r1, r2, r3, r4){
 
 
 zedAlphaDirectives
-    .directive('mapManager', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope, EventsStatusesHolder, $filter, DateHolder, ShiftsDayHolder) {
+    .directive('mapManager', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope, $filter, DateHolder, ShiftsDayHolder) {
         return {
             restrict: 'E',
             replace : true,
@@ -568,6 +568,9 @@ zedAlphaDirectives
                     shapes = [];
                 var filteredEventsWatcher,
                     events;
+
+
+                var EventsStatusesHolder = BusinessHolder.business.eventsStatuses;
 
                 scope.highlightedShapes = [];
                 panZoom.enable();

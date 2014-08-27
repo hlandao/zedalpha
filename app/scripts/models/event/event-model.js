@@ -3,12 +3,12 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 zedAlphaServices
     .value('NotCollidingEventStatuses', ['NO_SHOW', 'FINISHED', 'CANCELED'])
-    .factory('Event', function ($q, DateHolder, DateHelpers, BusinessHolder, EventsHolder, $filter, BusinessHolder, ShiftsDayHolder, NotCollidingEventStatuses) {
-
+    .factory('Event', function ($q, DateHolder, DateHelpers, $injector, $filter, BusinessHolder, ShiftsDayHolder, NotCollidingEventStatuses) {
         var OccasionalEvent = _.findWhere(BusinessHolder.eventsStatuses, {status: 'OCCASIONAL'}),
             OrderedEvent = _.findWhere(BusinessHolder.eventsStatuses, {status: 'ORDERED'});
 
-        function Event(snapshot, newEventData) {
+        function Event(snapshot, newEventData, holder) {
+            this.holder = holder;
             if (snapshot) {
                 return this.$initWithFirebaseSnapshot(snapshot);
             } else if (newEventData) {
@@ -50,7 +50,7 @@ zedAlphaServices
                 this.data.startTime = moment(startTime).seconds(0);
 
                 // find the duration for the event and set the end time
-                var maxDurationForEvent = EventsHolder.maxEventDurationForStartTime(this.data.startTime);
+                var maxDurationForEvent = this.holder.maxEventDurationForStartTime(this.data.startTime);
                 if (maxDurationForEvent === 0) throw new TypeError("cannot create new event with the current startTime due to possible collisions");
                 var duration = BusinessHolder.eventsDurationForGuests.default || 120;
                 duration = Math.min(duration, maxDurationForEvent);
@@ -204,7 +204,7 @@ zedAlphaServices
              */
             $checkGuestsPer15Minutes: function () {
                 var defer = $q.defer();
-                if (!EventsHolder.isGuestsPer15ValidForNewEvent(this)) {
+                if (!this.holder.isGuestsPer15ValidForNewEvent(this)) {
                     defer.resolve({warning: "INVALID_GUESTS_PER_15_WARNING"});
                 } else {
                     defer.resolve();
@@ -284,12 +284,18 @@ zedAlphaServices
             },
 
             $enterEditingMode: function (event) {
-                var maxDurationForEvent = EventsHolder.maxEventDurationForStartTime(this.startTime);
+                var maxDurationForEvent = this.holder.maxEventDurationForStartTime(this.startTime);
                 this.helpers = this.helpers || {};
                 this.helpers.maxDuration = maxDurationForEvent;
                 this.helpers.isEditing = true;
                 return true;
             },
+
+            $exitEditingMode: function (event) {
+                this.helpers.isEditing = false;
+                return true;
+            },
+
 
             $beforeSave: function () {
                 return this.$validateCollision().
@@ -315,9 +321,9 @@ zedAlphaServices
 
             $saveAfterValidation: function () {
                 if (this.$isNew()) {
-                    EventsHolder.collection.$add(this.$event);
+                    this.holder.collection.$add(this.$event);
                 } else {
-                    EventsHolder.collection.$save(this);
+                    this.holder.collection.$save(this);
                 }
             },
 

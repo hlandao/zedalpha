@@ -1,8 +1,6 @@
 //"use strict";
 angular.module('zedalpha.routes', [])
 
-    // configure views; the authRequired parameter is used for specifying pages
-    // which should only be available while logged in
     .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
 
         var userHolderResolver = function(UserHolder){
@@ -140,11 +138,9 @@ angular.module('zedalpha.routes', [])
                     },
                     'map@events': {
                         templateUrl: '/partials/events/map.html'
-//                        controller: 'MapCtrl'
                     },
                     'events-list@events': {
                         templateUrl: '/partials/events/events-list.html'
-//                        controller: 'EventsListCtrl'
                     }
                 },
                 resolve : {

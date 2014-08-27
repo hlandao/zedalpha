@@ -57,6 +57,8 @@ zedAlphaServices
         });
 
 
+
+
         $rootScope.$watch(function(){
             return _shift.selected;
         },function(newVal){

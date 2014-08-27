@@ -9,4 +9,14 @@ zedAlphaFilters
         input = input.toLowerCase();
         return input.substring(0,1).toUpperCase()+input.substring(1);
     }
-});
+}).filter('seats', function(){
+        return function(input){
+            if(!input) return;
+            var arr = [];
+            for(var i in input){
+                if(input[i])
+                    arr.push(i);
+            }
+            return arr.join(',');
+        }
+    });

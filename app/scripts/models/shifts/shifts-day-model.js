@@ -309,25 +309,31 @@ zedAlphaServices
 
 
         return EditableShiftsDay;
-    }).service('ShiftsDayHolder', function(ReadOnlyShiftsDayGenerator, defer){
-        this.$checkIfEventFitsShifts = function (event) {
-            var theDateShifts = ReadOnlyShiftsDayGenerator.byDate(event.startTime),
-                defer = $q.defer();
+    }).factory('AllDayShift', function(DateHolder,FullDateFormat){
+        var defaults = {
+            active : true,
+            name : "ENTIRE_DAY"
+        }
+        return function(){
+            var dateMoment;
 
-            if(theDateShifts.isContainingEvent(event)){
-                defer.resolve(true);
+            if(DateHolder.currentDate){
+                dateMoment = moment(DateHolder.currentDate);
             }else{
-                var theDayBefore = event.startTime.clone().subtract(1, 'days');
-                theDateShifts = ReadOnlyShiftsDayGenerator.byDate(theDayBefore);
-                if(theDateShifts.isContainingEvent(event)){
-                    defer.resolve(true);
-                }else{
-                    defer.resolve(false);
-                }
+                dateMoment = moment();
             }
 
-            return defer.promise;
-        };
+            var defaultTime = new Date(dateMoment.format(FullDateFormat));
+            var startTime = new Date(dateMoment.hour(0).minutes(0).seconds(0).format(FullDateFormat));
+            var endTime = new Date(dateMoment.hour(23).minutes(59).seconds(0).format(FullDateFormat));
+
+
+            return angular.extend(defaults, {
+                startTime : startTime,
+                endTime : endTime,
+                defaultTime : defaultTime
+            })
+        }
     });
 
 

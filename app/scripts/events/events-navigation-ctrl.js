@@ -4,18 +4,18 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('EventsNavigationCtrl', function($scope, TimelyFilteredEvents){
+    .controller('EventsNavigationCtrl', function($scope){
         $scope.openDatePicker = function(e){
             e.preventDefault();
             e.stopPropagation();
             $scope.datePickerOpened = true;
         }
 
-        $scope.$watch(function(){
-            return TimelyFilteredEvents.filteredEventsByShift
-        }, function(){
-            countAll();
-        },true);
+//        $scope.$watch(function(){
+//            return TimelyFilteredEvents.filteredEventsByShift
+//        }, function(){
+//            countAll();
+//        },true);
 
         var countAll = function(){
             var totalOrdersCount = 0, totalGuestsCount = 0, guestsLeftCount = 0, totalWalkinsCount= 0;
