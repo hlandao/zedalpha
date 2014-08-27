@@ -164,6 +164,6 @@ zedAlphaServices
     }).filter('momentFilter', function(){
         return function(input, format){
             if(!input) return;
-            return input.format(format);
+            return input.format(format) + "";
         }
     })

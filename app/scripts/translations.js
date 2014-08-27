@@ -127,7 +127,19 @@ zedAlphaConfigModule
         "PAST_EVENTS" : "Past Reservations",
         "NOW_EVENTS" : "Current Reservations",
         "FUTURE_EVENTS" : "Upcoming Reservations",
-        "NEXT_EVENT" : "Next Reservation in"
+        "NEXT_EVENT" : "Next Reservation in",
+        // SHIFTS
+        "END_TIME" : "End",
+        "START_TIME" : "Start",
+        "DEFAULT_TIME" : "Default",
+        //DAYS
+        "SUNDAY" :"Sunday",
+        "MONDAY" : "Monday",
+        "TUESDAY" :"Tuesday",
+        "WEDNESDAY" :"Wednesday",
+        "THURSDAY" :"Thursday",
+        "FRIDAY" : "Friday",
+        "SATURDAY" :"Saturday"
 
 
     });
@@ -252,7 +264,20 @@ zedAlphaConfigModule
                 "PAST_EVENTS" : "הזמנות בעבר",
                 "NOW_EVENTS" : "הזמנות כעת",
                 "FUTURE_EVENTS" : "הזמנות עתידיות",
-                "NEXT_EVENT" : "ההזמנה הקרובה בעוד"
+                "NEXT_EVENT" : "ההזמנה הקרובה בעוד",
+                //SHIFTS
+                "END_TIME" : "סיום",
+                "START_TIME" : "התחלה",
+                "DEFAULT_TIME" : "ברירת מחדל",
+                //DAYS
+                "SUNDAY" :"ראשון",
+                "MONDAY" : "שני",
+                "TUESDAY" :"שלישי",
+                "WEDNESDAY" :"רביעי",
+                "THURSDAY" :"חמישי",
+                "FRIDAY" : "שישי",
+                "SATURDAY" :"שבת"
+
 
 
             }

@@ -889,17 +889,6 @@ zedAlphaDirectives
 
 
 
-                var $mapRef = BusinessHolder.$business.$child('map').$on('loaded', function(){
-                    $mapRef.$off('loaded');
-                    if($mapRef.$value){
-                        renderMapJson($mapRef.$value);
-                        filteredEventsWatcher = scope.$watch('filteredEvents.events', renderMapWithEvents,true);
-                        upcomingEventsWatcher = scope.$watch('upcomingEvents.events', renderMapWithEvents,true);
-
-                    }
-                });
-
-
                 var renderMapJson = function(map){
                     paper.fromJSON(map, function(el, data){
                         for(var i in data){
@@ -963,6 +952,10 @@ zedAlphaDirectives
 
                 });
 
+
+                renderMapJson(BusinessHolder.business.map);
+                filteredEventsWatcher = scope.$watch('filteredEvents.events', renderMapWithEvents,true);
+                upcomingEventsWatcher = scope.$watch('upcomingEvents.events', renderMapWithEvents,true);
 
 
             }
@@ -1102,7 +1095,8 @@ zedAlphaDirectives
                         }
 
                         var json = JSON.stringify(arr);
-                        $mapRef.$set(json);
+                        BusinessHolder.business.map = json;
+                        BusinessHolder.business.$save();
                     });
                 };
 
@@ -1139,12 +1133,7 @@ zedAlphaDirectives
                     panZoom.enable();
                 }
 
-                var $mapRef = BusinessHolder.$business.$child('map').$on('loaded', function(){
-                    $mapRef.$off('loaded');
-                    if($mapRef.$value){
-                        renderMapJson($mapRef.$value);
-                    }
-                });
+
 
 
                 var renderMapJson = function(map){
@@ -1204,6 +1193,9 @@ zedAlphaDirectives
                     }
 
                 };
+
+                renderMapJson(BusinessHolder.business.map);
+
 
 
             }

@@ -13,7 +13,7 @@
                             <input type="checkbox" ng-model="day.isEnabled" ng-change="toggle(day)">
                         </span>
                         <span class="">
-                            {{day.date | momentFilter : 'dddd DD/MM/YYYY'}}
+                            {{day.date | momentFilter : 'dddd' | translate }} {{day.date | momentFilter : 'DD/MM/YYYY'}}
                         </span>
                     </span>
                     <span ng-show="day.basic"> {{day.dayOfWeek | dayOfWeekFilter | translate}} </span>
@@ -24,18 +24,18 @@
                             <div class="row">
                                 <div class="col-xs-4 shiftlabel"><input type="checkbox" ng-model="shift.active"> {{shift.name}}</div>
                                 <div class="col-xs-4" ng-hide="!shift.active">
-                                    <label>Start Time</label>
+                                    <label>{{'START_TIME' | translate }}</label>
                                     <input pick-a-time="shift.startTime" on-change="dayWasChanged(day)" style="width:100%;">
                                 </div>
                                 <div class="col-xs-4"  ng-hide="!shift.active">
-                                    <label>End Time {{shift.duration}}</label>
+                                    <label>{{'END_TIME' | translate }}</label>
                                     <input hl-shift-duration shift="shift" on-change="dayWasChanged(day)">
 
                                 </div>
                             </div>
-                            <div class="row"  ng-hide="!shift.active" ng-if="$index == 0">
+                            <div class="row"  ng-hide="!shift.active">
                                 <div class="col-xs-4 col-xs-offset-8">
-                                    <label>Default Time</label>
+                                    <label>{{'DEFAULT_TIME' | translate }}</label>
                                     <input hl-timepicker ng-model="shift.defaultTime" settings="{min : shift.startTime, range : shift.duration}" on-change="dayWasChanged(day)">
 
                                 </div>
@@ -53,19 +53,19 @@
                             <div class="row">
                                 <div class="col-xs-4 shiftlabel"><input type="checkbox" ng-model="shift.active"> {{shift.name}}</div>
                                 <div class="col-xs-4" ng-hide="!shift.active">
-                                    <label>Start Time</label>
-                                    <input pick-a-time="shift.startTime" on-change="dayWasChanged(day)">
+                                    <label>{{'START_TIME' | translate }}</label>
+                                    <input pick-a-time="shift.startTime" on-change="dayWasChanged(day)"  style="width:100%;">
                                 </div>
                                 <div class="col-xs-4"  ng-hide="!shift.active">
-                                    <label>End Time {{shift.duration}}</label>
+                                    <label>{{'END_TIME' | translate }}</label>
                                     <input hl-shift-duration shift="shift" on-change="dayWasChanged(day)">
 
                                 </div>
                             </div>
                             <div class="row"  ng-hide="!shift.active">
                                 <div class="col-xs-4 col-xs-offset-8">
-                                    <label>Default Time</label>
-                                    <!--<input hl-timepicker ng-model="shift.defaultTime" ng-change="dayWasChanged(day)">-->
+                                    <label>{{'DEFAULT_TIME' | translate }}</label>
+                                    <input hl-timepicker ng-model="shift.defaultTime" settings="{min : shift.startTime, range : shift.duration}" on-change="dayWasChanged(day)">
 
                                 </div>
 
