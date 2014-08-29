@@ -21,15 +21,19 @@ zedAlphaDirectives
                         min: null,
                         max: null,
                         range : null,
-                        intervalInMinutes : 15
+                        intervalInMinutes : 15,
+                        showDurationFromDate : null
                     },
                     settings = defaultSettings;
 
 
+                var initWatcher = false;
                 var setNgModelWatcher = function(){
-                    var ngModelWatcher = $scope.$watch('ngModel', function(){
+                    if(initWatcher) return;
+                    initWatcher = true;
+                    var ngModelWatcher = $scope.$watch('ngModel', function(newVal){
                         init();
-                        ngModelWatcher();
+                        if(newVal) ngModelWatcher();
                     });
                 }
                 var init = this.init = function (_ngModel, _linkFN, _attrs) {
@@ -46,25 +50,21 @@ zedAlphaDirectives
                     }
 
                     if(!ngModel.$modelValue || !ngModel.$modelValue.isValid || !ngModel.$modelValue.isValid()){
-                        if(settings.alternateValue && settings.alternateValue.isValid && settings.alternateValue.isValid()){
-                            console.log('load alternate value');
-                            $scope.ngModel = settings.alternateValue.clone();
-                        }else{
-                            throw new TypeError("Cannot iniate timepicker");
-                            return;
-                        }
+                        throw new TypeError("Cannot iniate timepicker");
                     }
 
 
 //                    generateTimesArray();
 
-                    $scope.$watch('settings', function(){
+                    $scope.$watch('settings', function(newVal,oldVal){
+                        debugger;
                         settings = angular.extend(defaultSettings, $scope.settings);
                         generateTimesArray();
-                    });
+                    }, true);
 
 
                     ngModel.$render = function(){
+                        debugger;
                         if(!initialized){
                             init();
                         }else{
@@ -72,13 +72,14 @@ zedAlphaDirectives
                         }
                     };
 
-                    ngModel.$parsers.push(function(viewValue){
+                    ngModel.$parsers.unshift(function(viewValue){
                         if(viewValue){
                             return moment(viewValue.time);
                         }
                     });
 
                     $scope.setNewTime = function(timeObj, e){
+                        debugger;
                         e.stopPropagation();
                         ngModel.$setViewValue(timeObj);
                         generateTimesArray();
@@ -99,15 +100,13 @@ zedAlphaDirectives
                 var generateTimesArray  = function () {
                     var currentMoment,
                         interval = settings.intervalInMinutes,
-                        max = settings.max || ngModel.$modelValue.clone().hour(23).minute(59).seconds(0),
-                        min = settings.min || ngModel.$modelValue.clone().hour(0).minute(0).seconds(0),
+                        max = settings.max ? settings.max.clone() : ngModel.$modelValue.clone().hour(23).minute(59).seconds(0),
+                        min = settings.min ? settings.min.clone() : ngModel.$modelValue.clone().hour(0).minute(0).seconds(0),
                         currentMoment = min.clone(),
                         v = min,
                         rangeInMinutes = settings.range || max.diff(min, 'minutes');
 
-
                     resetTimesArray();
-
 
 
                     var timeObj;
@@ -179,7 +178,9 @@ zedAlphaDirectives
 
                 init();
 
-                scope.open = function(){
+                scope.open = function(e){
+                    e.preventDefault();
+                    e.stopPropagation();
                     ctrl.open();
                     setTimeout(function(){
                         var $ul = element.find('ul').eq(0);

@@ -2,32 +2,27 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 
 
 zedAlphaDirectives
-    .directive('hlEventForm', function(EventsLogic,areYouSureModalFactory, $filter, EventsHolder,EventsDurationForGuestsHolder, FullDateFormat, $q, $log, ShiftsDayHolder) {
+    .directive('hlEventForm', function(EventsCollection,areYouSureModalFactory, $filter, FullDateFormat, $q, $log, ShiftsDayHolder) {
         return {
             restrict: 'A',
             replace : true,
             priority : 10,
             scope : {
-              event : "="
+              eventObj : "=event"
             },
             templateUrl : '/partials/events/event-form-directive.html',
             controller : function($scope){
-               var justRevertedWhileEditing,
-                   eventWatcher,
-                   eventGuestsWatcher,
-                   eventClone;
+               var eventClone;
 
                 var init = function(){
-                    justRevertedWhileEditing = false;
-                    eventWatcher = $scope.$watch('event', eventWatching,true);
-                    $scope.event.helpers = $scope.event.helpers || {};
+                    $scope.event = $scope.eventObj.data;
                     eventClone = angular.copy($scope.event);
                 }
 
 
 
                $scope.$isNew = function(){
-                   return !$scope.event.$id;
+                   return $scope.event.$isNew();
                }
 
                 $scope.save = function(eventToSave){
@@ -100,7 +95,6 @@ zedAlphaDirectives
                         return;
                     }
 
-
                     // check start time
                     if(newVal && newVal.startTime != oldVal.startTime){
                         var startTimeMoment = moment(newVal.startTime);
@@ -128,14 +122,7 @@ zedAlphaDirectives
                     }
 
 
-                    // check guests per 15
-                    if(!EventsLogic.isGuestsPer15Valid(newVal)){
-                        newVal.helpers.guestsPer15Invalid = true;
-                    }else{
-                        newVal.helpers.guestsPer15Invalid = false;
-                    }
 
-                    $scope.event.helpers.maxDuration = maxDuration || EventsLogic.maxDurationForEventInMinutes(newVal);
 
 
                     // validate
@@ -152,8 +139,6 @@ zedAlphaDirectives
                             justRevertedWhileEditing = true;
                         }
                     }
-
-                    console.log('justRevertedWhileEditing',justRevertedWhileEditing);
                 },10);
 
 
@@ -169,28 +154,7 @@ zedAlphaDirectives
                 }
 
 
-                var updateEventTimeWithNewDuration = function(newDuration){
-                    if (newDuration && $scope.event.startTime){
-                        var startTimeMoment = moment($scope.event.startTime);
-                        var newEndTimeMoment = startTimeMoment.add(parseInt(newDuration), 'minutes');
-                        $scope.event.endTime = new Date(newEndTimeMoment.format(FullDateFormat));
-                    }
-                }
-
-
-                var shiftsWatcher = $scope.$watch(function(){
-                    return ShiftsDayHolder.selected;
-                }, function(newVal){
-                    if(newVal){
-                        $scope.minStartTime = newVal.startTime;
-                        $scope.maxStartTime = newVal.endTime;
-                    }
-                });
-
                 $scope.$on('$destroy', function(){
-                    console.log('$destroy');
-                    eventWatcher();
-                    shiftsWatcher();
                     eventClone = null;
                 });
 
@@ -203,4 +167,160 @@ zedAlphaDirectives
                 element.find('input').eq(0).focus();
             }
         };
+    }).directive('eventPhoneValidator', function(){
+        return {
+            priority : 0,
+            require : ['ngModel'],
+            link : function(scope, elem, attrs, ctrls){
+                var ngModel = ctrls[0];
+
+                var validate = function(value){
+                    value = value || ngModel.$modelValue;
+                    scope.eventObj.$validatePhone(value).then(function(warning){
+                        ngModel.$setValidity('phone', true);
+                    },function(error){
+                        ngModel.$setValidity('phone', false);
+                    });
+                }
+
+                validate();
+
+                ngModel.$parsers.push(function(viewValue){
+                    validate(viewValue);
+                    return viewValue;
+                });
+            }
+        }
+    }).directive('eventNameValidator', function(){
+        return {
+            priority : 0,
+            require : ['ngModel'],
+            link : function(scope, elem, attrs, ctrls){
+                var ngModel = ctrls[0];
+
+                var validate = function(value){
+                    value = value || ngModel.$modelValue;
+                    scope.eventObj.$validateName(value).then(function(warning){
+                        ngModel.$setValidity('name', true);
+                    },function(error){
+                        ngModel.$setValidity('name', false);
+                    });
+                }
+
+                validate();
+
+                ngModel.$parsers.push(function(viewValue){
+                    validate(viewValue);
+                    return viewValue;
+                });
+
+
+            }
+        }
+    }).directive('eventGuestsValidator', function(EventsCollection){
+        return {
+            priority : 0,
+            require : ['ngModel'],
+            link : function(scope, elem, attrs, ctrls){
+                var ngModel = ctrls[0];
+
+                var validate = function(value){
+                    value = value || ngModel.$modelValue;
+                    EventsCollection.checkGuestsPer15Minutes(scope.event.startTime, value).then(function(warning){
+                        ngModel.$setValidity('guests', true);
+                    },function(error){
+                        ngModel.$setValidity('guests', false);
+                    });
+                }
+
+                validate();
+
+                ngModel.$parsers.push(function(viewValue){
+                    validate(viewValue);
+                    return viewValue;
+                });
+
+            }
+        }
+    }).directive('eventSeatsValidator', function(){
+        return {
+            priority : 0,
+            require : ['ngModel'],
+            link : function(scope, elem, attrs, ctrls){
+                var ngModel = ctrls[0];
+
+                var validate = function(value){
+                    value = value || ngModel.$modelValue;
+                    scope.eventObj.$validateSeats(value).then(function(warning){
+                        ngModel.$setValidity('seats', true);
+                    },function(error){
+                        ngModel.$setValidity('seats', false);
+                    });
+                }
+
+                validate();
+
+                ngModel.$parsers.push(function(viewValue){
+                    validate(viewValue);
+                    return viewValue;
+                });
+            }
+        }
+    }).directive('eventEmailValidator', function(){
+        return {
+            priority : 0,
+            require : ['ngModel'],
+            link : function(scope, elem, attrs, ctrls){
+                var ngModel = ctrls[0];
+            }
+        }
+    }).directive('eventStatusValidator', function(){
+        return {
+            priority : 0,
+            require : ['ngModel'],
+            link : function(scope, elem, attrs, ctrls){
+                var ngModel = ctrls[0];
+            }
+        }
+    }).directive('eventStartTimeValidator', function(){
+        return {
+            priority : 0,
+            require : ['ngModel'],
+            link : function(scope, elem, attrs, ctrls){
+                var ngModel = ctrls[0];
+
+                var validate = function(value){
+                    console.log('eventStartTimeValidator viewValue',value);
+                };
+
+                var validateStartTime = function(value){
+                    value = value || ngModel.$modelValue;
+                    scope.eventObj.$validateStartTime(value).then(function(warning){
+                        ngModel.$setValidity('startTime', true);
+                    },function(error){
+                        ngModel.$setValidity('startTime', false);
+                    });
+                }
+
+                var validateCollisions = function(){
+
+                }
+
+
+//                ngModel.$parsers.push(function(viewValue){
+////                    validate(viewValue);
+//                    return viewValue;
+//                });
+
+
+            }
+        }
+    }).directive('eventEndTimeValidator', function(){
+        return {
+            priority : 0,
+            require : ['ngModel'],
+            link : function(scope, elem, attrs, ctrls){
+                var ngModel = ctrls[0];
+            }
+        }
     });

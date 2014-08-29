@@ -4,14 +4,15 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('EventsCtrl', function($scope, $log, DateHolder, EventsHolder, Event, $filter, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder){
+    .controller('EventsCtrl', function($scope, $log, DateHolder, Event, $filter, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder, EventsCollection){
 
         $scope.DateHolder = DateHolder;
         $scope.ShiftsDayHolder = ShiftsDayHolder;
         $scope.business = BusinessHolder.business;
 
+        EventsCollection.updateEvents();
         // --------- New event ----------- //
-        $scope.newEventWithSeatsDic = function(occasionalOrDestination, seatsDic, specificStartTime){
+        $scope.newEventWithSeatsDic = function(occasionalOrDestination, seatsDic, startTime){
             if($scope.switchMode){
                 var localizedError = $filter('translate')('SWITCH_EVENT_WARNING');
                 alert(localizedError)
@@ -22,16 +23,14 @@ zedAlphaControllers
                 return;
             }
             CloseOpenControls();
-            $scope.newEvent = new Event(null, {
+            $scope.newEvent = EventsCollection.createNewEvent({
                 occasionalOrDestination : occasionalOrDestination,
-                specificStartTime : specificStartTime,
+                startTime : startTime,
                 seatsDic : seatsDic
-
-            }).then(function(){
-
             });
 
-            if(isOccasional) $scope.goToNow();
+            console.log('$scope.newEvent',$scope.newEvent);
+            if($scope.newEvent.isOccasional) $scope.goToNow();
         };
 
 
@@ -60,7 +59,7 @@ zedAlphaControllers
 
 
         $scope.eventStatusChanged = function(event){
-            event.$saveWithValidation();
+            EventsCollection.$saveWithValidation(event);
         };
 
 
@@ -76,7 +75,7 @@ zedAlphaControllers
         }
 
 
-        $scope.sortedEvents = EventsHolder.sorted;
+//        $scope.sortedEvents = EventsHolder.sorted;
 
         $scope.goToEntireShift = function(){
             DateHolder.isEntireShift = true;

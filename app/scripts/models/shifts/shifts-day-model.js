@@ -182,7 +182,9 @@ zedAlphaServices
                }else{
                    if(!shiftsDay.shifts){
                        var readOnlyShiftForDate = ReadOnlyShiftsDayGenerator.byDate(date);
-                       shiftsDay.$inst().$set(readOnlyShiftForDate);
+                       shiftsDay.$populate(readOnlyShiftForDate);
+                       shiftsDay.$saveWithValidation();
+//                       shiftsDay.$inst().$set(readOnlyShiftForDate);
                    }
                }
                 return shiftsDay;

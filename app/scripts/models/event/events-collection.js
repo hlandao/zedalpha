@@ -6,7 +6,7 @@ zedAlphaServices
         return $FirebaseArray.$extendFactory({
             // override the $createObject behavior to return a Message object
             $createObject: function (snap) {
-                return new Event(snap);
+//                return new Event(snap);
             },
 
             // override the $$updated behavior to call a method on the Message
@@ -16,45 +16,41 @@ zedAlphaServices
                 event.$update(snap);
             }
         });
-    }).factory("EventsCollection",function ($firebase, EventsFactory, $log) {
-        return function (ref, date) {
-            if(date){
-                var dayOfYear = moment(date).dayOfYear();
-                ref = ref.child(dayOfYear);
-            }
-            console.log('ref',ref);
-            return $firebase(ref, {arrayFactory: EventsFactory}).$asArray();
+    }).factory("EventsCollectionGenerator",function ($firebase, $log, EventsFactory) {
+        return function (ref) {
+            return $firebase(ref, {arrayFactory : EventsFactory}).$asArray();
         }
-    }).service("EventsHolder", function (BusinessHolder, EventsCollection, firebaseRef, DateHolder, $rootScope, $log, $filter) {
+    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q) {
         var self = this;
 
-        var updateEvents = function () {
+        this.updateEvents = function () {
             if (BusinessHolder.business) {
                 var businessId = BusinessHolder.business.$id;
-                var ref = firebaseRef('events/' + businessId);
-                self.collection = EventsCollection(ref, DateHolder.currentDate).$loaded().then(function (col) {
-                    console.log('collection',col)
-                    $log.info('[EventsHolder] Loaded ' + self.collection.length + ' events for business id : ' + businessId);
-                    sortEvents();
-                }, function(){
-                    $log.error('[EventsHolder] Failed loaded events for business id : ' + businessId);
+                var dayOfYear = DateHolder.currentDate.dayOfYear();
+                var ref = firebaseRef('events/').child(businessId).child(dayOfYear);
+                self.collection = EventsCollectionGenerator(ref, self);
+                self.collection.$loaded().then(function(){
+                    self.sortEvents();
                 });
             }
         };
 
 
-        var sortEvents = this.sortEvents = function(statusFilter, query){
-            var sorted = $filter('sortDayEvents')(self.collection, DateHolder.currentClock, statusFilter, query);
-            self.sorted = sorted;
+        this.sortEvents = function(statusFilter, query){
+            if(self.collection && self.collection.length){
+                var sorted = $filter('sortDayEvents')(self.collection, moment(), statusFilter, query);
+                self.sorted = sorted;
+            }
         };
 
         this.maxEventDurationForStartTime = function (event) {
+
             var maxDuration = -1, tempMaxDuration, currentEvent;
             for (var i = 0; i< this.collection.length; ++i) {
                 currentEvent = this.collection.$getRecord(key);
 
-                if (currentEvent.$shouldCollide() && event.$sharingTheSameSeatsWithAnotherEvent(currentEvent)) {
-                    tempMaxDuration = event.$maxDurationForEventInRegardToAnotherEvent(currentEvent);
+                if (currentEvent.$shouldCollide() && currentEvent.$sharingTheSameSeatsWithAnotherEvent(event)) {
+                    tempMaxDuration = currentEvent.$maxDurationForEventInRegardToAnotherEvent(event);
                     if (tempMaxDuration === 0) {
                         return 0;
                     } else if (tempMaxDuration > 0) {
@@ -65,25 +61,121 @@ zedAlphaServices
             return maxDuration;
         };
 
-        this.isGuestsPer15ValidForNewEvent = function (newEvent) {
-            var guestPer15Value = parseInt(GuestsPer15.$value);
-            if (!guestPer15Value || guestPer15Value === 0 || !this.data.guests) return true;
-            if (!newEvent.data.startTime) return false;
-            var count = 0, currentEvent;
-            for (var key in this.collection) {
+        this.createNewEvent = function(data){
+            // find the duration for the event and set the end time
+            var tempEvent = new Event(null, data);
+            var maxDurationForEvent = self.maxEventDurationForStartTime(tempEvent);
+            if (maxDurationForEvent === 0) throw new TypeError("cannot create new event with the current startTime due to possible collisions");
+            else if(maxDurationForEvent > 0) tempEvent.$setEndTimeWithDuration(maxDurationForEvent);
+            return tempEvent;
+        }
+
+
+        /**
+         * validates this for collisions
+         * @returns {promise}
+         */
+        this.validateCollision = function (event) {
+            var defer = $q.defer();
+            if (self.checkCollisionsForEvent(event)) {
+                defer.reject({error: "ERROR_EVENT_MSG_COLLISION"});
+            } else {
+                defer.resolve();
+            }
+            return defer.promise;
+        },
+
+
+        /**
+         * checks the guests per 15 minutes limitation on the event
+         * @returns {promise}
+         */
+
+        this.checkGuestsPer15Minutes = function (startTimeValue, guestPer15Value) {
+            var defer = $q.defer();
+            if (!this.isGuestsPer15ValidForNewEvent(startTimeValue, guestPer15Value)) {
+                defer.resolve({warning: "INVALID_GUESTS_PER_15_WARNING"});
+            } else {
+                defer.resolve();
+            }
+            return defer.promise;
+        };
+
+
+        this.isGuestsPer15ValidForNewEvent = function (eventStartTime, eventGuestsPer15Value) {
+            var guestPer15Value = parseInt(BusinessHolder.business.guestsPer15);
+            if (!guestPer15Value || guestPer15Value === 0 || !eventGuestsPer15Value) return true;
+            if (!eventStartTime) return true;
+            var count = eventGuestsPer15Value, currentEvent;
+            for (var key = 0; key < this.collection.length; ++key) {
                 currentEvent = this.collection.$getRecord(key);
-                if (!currentEvent.isOccasional && newEvent.data.startTime.isSame(currentEvent.data.startTime, 'minutes')) {
+                if (!currentEvent.data.isOccasional && eventStartTime.isSame(currentEvent.data.startTime, 'minutes')) {
                     count += parseInt(currentEvent.guests);
                 }
             }
-
             return count <= guestPer15Value;
         };
 
-        $rootScope.$on('$businessHolderChanged', updateEvents);
-        $rootScope.$on('$dateWasChanged', updateEvents);
-        $rootScope.$on('$clockWasChanged', sortEvents);
-        updateEvents();
+
+
+
+        /**
+         * check all the available warnings for the event
+         * @returns {Promise|*}
+         */
+        this.checkAllWarnings = function (event) {
+            var warnings = {warnings: []};
+            var promises = [this.$checkGuestsPer15Minutes(), event.$checkIfEventFitsShifts()];
+
+            return $q.all(promises).then(function (result) {
+                for (var i = 0; i < result.length; ++i) {
+                    if (result[i]) warnings.warnings.push(result[i]);
+                }
+                return warnings;
+           });
+        };
+
+        this.beforeSave = function (event) {
+            return self.validateCollision().
+                then(event.$validatePhone).
+                then(event.$validateName).
+                then(event.$validateStartTime).
+                then(event.$validateEndTime).
+                then(event.$validateSeats).
+                then(event.$validateHostess).
+                then(self.checkAllWarnings);
+        };
+
+        this.saveWithValidation = function (event, approveAllWarnings) {
+            return self.beforeSave(event).then(function (result) {
+                if (!approveAllWarnings && result.warnings) {
+                    return result;
+                } else {
+                    self.saveAfterValidation(event);
+                }
+            });
+        };
+
+
+        this.saveAfterValidation = function (event) {
+            if (event.$isNew()) {
+                this.collection.$add(this.$event);
+            } else {
+                this.collection.$save(this);
+            }
+        };
+
+
+        $rootScope.$on('$businessHolderChanged', function(){
+            updateEvents();
+        });
+
+        $rootScope.$on('$dateWasChanged', function(){
+            self.updateEvents();
+        });
+
+        $rootScope.$on('$clockWasChanged', self.sortEvents);
+        self.updateEvents();
     });
 
 

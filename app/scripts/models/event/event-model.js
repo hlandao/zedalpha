@@ -7,16 +7,14 @@ zedAlphaServices
         var OccasionalEvent = _.findWhere(BusinessHolder.eventsStatuses, {status: 'OCCASIONAL'}),
             OrderedEvent = _.findWhere(BusinessHolder.eventsStatuses, {status: 'ORDERED'});
 
-        function Event(snapshot, newEventData, holder) {
-            this.holder = holder;
+        function Event(snapshot, newEventData) {
             if (snapshot) {
                 return this.$initWithFirebaseSnapshot(snapshot);
             } else if (newEventData) {
-                return this.$initNewEventAsync(newEventData);
+                return this.$initNewEvent(newEventData);
             } else {
                 throw new TypeError("please provide either a valid snapshot object or new event data");
             }
-
         };
 
 
@@ -32,45 +30,35 @@ zedAlphaServices
 
                 return this;
             },
-            $initNewEventAsync: function (data) {
+            $initNewEvent: function (data) {
                 if (this.initialized) throw new TypeError("init methods can be called only once");
                 this.initialized = true;
-                this.initting = $q.defer();
 
                 this.data = {};
 
                 // determine if the event is 'destination' or 'occasional'
-                this.data.isOccasional = (data.occasionalOrDestination == 'occasional')
+                this.data.isOccasional = (data.occasionalOrDestination && data.occasionalOrDestination == 'occasional')
                 this.data.status = this.data.isOccasional ? OccasionalEvent : OrderedEvent;
 
                 // set the start time
-                var startTime = data.specificStartTime || (this.data.isOccasional ? new Date() : DateHolder.currentClock);
-                if (!startTime) throw new TypeError("cannot create new event due to invalid start time");
-                startTime = DateHelpers.findClosestIntervalToDate(startTime);
-                this.data.startTime = moment(startTime).seconds(0);
+                var startTime = data.startTime || (this.data.isOccasional ? moment(Date.now()) : DateHolder.currentClock.clone());
+                if (!startTime || !startTime.isValid || !startTime.isValid()) throw new TypeError("cannot create new event due to invalid start time, should be a moment obj.");
+                startTime.minute(DateHelpers.findClosestIntervalToDate(startTime));
+                this.data.startTime = startTime.seconds(0);
 
                 // find the duration for the event and set the end time
-                var maxDurationForEvent = this.holder.maxEventDurationForStartTime(this.data.startTime);
-                if (maxDurationForEvent === 0) throw new TypeError("cannot create new event with the current startTime due to possible collisions");
-                var duration = BusinessHolder.eventsDurationForGuests.default || 120;
-                duration = Math.min(duration, maxDurationForEvent);
-                this.data.endTime = this.$endTimeWithDuration(duration);
-                if (!this.data.endTime) throw new TypeError("cannot create new event due to failure in setting the end time");
+                var duration = BusinessHolder.business.eventsDurationForGuests.default || 120;
+                this.data.endTime = this.$setEndTimeWithDuration(duration);
+                if (!this.data.endTime || !this.data.endTime.isValid || !this.data.endTime.isValid()) throw new TypeError("cannot create new event due to failure in setting the end time,should be a moment obj.");
 
                 // set the events seats dictionary
-                if (!data.seatsDic) throw new TypeError('cannot create new event due to invalid seats object.');
-                this.data.seats = seatsDic;
+                this.data.seats = data.seatsDic;
 
                 // set name
                 this.data.name = this.data.isOccasional ? $filter('translate')('OCCASIONAL') : '';
 
                 // set createdAt date
                 this.data.createdAt = new Date();
-
-                // enter editing mode
-                this.$enterEditingMode();
-
-                this.initting.resolve(this);
                 return this;
             },
 
@@ -78,17 +66,18 @@ zedAlphaServices
                 angular.extend(this.data, snapshot.val());
                 this.data.startTime = moment(this.data.startTime);
                 this.data.endTime = moment(this.data.endTime);
-
             },
+
 
             // ------ Validators (major errors) ------ //
             /**
              * validates  this.name
              * @returns {promise}
              */
-            $validateName: function () {
+            $validateName: function (value) {
+                value = value || this.data.name;
                 var defer = $q.defer();
-                if (!this.data.name) {
+                if (!value) {
                     defer.reject({error: "ERROR_EVENT_MSG_NAME"});
                 } else {
                     defer.resolve();
@@ -126,9 +115,10 @@ zedAlphaServices
              * validates this.phone
              * @returns {promise}
              */
-            $validatePhone: function () {
+            $validatePhone: function (value) {
+                value = value || this.data.phone;
                 var defer = $q.defer();
-                if (!this.data.isOccasional && !this.phone) {
+                if (!this.data.isOccasional && !value) {
                     defer.reject({error: "ERROR_EVENT_MSG_PHONE"});
                 } else {
                     defer.resolve();
@@ -165,52 +155,8 @@ zedAlphaServices
             },
 
 
-            /**
-             * validates this for collisions
-             * @returns {promise}
-             */
-            $validateCollision: function () {
-                var defer = $q.defer();
-                if (EventCollection.checkCollisionsForEvent(this)) {
-                    defer.reject({error: "ERROR_EVENT_MSG_COLLISION"});
-                } else {
-                    defer.resolve();
-                }
-                return defer.promise;
-            },
 
             // ------ Checks (warnings) ------ //
-
-
-            /**
-             * check all the available warnings for the event
-             * @returns {Promise|*}
-             */
-            $checkAllWarnings: function () {
-                var warnings = {warnings: []};
-                var promises = [this.$checkGuestsPer15Minutes(), this.$checkIfEventFitsShifts()];
-
-                return $q.all(promises).then(function (result) {
-                    for (var i = 0; i < result.length; ++i) {
-                        if (result[i]) warnings.warnings.push(result[i]);
-                    }
-                    return warnings;
-                });
-            },
-
-            /**
-             * checks the guests per 15 minutes limitation on the event
-             * @returns {promise}
-             */
-            $checkGuestsPer15Minutes: function () {
-                var defer = $q.defer();
-                if (!this.holder.isGuestsPer15ValidForNewEvent(this)) {
-                    defer.resolve({warning: "INVALID_GUESTS_PER_15_WARNING"});
-                } else {
-                    defer.resolve();
-                }
-                return defer.promise;
-            },
 
             /**
              * checks if the event is within the shifts
@@ -238,11 +184,21 @@ zedAlphaServices
              * @param minutes
              * @returns {*}
              */
-            $endTimeWithDuration: function (minutes) {
+            $setEndTimeWithDuration: function (minutes) {
                 if (!minutes || minutes == 0) return false;
                 if (!this.data.startTime) return false;
                 return this.data.startTime.clone().add(minutes, 'minutes');
             },
+            $setEndTimeByMaxDuartion: function(maxDuration){
+                var duration = this.$getDuration();
+                duration = Math.min(duration, maxDuration);
+                this.$setEndTimeWithDuration(duration);
+            },
+
+            $getDuration : function(){
+                return this.endTime.diff(this.startTime, 'minutes');
+            },
+
             /**
              * helper function to determine if the event has seats
              * @returns {*}
@@ -259,9 +215,10 @@ zedAlphaServices
                 return (this.data.status && this.data.status.status) ? (NotCollidingEventStatuses.indexOf(this.data.status.status) == -1) : false;
             },
 
-            $sharingTheSameSeatsWithAnotherEvent: function (anotherEvent) {
+            $sharingTheSameSeatsWithAnotherEvent: function (anotherEvent, seats) {
+                seats = anotherEvent.data.seats || seats;
                 for (var i  in this.data.seats) {
-                    if (anotherEvent.data.seats[i]) return true;
+                    if (seats[i]) return true;
                 }
                 return false;
             },
@@ -283,49 +240,8 @@ zedAlphaServices
 
             },
 
-            $enterEditingMode: function (event) {
-                var maxDurationForEvent = this.holder.maxEventDurationForStartTime(this.startTime);
-                this.helpers = this.helpers || {};
-                this.helpers.maxDuration = maxDurationForEvent;
-                this.helpers.isEditing = true;
-                return true;
-            },
-
-            $exitEditingMode: function (event) {
-                this.helpers.isEditing = false;
-                return true;
-            },
 
 
-            $beforeSave: function () {
-                return this.$validateCollision().
-                    then(this.$validatePhone).
-                    then(this.$validateName).
-                    then(this.$validateStartTime).
-                    then(this.$validateEndTime).
-                    then(this.$validateSeats).
-                    then(this.$validateHostess).
-                    then(this.$checkAllWarnings);
-            },
-
-            $saveWithValidation: function (approveAllWarnings) {
-                var self = this;
-                return self.$beforeSave().then(function (result) {
-                    if (!approveAllWarnings && result.warnings) {
-                        return result;
-                    } else {
-                        self.$saveAfterValidation();
-                    }
-                });
-            },
-
-            $saveAfterValidation: function () {
-                if (this.$isNew()) {
-                    this.holder.collection.$add(this.$event);
-                } else {
-                    this.holder.collection.$save(this);
-                }
-            },
 
             $isNew: function () {
                 return !this.$id;

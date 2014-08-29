@@ -29,7 +29,7 @@ zedAlphaDirectives
                             // That's it I'm done being a programmer, I'd rather go serve Emperor Trajan as a sex slave.
                             newDate.setMonth(select.obj.getMonth());
                             newDate.setDate(select.obj.getDate());
-                            $scope.pickADate = moment(newDate);
+                            scope.pickADate = moment(newDate);
                             attrs.onChange && scope.$parent.$eval(attrs.onChange);
                         },0,false);
                     },

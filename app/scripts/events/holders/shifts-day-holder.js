@@ -3,8 +3,8 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 zedAlphaServices
 
-    .service('ShiftsDayHolder', function (ShiftsDayGenerator, ReadOnlyShiftsDayGenerator, $q) {
-
+    .service('ShiftsDayHolder', function (ShiftsDayGenerator, ReadOnlyShiftsDayGenerator, $q, $rootScope, DateHolder, AllDayShift) {
+        var self = this;
         this.$checkIfEventFitsShifts = function (event) {
             var theDateShifts = ReadOnlyShiftsDayGenerator.byDate(event.startTime),
                 defer = $q.defer();
@@ -26,11 +26,11 @@ zedAlphaServices
 
 
 
-        var loadShiftsWithDate = function(date){
+        var loadShiftWithDate = function(date){
             var wasInitialized = !!this.currentDay;
             ShiftsDayGenerator.byDate(date).then(function(_shiftDay){
-               this.currentDay = _shiftDay;
-                this.selectedShift = getDefaultShiftForDay(_shiftDay);
+               self.currentDay = _shiftDay;
+                self.selectedShift = getDefaultShiftForDay(_shiftDay);
                 if(!wasInitialized){
                     selectDefaultTime();
                 }
@@ -39,51 +39,45 @@ zedAlphaServices
 
         var getDefaultShiftForDay = function(_shiftDay){
             var currentShift;
-            if(keepClockAfterChangingDate){
-                now = moment(DateHolder.currentClock);
-            }
             for (var i = 0; i < _shiftDay.shifts.length; ++i){
                 currentShift = _shiftDay.shifts[i];
-                startDateMoment = moment(currentShift.startTime);
-                endDateMoment = moment(currentShift.endTime);
 
-                var startTimeCheck = DateHolder.currentDate.isSame(currentShift.startTime) || DateHolder.currentDate.isAfter(currentShift.startTime);
-                var endTimeCheck =
-                if(DateHolder.currentDate >= currentShift.startTime && now <= currentShift.endTime){
-                    return _shift.selected = currentShift;
+                var startTimeCheck = DateHolder.currentClock.isSame(currentShift.startTime, 'minutes') || DateHolder.currentClock.isAfter(currentShift.startTime, 'minutes');
+                var endTimeCheck = DateHolder.currentClock.isSame(currentShift.endTime, 'minutes') || DateHolder.currentClock.isBefore(currentShift.endTime, 'minutes') ;
+                if(startTimeCheck && endTimeCheck){
+                    return currentShift;
                 }
             }
 
-
-            _shift.selected = AllDayShift();
-        };
-
-        var selectCurrentShift = function(){
-
+            return AllDayShift();
         };
 
         var selectDefaultTime = function(){
-
+            var defaultTime = this.selectedShift && this.selectedShift.defaultTime;
+            if(defaultTime && defaultTime.isValid && this.selectedShift.defaultTime.isValid()){
+                DateHolder.currentClock = this.selectedShift.defaultTime;
+            }
         };
 
         $rootScope.$on('$dateWasChanged', function(){
-            loadShiftWithDate(DateHolder.currentDate, false);
+            loadShiftWithDate(DateHolder.currentDate);
         });
 
 
-        $rootScope.$watch(function(){
-            return this.selectedShift;
-        },function(newVal){
-            if(newVal && !keepClockAfterChangingDate){
-                console.log('here : ',newVal);
-                DateHolder.currentClock = new Date(newVal.defaultTime || newVal.startTime);
-                $log.info('[ShiftsDayHolder] changing currentClock after _shift.selected change to ', moment(DateHolder.currentClock).format(FullDateFormat));
-
-            }else{
-                keepClockAfterChangingDate = false;
-            }
-
-        });
+//        $rootScope.$watch(function(){
+//            return this.selectedShift;
+//        },function(newVal){
+//
+//            if(newVal && !keepClockAfterChangingDate){
+//                console.log('here : ',newVal);
+//                DateHolder.currentClock = new Date(newVal.defaultTime || newVal.startTime);
+//                $log.info('[ShiftsDayHolder] changing currentClock after _shift.selected change to ', moment(DateHolder.currentClock).format(FullDateFormat));
+//
+//            }else{
+//                keepClockAfterChangingDate = false;
+//            }
+//
+//        });
 
 
     })

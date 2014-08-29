@@ -5,23 +5,23 @@
             <span ng-show="event.$id"> {{ 'EDITED_EVENT' | translate }} </span>
         </div>
     </div>
-    <form class="form-horizontal" role="form">
+    <form class="form-horizontal" role="form" name="eventForm">
         <div class="form-group" ng-show="!event.isOccasional">
             <label class="col-sm-4 control-label">{{ 'PHONE' | translate }}</label>
             <div class="col-sm-8">
-                <input type="phone" class="form-control phone-input" ng-model="event.phone" placeholder="{{ 'PHONE' | translate }}" hl-event-phone-validator is-occasional="event.isOccasional">
+                <input event-phone-validator type="phone" class="form-control phone-input" ng-model="event.phone" placeholder="{{ 'PHONE' | translate }}" hl-event-phone-validator is-occasional="event.isOccasional">
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-4 control-label">{{ 'NAME' | translate }}</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" ng-model="event.name" placeholder="{{ 'NAME' | translate }}">
+                <input event-name-validator type="text" class="form-control" ng-model="event.name" placeholder="{{ 'NAME' | translate }}">
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-4 control-label">{{ 'GUESTS_AMOUNT' | translate }}</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control"  ng-model="event.guests" placeholder="0">
+                <input event-guests-validator type="text" class="form-control"  ng-model="event.guests" placeholder="0">
             </div>
         </div>
 
@@ -34,34 +34,34 @@
         <div class="form-group">
             <label class="col-sm-4 control-label">{{ 'COMMENT' | translate }}</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control"  ng-model="event.comment" placeholder="{{ 'COMMENT' | translate }}">
+                <input event-comment-validatortype="text" class="form-control"  ng-model="event.comment" placeholder="{{ 'COMMENT' | translate }}">
             </div>
         </div>
         <div class="form-group" ng-if="!event.isOccasional">
             <label class="col-sm-4 control-label">{{ 'CONTACT_COMMENT' | translate }}</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" ng-model="event.contactComment" placeholder="{{ 'CONTACT_COMMENT' | translate }}">
+                <input event-contact-comment-validator type="text" class="form-control" ng-model="event.contactComment" placeholder="{{ 'CONTACT_COMMENT' | translate }}">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-sm-4 control-label">{{ 'HOSTESS' | translate }}</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control"  placeholder="{{ 'HOSTESS' | translate }}" ng-model="event.hostess">
+                <input event-hostess-validator type="text" class="form-control"  placeholder="{{ 'HOSTESS' | translate }}" ng-model="event.hostess">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-sm-4 control-label">{{ 'SEATS' | translate }}</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" ng-model="event.seats" hl-seats-input>
+                <input event-seats-validator hl-seats-input type="text" class="form-control" ng-model="event.seats">
             </div>
         </div>
 
         <div class="form-group" ng-if="!event.isOccasional">
             <label class="col-sm-4 control-label">{{ 'EMAIL' | translate }}</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control"  ng-model="event.email" placeholder="{{ 'EMAIL' | translate }}">
+                <input event-email-validator type="text" class="form-control"  ng-model="event.email" placeholder="{{ 'EMAIL' | translate }}">
             </div>
         </div>
 
@@ -69,14 +69,29 @@
         <div class="form-group">
             <label class="col-sm-4 control-label">{{ 'STATUS' | translate }}</label>
             <div class="col-sm-8">
-                <hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector>
+                <hl-status-selector event-status-validator ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector>
             </div>
         </div>
 
 
         <div class="form-group">
             <div class="col-sm-12">
-                <hl-event-duration-select event="event" min-start-time="minStartTime" max-start-time="maxStartTime" ></hl-event-duration-select>
+                <table class="table table-responsive table-event-duration">
+                    <tr>
+                        <td class="the-date">
+                            <input type="text" class="datepicker-input" pick-a-date="event.startTime" on-change="changeDate()"/>
+                        </td>
+                        <td class="start-time">
+                            <input event-start-time-validator hl-timepicker ng-model="event.startTime" >
+                        </td>
+                        <td class="to-text">
+                            <span> {{ 'TO' | translate }} </span>
+                        </td>
+                        <td class="end-time">
+                            <!--<input event-end-time-validator hl-timepicker ng-model="event.endTime" settings="{min : event.startTime, showDurationFromDate : event.startTime, range : 300}">-->
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
 
@@ -93,7 +108,7 @@
             <div class="col-sm-offset-4 col-sm-8">
                 <button class="btn btn-default" ng-click="close(event)"> {{ 'BACK' | translate }}</button>
                 <button class="btn btn-danger" ng-click="remove(event)" ng-show="event.$id"> {{ 'DELETE' | translate }} </button>
-                <button class="btn btn-success" ng-click="save(event)"> {{ 'SAVE' | translate }}</button>
+                <button class="btn btn-success" ng-click="save(event)" ng-disabled="eventForm.$invalid"> {{ 'SAVE' | translate }}</button>
 
             </div>
         </div>

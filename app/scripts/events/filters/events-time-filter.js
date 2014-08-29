@@ -7,10 +7,9 @@ zedAlphaFilters
     .filter('sortDayEvents', function ($filter, EVENT_TIME_FRAME_IN_MINUTES, DEAD_EVENTS_STATUSES) {
         return function (eventsCollection, dateMoment, statusFilter, nameQuery) {
 
+            var _dateMoment = dateMoment.clone();
             var upcomingEvents = [], nowEvents = [], deadEvents = [];
-            var currentEvent, status, isStartTimeSameAsCurrent, isStartingBefore, startTimeDiffInMinutes, isEndingAfterCurrentDate;
-
-            console.log('eventsCollection',eventsCollection);
+            var currentEvent, status, isStartTimeSameAsCurrent, isStartingBefore, startTimeDiffInMinutes, isEndingAfterCurrentDate, isNowEvent, isUpcomingEvent, isDeadEvent;
 
             for (var i = 0; i < eventsCollection.length; ++i) {
                 currentEvent = eventsCollection.$getRecord(key);
@@ -20,10 +19,10 @@ zedAlphaFilters
                     continue;
                 }
 
-                isStartTimeSameAsCurrent = startTimeMoment.isSame(dateMoment, 'minute');
-                isStartingBefore = startTimeMoment.isBefore(dateMoment, 'minute');
-                startTimeDiffInMinutes = startTimeMoment.diff(dateMoment, 'minutes');
-                isEndingAfterCurrentDate = currentDateMoment.isBefore(dateMoment, 'minute');
+                isStartTimeSameAsCurrent = currentEvent.startTime.isSame(_dateMoment, 'minute');
+                isStartingBefore = currentEvent.startTime.isBefore(_dateMoment, 'minute');
+                startTimeDiffInMinutes = currentEvent.startTime.diff(_dateMoment, 'minutes');
+                isEndingAfterCurrentDate = currentEvent.endTime.isBefore(_dateMoment, 'minute');
 
                 isNowEvent = !!(isStartTimeSameAsCurrent || (isStartingBefore && isEndingAfterCurrentDate));
                 isUpcomingEvent = !!((startTimeDiffInMinutes > 0 && startTimeDiffInMinutes <= EVENT_TIME_FRAME_IN_MINUTES));
@@ -111,54 +110,55 @@ zedAlphaFilters
 
             return filteredEventsArr;
         }
-    }).filter('eventsBySeatAndTime',function (EventsHolder) {
-        return function (events, seatNumber, fromTime, toTime) {
-            var fromTimeMoment,
-                toTimeMoment,
-                filteredEventsArr;
-
-            events = events || EventsHolder.$allEvents;
-
-            fromTimeMoment = moment(fromTime);
-            toTimeMoment = moment(toTime);
-
-
-            filteredEventsArr = [];
-
-            angular.forEach(events, function (event, key) {
-                if (!event || key == '$id' || typeof event == "function") return;
-                var startTimeMoment = moment(event.startTime);
-                var endTimeMoment = moment(event.endTime);
-                var fromTimeCheck = fromTime ? startTimeMoment.diff(fromTimeMoment, 'minutes') >= 0 : true;
-                var toTimeCheck = toTime ? toTimeMoment.diff(startTimeMoment, 'minutes') >= 0 : true;
-                var isStartingAtShift = fromTimeCheck && toTimeCheck;
-
-                if (isStartingAtShift && event.seats[seatNumber]) {
-                    event.$id = key;
-                    filteredEventsArr.push(event);
-                }
-            });
-            return filteredEventsArr;
-
-        }
-    }).filter('eventsBySeatAndShiftsDay', function (EventsHolder, $filter) {
-        return function (events, seatNumber, shiftsDay) {
-            var fromTimeMoment,
-                toTimeMoment,
-                filteredEventsArr;
-
-            events = events || EventsHolder.$allEvents;
-
-            filteredEventsArr = [];
-
-            angular.forEach(shiftsDay.shifts, function (shift) {
-                var moreEvents = $filter('eventsBySeatAndTime')(events, seatNumber, shift.startTime, shift.endTime);
-
-                filteredEventsArr = filteredEventsArr.concat(moreEvents);
-            });
-
-            return filteredEventsArr;
-        }
-    });
+    })
+// .filter('eventsBySeatAndTime',function () {
+//        return function (events, seatNumber, fromTime, toTime) {
+//            var fromTimeMoment,
+//                toTimeMoment,
+//                filteredEventsArr;
+//
+//            events = events || EventsHolder.$allEvents;
+//
+//            fromTimeMoment = moment(fromTime);
+//            toTimeMoment = moment(toTime);
+//
+//
+//            filteredEventsArr = [];
+//
+//            angular.forEach(events, function (event, key) {
+//                if (!event || key == '$id' || typeof event == "function") return;
+//                var startTimeMoment = moment(event.startTime);
+//                var endTimeMoment = moment(event.endTime);
+//                var fromTimeCheck = fromTime ? startTimeMoment.diff(fromTimeMoment, 'minutes') >= 0 : true;
+//                var toTimeCheck = toTime ? toTimeMoment.diff(startTimeMoment, 'minutes') >= 0 : true;
+//                var isStartingAtShift = fromTimeCheck && toTimeCheck;
+//
+//                if (isStartingAtShift && event.seats[seatNumber]) {
+//                    event.$id = key;
+//                    filteredEventsArr.push(event);
+//                }
+//            });
+//            return filteredEventsArr;
+//
+//        }
+//    }).filter('eventsBySeatAndShiftsDay', function (EventsHolder, $filter) {
+//        return function (events, seatNumber, shiftsDay) {
+//            var fromTimeMoment,
+//                toTimeMoment,
+//                filteredEventsArr;
+//
+//            events = events || EventsHolder.$allEvents;
+//
+//            filteredEventsArr = [];
+//
+//            angular.forEach(shiftsDay.shifts, function (shift) {
+//                var moreEvents = $filter('eventsBySeatAndTime')(events, seatNumber, shift.startTime, shift.endTime);
+//
+//                filteredEventsArr = filteredEventsArr.concat(moreEvents);
+//            });
+//
+//            return filteredEventsArr;
+//        }
+//    });
 
 

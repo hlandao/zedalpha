@@ -19,7 +19,7 @@ zedAlphaDirectives
 
 
                 var settings = angular.extend({
-                    rangeInHours: 10,
+                    range: 720,
                     intervalInMintues: 15
                 }, $scope.settings);
 
@@ -42,7 +42,7 @@ zedAlphaDirectives
                     var currentMoment,
                         diff,
                         interval = settings.intervalInMintues,
-                        rangeInMinutes = settings.rangeInHours * 60,
+                        rangeInMinutes = settings.range;
                         duration = $scope.shift.duration;
 
                     resetTimesArray();

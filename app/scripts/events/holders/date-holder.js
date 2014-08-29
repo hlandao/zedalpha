@@ -2,10 +2,11 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory('DateHolder', function($rootScope, DateHelpers){
-        var _date = {};
+    .service('DateHolder', function($rootScope, DateHelpers){
 
-        var goToNow = function(init){
+        var self = this;
+        this.goToNow = function(init){
+
             var now = moment(), newDateMoment;
 
             if(init && now.hour() < 6){
@@ -17,42 +18,30 @@ zedAlphaServices
             newDateMoment.minute(DateHelpers.findClosestIntervalToDate(newDateMoment)).seconds(0);
 
 
-            _date.currentClock = newDateMoment;
-            _date.currentDate = newDateMoment.clone().hour(0).minute(0);
+            this.currentClock = newDateMoment;
+            this.currentDate = newDateMoment.clone().hour(0).minute(0);
+            $rootScope.$emit('$dateWasChanged');
+            $rootScope.$emit('$clockWasChanged');
 
-            newDateMoment = null;
         }
 
-
-
-        _date.goToNow = goToNow;
-        goToNow(true);
-
         $rootScope.$watch(function(){
-            return _date.currentClock
+            return this.currentClock;
         }, function(newVal){
-            if(!newVal.isValid || !newVal.isValid()){
-                _date.currentClock = moment(_date.currentClock);
-            }
             $rootScope.$emit('$clockWasChanged');
-        }, true);
+        });
+
 
         $rootScope.$watch(function(){
-            return _date.currentDate
+            return this.currentDate;
         }, function(newVal){
-            if(!newVal.isValid || !newVal.isValid()){
-                _date.currentDate = moment(_date.currentDate);
-            }
-
-            if(_date.currentClock){
-                _date.currentClock = _date.currentDate.clone().hour(_date.currentClock.hour()).minute(_date.currentClock.minute());
+            if(self.currentClock){
+                self.currentClock = self.currentDate.clone().hour(self.currentClock.hour()).minute(self.currentClock.minute());
             }else{
-                _date.currentClock = _date.currentDate.clone();
+                self.currentClock = self.currentDate.clone();
             }
-
             $rootScope.$emit('$dateWasChanged');
-        }, true);
+        });
 
-
-        return _date;
+        this.goToNow(true);
     });

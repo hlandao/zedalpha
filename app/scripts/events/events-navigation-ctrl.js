@@ -11,12 +11,6 @@ zedAlphaControllers
             $scope.datePickerOpened = true;
         }
 
-//        $scope.$watch(function(){
-//            return TimelyFilteredEvents.filteredEventsByShift
-//        }, function(){
-//            countAll();
-//        },true);
-
         var countAll = function(){
             var totalOrdersCount = 0, totalGuestsCount = 0, guestsLeftCount = 0, totalWalkinsCount= 0;
             var event, eventGuests;

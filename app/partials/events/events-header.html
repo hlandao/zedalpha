@@ -43,7 +43,7 @@
 
             <li class="shiftpicker-col dropdown">
                 <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
-                    {{ShiftsDayHolder.selected.name | translate | capitalize}} <span class="caret"></span>
+                    {{ShiftsDayHolder.selectedShift.name | translate | capitalize}} <span class="caret"></span>
                 </a>
                 <div class="dropdown-menu pull-right with-arrow ">
                     <ul class="list-group">
@@ -54,7 +54,7 @@
                                 </div>
                             </a>
                         </li>
-                        <li class="list-group-item" ng-repeat="shift in ShiftsDayHolder.current.shifts | activeShift" ng-click="ShiftsDayHolder.selected = shift">
+                        <li class="list-group-item" ng-repeat="shift in ShiftsDayHolder.currentDay.shifts | activeShift" ng-click="ShiftsDayHolder.selected = shift">
                             <a href="javascript:;" class="media">
                                 <div class="media-body">
                                     <span class="block">{{shift.name | translate | capitalize}}</span>
