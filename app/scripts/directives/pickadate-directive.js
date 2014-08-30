@@ -11,11 +11,13 @@ zedAlphaDirectives
                 maxDate: '='
             },
             link: function (scope, element, attrs) {
-                var updatedModel = false;
+                var updatedModel = false,
+                    updatedByUser = false;
                 element.pickadate({
                     onSet: function (context) {
                         if(updatedModel){
                             updatedModel = false;
+                            updatedByUser = false;
                             return;
                         }
                         $timeout(function(){
@@ -25,6 +27,7 @@ zedAlphaDirectives
                             }
 
                             var newDate = new Date(context.select);
+                            updatedByUser = true;
                             scope.pickADate = moment(newDate);
                             attrs.onChange && scope.$parent.$eval(attrs.onChange);
                         },0);
@@ -42,7 +45,14 @@ zedAlphaDirectives
                     picker.set('select', date);
                     updatedModel = true;
                 };
-                scope.$watch('pickADate', update);
+                scope.$watch('pickADate', function(){
+                    if(updatedByUser){
+                        updatedModel = false;
+                        updatedByUser = false;
+                    }else{
+                        update.apply(this,arguments);
+                    }
+                });
             }
         };
     });

@@ -41,6 +41,7 @@ zedAlphaServices
         $rootScope.$watch(function(){
             return self.currentDate;
         }, function(newVal){
+            console.log('newVal',newVal);
             if(!dateInitialized){
                 dateInitialized = true;
                 return;
