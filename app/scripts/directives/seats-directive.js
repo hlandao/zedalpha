@@ -11,12 +11,19 @@ zedAlphaDirectives
                 var ngModel = ctrls[0];
 
                 ngModel.$formatters.push(function(modelValue){
-                    var arr = _.map(modelValue, function(val, seatNumber){return seatNumber});
+                    console.log('ngModel.$formatters',modelValue);
+                    var arr = [];
+                    for(var i  in modelValue){
+                        if(modelValue[i]){
+                            arr.push(i);
+                        }
+                    }
                     return arr.join(',');
                 });
 
 
                 ngModel.$render = function(){
+                    console.log('ngModel.$render');
                     element.val(ngModel.$viewValue);
                 };
 
@@ -25,8 +32,8 @@ zedAlphaDirectives
                     ngModel.$setViewValue(element.val());
                 });
 
-                ngModel.$parsers.push(function(viewValue){
-                    viewValue = viewValue || "";
+                ngModel.$parsers.unshift(function(viewValue){
+                    if(!viewValue) return {};
                     var output = {};
                     var arr = viewValue.split(',');
                     for(var i = 0; i <arr.length; ++i){

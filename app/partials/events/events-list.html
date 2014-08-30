@@ -39,8 +39,8 @@
             </div>
         </div>
 
-        <div ng-if="newEvent" hl-event-form event="newEvent"></div>
-        <div ng-if="editedEvent" hl-event-form event="editedEvent"></div>
+        <div ng-if="newEvent" hl-event-form event="newEvent" on-close="closeNewEvent()"></div>
+        <div ng-if="editedEvent" hl-event-form event="editedEvent" on-close="closeEditedEvent()"></div>
 
         <table class="table">
             <thead>

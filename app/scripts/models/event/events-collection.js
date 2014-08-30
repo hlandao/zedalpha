@@ -13,8 +13,8 @@ zedAlphaServices
                 this.$getRecord(snap.name()).update(snap);
             },
 
-            $setDate : function(date){
-                this.date = date.clone();
+            $setSubName : function(subName){
+                this.$list.subName = subName;
             }
         });
     }).factory("EventsCollectionGenerator",function ($firebase, $log, EventsFactory) {
@@ -23,34 +23,47 @@ zedAlphaServices
         }
     }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q) {
         var self = this,
-            lastDate = null,
-            lastBusiness = null;
+            lastSubName = null,
+            lastBusinessId = null;
 
         var subNameByDate = function(date){
-            return date.dayOfYear();
             return date.format('YYYY-MM-DD');
+        };
+
+        var getCollectionForDate = function(businessId, date){
+            var subName = subNameByDate(date);
+            businessId = businessId || BusinessHolder.business.$id;
+
+            if(subName == lastSubName && lastBusinessId == businessId){
+                var defer = $q.defer();
+                defer.resolve(self.collection);
+                return defer.promise;
+            }
+            var ref = firebaseRef('events/').child(businessId).child(subName);
+            console.log('fetching new collection');
+            return EventsCollectionGenerator(ref).$loaded().then(function(collection){
+                collection.$setSubName(lastSubName);
+                return collection;
+            });
         };
 
         this.sorted = {};
 
         this.updateEvents = function () {
             if (BusinessHolder.business) {
-                var dayOfYear = DateHolder.currentDate.dayOfYear();
-
-                if(dayOfYear == lastDate && lastBusiness == BusinessHolder.business){
+                var newSubName = subNameByDate(DateHolder.currentDate);
+                if(newSubName == lastSubName && lastBusinessId == BusinessHolder.business.$id){
                     return;
                 }
 
                 self.collection && self.collection.$destroy && self.collection.$destroy();
+                self.collection = null;
 
-                lastDate = subNameByDate(DateHolder.currentDate);
-                lastBusiness = BusinessHolder.business;
+                getCollectionForDate(BusinessHolder.business.$id, DateHolder.currentDate).then(function(collection){
+                    lastSubName = newSubName;
+                    lastBusinessId = BusinessHolder.business.$id;
 
-                var businessId = BusinessHolder.business.$id;
-                var ref = firebaseRef('events/').child(businessId).child(dayOfYear);
-                self.collection = EventsCollectionGenerator(ref, self);
-                self.collection.$loaded().then(function(){
-                    self.collection.$setDate(DateHolder.currentDate);
+                    self.collection = collection;
                     self.sortEvents();
                 });
             }
@@ -58,16 +71,22 @@ zedAlphaServices
 
 
         this.sortEvents = function(statusFilter, query){
+            console.log('sortEvents',self.collection && self.collection.length);
             if(self.collection && self.collection.length){
                 var sorted = $filter('sortDayEvents')(self.collection, DateHolder.currentClock, statusFilter, query);
                 angular.extend(self.sorted, sorted);
+            }else{
+                self.sorted.deadEvents = null;
+                self.sorted.nowEvents = null;
+                self.sorted.upcomingEvents = null;
             }
         };
 
         this.maxEventDurationForEvent = function (event) {
 
-            var maxDuration = -1, tempMaxDuration, currentEvent;
+            var maxDuration = -1, tempMaxDuration, currentEvent, key;
             for (var i = 0; i< this.collection.length; ++i) {
+                key = this.collection.$keyAt(i);
                 currentEvent = this.collection.$getRecord(key);
 
                 if (currentEvent.$shouldCollide() && currentEvent.$sharingTheSameSeatsWithAnotherEvent(event)) {
@@ -96,14 +115,15 @@ zedAlphaServices
          * validates this for collisions
          * @returns {promise}
          */
-        this.validateCollision = function (event) {
-            if(!event.data.startTime.isSame(this.collection.date, 'day')){
+        this.validateCollision = function (event, extra) {
+            if(self.collection.subName != subNameByDate(event.data.startTime)){
                 throw new TypeError('this.collection is not same day as event');
             }
             var defer = $q.defer();
-            if (self.checkCollisionsForEvent(event)) {
+            if (self.collection.length && self.checkCollisionsForEvent(event, extra)) {
                 defer.reject({error: "ERROR_EVENT_MSG_COLLISION"});
             } else {
+                console.log('NO COLLISIONS!');
                 defer.resolve();
             }
             return defer.promise;
@@ -115,14 +135,15 @@ zedAlphaServices
          * @param event
          * @returns {boolean}
          */
-        this.checkCollisionsForEvent = function(event){
-            var eventToCheck, sharedSeats, isCollidingStatus;
+        this.checkCollisionsForEvent = function(event, extra){
+            var eventToCheck, key;
+            var extraSeats = extra ? extra.seats : null;
 
-            for (var key = 0; key < this.collection.length; ++key) {
-                eventToCheck = this.collection.$getRecord(key);
-                sharedSeats = checkIfTwoEventsShareTheSameSeats(event, eventToCheck);
-
-                if(eventToCheck.$shouldCollide() && eventToCheck.$sharingTheSameSeatsWithAnotherEvent(event)){
+            for (var i = 0; i < self.collection.length; ++i) {
+                key = self.collection.$keyAt(i);
+                eventToCheck = self.collection.$getRecord(key);
+                if(eventToCheck === event) continue;
+                if(eventToCheck.$shouldCollide() && eventToCheck.$sharingTheSameSeatsWithAnotherEvent(event, extraSeats)){
                     if(eventToCheck.$maxDurationForEventInRegardToAnotherEvent(event) === 0){
                         return true;
                     }
@@ -141,7 +162,7 @@ zedAlphaServices
 
         this.checkGuestsPer15Minutes = function (startTimeValue, guestPer15Value) {
             var defer = $q.defer();
-            if (!this.isGuestsPer15ValidForNewEvent(startTimeValue, guestPer15Value)) {
+            if (!self.isGuestsPer15ValidForNewEvent(startTimeValue, guestPer15Value)) {
                 defer.resolve({warning: "INVALID_GUESTS_PER_15_WARNING"});
             } else {
                 defer.resolve();
@@ -155,8 +176,8 @@ zedAlphaServices
             if (!guestPer15Value || guestPer15Value === 0 || !eventGuestsPer15Value) return true;
             if (!eventStartTime) return true;
             var count = eventGuestsPer15Value, currentEvent;
-            for (var key = 0; key < this.collection.length; ++key) {
-                currentEvent = this.collection.$getRecord(key);
+            for (var key = 0; key < self.collection.length; ++key) {
+                currentEvent = self.collection.$getRecord(key);
                 if (!currentEvent.data.isOccasional && eventStartTime.isSame(currentEvent.data.startTime, 'minutes')) {
                     count += parseInt(currentEvent.guests);
                 }
@@ -209,17 +230,30 @@ zedAlphaServices
             if (event.$isNew()) {
                 console.log('[EventsCollection] Adding event', event);
                 return self.collection.$add(event.toObject()).then(function(){
+                    self.sortEvents();
                 }).catch(function(){
 
                 });
             } else {
                 console.log('[EventsCollection] Saving event', event);
-                return self.collection.$save(this).then(function(){
+                return self.collection.$save(event).then(function(){
 
                 }, function(){
 
                 });
             }
+        };
+
+        this.remove = function(event){
+            console.log('event to remove',event);
+
+            return getCollectionForDate(null, event.data.startTime).then(function(collection){
+                collection.$remove(event).then(function(){
+                    self.sortEvents();
+                });
+
+            });
+
         };
 
 

@@ -5,7 +5,7 @@
 
     <div class="dropdown-menu  with-arrow">
         <ul class="list-group">
-            <li class="list-group-item"  ng-repeat="status in EventsStatusesHolder" ng-click="selectStatus(status,$event)">
+            <li class="list-group-item"  ng-repeat="status in EventsStatusesHolder" ng-click="selectStatus(status.status,$event)">
                 <a href="javascript:;">
                     <span class="label label-info" style="background: {{status.color}}"> {{status.status | translate}} </span>
                 </a>

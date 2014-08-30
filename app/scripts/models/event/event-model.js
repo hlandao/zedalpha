@@ -6,7 +6,6 @@ zedAlphaServices
     .factory('Event', function ($q, DateHolder, DateHelpers, $injector, $filter, BusinessHolder, ShiftsDayHolder, NotCollidingEventStatuses) {
 
         function Event(snapshot, newEventData) {
-            console.log('Event',snapshot.name(),snapshot.val());
             if (snapshot) {
                 return this.$initWithFirebaseSnapshot(snapshot);
             } else if (newEventData) {
@@ -87,7 +86,8 @@ zedAlphaServices
              * validates this.seats
              * @returns {promise}
              */
-            $validateSeats: function () {
+            $validateSeats: function (value) {
+                value = value || this.data.seats;
                 var defer = $q.defer();
                 if (this.$noSeats() && (BusinessHolder.businessType != 'Bar' || !this.data.isOccasional)) {
                     defer.reject({error: "ERROR_EVENT_MSG_SEATS"});
@@ -215,13 +215,15 @@ zedAlphaServices
              * @returns {boolean}
              */
             $shouldCollide: function () {
-                return (this.data.status && this.data.status.status) ? (NotCollidingEventStatuses.indexOf(this.data.status.status) == -1) : false;
+                return (this.data.status) ? (NotCollidingEventStatuses.indexOf(this.data.status) == -1) : false;
             },
 
             $sharingTheSameSeatsWithAnotherEvent: function (anotherEvent, seats) {
-                seats = anotherEvent.data.seats || seats;
-                for (var i  in this.data.seats) {
-                    if (seats[i]) return true;
+                seats = seats || anotherEvent.data.seats;
+                if(seats && !isEmptyObject(seats)){
+                    for (var i  in this.data.seats) {
+                        if (seats[i]) return true;
+                    }
                 }
                 return false;
             },
@@ -233,7 +235,7 @@ zedAlphaServices
 
                 if (startTimeDiff > 0) {
                     // this start before anotherEvent begins
-                    return e2StartTimeDiffEventToCheckStartTime;
+                    return startTimeDiff;
                 } else if (this.data.startTime.isAfter(anotherEvent.data.endTime, 'minutes') || anotherEvent.data.endTime.isSame(this.data.startTime, 'minutes')) {
                     // this start after anotherEvent ends
                     return -1;
@@ -263,6 +265,13 @@ zedAlphaServices
                 output.endTime = output.endTime.toJSON();
                 return output;
             },
+
+            $enterEditingMode: function(){
+                this.editing = true;
+            },
+            $exitEditingMode: function(){
+                this.editing = false;
+            }
 
         };
 

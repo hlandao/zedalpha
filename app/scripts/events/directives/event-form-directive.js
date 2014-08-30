@@ -20,6 +20,9 @@ zedAlphaDirectives
                 }
 
 
+               var revertEventToOriginal = function(){
+                  angular.extend($scope.eventObj.data,eventClone);
+               }
 
                $scope.$isNew = function(){
                    return $scope.eventObj.$isNew();
@@ -35,9 +38,12 @@ zedAlphaDirectives
 
                             $q.all(promises).then(function(){
                                 EventsCollection.saveWithValidation($scope.eventObj, true);
+                                $scope.closeLinkFN();
                             }, function(){
 
                             });
+                        }else{
+                            $scope.closeLinkFN();
                         }
                     }).catch(function(error){
                         if(error && error.error){
@@ -75,11 +81,10 @@ zedAlphaDirectives
 //
 //
 //
-//                $scope.close = function(event){
-//                    if(event.$id) revertEventToOriginal();
-//                    if(!event) return false;
-//                    delete event.helpers;
-//                };
+                $scope.close = function(event){
+                    if($scope.eventObj.$id) revertEventToOriginal();
+                    $scope.closeLinkFN();
+                };
 //
 //                var revertEventToOriginal = function(){
 //                    angular.extend($scope.event, eventClone);
@@ -139,19 +144,21 @@ zedAlphaDirectives
 //                },10);
 
 
-//                $scope.remove = function(event){
-//                    if(!event || !event.$id) return false;
-//                    var modal = areYouSureModalFactory(null, 'REMOVE_EVENT_WARNING');
-//                    modal.result.then(function () {
-//                        EventsHolder.$allEvents.$remove(event.$id);
-//                        delete event.helpers;
-//                    }, function () {
-//                    });
-//
-//                }
+                $scope.remove = function(event){
+                    var modal = areYouSureModalFactory(null, 'REMOVE_EVENT_WARNING');
+                    modal.result.then(function () {
+                        EventsCollection.remove($scope.eventObj).then(function(){
+                            $scope.closeLinkFN();
+                        }, function(){
+
+                        });
+                    });
+
+                }
 
 
                 $scope.$on('$destroy', function(){
+                    $scope.eventObj && $scope.eventObj.$exitEditingMode && $scope.eventObj.$exitEditingMode();
                 });
 
 
@@ -161,6 +168,10 @@ zedAlphaDirectives
             },
             link : function(scope, element, attrs){
                 element.find('input').eq(0).focus();
+
+                scope.closeLinkFN =  function(){
+                    attrs.onClose && scope.$parent.$eval(attrs.onClose);
+                }
             }
         };
     }).directive('eventPhoneValidator', function(){
@@ -238,26 +249,38 @@ zedAlphaDirectives
 
             }
         }
-    }).directive('eventSeatsValidator', function(){
+    }).directive('eventSeatsValidator', function(EventsCollection){
         return {
             priority : 0,
             require : ['ngModel'],
             link : function(scope, elem, attrs, ctrls){
                 var ngModel = ctrls[0];
 
-                var validate = function(value){
-                    value = value || ngModel.$modelValue;
-                    scope.eventObj.$validateSeats(value).then(function(warning){
-                        ngModel.$setValidity('seats', true);
-                    },function(error){
-                        ngModel.$setValidity('seats', false);
+                var validate = function(viewValue){
+                    return validateSeats(viewValue).then(function(){
+                        return validateCollisions(viewValue);
                     });
                 }
 
-                validate();
+
+                var validateSeats = function(value){
+                    value = value || ngModel.$modelValue;
+                    return scope.eventObj.$validateSeats(value);
+                }
+
+                var validateCollisions  =  function(value){
+                    return EventsCollection.validateCollision(scope.eventObj, {seats : value});
+                }
+
 
                 ngModel.$parsers.push(function(viewValue){
-                    validate(viewValue);
+                    var seatsBefore = ngModel.$modelValue;
+                    validateCollisions(viewValue).then(function(warning){
+                        ngModel.$setValidity('seats', true);
+                    },function(error){
+                        scope.event.seats = seatsBefore || {};
+                    });
+
                     return viewValue;
                 });
             }

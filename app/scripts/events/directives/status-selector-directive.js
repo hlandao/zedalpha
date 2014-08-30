@@ -3,38 +3,50 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 
 zedAlphaDirectives
 
-    .controller('HlStatusSelectorCtrl', function ($scope, DateHelpers, EventsStatusesHolder, $timeout){
+    .controller('HlStatusSelectorCtrl', function ($scope, DateHelpers, BusinessHolder, $timeout){
+        var EventsStatusesHolder = BusinessHolder.business.eventsStatuses;
+
         var ngModel;
         var dateMoment;
+
+        $scope.EventsStatusesHolder = EventsStatusesHolder;
+
+        $scope.toggleSelector = function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            $scope.showSelector = !$scope.showSelector
+        };
+
+        $scope.selectStatus = function(selectedStatus, e){
+            if(e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            ngModel.$setViewValue(selectedStatus);
+            $scope.status = findStatusByStatus(selectedStatus) || findStatusByKey(selectedStatus);
+            $timeout(function(){
+                $scope.showSelector = false;
+            },100);
+        };
+
+
         this.init = function(_ngModel){
             ngModel = _ngModel;
 
             ngModel.$render=function(){
-                $scope.status = ngModel.$viewValue;
+                $scope.status = findStatusByStatus(ngModel.$modelValue) || findStatusByKey(ngModel.$modelValue);
             };
-
-
-            $scope.toggleSelector = function(e){
-                e.preventDefault();
-                e.stopPropagation();
-                $scope.showSelector = !$scope.showSelector
-            }
-
-
-            $scope.selectStatus = function(selectedStatus, e){
-                if(e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                }
-                ngModel.$setViewValue(selectedStatus);
-                $scope.status = selectedStatus;
-                $timeout(function(){
-                    $scope.showSelector = false;
-                },100);
-            };
-
-            $scope.EventsStatusesHolder = EventsStatusesHolder;
         }
+
+
+        var findStatusByKey = function(status){
+            return EventsStatusesHolder[status];
+        }
+
+        var findStatusByStatus = function(status){
+            return _.findWhere(EventsStatusesHolder, {status : status});
+        }
+
     })
     .directive('hlStatusSelector', ['$timeout', function ($timeout) {
 

@@ -11,10 +11,6 @@ zedAlphaControllers
         $scope.business = BusinessHolder.business;
         $scope.sortedEvents = EventsCollection.sorted;
 
-        $scope.$watch('sortedEvents', function(newVal){
-            console.log('sortedEvents newVal',newVal);
-        }, true);
-
         // --------- New event ----------- //
         $scope.newEventWithSeatsDic = function(occasionalOrDestination, seatsDic, startTime){
             if($scope.switchMode){
@@ -35,6 +31,11 @@ zedAlphaControllers
             if($scope.newEvent.isOccasional) $scope.goToNow();
         };
 
+        $scope.closeNewEvent = function(){
+            $scope.newEvent = null;
+        }
+
+
 
         // ----------Click on event ----------//
         $scope.clickOnEvent = function(event){
@@ -52,12 +53,14 @@ zedAlphaControllers
             if($scope.editedEvent === event){
                 return;
             }else if($scope.editedEvent){
-                $scope.editedEvent.$exitEditingMode();
+                $scope.editedEvent = null;
             }
-
-            event.$enterEditingMode();
             $scope.editedEvent = event;
         };
+
+        $scope.closeEditedEvent = function(){
+            $scope.editedEvent = null;
+        }
 
 
         $scope.eventStatusChanged = function(event){
