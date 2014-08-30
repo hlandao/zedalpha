@@ -10,7 +10,7 @@ zedAlphaServices
             },
             // override the $$updated behavior to call a method on the Message
             $$updated: function (snap) {
-                this.$getRecord(snap.name()).update(snap);
+                this.$getRecord(snap.name()).$update(snap);
             },
 
             $setSubName : function(subName){
@@ -237,7 +237,7 @@ zedAlphaServices
             } else {
                 console.log('[EventsCollection] Saving event', event);
                 return self.collection.$save(event).then(function(){
-
+                    self.sortEvents();
                 }, function(){
 
                 });

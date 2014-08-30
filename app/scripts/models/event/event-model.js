@@ -256,7 +256,7 @@ zedAlphaServices
                 output = angular.extend({},this.data);
                 output.startTime = output.startTime.toJSON();
                 output.endTime = output.endTime.toJSON();
-                return JSON.stringify(output);
+                return output;
             },
 
             toObject: function () {
