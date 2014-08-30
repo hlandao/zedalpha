@@ -22,12 +22,11 @@ zedAlphaDirectives
 
 
                $scope.$isNew = function(){
-                   return $scope.event.$isNew();
+                   return $scope.eventObj.$isNew();
                }
 
-                $scope.save = function(eventToSave){
-                    var isInvalidPromise = EventsLogic.isInvalidEventBeforeSave(eventToSave);
-                    isInvalidPromise.then(function(output){
+                $scope.save = function(){
+                    EventsCollection.saveWithValidation($scope.eventObj).then(function(output){
                         if(output && output.warnings && output.warnings.length){
                             var promises = [];
                             for (var i = 0; i < output.warnings.length; ++i){
@@ -35,127 +34,124 @@ zedAlphaDirectives
                             }
 
                             $q.all(promises).then(function(){
-                                saveAfterValidation(eventToSave);
+                                EventsCollection.saveWithValidation($scope.eventObj, true);
                             }, function(){
 
                             });
-                        }else{
-                            saveAfterValidation(eventToSave);
                         }
-                    },function(output){
-                        if(output && output.error){
-                            var localizedError = $filter('translate')(output.error);
-                            $log.info('[EventForm] error saving event',output.error);
+                    }).catch(function(error){
+                        if(error && error.error){
+                            var localizedError = $filter('translate')(error.error);
+                            $log.info('[EventForm] error saving event',error.error);
                             alert(localizedError);
                         }
                     });
-                };
+               };
+//
+//
+//
+//                var saveAfterValidation = function(eventToSave){
+//                    if(angular.isFunction(eventWatcher)) eventWatcher();
+//                    var cloned = angular.copy(eventToSave);
+//                    if(eventToSave.$id){
+//                        delete cloned.helpers;
+//                        var $event = EventsHolder.$allEvents.$child(eventToSave.$id);
+//                        $event.$set(cloned).then(function(){
+//                            delete eventToSave.helpers;
+//                        }, function(error){
+//                            $log.error('[EventForm] Error saving existing event child to Firebase',error);
+//                        });
+//                    }else{
+//                        delete cloned.helpers;
+//                        EventsHolder.$allEvents.$add(cloned).then(function(){
+//                            delete eventToSave.helpers;
+//                        }, function(error){
+//                            $log.error('[EventForm] Error adding new event child to Firebase',error);
+//                        });
+//
+//                    }
+//                }
+//
+//
+//
+//
+//                $scope.close = function(event){
+//                    if(event.$id) revertEventToOriginal();
+//                    if(!event) return false;
+//                    delete event.helpers;
+//                };
+//
+//                var revertEventToOriginal = function(){
+//                    angular.extend($scope.event, eventClone);
+//                }
+//
+//                var eventWatching = _.throttle(function(newVal, oldVal){
+//                    var maxDuration;
+//                    if(justRevertedWhileEditing){
+//                        justRevertedWhileEditing = false;
+//                        return;
+//                    }
+//
+//                    // check start time
+//                    if(newVal && newVal.startTime != oldVal.startTime){
+//                        var startTimeMoment = moment(newVal.startTime);
+//                        var newDuration = moment(oldVal.endTime).diff(moment(oldVal.startTime),'minutes');
+//
+//                        maxDuration  = EventsLogic.maxDurationForEventInMinutes(newVal);
+//                        if(maxDuration == -1 || maxDuration > 0){
+//                            if(maxDuration != -1) newDuration =  Math.min(newDuration, maxDuration);
+//                            var newEndTimeMoment = startTimeMoment.clone().add(newDuration, 'minutes');
+//                            $scope.event.endTime = new Date(newEndTimeMoment.format(FullDateFormat));
+//                            justRevertedWhileEditing = true;
+//                        }
+//                    }
+//
+//
+//                    // check guests
+//                    if(newVal && newVal.guests !== oldVal.guests){
+//                        var newDuration = EventsLogic.eventDurationForGuestsNumber(newVal.guests);
+//                        maxDuration  = EventsLogic.maxDurationForEventInMinutes(newVal);
+//                        if(newDuration && maxDuration > -1 && newDuration > maxDuration){
+//                            alert('Maximum duration for these seats is ' + maxDuration + ' minutes');
+//                        }else if(newDuration){
+//                            EventsLogic.updateEventDuration(newVal, newDuration);
+//                        }
+//                    }
+//
+//
+//
+//
+//
+//                    // validate
+//                    if(newVal){
+//                        var isInvalid = EventsLogic.isInvalidEventWhileEdit(newVal);
+//                        if(isInvalid && isInvalid.error){
+//                            $log.info('[EventForm]: error while edit event', isInvalid.error);
+//                            var localizedError = $filter('translate')(isInvalid.error);
+//
+//                            newVal.startTime =  oldVal.startTime;
+//                            newVal.endTime =  oldVal.endTime;
+//                            newVal.seats =  oldVal.seats;
+//                            alert(localizedError);
+//                            justRevertedWhileEditing = true;
+//                        }
+//                    }
+//                },10);
 
 
-
-                var saveAfterValidation = function(eventToSave){
-                    if(angular.isFunction(eventWatcher)) eventWatcher();
-                    var cloned = angular.copy(eventToSave);
-                    if(eventToSave.$id){
-                        delete cloned.helpers;
-                        var $event = EventsHolder.$allEvents.$child(eventToSave.$id);
-                        $event.$set(cloned).then(function(){
-                            delete eventToSave.helpers;
-                        }, function(error){
-                            $log.error('[EventForm] Error saving existing event child to Firebase',error);
-                        });
-                    }else{
-                        delete cloned.helpers;
-                        EventsHolder.$allEvents.$add(cloned).then(function(){
-                            delete eventToSave.helpers;
-                        }, function(error){
-                            $log.error('[EventForm] Error adding new event child to Firebase',error);
-                        });
-
-                    }
-                }
-
-
-
-
-                $scope.close = function(event){
-                    if(event.$id) revertEventToOriginal();
-                    if(!event) return false;
-                    delete event.helpers;
-                };
-
-                var revertEventToOriginal = function(){
-                    angular.extend($scope.event, eventClone);
-                }
-
-                var eventWatching = _.throttle(function(newVal, oldVal){
-                    var maxDuration;
-                    if(justRevertedWhileEditing){
-                        justRevertedWhileEditing = false;
-                        return;
-                    }
-
-                    // check start time
-                    if(newVal && newVal.startTime != oldVal.startTime){
-                        var startTimeMoment = moment(newVal.startTime);
-                        var newDuration = moment(oldVal.endTime).diff(moment(oldVal.startTime),'minutes');
-
-                        maxDuration  = EventsLogic.maxDurationForEventInMinutes(newVal);
-                        if(maxDuration == -1 || maxDuration > 0){
-                            if(maxDuration != -1) newDuration =  Math.min(newDuration, maxDuration);
-                            var newEndTimeMoment = startTimeMoment.clone().add(newDuration, 'minutes');
-                            $scope.event.endTime = new Date(newEndTimeMoment.format(FullDateFormat));
-                            justRevertedWhileEditing = true;
-                        }
-                    }
-
-
-                    // check guests
-                    if(newVal && newVal.guests !== oldVal.guests){
-                        var newDuration = EventsLogic.eventDurationForGuestsNumber(newVal.guests);
-                        maxDuration  = EventsLogic.maxDurationForEventInMinutes(newVal);
-                        if(newDuration && maxDuration > -1 && newDuration > maxDuration){
-                            alert('Maximum duration for these seats is ' + maxDuration + ' minutes');
-                        }else if(newDuration){
-                            EventsLogic.updateEventDuration(newVal, newDuration);
-                        }
-                    }
-
-
-
-
-
-                    // validate
-                    if(newVal){
-                        var isInvalid = EventsLogic.isInvalidEventWhileEdit(newVal);
-                        if(isInvalid && isInvalid.error){
-                            $log.info('[EventForm]: error while edit event', isInvalid.error);
-                            var localizedError = $filter('translate')(isInvalid.error);
-
-                            newVal.startTime =  oldVal.startTime;
-                            newVal.endTime =  oldVal.endTime;
-                            newVal.seats =  oldVal.seats;
-                            alert(localizedError);
-                            justRevertedWhileEditing = true;
-                        }
-                    }
-                },10);
-
-
-                $scope.remove = function(event){
-                    if(!event || !event.$id) return false;
-                    var modal = areYouSureModalFactory(null, 'REMOVE_EVENT_WARNING');
-                    modal.result.then(function () {
-                        EventsHolder.$allEvents.$remove(event.$id);
-                        delete event.helpers;
-                    }, function () {
-                    });
-
-                }
+//                $scope.remove = function(event){
+//                    if(!event || !event.$id) return false;
+//                    var modal = areYouSureModalFactory(null, 'REMOVE_EVENT_WARNING');
+//                    modal.result.then(function () {
+//                        EventsHolder.$allEvents.$remove(event.$id);
+//                        delete event.helpers;
+//                    }, function () {
+//                    });
+//
+//                }
 
 
                 $scope.$on('$destroy', function(){
-                    eventClone = null;
                 });
 
 
@@ -282,7 +278,7 @@ zedAlphaDirectives
                 var ngModel = ctrls[0];
             }
         }
-    }).directive('eventStartTimeValidator', function(){
+    }).directive('eventStartTimeValidator', function(EventsCollection){
         return {
             priority : 0,
             require : ['ngModel'],
@@ -290,29 +286,32 @@ zedAlphaDirectives
                 var ngModel = ctrls[0];
 
                 var validate = function(value){
-                    console.log('eventStartTimeValidator viewValue',value);
+                    return validateStartTime(value).then(validateCollisions);
                 };
 
-                var validateStartTime = function(value){
-                    value = value || ngModel.$modelValue;
-                    scope.eventObj.$validateStartTime(value).then(function(warning){
-                        ngModel.$setValidity('startTime', true);
-                    },function(error){
+                var validateStartTime  = function(viewValue){
+                    value = viewValue || ngModel.$modelValue;
+                    return scope.eventObj.$validateStartTime(value);
+                }
+
+                var validateCollisions  =  function(){
+                    return EventsCollection.validateCollision(scope.eventObj);
+                }
+
+
+                ngModel.$parsers.push(function(viewValue){
+                    var valueStartTimeBefore = ngModel.$modelValue;
+                    var valueEndtimeBefore = scope.event.endTime;
+                    var valueDurationBefore = scope.eventObj.$getDuration();
+                    validate(viewValue).then(function(){
+                        var maxDurationForEvent = EventsCollection.maxEventDurationForEvent(viewValue);
+                        scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore);
+                    }).catch(function(){
                         ngModel.$setValidity('startTime', false);
+                        ngModel.$setViewValue(valueStartTimeBefore);
                     });
-                }
-
-                var validateCollisions = function(){
-
-                }
-
-
-//                ngModel.$parsers.push(function(viewValue){
-////                    validate(viewValue);
-//                    return viewValue;
-//                });
-
-
+                    return viewValue;
+                });
             }
         }
     }).directive('eventEndTimeValidator', function(){
@@ -321,6 +320,32 @@ zedAlphaDirectives
             require : ['ngModel'],
             link : function(scope, elem, attrs, ctrls){
                 var ngModel = ctrls[0];
+
+                var validate = function(value){
+                    return validateEndTime(value).then(validateCollisions);
+                };
+
+                var validateEndTime  = function(viewValue){
+                    value = viewValue || ngModel.$modelValue;
+                    return scope.eventObj.$validateEndTime(value);
+                }
+
+                var validateCollisions  =  function(){
+                    return EventsCollection.validateCollision(scope.eventObj);
+                }
+
+
+                ngModel.$parsers.push(function(viewValue){
+                    var valueEndTimeBefore = ngModel.$modelValue;
+                    validate(viewValue).then(function(){
+                    }).catch(function(){
+                            ngModel.$setValidity('startTime', false);
+                            ngModel.$setViewValue(valueEndTimeBefore);
+                    });
+                    return viewValue;
+                });
+
+
             }
         }
     });

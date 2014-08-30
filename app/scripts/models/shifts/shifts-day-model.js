@@ -32,8 +32,8 @@ zedAlphaServices
                 return false;
             },
             isEventWithinShift : function(shift, event){
-                var isOverlappingShift = event.startTime.isBefore(shift.startTime, 'minutes') && event.startTime.isAfter(shift.startTime, 'minutes'),
-                    isStartingWithinShift = event.startTime.isSame(shift.startTime, 'minutes') || (event.startTime.isAfter(shift.startTime, 'minutes') && (event.startTime.isBefore(shift.endTime, 'minutes') || event.startTime.isSame(shift.endTime, 'minutes')));
+                var isOverlappingShift = event.data.startTime.isBefore(shift.startTime, 'minutes') && event.data.startTime.isAfter(shift.startTime, 'minutes'),
+                    isStartingWithinShift = event.data.startTime.isSame(shift.startTime, 'minutes') || (event.data.startTime.isAfter(shift.startTime, 'minutes') && (event.data.startTime.isBefore(shift.endTime, 'minutes') || event.data.startTime.isSame(shift.endTime, 'minutes')));
 
                 return isOverlappingShift || isStartingWithinShift;
             }

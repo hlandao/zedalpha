@@ -4,7 +4,9 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 zedAlphaServices
     .service('DateHolder', function($rootScope, DateHelpers){
 
-        var self = this;
+        var self = this,
+            clockInitialized = false,
+            dateInitialized = false;
         this.goToNow = function(init){
 
             var now = moment(), newDateMoment;
@@ -26,22 +28,31 @@ zedAlphaServices
         }
 
         $rootScope.$watch(function(){
-            return this.currentClock;
-        }, function(newVal){
+            return self.currentClock;
+        }, function(newVal, oldVal){
+            if(!clockInitialized){
+                clockInitialized = true;
+                return;
+            }
             $rootScope.$emit('$clockWasChanged');
         });
 
 
         $rootScope.$watch(function(){
-            return this.currentDate;
+            return self.currentDate;
         }, function(newVal){
+            if(!dateInitialized){
+                dateInitialized = true;
+                return;
+            }
+
             if(self.currentClock){
                 self.currentClock = self.currentDate.clone().hour(self.currentClock.hour()).minute(self.currentClock.minute());
             }else{
                 self.currentClock = self.currentDate.clone();
             }
             $rootScope.$emit('$dateWasChanged');
-        });
+        }, true);
 
         this.goToNow(true);
     });

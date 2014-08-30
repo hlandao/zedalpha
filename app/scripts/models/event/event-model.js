@@ -4,10 +4,9 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 zedAlphaServices
     .value('NotCollidingEventStatuses', ['NO_SHOW', 'FINISHED', 'CANCELED'])
     .factory('Event', function ($q, DateHolder, DateHelpers, $injector, $filter, BusinessHolder, ShiftsDayHolder, NotCollidingEventStatuses) {
-        var OccasionalEvent = _.findWhere(BusinessHolder.eventsStatuses, {status: 'OCCASIONAL'}),
-            OrderedEvent = _.findWhere(BusinessHolder.eventsStatuses, {status: 'ORDERED'});
 
         function Event(snapshot, newEventData) {
+            console.log('Event',snapshot.name(),snapshot.val());
             if (snapshot) {
                 return this.$initWithFirebaseSnapshot(snapshot);
             } else if (newEventData) {
@@ -23,7 +22,7 @@ zedAlphaServices
             $initWithFirebaseSnapshot: function (snapshot) {
                 if (this.initialized) throw new TypeError("init methods can be called only once");
                 this.initialized = true;
-
+                this.$id = snapshot.name();
                 this.data = angular.extend({}, snapshot.val());
                 this.data.startTime = moment(this.data.startTime);
                 this.data.endTime = moment(this.data.endTime);
@@ -38,7 +37,7 @@ zedAlphaServices
 
                 // determine if the event is 'destination' or 'occasional'
                 this.data.isOccasional = (data.occasionalOrDestination && data.occasionalOrDestination == 'occasional')
-                this.data.status = this.data.isOccasional ? OccasionalEvent : OrderedEvent;
+                this.data.status = this.data.isOccasional ? 'OCCASIONAL' : 'ORDERED';
 
                 // set the start time
                 var startTime = data.startTime || (this.data.isOccasional ? moment(Date.now()) : DateHolder.currentClock.clone());
@@ -48,7 +47,7 @@ zedAlphaServices
 
                 // find the duration for the event and set the end time
                 var duration = BusinessHolder.business.eventsDurationForGuests.default || 120;
-                this.data.endTime = this.$setEndTimeWithDuration(duration);
+                this.$setEndTimeWithDuration(duration);
                 if (!this.data.endTime || !this.data.endTime.isValid || !this.data.endTime.isValid()) throw new TypeError("cannot create new event due to failure in setting the end time,should be a moment obj.");
 
                 // set the events seats dictionary
@@ -144,7 +143,7 @@ zedAlphaServices
              */
             $validateEndTime: function () {
                 var defer = $q.defer();
-                if (!this.data.endTime || !this.endTime.data.isValid || !this.endTime.data.isValid()) {
+                if (!this.data.endTime || !this.data.endTime.isValid || !this.data.endTime.isValid()) {
                     defer.reject({error: "ERROR_EVENT_MSG_ENDTIME"});
                 } else if (!this.data.endTime.isAfter(this.data.startTime, 'minutes')) {
                     defer.reject({error: "ERROR_EVENT_MSG_ENDTIME_LT_STARTTIME"});
@@ -185,18 +184,22 @@ zedAlphaServices
              * @returns {*}
              */
             $setEndTimeWithDuration: function (minutes) {
+                this.data.endTime = this.$getEndTimeWithDuration(minutes);
+            },
+            $getEndTimeWithDuration: function (minutes) {
                 if (!minutes || minutes == 0) return false;
                 if (!this.data.startTime) return false;
                 return this.data.startTime.clone().add(minutes, 'minutes');
             },
-            $setEndTimeByMaxDuartion: function(maxDuration){
-                var duration = this.$getDuration();
-                duration = Math.min(duration, maxDuration);
+
+            $setEndTimeByMaxDuartion: function(maxDuration, duration){
+                duration = duration || this.$getDuration();
+                duration = maxDuration > 0 ? Math.min(duration, maxDuration) : duration;
                 this.$setEndTimeWithDuration(duration);
             },
 
             $getDuration : function(){
-                return this.endTime.diff(this.startTime, 'minutes');
+                return this.data.endTime.diff(this.data.startTime, 'minutes');
             },
 
             /**
@@ -248,9 +251,18 @@ zedAlphaServices
             },
 
             toJSON: function () {
-                return JSON.stringify(this.data);
+                output = angular.extend({},this.data);
+                output.startTime = output.startTime.toJSON();
+                output.endTime = output.endTime.toJSON();
+                return JSON.stringify(output);
             },
 
+            toObject: function () {
+                output = angular.extend({},this.data);
+                output.startTime = output.startTime.toJSON();
+                output.endTime = output.endTime.toJSON();
+                return output;
+            },
 
         };
 

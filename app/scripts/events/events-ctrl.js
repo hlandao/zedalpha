@@ -9,8 +9,12 @@ zedAlphaControllers
         $scope.DateHolder = DateHolder;
         $scope.ShiftsDayHolder = ShiftsDayHolder;
         $scope.business = BusinessHolder.business;
+        $scope.sortedEvents = EventsCollection.sorted;
 
-        EventsCollection.updateEvents();
+        $scope.$watch('sortedEvents', function(newVal){
+            console.log('sortedEvents newVal',newVal);
+        }, true);
+
         // --------- New event ----------- //
         $scope.newEventWithSeatsDic = function(occasionalOrDestination, seatsDic, startTime){
             if($scope.switchMode){
@@ -28,8 +32,6 @@ zedAlphaControllers
                 startTime : startTime,
                 seatsDic : seatsDic
             });
-
-            console.log('$scope.newEvent',$scope.newEvent);
             if($scope.newEvent.isOccasional) $scope.goToNow();
         };
 

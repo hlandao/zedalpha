@@ -73,24 +73,24 @@
             <tr class="events-switch-title" ng-if="switchMode">
                 <td colspan="5"> <span>{{'SWITCH_MODE_TITLE' | translate }}</span> </td>
             </tr>
-            <tr class="event-row" ng-repeat="event in filteredEvents.nowEvents | orderBy : 'startTime'" ng-hide="event === editedEvent" ng-class="{switching : (event === eventToSwitch)}">
-                <td class="status-col" prevent-default><hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
-                <td ng-click="clickOnEvent(event)"> {{event.startTime | date : 'HH:mm'}} </td>
-                <td ng-click="clickOnEvent(event)"> <span  class="badge">{{event.guests}}</span> </td>
-                <td ng-click="clickOnEvent(event)" class="name-col">  <span> {{event.name}} </span> </td>
-                <td ng-click="clickOnEvent(event)"> <span>{{event.seats | seats}}</span> <i class="glyphicon glyphicon-asterisk" style="color:#ffda5c;" ng-show="event.comment || event.contactComment"></i> </td>
+            <tr class="event-row" ng-repeat="event in sortedEvents.nowEvents | orderBy : 'data.startTime'" ng-hide="event === editedEvent" ng-class="{switching : (event === eventToSwitch)}">
+                <td class="status-col" prevent-default><hl-status-selector ng-model="event.data.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
+                <td ng-click="clickOnEvent(event)"> {{event.data.startTime | momentFilter : 'HH:mm'}} </td>
+                <td ng-click="clickOnEvent(event)"> <span  class="badge">{{event.data.guests || 0}}</span> </td>
+                <td ng-click="clickOnEvent(event)" class="name-col">  <span> {{event.data.name}} </span> </td>
+                <td ng-click="clickOnEvent(event)"> <span>{{event.data.seats | seats}}</span> <i class="glyphicon glyphicon-asterisk" style="color:#ffda5c;" ng-show="event.data.comment || event.data.contactComment"></i> </td>
             </tr>
-            <tr class="upcoming-events-title" ng-class="{active : upcomingEvents.events.length}">
+            <tr class="upcoming-events-title" ng-class="{active : sortedEvents.upcomingEvents.length}" ng-show="sortedEvents.upcomingEvents.length">
                 <td colspan="5">
                     <span> {{"UPCOMING_EVENTS_TITLE" | translate }} </span>
                 </td>
             </tr>
-            <tr class="upcoming-events-row event-row" ng-repeat="event in filteredEvents.upcomingEvents | orderBy : 'startTime'" ng-hide="event === editedEvent"  ng-class="{switching : (event === eventToSwitch)}">
-                <td class="status-col"><hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
-                <td ng-click="clickOnEvent(event)" > {{event.startTime | date : 'HH:mm'}} </td>
-                <td ng-click="clickOnEvent(event)" > <span  class="badge">{{event.guests}}</span> </td>
-                <td ng-click="clickOnEvent(event)" class="name-col"> <span> {{event.name}} </span> </td>
-                <td ng-click="clickOnEvent(event)" > <span>{{event.seats | seats}}</span> <i class="glyphicon glyphicon-asterisk" style="color:#ffda5c;" ng-show="event.comment || event.contactComment"></i> </td>
+            <tr class="upcoming-events-row event-row" ng-repeat="event in sortedEvents.upcomingEvents | orderBy : 'data.startTime'" ng-hide="event === editedEvent"  ng-class="{switching : (event === eventToSwitch)}">
+                <td class="status-col"><hl-status-selector ng-model="event.data.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
+                <td ng-click="clickOnEvent(event)" > {{event.data.startTime | momentFilter : 'HH:mm'}} </td>
+                <td ng-click="clickOnEvent(event)" > <span  class="badge">{{event.data.guests}}</span> </td>
+                <td ng-click="clickOnEvent(event)" class="name-col"> <span> {{event.data.name}} </span> </td>
+                <td ng-click="clickOnEvent(event)" > <span>{{event.data.seats | seats}}</span> <i class="glyphicon glyphicon-asterisk" style="color:#ffda5c;" ng-show="event.data.comment || event.data.contactComment"></i> </td>
             </tr>
 
             <tr class="dead-events-title" ng-class="{showed : showDeadEvents}">
@@ -100,11 +100,11 @@
                 </td>
             </tr>
             <tr class="dead-events-row event-row" ng-repeat="event in filteredEvents.deadEvents | orderBy : 'startTime'" ng-hide="event === editedEvent" ng-if="showDeadEvents">
-                <td class="status-col"><hl-status-selector ng-model="event.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
-                <td ng-click="clickOnEvent(event)" > {{event.startTime | date : 'HH:mm'}} </td>
-                <td ng-click="clickOnEvent(event)" > <span  class="badge">{{event.guests}}</span> </td>
-                <td ng-click="clickOnEvent(event)" class="name-col"> <span> {{event.name}} </span> </td>
-                <td ng-click="clickOnEvent(event)" > <span>{{event.seats | seats}}</span> <i class="glyphicon glyphicon-asterisk" style="color:#ffda5c;" ng-show="event.comment || event.contactComment"></i> </td>
+                <td class="status-col"><hl-status-selector ng-model="event.data.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
+                <td ng-click="clickOnEvent(event)" > {{event.data.startTime | momentFilter : 'HH:mm'}} </td>
+                <td ng-click="clickOnEvent(event)" > <span  class="badge">{{event.data.guests}}</span> </td>
+                <td ng-click="clickOnEvent(event)" class="name-col"> <span> {{event.data.name}} </span> </td>
+                <td ng-click="clickOnEvent(event)" > <span>{{event.data.seats | seats}}</span> <i class="glyphicon glyphicon-asterisk" style="color:#ffda5c;" ng-show="event.data.comment || event.data.contactComment"></i> </td>
             </tr>
 
             <!--<tr ng-repeat-end="" ng-if="event.helpers.isEditing" hl-event-form event="event"></tr>-->

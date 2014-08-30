@@ -3,7 +3,7 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 
 zedAlphaDirectives
 
-    .controller('HlStatusSelectorCtrl', function hlTimePickerController($scope, DateHelpers, EventsStatusesHolder, $timeout){
+    .controller('HlStatusSelectorCtrl', function ($scope, DateHelpers, EventsStatusesHolder, $timeout){
         var ngModel;
         var dateMoment;
         this.init = function(_ngModel){

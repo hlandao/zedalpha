@@ -33,7 +33,7 @@ zedAlphaDirectives
                     initWatcher = true;
                     var ngModelWatcher = $scope.$watch('ngModel', function(newVal){
                         init();
-                        if(newVal) ngModelWatcher();
+                        if(newVal && ngModelWatcher) ngModelWatcher();
                     });
                 }
                 var init = this.init = function (_ngModel, _linkFN, _attrs) {
@@ -57,14 +57,12 @@ zedAlphaDirectives
 //                    generateTimesArray();
 
                     $scope.$watch('settings', function(newVal,oldVal){
-                        debugger;
                         settings = angular.extend(defaultSettings, $scope.settings);
                         generateTimesArray();
                     }, true);
 
 
                     ngModel.$render = function(){
-                        debugger;
                         if(!initialized){
                             init();
                         }else{
@@ -78,8 +76,9 @@ zedAlphaDirectives
                         }
                     });
 
+
+
                     $scope.setNewTime = function(timeObj, e){
-                        debugger;
                         e.stopPropagation();
                         ngModel.$setViewValue(timeObj);
                         generateTimesArray();
@@ -107,8 +106,6 @@ zedAlphaDirectives
                         rangeInMinutes = settings.range || max.diff(min, 'minutes');
 
                     resetTimesArray();
-
-
                     var timeObj;
                     do{
                         timeObj = getTimeObject(currentMoment);
@@ -189,12 +186,12 @@ zedAlphaDirectives
                             css( 'padding-right', '+=' + getScrollbarWidth() )
 
                         var index = scope.times.indexOf(scope.selected);
-                        console.log('index',index);
                         var $child = $ul.children().eq(index);
                         var top = $child.position().top;
                         var height = $child[0].clientHeight;
                         $pickerHolder.scrollTop(top - height * 2);
                     },1);
+
                 };
 
                 scope.close = function(){

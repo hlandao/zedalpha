@@ -6,9 +6,8 @@ zedAlphaServices
     .service('ShiftsDayHolder', function (ShiftsDayGenerator, ReadOnlyShiftsDayGenerator, $q, $rootScope, DateHolder, AllDayShift) {
         var self = this;
         this.$checkIfEventFitsShifts = function (event) {
-            var theDateShifts = ReadOnlyShiftsDayGenerator.byDate(event.startTime),
+            var theDateShifts = ReadOnlyShiftsDayGenerator.byDate(event.data.startTime, true),
                 defer = $q.defer();
-
             if (theDateShifts.isContainingEvent(event)) {
                 defer.resolve(true);
             } else {

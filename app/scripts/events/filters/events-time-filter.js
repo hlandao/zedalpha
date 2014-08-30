@@ -9,9 +9,10 @@ zedAlphaFilters
 
             var _dateMoment = dateMoment.clone();
             var upcomingEvents = [], nowEvents = [], deadEvents = [];
-            var currentEvent, status, isStartTimeSameAsCurrent, isStartingBefore, startTimeDiffInMinutes, isEndingAfterCurrentDate, isNowEvent, isUpcomingEvent, isDeadEvent;
+            var currentEvent,key, status, isStartTimeSameAsCurrent, isStartingBefore, startTimeDiffInMinutes, isEndingAfterCurrentDate, isNowEvent, isUpcomingEvent, isDeadEvent;
 
             for (var i = 0; i < eventsCollection.length; ++i) {
+                key = eventsCollection.$keyAt(i);
                 currentEvent = eventsCollection.$getRecord(key);
                 status = currentEvent.status && currentEvent.status.status;
 
@@ -19,10 +20,10 @@ zedAlphaFilters
                     continue;
                 }
 
-                isStartTimeSameAsCurrent = currentEvent.startTime.isSame(_dateMoment, 'minute');
-                isStartingBefore = currentEvent.startTime.isBefore(_dateMoment, 'minute');
-                startTimeDiffInMinutes = currentEvent.startTime.diff(_dateMoment, 'minutes');
-                isEndingAfterCurrentDate = currentEvent.endTime.isBefore(_dateMoment, 'minute');
+                isStartTimeSameAsCurrent = currentEvent.data.startTime.isSame(_dateMoment, 'minute');
+                isStartingBefore = currentEvent.data.startTime.isBefore(_dateMoment, 'minute');
+                startTimeDiffInMinutes = currentEvent.data.startTime.diff(_dateMoment, 'minutes');
+                isEndingAfterCurrentDate = currentEvent.data.endTime.isAfter(_dateMoment, 'minute');
 
                 isNowEvent = !!(isStartTimeSameAsCurrent || (isStartingBefore && isEndingAfterCurrentDate));
                 isUpcomingEvent = !!((startTimeDiffInMinutes > 0 && startTimeDiffInMinutes <= EVENT_TIME_FRAME_IN_MINUTES));

@@ -4,16 +4,17 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 zedAlphaServices
     .factory("EventsFactory",function ($FirebaseArray, Event) {
         return $FirebaseArray.$extendFactory({
-            // override the $createObject behavior to return a Message object
-            $createObject: function (snap) {
-//                return new Event(snap);
+            $$added : function(snap){
+                var newEvent = new Event(snap);
+                this._process('child_added', newEvent);
             },
-
             // override the $$updated behavior to call a method on the Message
             $$updated: function (snap) {
-                var i = this.$indexFor(snap.name());
-                var event = this._list[i];
-                event.$update(snap);
+                this.$getRecord(snap.name()).update(snap);
+            },
+
+            $setDate : function(date){
+                this.date = date.clone();
             }
         });
     }).factory("EventsCollectionGenerator",function ($firebase, $log, EventsFactory) {
@@ -21,15 +22,35 @@ zedAlphaServices
             return $firebase(ref, {arrayFactory : EventsFactory}).$asArray();
         }
     }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q) {
-        var self = this;
+        var self = this,
+            lastDate = null,
+            lastBusiness = null;
+
+        var subNameByDate = function(date){
+            return date.dayOfYear();
+            return date.format('YYYY-MM-DD');
+        };
+
+        this.sorted = {};
 
         this.updateEvents = function () {
             if (BusinessHolder.business) {
-                var businessId = BusinessHolder.business.$id;
                 var dayOfYear = DateHolder.currentDate.dayOfYear();
+
+                if(dayOfYear == lastDate && lastBusiness == BusinessHolder.business){
+                    return;
+                }
+
+                self.collection && self.collection.$destroy && self.collection.$destroy();
+
+                lastDate = subNameByDate(DateHolder.currentDate);
+                lastBusiness = BusinessHolder.business;
+
+                var businessId = BusinessHolder.business.$id;
                 var ref = firebaseRef('events/').child(businessId).child(dayOfYear);
                 self.collection = EventsCollectionGenerator(ref, self);
                 self.collection.$loaded().then(function(){
+                    self.collection.$setDate(DateHolder.currentDate);
                     self.sortEvents();
                 });
             }
@@ -38,12 +59,12 @@ zedAlphaServices
 
         this.sortEvents = function(statusFilter, query){
             if(self.collection && self.collection.length){
-                var sorted = $filter('sortDayEvents')(self.collection, moment(), statusFilter, query);
-                self.sorted = sorted;
+                var sorted = $filter('sortDayEvents')(self.collection, DateHolder.currentClock, statusFilter, query);
+                angular.extend(self.sorted, sorted);
             }
         };
 
-        this.maxEventDurationForStartTime = function (event) {
+        this.maxEventDurationForEvent = function (event) {
 
             var maxDuration = -1, tempMaxDuration, currentEvent;
             for (var i = 0; i< this.collection.length; ++i) {
@@ -64,7 +85,7 @@ zedAlphaServices
         this.createNewEvent = function(data){
             // find the duration for the event and set the end time
             var tempEvent = new Event(null, data);
-            var maxDurationForEvent = self.maxEventDurationForStartTime(tempEvent);
+            var maxDurationForEvent = self.maxEventDurationForEvent(tempEvent);
             if (maxDurationForEvent === 0) throw new TypeError("cannot create new event with the current startTime due to possible collisions");
             else if(maxDurationForEvent > 0) tempEvent.$setEndTimeWithDuration(maxDurationForEvent);
             return tempEvent;
@@ -76,6 +97,9 @@ zedAlphaServices
          * @returns {promise}
          */
         this.validateCollision = function (event) {
+            if(!event.data.startTime.isSame(this.collection.date, 'day')){
+                throw new TypeError('this.collection is not same day as event');
+            }
             var defer = $q.defer();
             if (self.checkCollisionsForEvent(event)) {
                 defer.reject({error: "ERROR_EVENT_MSG_COLLISION"});
@@ -84,6 +108,30 @@ zedAlphaServices
             }
             return defer.promise;
         },
+
+        //------- COLLISIONS & DURATIONS --------//
+        /**
+         * return TRUE if the @event collides with another event
+         * @param event
+         * @returns {boolean}
+         */
+        this.checkCollisionsForEvent = function(event){
+            var eventToCheck, sharedSeats, isCollidingStatus;
+
+            for (var key = 0; key < this.collection.length; ++key) {
+                eventToCheck = this.collection.$getRecord(key);
+                sharedSeats = checkIfTwoEventsShareTheSameSeats(event, eventToCheck);
+
+                if(eventToCheck.$shouldCollide() && eventToCheck.$sharingTheSameSeatsWithAnotherEvent(event)){
+                    if(eventToCheck.$maxDurationForEventInRegardToAnotherEvent(event) === 0){
+                        return true;
+                    }
+                }
+
+
+            }
+            return false;
+        };
 
 
         /**
@@ -125,7 +173,7 @@ zedAlphaServices
          */
         this.checkAllWarnings = function (event) {
             var warnings = {warnings: []};
-            var promises = [this.$checkGuestsPer15Minutes(), event.$checkIfEventFitsShifts()];
+            var promises = [self.checkGuestsPer15Minutes(), event.$checkIfEventFitsShifts()];
 
             return $q.all(promises).then(function (result) {
                 for (var i = 0; i < result.length; ++i) {
@@ -136,22 +184,22 @@ zedAlphaServices
         };
 
         this.beforeSave = function (event) {
-            return self.validateCollision().
-                then(event.$validatePhone).
-                then(event.$validateName).
-                then(event.$validateStartTime).
-                then(event.$validateEndTime).
-                then(event.$validateSeats).
-                then(event.$validateHostess).
-                then(self.checkAllWarnings);
+            return self.validateCollision(event).
+                then(angular.bind(event, event.$validatePhone)).
+                then(angular.bind(event,event.$validateName)).
+                then(angular.bind(event,event.$validateStartTime)).
+                then(angular.bind(event,event.$validateEndTime)).
+                then(angular.bind(event,event.$validateSeats)).
+                then(angular.bind(event,event.$validateHostess)).
+                then(angular.bind(self,self.checkAllWarnings, event));
         };
 
         this.saveWithValidation = function (event, approveAllWarnings) {
             return self.beforeSave(event).then(function (result) {
-                if (!approveAllWarnings && result.warnings) {
+                if (!approveAllWarnings && (result.warnings && result.warnings.length)) {
                     return result;
                 } else {
-                    self.saveAfterValidation(event);
+                    return self.saveAfterValidation(event);
                 }
             });
         };
@@ -159,9 +207,18 @@ zedAlphaServices
 
         this.saveAfterValidation = function (event) {
             if (event.$isNew()) {
-                this.collection.$add(this.$event);
+                console.log('[EventsCollection] Adding event', event);
+                return self.collection.$add(event.toObject()).then(function(){
+                }).catch(function(){
+
+                });
             } else {
-                this.collection.$save(this);
+                console.log('[EventsCollection] Saving event', event);
+                return self.collection.$save(this).then(function(){
+
+                }, function(){
+
+                });
             }
         };
 
@@ -171,11 +228,14 @@ zedAlphaServices
         });
 
         $rootScope.$on('$dateWasChanged', function(){
+            console.log('$dateWasChanged');
             self.updateEvents();
         });
 
-        $rootScope.$on('$clockWasChanged', self.sortEvents);
-        self.updateEvents();
+        $rootScope.$on('$clockWasChanged', function(){
+            self.sortEvents();
+        });
+//        self.updateEvents();
     });
 
 
