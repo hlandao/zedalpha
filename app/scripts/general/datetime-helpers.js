@@ -4,6 +4,8 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 zedAlphaServices
     .constant('EventInterval',15)
     .constant('FullDateFormat',"YYYY-MM-DD HH:mm:ss")
+    .constant('DateFormatFirebase',"YYYY-MM-DD")
+    .constant('HourFormatFirebase',"HH:mm")
     .factory('DateHelpers', function(FullDateFormat, EventInterval){
 
         /**
@@ -66,12 +68,17 @@ zedAlphaServices
             return new Date(dateMoment.format(FullDateFormat));
         }
 
+        var isMomentValid = function(m){
+            return m && m.isValid && m.isValid();
+        }
+
 
         return {
             changeDateHourAndMinutes : changeDateHourAndMinutes,
             hourAndMinutesArrFromString : hourAndMinutesArrFromString,
             findClosestIntervalToDate : findClosestIntervalToDate,
-            resetDateSeconds : resetDateSeconds
+            resetDateSeconds : resetDateSeconds,
+            isMomentValid : isMomentValid
         };
     })
     .filter('numberFixedLen', function () {

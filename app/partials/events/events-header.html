@@ -54,7 +54,7 @@
                                 </div>
                             </a>
                         </li>
-                        <li class="list-group-item" ng-repeat="shift in ShiftsDayHolder.currentDay.shifts | activeShift" ng-click="ShiftsDayHolder.selected = shift">
+                        <li class="list-group-item" ng-repeat="shift in ShiftsDayHolder.currentDay.shifts | activeShift" ng-click="selectNewShift(shift)">
                             <a href="javascript:;" class="media">
                                 <div class="media-body">
                                     <span class="block">{{shift.name | translate | capitalize}}</span>
@@ -66,7 +66,7 @@
             </li>
 
             <li class="timepicker-col">
-                <input hl-timepicker ng-model="DateHolder.currentClock" class="">
+                <input hl-timepicker ng-model="DateHolder.currentClock" settings="{min : ShiftsDayHolder.selectedShift.startTime, range : ShiftsDayHolder.selectedShift.duration}">
             </li>
 
 

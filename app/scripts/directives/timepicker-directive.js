@@ -100,7 +100,7 @@ zedAlphaDirectives
                     var currentMoment,
                         interval = settings.intervalInMinutes,
                         max = settings.max ? settings.max.clone() : ngModel.$modelValue.clone().hour(23).minute(59).seconds(0),
-                        min = settings.min ? settings.min.clone() : ngModel.$modelValue.clone().hour(0).minute(0).seconds(0),
+                        min = (settings.min && settings.min.isValid && settings.min.isValid()) ? settings.min.clone() : ngModel.$modelValue.clone().hour(0).minute(0).seconds(0),
                         currentMoment = min.clone(),
                         v = min,
                         rangeInMinutes = settings.range || max.diff(min, 'minutes');

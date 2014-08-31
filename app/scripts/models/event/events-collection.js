@@ -40,7 +40,6 @@ zedAlphaServices
                 return defer.promise;
             }
             var ref = firebaseRef('events/').child(businessId).child(subName);
-            console.log('fetching new collection');
             return EventsCollectionGenerator(ref).$loaded().then(function(collection){
                 collection.$setSubName(lastSubName);
                 return collection;
@@ -71,7 +70,6 @@ zedAlphaServices
 
 
         this.sortEvents = function(statusFilter, query){
-            console.log('sortEvents',self.collection && self.collection.length);
             if(self.collection && self.collection.length){
                 var sorted = $filter('sortDayEvents')(self.collection, DateHolder.currentClock, statusFilter, query);
                 angular.extend(self.sorted, sorted);
@@ -123,7 +121,6 @@ zedAlphaServices
             if (self.collection.length && self.checkCollisionsForEvent(event, extra)) {
                 defer.reject({error: "ERROR_EVENT_MSG_COLLISION"});
             } else {
-                console.log('NO COLLISIONS!');
                 defer.resolve();
             }
             return defer.promise;
@@ -228,14 +225,12 @@ zedAlphaServices
 
         this.saveAfterValidation = function (event) {
             if (event.$isNew()) {
-                console.log('[EventsCollection] Adding event', event);
                 return self.collection.$add(event.toObject()).then(function(){
                     self.sortEvents();
                 }).catch(function(){
 
                 });
             } else {
-                console.log('[EventsCollection] Saving event', event);
                 return self.collection.$save(event).then(function(){
                     self.sortEvents();
                 }, function(){
@@ -245,8 +240,6 @@ zedAlphaServices
         };
 
         this.remove = function(event){
-            console.log('event to remove',event);
-
             return getCollectionForDate(null, event.data.startTime).then(function(collection){
                 collection.$remove(event).then(function(){
                     self.sortEvents();
@@ -262,7 +255,7 @@ zedAlphaServices
         });
 
         $rootScope.$on('$dateWasChanged', function(){
-            console.log('$dateWasChanged');
+            console.log('$dateWasChanged',DateHolder.currentDate);
             self.updateEvents();
         });
 

@@ -8,7 +8,6 @@ zedAlphaServices
             clockInitialized = false,
             dateInitialized = false;
         this.goToNow = function(init){
-
             var now = moment(), newDateMoment;
 
             if(init && now.hour() < 6){
@@ -21,16 +20,14 @@ zedAlphaServices
 
 
             this.currentClock = newDateMoment;
-            this.currentDate = newDateMoment.clone().hour(0).minute(0);
-            $rootScope.$emit('$dateWasChanged');
-            $rootScope.$emit('$clockWasChanged');
-
+            var currentDate = newDateMoment.clone().hour(0).minute(0);
+            this.currentDate = currentDate;
         }
 
         $rootScope.$watch(function(){
             return self.currentClock;
         }, function(newVal, oldVal){
-            if(!clockInitialized){
+            if(!clockInitialized || !newVal){
                 clockInitialized = true;
                 return;
             }
@@ -41,8 +38,7 @@ zedAlphaServices
         $rootScope.$watch(function(){
             return self.currentDate;
         }, function(newVal){
-            console.log('newVal',newVal);
-            if(!dateInitialized){
+            if(!dateInitialized || !newVal){
                 dateInitialized = true;
                 return;
             }

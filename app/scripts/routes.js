@@ -54,11 +54,15 @@ angular.module('zedalpha.routes', [])
                 isSpecificPage : true,
                 authRequired: true,
                 url : '/business/new',
-                templateUrl: '/partials/admin/business/new-business.html',
-                controller: 'BusinessCtrl',
+                views: {
+                    "main" : {
+                        templateUrl: '/partials/admin/business/new-business.html',
+                        controller: 'BusinessCtrl'
+                    }
+                },
                 resolve : {
-                    businessResolver : businessResolver
-                }
+                    userHolder : userHolderResolver
+                },
 
         }).state('business',{
                 authRequired: true,

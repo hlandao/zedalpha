@@ -75,6 +75,10 @@ zedAlphaControllers
             $scope.selectedFilter = filter;
         };
 
+        $scope.selectNewShift = function(shift, e){
+            ShiftsDayHolder.$selectNewShift(shift)
+        }
+
         $scope.selectAllDayShift = function(){
             ShiftsDayHolder.selected = AllDayShift();
         }

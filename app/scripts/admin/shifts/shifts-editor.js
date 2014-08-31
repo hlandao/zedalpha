@@ -23,6 +23,7 @@ zedAlphaDirectives
 
                 var getShiftWeekWithNumber = function(weekNumber){
                     $scope.week = new ShiftsWeek(weekNumber);
+                    console.log('$scope.week',$scope.week);
                 };
 
                 $scope.dayWasChanged = function(day){
