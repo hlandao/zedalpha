@@ -12,6 +12,7 @@ zedAlphaControllers
         $scope.business = BusinessHolder.business;
 
         $scope.create = function(newBusiness){
+            newBusiness.eventsStatuses = BusinessMetaData.eventsStatuses || null;
             BusinessesCollection.collection.$add(newBusiness).then(function(ref){
                 $state.go('business.show', {businessId : ref.name()});
             }, function(){

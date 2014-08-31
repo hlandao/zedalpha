@@ -7,7 +7,8 @@ zedAlphaServices
         var self = this;
         this.$checkIfEventFitsShifts = function (event) {
             var theDateShifts = ReadOnlyShiftsDayGenerator.byDate(event.data.startTime, {
-                    tryBasicShifts : true
+                    tryBasicShifts : true,
+                    extendProto : true
                 }),
                 defer = $q.defer();
             if (theDateShifts.isContainingEvent(event)) {
