@@ -10,7 +10,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="(duration,val) in eventsDuration | orderBy:duration">
+                <tr ng-repeat="(duration,val) in business.eventsDuration | orderBy:duration">
                     <td class="status"> {{duration}}</td>
                     <td><button class="btn btn-danger" ng-click="removeDuration(duration)">Remove</button></td>
                 </tr>
@@ -41,7 +41,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="(key,val) in eventsDurationForGuests | orderBy:val.guests">
+                <tr ng-repeat="(key,val) in business.eventsDurationForGuests | orderBy:val.guests">
                     <td class="status"> {{key}}</td>
                     <td class="status"> {{val}}</td>
                     <td><button class="btn btn-danger" ng-click="removeDurationForGuests(key)">Remove</button></td>
@@ -53,7 +53,7 @@
                                 <input type="text" class="form-control" ng-model="newDurationForGuests.guests" placeholder="Enter guests">
                             </div>
                             <div class="form-group">
-                                <select ng-model="newDurationForGuests.duration" ng-options="duration as duration for (duration,val) in eventsDuration"></select>
+                                <select ng-model="newDurationForGuests.duration" ng-options="duration as duration for (duration,val) in business.eventsDuration"></select>
                             </div>
                             <button class="btn btn-default" ng-click="addDurationForGuests(newDurationForGuests)">Add +</button>
                         </form>

@@ -11,10 +11,6 @@ zedAlphaControllers
         // check if ID is available
         // get business data from business holder
         $scope.business = BusinessHolder.business;
-        $scope.eventsDuration = $scope.business.eventsDuration;
-        $scope.eventsDurationForGuests = $scope.business.eventsDurationForGuests;
-
-        console.log($scope.business);
 
         $scope.msg = new Alert(4000);
 
@@ -28,7 +24,8 @@ zedAlphaControllers
                 $scope.err = "Please enter duration as a number";
                 return;
             }
-            $scope.eventsDuration[newDuration] = true;
+            $scope.business.eventsDuration = $scope.business.eventsDuration || {};
+            $scope.business.eventsDuration[newDuration] = true;
             $scope.business.$save().then(function(){
                 $scope.msg.setMsg('Saved!');
             });
@@ -38,7 +35,8 @@ zedAlphaControllers
             $scope.err = null;
             $scope.msg.setMsg('');
             if(duration){
-                $scope.eventsDuration[duration] = null;
+                $scope.business.eventsDuration = $scope.business.eventsDuration || {};
+                $scope.business.eventsDuration[duration] = null;
                 return $scope.business.$save().then(function(){
                     $scope.msg.setMsg('Duration was Removed!');
                 });
@@ -52,10 +50,10 @@ zedAlphaControllers
             if(!newDurationForGuests || !newDurationForGuests.guests || !newDurationForGuests.duration){
                 return $scope.err = "Please enter duration as a number";
             }
-            if(!$scope.eventsDurationForGuests){
-                $scope.eventsDurationForGuests = $scope.business.eventsDurationForGuests = {};
+            if(!$scope.business.eventsDurationForGuests){
+                $scope.business.eventsDurationForGuests = $scope.business.eventsDurationForGuests = {};
             }
-            $scope.eventsDurationForGuests[newDurationForGuests.guests] = newDurationForGuests.duration;
+            $scope.business.eventsDurationForGuests[newDurationForGuests.guests] = newDurationForGuests.duration;
             return $scope.business.$save().then(function(){
                 $scope.msg.setMsg('Saved!');
             });
@@ -63,7 +61,7 @@ zedAlphaControllers
 
         $scope.removeDurationForGuests = function(key){
             if(key){
-                $scope.eventsDurationForGuests[key] = null;
+                $scope.business.eventsDurationForGuests[key] = null;
                 return $scope.business.$save().then(function(){
                     $scope.msg.setMsg('Duration for guests was Removed!');
                 });
