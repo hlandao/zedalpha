@@ -87,8 +87,6 @@ zedAlphaControllers
         }
 
 
-//        $scope.sortedEvents = EventsHolder.sorted;
-
         $scope.goToEntireShift = function(){
             DateHolder.isEntireShift = true;
         };
@@ -138,6 +136,15 @@ zedAlphaControllers
                 $scope.switchMode = false;
             } else{
                 $scope.eventToSwitch = event;
+            }
+        }
+
+        $scope.toggleDeadEvents = function(e){
+            e.preventDefault();
+            if(showDeadEvents){
+                showDeadEvents = false;
+            }else{
+                showDeadEvents = true;
             }
         }
 

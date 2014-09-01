@@ -68,6 +68,9 @@ zedAlphaConfigModule
         MINUTES_SHORT : 'mins',
         HOURS_SHORT : 'hrs',
         default : 'Default',
+        SHIFTS_EDITOR : 'Shifts Editor',
+        BASIC_SHIFTS : 'Basic Shifts',
+
 
         ORDERED: "Orderd",
         // ERRORS
@@ -238,6 +241,11 @@ zedAlphaConfigModule
                 "HIDE_DEAD_EVENTS" : "הסתר ארועים שהסתיימו",
                 "UPCOMING_EVENTS_TITLE" : "ארועים קרובים",
                 "default" : 'ברירת מחדל',
+                "morning" : 'בוקר',
+                "noon" : 'צהריים',
+                "evening" : 'ערב',
+                "SHIFTS_EDITOR" : 'עריכת משמרות',
+                "BASIC_SHIFTS" : 'משמרות בסיס',
 
                 "TO" : 'עד',
                 "MIN" : 'דקות',

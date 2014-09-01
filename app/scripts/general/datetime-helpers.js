@@ -163,7 +163,7 @@ zedAlphaServices
         };
     }]).filter('dayOfWeekFilter', function(){
         return function(input){
-            if(!input) return;
+            if(input != 0 && !input) return;
             var days = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
             return days[input];
         }
