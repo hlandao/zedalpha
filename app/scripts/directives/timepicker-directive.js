@@ -27,66 +27,44 @@ zedAlphaDirectives
                     settings = defaultSettings;
 
 
-                var initWatcher = false;
-                var setNgModelWatcher = function(){
-                    if(initWatcher) return;
-                    initWatcher = true;
-                    var ngModelWatcher = $scope.$watch('ngModel', function(newVal){
-                        init();
-                        if(newVal && ngModelWatcher) ngModelWatcher();
-                    });
-                }
                 var init = this.init = function (_ngModel, _linkFN, _attrs) {
+                    console.log('init');
                     ngModel = ngModel || _ngModel;
                     linkFN =  linkFN || _linkFN;
                     attrs = attrs || _attrs;
                     settings = angular.extend(defaultSettings, $scope.settings);
 
-                    if(!ngModel || !ngModel.$modelValue){
-                        setNgModelWatcher();
-                        return;
-                    }else{
-                        initialized = true;
-                    }
-
-                    if(!ngModel.$modelValue || !ngModel.$modelValue.isValid || !ngModel.$modelValue.isValid()){
-                        throw new TypeError("Cannot iniate timepicker");
-                    }
-
-
-//                    generateTimesArray();
-
-                    $scope.$watch('settings', function(newVal,oldVal){
-                        settings = angular.extend(defaultSettings, $scope.settings);
-                        generateTimesArray();
-                    }, true);
-
-
                     ngModel.$render = function(){
-                        if(!initialized){
-                            init();
-                        }else{
-                            generateTimesArray();
-                        }
+                        generateTimesArray();
                     };
 
                     ngModel.$parsers.unshift(function(viewValue){
                         if(viewValue){
-                            return moment(viewValue.time);
+                            console.log('change to : viewValue',viewValue, moment(viewValue).hour());
+                            return moment(viewValue);
+                        }else{
+                            return undefined;
                         }
                     });
 
+                    $scope.$watch('settings', function(newVal,oldVal){
+                        settings = angular.extend(defaultSettings, $scope.settings);
+//                        generateTimesArray();
+                    }, true);
 
-
-                    $scope.setNewTime = function(timeObj, e){
-                        e.stopPropagation();
-                        ngModel.$setViewValue(timeObj);
-                        generateTimesArray();
-                        $scope.opened = false;
-                        attrs.onChange && $scope.$parent.$eval(attrs.onChange);
-                    }
 
                 };
+
+
+
+                $scope.setNewTime = function(timeObj, e){
+                    e.stopPropagation();
+                    ngModel.$setViewValue(timeObj.time);
+                    ngModel.$render();
+                    $scope.opened = false;
+                    attrs.onChange && $scope.$parent.$eval(attrs.onChange);
+                }
+
 
 
                 var resetTimesArray = function () {
@@ -97,19 +75,26 @@ zedAlphaDirectives
                 }
 
                 var generateTimesArray  = function () {
+                    if(!settings.min && !ngModel.$modelValue){
+                        return;
+                    }
+
+                    if(ngModel.$modelValue) console.log('generateTimesArray','ngModel.$modelValue',ngModel.$modelValue.hour());
                     var currentMoment,
                         interval = settings.intervalInMinutes,
-                        max = settings.max ? settings.max.clone() : ngModel.$modelValue.clone().hour(23).minute(59).seconds(0),
                         min = (settings.min && settings.min.isValid && settings.min.isValid()) ? settings.min.clone() : ngModel.$modelValue.clone().hour(0).minute(0).seconds(0),
+                        max = settings.max ? settings.max.clone() : (ngModel.$modelValue) ? (ngModel.$modelValue.clone().hour(23).minute(59).seconds(0)) : min.clone().hour(23).minute(59).seconds(0),
+
                         currentMoment = min.clone(),
                         v = min,
                         rangeInMinutes = settings.range || max.diff(min, 'minutes');
 
                     resetTimesArray();
+
                     var timeObj;
                     do{
                         timeObj = getTimeObject(currentMoment);
-                        if (currentMoment.isSame(ngModel.$modelValue, 'minutes')) {
+                        if (ngModel.$modelValue && currentMoment.isSame(ngModel.$modelValue, 'minutes')) {
                             $scope.selected = timeObj;
                         }
                         $scope.times.push(timeObj);
@@ -154,6 +139,7 @@ zedAlphaDirectives
                 }
 
                 this.open = function(){
+                    if(!$scope.times) generateTimesArray();
                     $scope.opened = true;
                 }
 

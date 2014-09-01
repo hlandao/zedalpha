@@ -36,7 +36,7 @@ zedAlphaServices
             }
             if(shift.defaultTime && !DateHelpers.isMomentValid(shift.defaultTime)){
                 var defaultTimeArr = shift.defaultTime.split(':');
-                shift.defaultTime = moment().day(this.dayOfWeek).hour(startTimeArr[0]).minute(startTimeArr[1]);
+                shift.defaultTime = moment().day(this.dayOfWeek).hour(defaultTimeArr[0]).minute(defaultTimeArr[1]);
             }
         };
 

@@ -27,6 +27,7 @@ zedAlphaDirectives
                 };
 
                 $scope.dayWasChanged = function(day){
+//                    return;
                     var shiftsDay = day.shiftsDay ? day.shiftsDay : day;
                     if(shiftsDay.$save) shiftsDay.$saveWithValidation().then(function(){
                                 $scope.msg.setMsg("Changes were Saved")
