@@ -28,7 +28,6 @@ zedAlphaDirectives
 
 
                 var init = this.init = function (_ngModel, _linkFN, _attrs) {
-                    console.log('init');
                     ngModel = ngModel || _ngModel;
                     linkFN =  linkFN || _linkFN;
                     attrs = attrs || _attrs;
@@ -40,7 +39,6 @@ zedAlphaDirectives
 
                     ngModel.$parsers.unshift(function(viewValue){
                         if(viewValue){
-                            console.log('change to : viewValue',viewValue, moment(viewValue).hour());
                             return moment(viewValue);
                         }else{
                             return undefined;
@@ -49,7 +47,7 @@ zedAlphaDirectives
 
                     $scope.$watch('settings', function(newVal,oldVal){
                         settings = angular.extend(defaultSettings, $scope.settings);
-//                        generateTimesArray();
+                        generateTimesArray();
                     }, true);
 
 
@@ -79,7 +77,6 @@ zedAlphaDirectives
                         return;
                     }
 
-                    if(ngModel.$modelValue) console.log('generateTimesArray','ngModel.$modelValue',ngModel.$modelValue.hour());
                     var currentMoment,
                         interval = settings.intervalInMinutes,
                         min = (settings.min && settings.min.isValid && settings.min.isValid()) ? settings.min.clone() : ngModel.$modelValue.clone().hour(0).minute(0).seconds(0),
