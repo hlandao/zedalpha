@@ -67,6 +67,7 @@ zedAlphaConfigModule
         EDITED_EVENT : 'Editing Event',
         MINUTES_SHORT : 'mins',
         HOURS_SHORT : 'hrs',
+        default : 'Default',
 
         ORDERED: "Orderd",
         // ERRORS
@@ -236,6 +237,7 @@ zedAlphaConfigModule
                 "SHOW_DEAD_EVENTS" : "הצג ארועים שהסתיימו",
                 "HIDE_DEAD_EVENTS" : "הסתר ארועים שהסתיימו",
                 "UPCOMING_EVENTS_TITLE" : "ארועים קרובים",
+                "default" : 'ברירת מחדל',
 
                 "TO" : 'עד',
                 "MIN" : 'דקות',
