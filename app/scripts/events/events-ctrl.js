@@ -4,12 +4,16 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('EventsCtrl', function($scope, $log, DateHolder, Event, $filter, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder, EventsCollection){
+    .value('StatusFilters', ['ALL','SEATED','ORDERED','OCCASIONAL'])
+    .controller('EventsCtrl', function($scope, $log, DateHolder, Event, $filter, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder, EventsCollection, StatusFilters){
 
         $scope.DateHolder = DateHolder;
         $scope.ShiftsDayHolder = ShiftsDayHolder;
         $scope.business = BusinessHolder.business;
         $scope.sortedEvents = EventsCollection.sorted;
+        $scope.filters = EventsCollection.filters;
+
+
 
         // --------- New event ----------- //
         $scope.newEventWithSeatsDic = function(occasionalOrDestination, seatsDic, startTime){
@@ -68,11 +72,10 @@ zedAlphaControllers
         };
 
 
-        $scope.filters = ['ALL','SEATED','ORDERED','OCCASIONAL'];
-        $scope.selectedFilter = $scope.filters[0];
+        $scope.StatusFilters = StatusFilters;
 
         $scope.selectFilter = function(filter){
-            $scope.selectedFilter = filter;
+            EventsCollection.filters.status = filter;
         };
 
         $scope.selectNewShift = function(shift, e){

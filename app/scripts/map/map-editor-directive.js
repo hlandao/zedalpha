@@ -1,1033 +1,62 @@
 var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directives', []);
 
-
-/**
- * ShapeGroup
- * used to move more a group of objects together.
- * only in the map editor.
- * @param paper
- * @param options
- * @returns {boolean}
- * @constructor
- */
-function ShapeGroup(paper, options){
-    var self = this;
-    this.paper = paper;
-    this.changeCallback = options.changeCallback;
-    this.dragStartCallback = options.dragStartCallback;
-    this.dragEndCallback = options.dragEndCallback;
-
-
-    if(options.shapesArr){
-        this.shapesArr = options.shapesArr;
-        this.groupSet = paper.set();
-        for (var i = 0 ; i  <  options.shapesArr.length; ++i){
-            options.shapesArr[i].isPartOfGroup = true;
-            options.shapesArr[i].hideHandles();
-            this.groupSet.push(options.shapesArr[i].shapesSet);
-        }
-
-        this.setFT();
-
-        this.groupSet.click(function(e){
-            e.stopPropagation();
-            e.preventDefault();
-            return false;
-        })
-
-    }else{
-        return false;
-    }
-};
-
-ShapeGroup.prototype.setFT = function(){
-    var paper = this.paper, self = this;
-    if(this.ft && this.ft.unplug) this.ft.unplug();
-    this.ft = paper.freeTransformAdjusted(this.groupSet, { keepRatio: true, scale : [], draw : ['bbox'], rotate : [], drag:['self']}, function(data,events){
-        if(events.indexOf('drag start') > -1){
-            self.dragStartCallback && self.dragStartCallback(self);
-        } else if(events.indexOf('drag end') > -1){
-            self.changeCallback && self.changeCallback(self);
-            self.dragEndCallback && self.dragEndCallback(self);
-        }
-    }).showHandles();
-}
-
-
-ShapeGroup.prototype.hideHandles = function(){
-    for (var i = 0; i < this.shapesArr.length; ++i){
-        this.shapesArr[i].isPartOfGroup = false;
-        this.shapesArr[i].setFT();
-    }
-    this.ft.unplug();
-    this.groupSet.clear();
-}
-
-ShapeGroup.prototype.addSet = function(newSet){
-    newSet.hideHandles();
-    if(this.shapesArr.indexOf(newSet) == -1){
-        this.groupSet.push(newSet.shapesSet);
-        this.shapesArr.push(newSet);
-        this.setFT();
-    }
-}
-
-ShapeGroup.prototype.seatString = function(){
-    var output = "";
-    for (var i = 0; i < this.shapesArr.length; ++i){
-        if(output) output += ', ';
-        output += this.shapesArr[i].seatNumber;
-    }
-    return output;
-}
-
-ShapeGroup.prototype.removeFromPaper = function(){
-    this.ft.unplug();
-    this.groupSet.remove();
-    for (var i = 0; i < this.shapesArr.length; ++i){
-        this.shapesArr[i].removeFromPaper();
-    }
-}
-
-
-/**
- * SeatShape
- * used for all kind of seats shapes
- * @param paper
- * @param options
- * @constructor
- */
-function SeatShape(paper, options){
-    var self = this;
-    this.paper = paper;
-    this.shapeObject = options.shapeObject;
-    this.seatNumber = options.seatNumber;
-    this.shapesArr = options.shapesArr;
-    this.changeCallback = options.changeCallback;
-    this.selectCallback = options.selectCallback;
-    this.deselectCallback = options.deselectCallback;
-    this.dragStartCallback = options.dragStartCallback;
-    this.dragEndCallback = options.dragEndCallback
-    this.clickCallback = options.clickCallback;
-    this.mouseoverCallback = options.mouseoverCallback;
-    this.mouseoutCallback = options.mouseoutCallback;
-
-    this.FTEnabled = options.FTEnabled;
-    this.id = this.generateId();
-    this.defaultX = 100;
-    this.defaultY = 100;
-    this.normalFillColor = "#eee";
-    this.normalStrokeColor = "#ddd";
-    this.normalStateAttrs = {'fill' : this.normalFillColor, 'fill-opacity' : 1.0, 'stroke-width' : 1, stroke : '#ddd'};
-    this.textColor = "#E87352";
-    this.highlightFillColor = "#31C0BE";
-    this.highlightStrokeColor = "#31C0BE";
-    this.highlightStateAttrs = {'stroke-width' : 2, stroke : this.highlightStrokeColor};
-    this.hpverStrokeColor = "#444";
-    this.hoverStateAttrs = {'stroke-width' : 2, stroke : this.hpverStrokeColor};
-
-
-
-
-    if(this.shapeObject){
-        this.initFromObjectAndSeatNumber();
-    }else if(this.shapesArr){
-        this.initFromShapesArr();
-    }
-
-    this.setFT();
-
-    this.shapesSet.click(function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        if(self.isPartOfGroup){
-            return;
-        }
-
-        if(self.FTEnabled){
-            if(self.isDragging){
-                self.isDragging = false;
-                return false;
-            }
-            if(!self.handlesOn){
-                self.handlesOn = true;
-                self.ft.showHandles();
-                self.selectCallback && self.selectCallback(self);
-            }else{
-                self.handlesOn = false;
-                self.ft.hideHandles();
-                self.deselectCallback && self.deselectCallback(self);
-            }
-            return
-        }else{
-            self.clickCallback(self);
-        }
-
-    });
-
-    this.shapesSet.touchend(function(e){
-        alert(1);
-    });
-
-
-    this.shapesSet.mouseover(function(e){
-        if(self.highlighted) return;
-        self.prevMouseoverAttrs = $.extend({},self.shape.attrs);
-        self.shape.attr(self.hoverStateAttrs);
-        self.mouseoverCallback && self.mouseoverCallback(self);
-    });
-
-    this.shapesSet.mouseout(function(e){
-        if(self.highlighted) return;
-        self.shape.attr(self.prevMouseoverAttrs);
-        self.prevMouseoverAttrs = null;
-        self.mouseoutCallback && self.mouseoutCallback(self);
-    });
-
-
-};
-
-
-SeatShape.prototype.setFT = function(){
-    if(!this.FTEnabled) return;
-    var paper = this.paper, self = this;
-    if(this.ft && this.ft.unplug) this.ft.unplug();
-    this.ft = paper.freeTransformAdjusted(this.shapesSet, { keepRatio: true, scale : ['bboxCorners'], draw : ['bbox'], rotate : ['axisX'], drag : ['self']}, function(data,evetns){
-        if(self.isPartOfGroup){
-            return;
-        }
-        self.throttledCallback(data, evetns);
-    }).hideHandles();
-
-}
-
-SeatShape.prototype.throttledCallback = _.throttle(function(data,events){
-    var self = this;
-    if(events.indexOf('drag start') > -1 || events.indexOf('rotate start') > -1 || events.indexOf('scale start') > -1){
-        this.isDragging = true;
-        self.dragStartCallback && self.dragStartCallback(self);
-    }else if(events.indexOf('drag end') > -1 || events.indexOf('rotate end') > -1 || events.indexOf('scale end') > -1){
-        this.changeCallback && this.changeCallback(this);
-        self.dragEndCallback && self.dragEndCallback(self);
-    }
-}, 100, {trailing : true});
-
-
-SeatShape.prototype.initFromObjectAndSeatNumber = function(paper, shapeObject, seatNumber){
-    this.shapesSet = this.paper.set();
-    var shapeObject = this.shapeObject,
-        defaultX = this.defaultX,
-        defaultY = this.defaultY;
-
-    if(!shapeObject || !shapeObject){
-        return;
-    }else if(shapeObject.shapeType == 'circle'){
-        this.shape = this.paper.circle(defaultX, defaultY, shapeObject.r).attr(this.normalStateAttrs);
-        this.text = this.setTextShape(defaultX, defaultY);
-    }else if(shapeObject.shapeType === 'rect'){
-        this.shape = this.paper.rect(defaultX, defaultY, shapeObject.w, shapeObject.h).attr(this.normalStateAttrs);
-        this.text = this.setTextShape((defaultX+shapeObject.w/2), (defaultY+shapeObject.h/2));
-    }else if(shapeObject.shapeType == 'roundedRect'){
-        this.shape = this.paper.roundedRect(defaultX, defaultY, shapeObject.w, shapeObject.h, 5, 5, 0, 0).attr(this.normalStateAttrs);
-        this.text = this.setTextShape((defaultX+shapeObject.w/2), (defaultY+shapeObject.h/2));
-    }
-
-    this.shape.data('seatId', this.id);
-    this.shape.data('type','SeatShapeTheShape');
-    this.shape.data('seatNumber',this.seatNumber);
-
-    this.text.data('seatId', this.id);
-    this.text.data('type','SeatShapeTheShape');
-    this.text.data('seatNumber',this.seatNumber);
-
-
-    this.shapesSet.push(this.shape);
-    this.shapesSet.push(this.text);
-    this.shapesSet.data('seatId', this.id);
-    this.shapesSet.data('type','SeatShape');
-    this.shapesSet.data('seatNumber',this.seatNumber);
-
-
-}
-
-SeatShape.prototype.initFromShapesArr = function(){
-    var seatNumber, seatId;
-    this.shapesSet = this.paper.set();
-    var arr = this.shapesArr;
-  for (var i = 0 ; i  <  arr.length; ++i){
-      seatNumber = this.seatNumber || seatNumber || arr[i].data('seatNumber');
-      seatId = seatId || arr[i].data('seatId');
-      this.shapesSet.push(arr[i]);
-  }
-    this.shape = this.shapesSet[0];
-    this.text = this.shapesSet[1];
-    this.id = seatId;
-    this.seatNumber = seatNumber;
-    this.shapesSet.data('seatId', seatId);
-    this.shapesSet.data('type','SeatShape');
-    this.shapesSet.data('seatNumber',seatNumber);
-    this.cancelHighlight();
-};
-
-SeatShape.prototype.generateId = function ()
-{
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-    for( var i=0; i < 5; i++ )
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-    return text;
-};
-
-
-SeatShape.prototype.setTextShape = function(x, y){
-    return this.paper.text(x, y, "" + this.seatNumber + "").attr({fill: this.textColor}).attr('isTransformable', 0);
-};
-
-SeatShape.prototype.hideHandles = function(){
-    this.handlesOn = false;
-    this.ft.hideHandles();
-}
-
-SeatShape.prototype.seatString = function(){
-    return this.seatNumber;
-}
-
-SeatShape.prototype.updateSeatNumber = function(){
-    this.shapesSet.data('seatNumber', this.seatNumber);
-    this.shapesSet[0].data('seatNumber', this.seatNumber);
-    this.shapesSet[1].data('seatNumber', this.seatNumber);
-    this.shapesSet[1].attr({text : "" + this.seatNumber + ""});
-}
-
-SeatShape.prototype.removeFromPaper = function(){
-    this.ft.unplug();
-    this.shapesSet.remove();
-}
-
-SeatShape.prototype.generateShapesArr = function(){
-    return [this.shape, this.text];
-}
-
-SeatShape.prototype.translate = function(x,y){
-    this.ft.attrs.x = x;
-    this.ft.attrs.y = y;
-    this.ft.apply();
-    this.ft.updateHandles();
-};
-
-SeatShape.prototype.highlight = function(){
-    this.highlighted = true;
-    this.shape.attr(this.highlightStateAttrs);
-};
-
-SeatShape.prototype.cancelHighlight = function(){
-    this.highlighted = false;
-    this.shape.attr(this.normalStateAttrs);
-};
-
-SeatShape.prototype.toggleHighlight = function(){
-    if(this.highlighted){
-        this.cancelHighlight();
-    }else{
-        this.highlight();
-    }
-};
-
-SeatShape.prototype.normalState = function(){
-    this.cancelHighlight();
-};
-
-SeatShape.prototype.setBackgroundColor = function(color){
-    this.shape.attr({fill : color});
-};
-
-SeatShape.prototype.setBackgroundColorWithOpacity = function(color, opacity){
-    this.shape.attr({'fill' : color, 'fill-opacity' : opacity});
-};
-
-SeatShape.prototype.getBBox = function(){
-    return this.shape.getBBox();
-};
-
-
-/**
- * DecorativeShape
- * used for walls and other non-seats objects
- * @param paper
- * @param options
- * @constructor
- */
-function DecorativeShape(paper, options){
-    var self = this;
-    this.paper = paper;
-    this.shapeObject = options.shapeObject;
-    this.shapesArr = options.shapesArr;
-    this.changeCallback = options.changeCallback;
-    this.selectCallback = options.selectCallback;
-    this.deselectCallback = options.deselectCallback;
-    this.dragStartCallback = options.dragStartCallback;
-    this.dragEndCallback = options.dragEndCallback
-    this.clickCallback = options.clickCallback;
-    this.mouseoverCallback = options.mouseoverCallback;
-    this.mouseoutCallback = options.mouseoutCallback;
-
-    this.FTEnabled = options.FTEnabled;
-    this.id = this.generateId();
-    this.defaultX = 100;
-    this.defaultY = 100;
-
-
-
-
-    if(this.shapeObject){
-        this.initFromObject();
-    }else if(this.shapesArr){
-        this.initFromShapesArr();
-    }
-
-    this.setFT();
-
-    this.shapesSet.click(function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        if(self.isPartOfGroup){
-            return;
-        }
-
-        if(self.FTEnabled){
-            if(self.isDragging){
-                self.isDragging = false;
-                return false;
-            }
-            if(!self.handlesOn){
-                self.handlesOn = true;
-                self.ft.showHandles();
-                self.selectCallback && self.selectCallback(self);
-            }else{
-                self.handlesOn = false;
-                self.ft.hideHandles();
-                self.deselectCallback && self.deselectCallback(self);
-            }
-            return
-        }else{
-            self.clickCallback && self.clickCallback(self);
-        }
-
-    });
-
-    this.shapesSet.touchend(function(e){
-    });
-
-
-};
-
-
-DecorativeShape.prototype.setFT = function(){
-    if(!this.FTEnabled) return;
-    var paper = this.paper, self = this;
-    if(this.ft && this.ft.unplug) this.ft.unplug();
-    this.ft = paper.freeTransformAdjusted(this.shapesSet, { keepRatio: false, scale : ['bboxCorners'], draw : ['bbox'], rotate : ['axisX'], drag : ['self']}, function(data,evetns){
-        if(self.isPartOfGroup){
-            return;
-        }
-        self.throttledCallback(data, evetns);
-    }).hideHandles();
-
-}
-
-DecorativeShape.prototype.throttledCallback = _.throttle(function(data,events){
-    var self = this;
-    if(events.indexOf('drag start') > -1 || events.indexOf('rotate start') > -1 || events.indexOf('scale start') > -1){
-        this.isDragging = true;
-        self.dragStartCallback && self.dragStartCallback(self);
-    }else if(events.indexOf('drag end') > -1 || events.indexOf('rotate end') > -1 || events.indexOf('scale end') > -1){
-        this.changeCallback && this.changeCallback(this);
-        self.dragEndCallback && self.dragEndCallback(self);
-    }
-}, 100, {trailing : true});
-
-
-DecorativeShape.prototype.initFromObject = function(paper, shapeObject){
-    this.shapesSet = this.paper.set();
-    var shapeObject = this.shapeObject,
-        defaultX = this.defaultX,
-        defaultY = this.defaultY;
-
-    if(!shapeObject){
-        return;
-    }else if(shapeObject.shapeType == 'circle'){
-        this.shape = this.paper.circle(defaultX, defaultY, shapeObject.r).attr(shapeObject.attrs);
-    }else if(shapeObject.shapeType === 'rect'){
-        this.shape = this.paper.rect(defaultX, defaultY, shapeObject.w, shapeObject.h).attr(shapeObject.attrs);
-    }else if(shapeObject.shapeType == 'roundedRect'){
-        this.shape = this.paper.roundedRect(defaultX, defaultY, shapeObject.w, shapeObject.h, 5, 5, 0, 0).attr(shapeObject.attrs);
-    }
-
-    this.shape.data('seatId', this.id);
-    this.shape.data('type','DecorativeShapeTheShape');
-
-    this.shapesSet.push(this.shape);
-    this.shapesSet.data('seatId', this.id);
-    this.shapesSet.data('type','DecorativeShape');
-}
-
-DecorativeShape.prototype.initFromShapesArr = function(){
-    var seatId;
-    this.shapesSet = this.paper.set();
-    var arr = this.shapesArr;
-    for (var i = 0 ; i  <  arr.length; ++i){
-        seatId = seatId || arr[i].data('seatId');
-        this.shapesSet.push(arr[i]);
-    }
-    this.shape = this.shapesSet[0];
-    this.id = seatId;
-    this.shapesSet.data('seatId', seatId);
-    this.shapesSet.data('type','DecorativeShape');
-    this.normalState();
-};
-
-DecorativeShape.prototype.generateId = function ()
-{
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-    for( var i=0; i < 5; i++ )
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-    return text;
-};
-
-
-
-DecorativeShape.prototype.hideHandles = function(){
-    this.handlesOn = false;
-    this.ft.hideHandles();
-}
-
-
-DecorativeShape.prototype.removeFromPaper = function(){
-    this.ft.unplug();
-    this.shapesSet.remove();
-}
-
-DecorativeShape.prototype.generateShapesArr = function(){
-    return [this.shape];
-}
-
-DecorativeShape.prototype.translate = function(x,y){
-    this.ft.attrs.x = x;
-    this.ft.attrs.y = y;
-    this.ft.apply();
-    this.ft.updateHandles();
-};
-
-
-DecorativeShape.prototype.normalState = function(){
-    this.shape.attr(this.normalStateAttrs);
-};
-
-DecorativeShape.prototype.setBackgroundColor = function(color){
-    this.shape.attr({fill : color});
-};
-
-DecorativeShape.prototype.getBBox = function(){
-    return this.shape.getBBox();
-};
-
-
-
-Raphael.fn.roundedRect = function (x, y, w, h, r1, r2, r3, r4){
-    var array = [];
-    array = array.concat(["M",x,r1+y, "Q",x,y, x+r1,y]); //A
-    array = array.concat(["L",x+w-r2,y, "Q",x+w,y, x+w,y+r2]); //B
-    array = array.concat(["L",x+w,y+h-r3, "Q",x+w,y+h, x+w-r3,y+h]); //C
-    array = array.concat(["L",x+r4,y+h, "Q",x,y+h, x,y+h-r4, "Z"]); //D
-    return this.path(array);
-};
-
-
 zedAlphaDirectives
-    .directive('mapManager', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope, $filter, DateHolder, ShiftsDayHolder) {
+    .directive('mapEditor', function (firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope) {
         return {
             restrict: 'E',
-            replace : true,
-            templateUrl : '/partials/map/map-manager.html',
-            scope : {
-              business : "=",
-              businessId : "=",
-              filteredEvents : "=",
-              upcomingEvents : "="
+            replace: true,
+            templateUrl: '/partials/map/map-editor.html',
+            scope: {
+                business: "=",
+                businessId: "="
             },
-            link: function(scope, elem, attrs) {
-                var container = $("#map"),
-                    $seatMenu = $('#seat-menu').appendTo('body');
-                var paper = Raphael('map', container.width(), container.height());
-                var panZoom = paper.panzoom({ initialZoom: 4, initialPosition: { x: 0, y: 0} }),
-                    shapes = [];
-                var filteredEventsWatcher,
-                    events;
-
-
-                var EventsStatusesHolder = BusinessHolder.business.eventsStatuses;
-
-                scope.highlightedShapes = [];
-                panZoom.enable();
-                paper.safari();
-
-
-                container.click(function(){
-                    scope.$apply(function(){
-                        if(isAddingNewEvent()){
-                           return;
-                        }
-                        angular.forEach(scope.highlightedShapes, function(shape){
-                            shape.cancelHighlight();
-                        });
-                        renderMapWithEvents();
-                        scope.highlightedShapes = [];
-                        hideSeatMenu();
-
-                    });
-                });
-
-
-                $("#map-container #up").click(function (e) {
-                    panZoom.zoomIn(1);
-                    e.preventDefault();
-                });
-
-                $("#map-container #down").click(function (e) {
-                    panZoom.zoomOut(1);
-                    e.preventDefault();
-                });
-
-
-                var clickCallback  = function(shape){
-                    if(!shape.seatNumber) return;
-                    scope.$apply(function(){
-                        if(isAddingNewEvent()){
-                            clickHandlerForAddingNewEventState(shape);
-                        } else if(isEditingEvent()){
-                            clickHandlerForEditingEventState(shape);
-                        }else{
-                            clickHandlerForNormalState(shape);
-                        }
-                    });
-                };
-
-
-                var clickHandlerForAddingNewEventState = function(shape){
-                    var index = scope.highlightedShapes.indexOf(shape);
-                    if(index == -1){
-                        if(shapeSeatIsAvailable(shape)){
-                            scope.highlightedShapes.push(shape);
-                            shape.toggleHighlight();
-                        }
-                    }else if(index > -1){
-                        scope.highlightedShapes.splice(index,1);
-                        shape.toggleHighlight();
-                    }
-                    updateNewEventSeats();
-                    renderMapWithEvents();
-                }
-
-                var clickHandlerForEditingEventState = function(shape){
-                    var index = scope.highlightedShapes.indexOf(shape);
-                    if(index == -1){
-                        if(shapeSeatIsAvailable(shape)){
-                            scope.highlightedShapes.push(shape);
-                            shape.toggleHighlight();
-                        }
-                    }else if(index > -1){
-                        scope.highlightedShapes.splice(index,1);
-                        shape.toggleHighlight();
-                    }
-                    updateEditedEventSeats();
-                }
-
-                var clickHandlerForNormalState = function(shape){
-//                    shape.toggleHighlight();
-                    var index = scope.highlightedShapes.indexOf(shape);
-                    if(!shape.highlighted && index == -1){
-                        if(!shapeSeatIsAvailable(shape)){
-                            renderMapWithEvents();
-                            scope.highlightedShapes = [];
-                        }else{
-                            var l = scope.highlightedShapes.length;
-                            if(l > 0 && !shapeSeatIsAvailable(scope.highlightedShapes[l-1])){
-                                renderMapWithEvents();
-                                scope.highlightedShapes = [];
-                            }
-                        }
-                        shape.toggleHighlight();
-                        scope.highlightedShapes.push(shape);
-                    }else if(index != -1){
-                        shape.toggleHighlight();
-                        scope.highlightedShapes.splice(index,1);
-                    }
-
-                    if(!scope.highlightedShapes.length){
-                        hideSeatMenu();
-                    }else{
-                        positionSeatMenu(shape);
-                    }
-                    eventsForHighlightedShapes();
-                }
-
-
-                var eventsForHighlightedShapes = function(){
-                    if(scope.highlightedShapes.length == 1){
-//                        var fromTime = moment(DateHolder.currentDate).hour(0).minute(0);
-//                        var toTime = moment(DateHolder.currentDate).hour(23).minute(59);
-//
-//                        var events = $filter('eventsBySeatAndTime')(null,scope.highlightedShapes[0].seatString(),fromTime,toTime);
-                        console.log('scope.highlightedShapes[0].seatString()',scope.highlightedShapes[0].seatString());
-                        var events = $filter('eventsBySeatAndShiftsDay')(null,scope.highlightedShapes[0].seatString(),ShiftsDayHolder.current);
-
-
-                        var pastEvents = [], nowEvents = [], futureEvents =[];
-                        var currentClockMoment = moment(DateHolder.currentClock);
-                        angular.forEach(events, function(event){
-                            var startTimeMoment = moment(event.startTime);
-                            var endTimeMoment = moment(event.endTime);
-
-                            if(startTimeMoment.isBefore(currentClockMoment, 'minutes') && (endTimeMoment.isBefore(currentClockMoment, 'minutes') || endTimeMoment.isSame(currentClockMoment, 'minutes'))){
-                                if(pastEvents.indexOf(event) == -1)pastEvents.push(event);
-                            } else if (startTimeMoment.isSame(currentClockMoment, 'minutes') || (startTimeMoment.isBefore(currentClockMoment, 'minutes') && endTimeMoment.isAfter(currentClockMoment, 'minutes'))){
-                                if(nowEvents.indexOf(event) == -1) nowEvents.push(event);
-                            }else{
-                                if(futureEvents.indexOf(event) == -1) futureEvents.push(event);
-                            }
-                        });
-                        scope.highlightedPastEvents = _.sortBy(pastEvents, function(event){
-                            return event.startTime;
-                        });
-                        scope.highlightedNowEvents = _.sortBy(nowEvents, function(event){
-                            return event.startTime;
-                        });
-
-                        scope.highlightedFutureEvents = _.sortBy(futureEvents, function(event){
-                            return event.startTime;
-                        });
-
-                        if(!scope.highlightedNowEvents.length && scope.highlightedFutureEvents.length){
-                            scope.nextEventInXMinutes = moment(scope.highlightedFutureEvents[0].startTime).diff(moment(DateHolder.currentClock), 'seconds');
-                            if(scope.nextEventInXMinutes >  3600 * 6){
-                                scope.nextEventInXMinutes = null;
-                            }
-                        }
-
-                    }else{
-                        emptyEventsForHighlightedShapes();
-                    }
-                }
-
-                var emptyEventsForHighlightedShapes = function(){
-                    scope.highlightedPastEvents = null;
-                    scope.highlightedNowEvents = null;
-                    scope.highlightedFutureEvents = null;
-                    scope.nextEventInXMinutes = null;
-                }
-
-
-                var hideSeatMenu = function(){
-                    $seatMenu.hide();
-                }
-
-                var positionSeatMenu = function(shape){
-                    if(!shapeSeatIsAvailable(shape)){
-                        scope.highlightedIsntAvailable = true;
-                    }else{
-                        scope.highlightedIsntAvailable = false;
-                    }
-                    var l = scope.highlightedShapes.length;
-                    if(l){
-                        var lastShape = scope.highlightedShapes[l-1],
-                            bbox = lastShape.getBBox(),
-                            shape = lastShape.shapesSet[0],
-                            zoom = ((panZoom.getCurrentZoom() * 0.1) + 1.2),
-                            zoomPosition = panZoom.getCurrentPosition(),
-                            x = ((bbox.x+bbox.width - zoomPosition.x) * zoom) + 25,
-                            y = ((bbox.y - zoomPosition.y) * zoom);
-                        $seatMenu.css({top : y + 'px', left : x+'px', display:'block'});
-                    }
-
-                }
-
-                var shapeSeatIsAvailable = function(shape){
-                    var seatNumber = shape.seatNumber, event,seatNumberToCheck;
-                    for(var j = 0; j < scope.filteredEvents.events.length; ++j){
-                        event = scope.filteredEvents.events[j];
-                        for(seatNumberToCheck  in  event.seats){
-                            if(seatNumberToCheck == seatNumber) return false;
-                        }
-                    }
-                    return true;
-                }
-
-                var setAllShapesToNormal = function(){
-                    angular.forEach(shapes, function(shape){
-                        shape.normalState();
-                    });
-                };
-
-                var getEventStatusColor = function(status){
-                    var statusObj;
-
-                    for (var i in EventsStatusesHolder){
-                        statusObj = EventsStatusesHolder[i];
-                        if(statusObj.status == status.status){
-                            return statusObj.color;
-                        }
-                    }
-                    return null;
-                }
-
-
-                scope.newEventForSelectedShaped = function(occasionalOrDestination,e){
-                    e.preventDefault();
-                    scope.$parent.newEventWithSeatsDic(occasionalOrDestination, shapesArrToSeatsDic());
-                    hideSeatMenu();
-                    $timeout(renderMapWithEvents,10);
-                };
-
-                var shapesArrToSeatsDic = function(){
-                    var output = {};
-                    angular.forEach(scope.highlightedShapes, function(shape){
-                        output[shape.seatString()] = true;
-                    });
-                    return output;
-                }
-
-
-                // ------- Sync with Events Ctrl --------//
-                var isAddingNewEvent = function(){
-                    return scope.$parent.newEvent;
-                }
-
-                var isEditingEvent = function(){
-                    return scope.$parent.editedEvent;
-                }
-
-                var isSwitchingEvents = function(){
-                    return scope.$parent.switchMode;
-                }
-
-
-
-                var updateNewEventSeats = function (){
-                    scope.$parent.newEvent.seats = shapesArrToSeatsDic();
-                }
-
-
-                var updateEditedEventSeats = function (){
-                    scope.$parent.editedEvent.seats = shapesArrToSeatsDic();
-                }
-
-
-                var renderMapWithEvents = _.throttle(function(newVal){
-                    var filteredEvents = scope.filteredEvents.events,
-                        upcomingEvents = scope.upcomingEvents.events;
-
-
-                    if(scope.$parent.newEvent){
-                        filteredEvents = filteredEvents || [];
-                        filteredEvents.push(scope.$parent.newEvent);
-                    }
-
-                    setAllShapesToNormal();
-                    scope.highlightedShapes = [];
-
-                    if((!filteredEvents || !filteredEvents.length) && (!upcomingEvents || !upcomingEvents.length)){
-                        return;
-                    }
-
-
-                    var event, color, seatNumber, theShape, seatsWithBackground = {},seatsWithUpcomingBackground = {}, highlightedSeats = {}, upcomingHighlightedShapes = {};
-                    angular.forEach(filteredEvents, function(event){
-                        color = getEventStatusColor(event.status);
-                        for(seatNumber  in  event.seats){
-                            seatsWithBackground[seatNumber] = color;
-                            if(event.helpers && event.helpers.isEditing || !event.$id){
-                                highlightedSeats[seatNumber] = true;
-                            }
-
-                        }
-                    });
-
-                    angular.forEach(upcomingEvents, function(event){
-                        color = getEventStatusColor(event.status);
-                        for(seatNumber  in  event.seats){
-                            if(!seatsWithBackground[seatNumber]) seatsWithUpcomingBackground[seatNumber] = color;
-                        }
-                    });
-
-                    for (var i = 0;i < shapes.length; ++i){
-                        theShape = shapes[i];
-                        if(theShape.seatNumber){
-                            theShape.normalState();
-                            seatNumber = theShape.seatNumber;
-                            color = seatsWithBackground[seatNumber];
-                            if(color){
-                                theShape.setBackgroundColor(color);
-                            }
-                            color = seatsWithUpcomingBackground[seatNumber];
-                            if(color){
-                                theShape.setBackgroundColorWithOpacity(color, 0.4);
-                            }
-                            if(highlightedSeats[seatNumber]){
-                                theShape.highlight();
-                                scope.highlightedShapes.push(theShape);
-                            }
-                        }
-
-                    }
-
-                    hideSeatMenu();
-
-                },5,{trailing : true});
-
-
-
-
-                var renderMapJson = function(map){
-                    paper.fromJSON(map, function(el, data){
-                        for(var i in data){
-                            el.data(i, data[i]);
-                        }
-                    });
-                    var sortedSeats = {};
-                    var decorativeShapes = {};
-                    paper.forEach(function(el){
-                        var data = el.data();
-                        if(!data || !data.type){
-                            el.remove();
-                            return;
-                        }
-                        var seatId = el.data('seatId');
-                        var seatNumber = el.data('seatNumber');
-
-                        if(seatId && seatNumber){
-                            sortedSeats[seatId] = sortedSeats[seatId] || [];
-                            sortedSeats[seatId].push(el);
-                        }else if (seatId){
-                            decorativeShapes[seatId] = decorativeShapes[seatId] || [];
-                            decorativeShapes[seatId].push(el);
-                        }
-
-
-                    });
-
-                    for(var i in sortedSeats){
-                        shapes.push(new SeatShape(paper, {
-                            shapeObject : null,
-                            seatNumber : null,
-                            shapesArr :  sortedSeats[i],
-                            clickCallback : clickCallback,
-                            FTEnabled : false
-                        }));
-                    }
-
-                    for(var i in decorativeShapes){
-                        shapes.push(new DecorativeShape(paper, {
-                            shapeObject : null,
-                            seatNumber : null,
-                            shapesArr :  decorativeShapes[i],
-                            FTEnabled : false
-                        }));
-                    }
-
-                };
-
-
-                var newEventWatcher = scope.$parent.$watch('newEvent', function(newVal, oldVal){
-                    if(!newVal && oldVal){
-                        renderMapWithEvents();
-                    }
-                });
-
-                var editEventWatcher = scope.$parent.$watch('editedEvent', function(newVal, oldVal){
-                    if(!newVal && oldVal){
-                        renderMapWithEvents();
-                    }
-
-                });
-
-
-                renderMapJson(BusinessHolder.business.map);
-                filteredEventsWatcher = scope.$watch('filteredEvents.events', renderMapWithEvents,true);
-                upcomingEventsWatcher = scope.$watch('upcomingEvents.events', renderMapWithEvents,true);
-
-
-            }
-        };
-    }).filter('highlightedShapesSeats', function(){
-        return function(arr){
-            var output = "";
-            for (var i = 0; i < arr.length; ++i){
-                if(output) output += ", ";
-                output += arr[i].seatString();
-            }
-            return output;
-        }
-    }).directive('mapEditor', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope) {
-        return {
-            restrict: 'E',
-            replace : true,
-            templateUrl : '/partials/map/map-editor.html',
-            scope : {
-                business : "=",
-                businessId : "="
-            },
-            link: function(scope, elem, attrs) {
+            link: function (scope, elem, attrs) {
 
                 scope.shapes = [
-                    {shapeName : 'CIRCLE_TABLE_2', shapeType : 'circle', r  : 20, isSeat : true},
-                    {shapeName : 'CIRCLE_TABLE_4', shapeType : 'circle', r  : 30, isSeat : true},
-                    {shapeName : 'CIRCLE_TABLE_6', shapeType : 'circle', r  : 40, isSeat : true},
-                    {shapeName : 'CIRCLE_TABLE_8', shapeType : 'circle', r  : 50, isSeat : true},
-                    {shapeName : 'CIRCLE_TABLE_10', shapeType : 'circle', r  : 60, isSeat : true},
+                    {shapeName: 'CIRCLE_TABLE_2', shapeType: 'circle', r: 20, isSeat: true},
+                    {shapeName: 'CIRCLE_TABLE_4', shapeType: 'circle', r: 30, isSeat: true},
+                    {shapeName: 'CIRCLE_TABLE_6', shapeType: 'circle', r: 40, isSeat: true},
+                    {shapeName: 'CIRCLE_TABLE_8', shapeType: 'circle', r: 50, isSeat: true},
+                    {shapeName: 'CIRCLE_TABLE_10', shapeType: 'circle', r: 60, isSeat: true},
 
-                    {shapeName : 'SQUARE_TABLE_2', shapeType : 'rect', w  : 40, h : 40, isSeat : true},
-                    {shapeName : 'SQUARE_TABLE_4', shapeType : 'rect', w  : 50, h : 50, isSeat : true},
-                    {shapeName : 'RECT_TABLE_6', shapeType : 'rect', w  : 60, h : 40, isSeat : true},
-                    {shapeName : 'RECT_TABLE_8', shapeType : 'rect', w  : 80, h : 60, isSeat : true},
-                    {shapeName : 'CHAIR', shapeType : 'roundedRect', w  : 20, h:20, isSeat : true},
-                    {shapeName : 'WALL', shapeType : 'rect', w  : 50, h:10, isSeat : false, attrs : {fill : '#e7d2bc', 'stroke-width' : '0'}}
+                    {shapeName: 'SQUARE_TABLE_2', shapeType: 'rect', w: 40, h: 40, isSeat: true},
+                    {shapeName: 'SQUARE_TABLE_4', shapeType: 'rect', w: 50, h: 50, isSeat: true},
+                    {shapeName: 'RECT_TABLE_6', shapeType: 'rect', w: 60, h: 40, isSeat: true},
+                    {shapeName: 'RECT_TABLE_8', shapeType: 'rect', w: 80, h: 60, isSeat: true},
+                    {shapeName: 'CHAIR', shapeType: 'roundedRect', w: 20, h: 20, isSeat: true},
+                    {shapeName: 'WALL', shapeType: 'rect', w: 50, h: 10, isSeat: false, attrs: {fill: '#e7d2bc', 'stroke-width': '0'}}
                 ];
 
-                scope.selectNewShape = function(shape){
+                scope.selectNewShape = function (shape) {
                     scope.selectedNewShape = shape;
                 };
 
                 var shapes = [];
 
-                scope.addShape = function(){
-                    if(!scope.selectedNewShape) return;
-                    if(scope.selectedNewShape.isSeat){
+                scope.addShape = function () {
+                    if (!scope.selectedNewShape) return;
+                    if (scope.selectedNewShape.isSeat) {
                         shapes.push(new SeatShape(paper, {
-                            shapeObject : scope.selectedNewShape,
-                            seatNumber : scope.seatNumber,
-                            shapesArr : null,
-                            changeCallback : changeCallback,
-                            selectCallback : selectCallback,
-                            deselectCallback : deselectCallback,
-                            dragStartCallback : dragStartCallback,
-                            dragEndCallback : dragEndCallback,
-                            FTEnabled : true
+                            shapeObject: scope.selectedNewShape,
+                            seatNumber: scope.seatNumber,
+                            shapesArr: null,
+                            changeCallback: changeCallback,
+                            selectCallback: selectCallback,
+                            deselectCallback: deselectCallback,
+                            dragStartCallback: dragStartCallback,
+                            dragEndCallback: dragEndCallback,
+                            FTEnabled: true
                         }));
-                    }else{
+                    } else {
                         shapes.push(new DecorativeShape(paper, {
-                            shapeObject : scope.selectedNewShape,
-                            shapesArr : null,
-                            changeCallback : changeCallback,
-                            selectCallback : selectCallback,
-                            deselectCallback : deselectCallback,
-                            dragStartCallback : dragStartCallback,
-                            dragEndCallback : dragEndCallback,
-                            FTEnabled : true
+                            shapeObject: scope.selectedNewShape,
+                            shapesArr: null,
+                            changeCallback: changeCallback,
+                            selectCallback: selectCallback,
+                            deselectCallback: deselectCallback,
+                            dragStartCallback: dragStartCallback,
+                            dragEndCallback: dragEndCallback,
+                            FTEnabled: true
                         }));
                     }
 
@@ -1035,13 +64,13 @@ zedAlphaDirectives
                 };
 
 
-                scope.removeShape = function(shape){
+                scope.removeShape = function (shape) {
                     var shapesArr = angular.isArray(shape) ? shape : [shape];
                     shape.removeFromPaper();
-                    for(var i = 0;i < shapes.length; ++i){
-                        for (var j = 0 ; j < shapesArr.length; ++j){
-                            if(shapes[i] === shapesArr[j]){
-                                shapes.splice(i--,1);
+                    for (var i = 0; i < shapes.length; ++i) {
+                        for (var j = 0; j < shapesArr.length; ++j) {
+                            if (shapes[i] === shapesArr[j]) {
+                                shapes.splice(i--, 1);
                             }
 
                         }
@@ -1050,7 +79,7 @@ zedAlphaDirectives
                     scope.selectedShape = null;
                 };
 
-                scope.seatNumberChanged = function(shape){
+                scope.seatNumberChanged = function (shape) {
                     shape.updateSeatNumber();
                     scope.save();
                 };
@@ -1062,10 +91,10 @@ zedAlphaDirectives
                 paper.safari();
 
 
-                container.click(function(){
-                    scope.$apply(function(){
+                container.click(function () {
+                    scope.$apply(function () {
                         scope.selectedShape && scope.selectedShape.hideHandles();
-                        angular.forEach(shapes, function(shape){
+                        angular.forEach(shapes, function (shape) {
                             shape.hideHandles();
                             scope.selectedShape = null;
                         });
@@ -1084,15 +113,15 @@ zedAlphaDirectives
                 });
 
 
-                var changeCallback = scope.save = function(shape){
-                    $rootScope.safeApply(function(){
-                        var jsonStr = paper.toJSON(function(el){
+                var changeCallback = scope.save = function (shape) {
+                    $rootScope.safeApply(function () {
+                        var jsonStr = paper.toJSON(function (el) {
                             return el.data();
                         });
 
                         var arr = JSON.parse(jsonStr);
-                        for (var i = 0; i < arr.length; ++i){
-                            if(!arr[i].data || !arr[i].data.type){
+                        for (var i = 0; i < arr.length; ++i) {
+                            if (!arr[i].data || !arr[i].data.type) {
                                 arr.splice(i--, 1);
                             }
                         }
@@ -1103,63 +132,61 @@ zedAlphaDirectives
                     });
                 };
 
-                var selectCallback  = function(shape){
-                    scope.$apply(function(){
-                        if(scope.selectedShape){
-                            if(scope.selectedShape.addSet){
+                var selectCallback = function (shape) {
+                    scope.$apply(function () {
+                        if (scope.selectedShape) {
+                            if (scope.selectedShape.addSet) {
                                 scope.selectedShape.addSet(shape);
-                            }else{
-                                scope.selectedShape = new ShapeGroup(paper, {shapesArr : [scope.selectedShape, shape], changeCallback : changeCallback, dragStartCallback : dragStartCallback,dragEndCallback : dragEndCallback});
+                            } else {
+                                scope.selectedShape = new ShapeGroup(paper, {shapesArr: [scope.selectedShape, shape], changeCallback: changeCallback, dragStartCallback: dragStartCallback, dragEndCallback: dragEndCallback});
                             }
 
-                        }else{
+                        } else {
                             scope.selectedShape = shape;
                         }
                     });
                 };
 
 
-                var deselectCallback = function(){
-                    scope.$apply(function(){
-                        if(typeof scope.selectedShape != "ShapeGroup"){
+                var deselectCallback = function () {
+                    scope.$apply(function () {
+                        if (typeof scope.selectedShape != "ShapeGroup") {
                             scope.selectedShape = null;
                         }
                     });
                 };
 
-                var dragStartCallback = function(){
+                var dragStartCallback = function () {
                     panZoom.disable();
                 };
 
 
-                var dragEndCallback = function(){
+                var dragEndCallback = function () {
                     panZoom.enable();
                 }
 
 
-
-
-                var renderMapJson = function(map){
-                    paper.fromJSON(map, function(el, data){
-                        for(var i in data){
+                var renderMapJson = function (map) {
+                    paper.fromJSON(map, function (el, data) {
+                        for (var i in data) {
                             el.data(i, data[i]);
                         }
                     });
                     var sortedSeats = {};
                     var decorativeShapes = {};
-                    paper.forEach(function(el){
+                    paper.forEach(function (el) {
                         var data = el.data();
-                        if(!data || !data.type){
+                        if (!data || !data.type) {
                             el.remove();
                             return;
                         }
                         var seatId = el.data('seatId');
                         var seatNumber = el.data('seatNumber');
 
-                        if(seatId && seatNumber){
+                        if (seatId && seatNumber) {
                             sortedSeats[seatId] = sortedSeats[seatId] || [];
                             sortedSeats[seatId].push(el);
-                        }else if (seatId){
+                        } else if (seatId) {
                             decorativeShapes[seatId] = decorativeShapes[seatId] || [];
                             decorativeShapes[seatId].push(el);
                         }
@@ -1167,38 +194,37 @@ zedAlphaDirectives
 
                     });
 
-                    for(var i in sortedSeats){
+                    for (var i in sortedSeats) {
                         shapes.push(new SeatShape(paper, {
-                            shapeObject : null,
-                            seatNumber : null,
-                            shapesArr :  sortedSeats[i],
-                            changeCallback : changeCallback,
-                            selectCallback : selectCallback,
-                            deselectCallback : deselectCallback,
-                            dragStartCallback : dragStartCallback,
-                            dragEndCallback : dragEndCallback,
-                            FTEnabled : true
+                            shapeObject: null,
+                            seatNumber: null,
+                            shapesArr: sortedSeats[i],
+                            changeCallback: changeCallback,
+                            selectCallback: selectCallback,
+                            deselectCallback: deselectCallback,
+                            dragStartCallback: dragStartCallback,
+                            dragEndCallback: dragEndCallback,
+                            FTEnabled: true
                         }));
                     }
 
-                    for(var i in decorativeShapes){
+                    for (var i in decorativeShapes) {
                         shapes.push(new DecorativeShape(paper, {
-                            shapeObject : null,
-                            seatNumber : null,
-                            shapesArr :  decorativeShapes[i],
-                            changeCallback : changeCallback,
-                            selectCallback : selectCallback,
-                            deselectCallback : deselectCallback,
-                            dragStartCallback : dragStartCallback,
-                            dragEndCallback : dragEndCallback,
-                            FTEnabled : true
+                            shapeObject: null,
+                            seatNumber: null,
+                            shapesArr: decorativeShapes[i],
+                            changeCallback: changeCallback,
+                            selectCallback: selectCallback,
+                            deselectCallback: deselectCallback,
+                            dragStartCallback: dragStartCallback,
+                            dragEndCallback: dragEndCallback,
+                            FTEnabled: true
                         }));
                     }
 
                 };
 
                 renderMapJson(BusinessHolder.business.map);
-
 
 
             }

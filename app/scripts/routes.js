@@ -15,6 +15,9 @@ angular.module('zedalpha.routes', [])
 
 
 
+
+
+
         $stateProvider
             .state('home',{
                 url : '/',
@@ -95,13 +98,20 @@ angular.module('zedalpha.routes', [])
                 resolve : {
                     businessResolver : businessResolver
                 }
-        }).state('business.shifts',{
-                url : '/:businessId/shifts',
-                templateUrl: '/partials/admin/business/shifts-business.html',
+        }).state('business.wizard',{
+                url : '/:businessId/wizard',
+                templateUrl: '/partials/admin/business/wizard-business.html',
                 controller: 'BusinessCtrl',
                 resolve : {
                     businessResolver : businessResolver
                 }
+        }).state('business.shifts',{
+            url : '/:businessId/shifts',
+            templateUrl: '/partials/admin/business/shifts-business.html',
+            controller: 'BusinessCtrl',
+            resolve : {
+                businessResolver : businessResolver
+            }
         }).state('business.eventsStatuses',{
                 url : '/:businessId/eventsStatuses',
                 templateUrl: '/partials/admin/business/events-statuses-business.html',

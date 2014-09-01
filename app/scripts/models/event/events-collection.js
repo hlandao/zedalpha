@@ -21,7 +21,7 @@ zedAlphaServices
         return function (ref) {
             return $firebase(ref, {arrayFactory : EventsFactory}).$asArray();
         }
-    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q) {
+    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters) {
         var self = this,
             lastSubName = null,
             lastBusinessId = null;
@@ -47,6 +47,7 @@ zedAlphaServices
         };
 
         this.sorted = {};
+        this.filters = {};
 
         this.updateEvents = function () {
             if (BusinessHolder.business) {
@@ -64,10 +65,15 @@ zedAlphaServices
 
                     self.collection = collection;
                     self.sortEvents();
+                    self.resetFilters();
                 });
             }
         };
 
+        this.resetFilters = function(){
+            this.filters.name = null;
+            this.filters.status = StatusFilters[0];
+        }
 
         this.sortEvents = function(statusFilter, query){
             if(self.collection && self.collection.length){

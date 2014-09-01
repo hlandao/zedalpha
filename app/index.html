@@ -7,21 +7,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    <!-- build:css styles/vendor.css -->
-    <!-- bower:css -->
-    <link rel="stylesheet" href="bower_components/spectrum/spectrum.css" />
-    <link rel="stylesheet" href="bower_components/clockpicker/dist/jquery-clockpicker.css" />
-    <!-- endbower -->
-    <!-- endbuild -->
+  <!-- build:css styles/vendor.css -->
+  <!-- bower:css -->
+  <link rel="stylesheet" href="bower_components/spectrum/spectrum.css" />
+  <link rel="stylesheet" href="bower_components/clockpicker/dist/jquery-clockpicker.css" />
+  <!-- endbower -->
+  <!-- endbuild -->
 
-    <!-- build:css({.tmp,app}) styles/main.css -->
-    <link rel="stylesheet" href="bower_components/pickadate/lib/themes/default.css" />
+  <!-- build:css({.tmp,app}) styles/main.css -->
+  <link rel="stylesheet" href="bower_components/pickadate/lib/themes/default.css" />
+  <link rel="stylesheet" href="bower_components/pickadate/lib/themes/default.time.css" />
+  <link rel="stylesheet" href="bower_components/pickadate/lib/themes/default.date.css" />
+  <link rel="stylesheet" href="styles/main.css">
+  <!-- endbuild -->
 
-    <link rel="stylesheet" href="bower_components/pickadate/lib/themes/default.time.css" />
-    <link rel="stylesheet" href="bower_components/pickadate/lib/themes/default.date.css" />
 
-    <link rel="stylesheet" href="styles/main.css">
-    <!-- endbuild -->
   </head>
   <body ng-controller="BodyCtrl" ng-class="{'events-managment' : isEventsManagementViews,'body-special' : (isSpecificPage())}">
     <!--[if lt IE 10]>
@@ -113,7 +113,6 @@
     <script src="scripts/admin/controllers/businesses-ctrl.js"></script>
     <script src="scripts/admin/controllers/business-ctrl.js"></script>
     <script src="scripts/admin/controllers/business-nav-ctrl.js"></script>
-    <script src="scripts/admin/controllers/business-events-duration-ctrl.js"></script>
     <script src="scripts/admin/controllers/business-events-statuses-ctrl.js"></script>
     <script src="scripts/admin/controllers/business-events-duration-ctrl.js"></script>
     <!-- Shifts -->
@@ -125,17 +124,13 @@
     <script src="scripts/directives/seats-directive.js"></script>
     <script src="scripts/directives/shift-duration-directive.js"></script>
     <!-- MAP -->
+    <script src="scripts/map/map-shapes.js"></script>
+    <script src="scripts/map/map-manager-directive.js"></script>
     <script src="scripts/map/map-editor-directive.js"></script>
     <!-- Events -->
     <script src="scripts/events/events-ctrl.js"></script>
     <script src="scripts/events/events-navigation-ctrl.js"></script>
     <script src="scripts/events/holders/shifts-day-holder.js"></script>
-
-    <!--<script src="scripts/events/shifts/shift-selector-ctrl.js"></script>-->
-    <!--<script src="scripts/events/event.js"></script>-->
-    <!--<script src="scripts/events/events-logic.js"></script>-->
-
-
     <script src="scripts/events/holders/date-holder.js"></script>
     <script src="scripts/events/holders/seats-holder.js"></script>
 
@@ -145,21 +140,6 @@
 
     <script src="scripts/events/directives/event-form-directive.js"></script>
     <script src="scripts/events/directives/status-selector-directive.js"></script>
-    <!--<script src="scripts/events/directives/event-duration-directive.js"></script>-->
-    <!--<script src="scripts/directives/shift-organizer-directive.js"></script>-->
-
-
-    <!--<script src="scripts/events/filters/events-statuses-filter.js"></script>-->
-    <!--<script src="scripts/events/filters/events-time-filter.js"></script>-->
-
-    <!-- GENERAL -->
-    <!--<script src="scripts/vendor/jquery-timepicker.js"></script>-->
-    <!--<script src="scripts/directives/html-directives.js"></script>-->
-    <!--<script src="scripts/directives/seats-directive.js"></script>-->
-    <!--<script src="scripts/directives/clockpicker-directive.js"></script>-->
-    <!--<script src="scripts/directives/timepicker-directive.js"></script>-->
-
-    <!--<script src="scripts/directives/square-diretives.js"></script>-->
 
     <script src="scripts/config.js"></script>
     <script src="scripts/translations.js"></script>
@@ -173,8 +153,6 @@
     <script src="scripts/general/close-all-open-controls.js"></script>
     <script src="scripts/general/datetime-helpers.js"></script>
     <script src="scripts/general/are-you-sure-modal.js"></script>
-
-    <!--<script src="scripts/directives/hundred-percent-height-directive.js"></script>-->
     <!-- inject:partials -->
     <!-- endinject -->
     <!-- endbuild -->

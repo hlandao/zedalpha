@@ -33,6 +33,10 @@ zedAlphaServices
             }
         };
 
+        $rootScope.$on('$firebaseSimpleLogin:logout', function(){
+           self.business = null;
+        });
+
         $rootScope.$on('$businessHolderChanged', self.init);
     });
 

@@ -219,6 +219,7 @@ zedAlphaServices
             },
 
             $sharingTheSameSeatsWithAnotherEvent: function (anotherEvent, seats) {
+                if(!anotherEvent || !anotherEvent.data || !anotherEvent.data.seats) return;
                 seats = seats || anotherEvent.data.seats;
                 if(seats && !isEmptyObject(seats)){
                     for (var i  in this.data.seats) {
