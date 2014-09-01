@@ -8,6 +8,7 @@ zedAlphaDirectives
 
         var ngModel;
         var dateMoment;
+        console.log('BusinessHolder',BusinessHolder);
 
         $scope.EventsStatusesHolder = EventsStatusesHolder;
 
@@ -18,30 +19,20 @@ zedAlphaDirectives
         };
 
         $scope.selectStatus = function(selectedStatus, e){
-            if(e) {
-                e.stopPropagation();
-                e.preventDefault();
-            }
-            ngModel.$setViewValue(selectedStatus);
-            $scope.status = findStatusByStatus(selectedStatus) || findStatusByKey(selectedStatus);
-            $timeout(function(){
-                $scope.showSelector = false;
-            },100);
+            console.log('selectedStatus',selectedStatus);
+            ngModel.$setViewValue(selectedStatus    );
+            $scope.status = findStatusByStatus(selectedStatus);
         };
 
 
         this.init = function(_ngModel){
             ngModel = _ngModel;
-
             ngModel.$render=function(){
-                $scope.status = findStatusByStatus(ngModel.$modelValue) || findStatusByKey(ngModel.$modelValue);
+                $scope.status = findStatusByStatus(ngModel.$modelValue);
             };
+
         }
 
-
-        var findStatusByKey = function(status){
-            return EventsStatusesHolder[status];
-        }
 
         var findStatusByStatus = function(status){
             return _.findWhere(EventsStatusesHolder, {status : status});

@@ -14,7 +14,7 @@ zedAlphaFilters
             for (var i = 0; i < eventsCollection.length; ++i) {
                 key = eventsCollection.$keyAt(i);
                 currentEvent = eventsCollection.$getRecord(key);
-                status = currentEvent.status && currentEvent.status.status;
+                status = currentEvent.data.status;
 
                 if(nameQuery && (currentEvent.name.indexOf(nameQuery) === -1)){
                     continue;
@@ -28,6 +28,8 @@ zedAlphaFilters
                 isNowEvent = !!(isStartTimeSameAsCurrent || (isStartingBefore && isEndingAfterCurrentDate));
                 isUpcomingEvent = !!((startTimeDiffInMinutes > 0 && startTimeDiffInMinutes <= EVENT_TIME_FRAME_IN_MINUTES));
                 isDeadEvent = !!(DEAD_EVENTS_STATUSES.indexOf(status) >= 0);
+
+                console.log('DEAD_EVENTS_STATUSES',DEAD_EVENTS_STATUSES,'isDeadEvent',isDeadEvent, 'status',status);
 
                 if(isDeadEvent && isNowEvent){
                     deadEvents.push(currentEvent);

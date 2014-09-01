@@ -68,7 +68,12 @@ zedAlphaControllers
 
 
         $scope.eventStatusChanged = function(event){
-            EventsCollection.$saveWithValidation(event);
+            console.log('event',event);
+            EventsCollection.saveWithValidation(event).then(function(){
+                console.log('Saved');
+            }, function(){
+                alert('Error!');
+            });
         };
 
 
@@ -141,10 +146,10 @@ zedAlphaControllers
 
         $scope.toggleDeadEvents = function(e){
             e.preventDefault();
-            if(showDeadEvents){
-                showDeadEvents = false;
+            if($scope.showDeadEvents){
+                $scope.showDeadEvents = false;
             }else{
-                showDeadEvents = true;
+                $scope.showDeadEvents = true;
             }
         }
 

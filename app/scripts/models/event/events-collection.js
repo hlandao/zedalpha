@@ -76,6 +76,7 @@ zedAlphaServices
         }
 
         this.sortEvents = function(statusFilter, query){
+            console.log('this.sortEvents');
             if(self.collection && self.collection.length){
                 var sorted = $filter('sortDayEvents')(self.collection, DateHolder.currentClock, statusFilter, query);
                 angular.extend(self.sorted, sorted);
