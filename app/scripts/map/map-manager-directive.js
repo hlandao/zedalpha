@@ -28,6 +28,9 @@ zedAlphaDirectives
                 panZoom.enable();
                 paper.safari();
 
+                $(window).resize(function(){
+                    paper.setSize(container.width(), container.height());
+                })
 
                 container.click(function(){
                     scope.$apply(function(){
