@@ -135,7 +135,7 @@ zedAlphaDirectives
                     if(scope.highlightedShapes.length == 1){
                         var events = $filter('eventsBySeatAndShiftsDay')(null,scope.highlightedShapes[0].seatString(),ShiftsDayHolder.currentDay);
 
-                        var pastEvents = [], nowEvents = [], futureEvents =[];
+                        var nowEvents = [], futureEvents =[];
                         var currentClockMoment = DateHolder.currentClock;
                         var key, currentEvent;
 
@@ -143,9 +143,7 @@ zedAlphaDirectives
                             currentEvent = events[i];
 
 
-                            if(currentEvent.data.startTime.isBefore(currentClockMoment, 'minutes') && (currentEvent.data.endTime.isBefore(currentClockMoment, 'minutes') || currentEvent.data.endTime.isSame(currentClockMoment, 'minutes'))){
-                                if(pastEvents.indexOf(currentEvent) == -1)pastEvents.push(currentEvent);
-                            } else if (currentEvent.data.startTime.isSame(currentClockMoment, 'minutes') || (currentEvent.data.startTime.isBefore(currentClockMoment, 'minutes') && currentEvent.data.endTime.isAfter(currentClockMoment, 'minutes'))){
+                            if (currentEvent.data.startTime.isSame(currentClockMoment, 'minutes') || (currentEvent.data.startTime.isBefore(currentClockMoment, 'minutes') && currentEvent.data.endTime.isAfter(currentClockMoment, 'minutes'))){
                                 if(nowEvents.indexOf(currentEvent) == -1) nowEvents.push(currentEvent);
                             }else{
                                 if(futureEvents.indexOf(currentEvent) == -1) futureEvents.push(currentEvent);
@@ -153,10 +151,6 @@ zedAlphaDirectives
 
                         }
 
-
-                        scope.highlightedPastEvents = _.sortBy(pastEvents, function(event){
-                            return event.data.startTime;
-                        });
 
                         scope.highlightedNowEvents = _.sortBy(nowEvents, function(event){
                             return event.data.startTime;
