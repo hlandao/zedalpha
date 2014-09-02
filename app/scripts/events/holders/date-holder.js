@@ -22,7 +22,6 @@ zedAlphaServices
             newDateMoment.minute(DateHelpers.findClosestIntervalToDate(newDateMoment)).seconds(0);
 
 
-            console.log('newDateMoment',newDateMoment);
             this.currentClock = newDateMoment;
             if(!updateOnlyClock){
                 var currentDate = newDateMoment.clone().hour(0).minute(0);

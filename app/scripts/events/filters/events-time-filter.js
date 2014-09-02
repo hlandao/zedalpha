@@ -112,54 +112,53 @@ zedAlphaFilters
             return filteredEventsArr;
         }
     })
-// .filter('eventsBySeatAndTime',function () {
-//        return function (events, seatNumber, fromTime, toTime) {
-//            var fromTimeMoment,
-//                toTimeMoment,
-//                filteredEventsArr;
-//
-//            events = events || EventsHolder.$allEvents;
-//
-//            fromTimeMoment = moment(fromTime);
-//            toTimeMoment = moment(toTime);
-//
-//
-//            filteredEventsArr = [];
-//
-//            angular.forEach(events, function (event, key) {
-//                if (!event || key == '$id' || typeof event == "function") return;
-//                var startTimeMoment = moment(event.startTime);
-//                var endTimeMoment = moment(event.endTime);
-//                var fromTimeCheck = fromTime ? startTimeMoment.diff(fromTimeMoment, 'minutes') >= 0 : true;
-//                var toTimeCheck = toTime ? toTimeMoment.diff(startTimeMoment, 'minutes') >= 0 : true;
-//                var isStartingAtShift = fromTimeCheck && toTimeCheck;
-//
-//                if (isStartingAtShift && event.seats[seatNumber]) {
-//                    event.$id = key;
-//                    filteredEventsArr.push(event);
-//                }
-//            });
-//            return filteredEventsArr;
-//
-//        }
-//    }).filter('eventsBySeatAndShiftsDay', function (EventsHolder, $filter) {
-//        return function (events, seatNumber, shiftsDay) {
-//            var fromTimeMoment,
-//                toTimeMoment,
-//                filteredEventsArr;
-//
-//            events = events || EventsHolder.$allEvents;
-//
-//            filteredEventsArr = [];
-//
-//            angular.forEach(shiftsDay.shifts, function (shift) {
-//                var moreEvents = $filter('eventsBySeatAndTime')(events, seatNumber, shift.startTime, shift.endTime);
-//
-//                filteredEventsArr = filteredEventsArr.concat(moreEvents);
-//            });
-//
-//            return filteredEventsArr;
-//        }
-//    });
+.filter('eventsBySeatAndTime',function () {
+        return function (events, seatNumber, from, to) {
+            var filteredEventsArr = [], key, currentEvent;
+
+            if(!events || !seatNumber){
+                return filteredEventsArr;
+            }
+
+
+            for (var i = 0; i < events.length; ++i) {
+                key = events.$keyAt(i);
+                currentEvent = events.$getRecord(key);
+
+                if(!currentEvent.data.seats[seatNumber]){
+                    continue;
+                }
+
+                var fromTimeCheck = from ? currentEvent.data.startTime.diff(from, 'minutes') >= 0 : true;
+                var toTimeCheck = to ? to.diff(currentEvent.data.startTime, 'minutes') >= 0 : true;
+                var isStartingAtShift = fromTimeCheck && toTimeCheck;
+
+                if (isStartingAtShift) {
+                    filteredEventsArr.push(currentEvent);
+                }
+            }
+
+            return filteredEventsArr;
+        }
+    }).filter('eventsBySeatAndShiftsDay', function (EventsCollection, $filter) {
+        return function (events, seatNumber, shiftsDay) {
+            var fromTimeMoment,
+                toTimeMoment,
+                filteredEventsArr;
+
+            events = events || EventsCollection.collection;
+
+            filteredEventsArr = [];
+
+            angular.forEach(shiftsDay.shifts, function (shift) {
+                var endTime = shift.startTime.clone().add(shift.duration, 'minutes');
+                var moreEvents = $filter('eventsBySeatAndTime')(events, seatNumber, shift.startTime, endTime);
+
+                filteredEventsArr = filteredEventsArr.concat(moreEvents);
+            });
+
+            return filteredEventsArr;
+        }
+    });
 
 

@@ -133,37 +133,37 @@ zedAlphaDirectives
 
                 var eventsForHighlightedShapes = function(){
                     if(scope.highlightedShapes.length == 1){
-//                        var fromTime = moment(DateHolder.currentDate).hour(0).minute(0);
-//                        var toTime = moment(DateHolder.currentDate).hour(23).minute(59);
-//
-//                        var events = $filter('eventsBySeatAndTime')(null,scope.highlightedShapes[0].seatString(),fromTime,toTime);
-                        console.log('scope.highlightedShapes[0].seatString()',scope.highlightedShapes[0].seatString());
-                        var events = $filter('eventsBySeatAndShiftsDay')(null,scope.highlightedShapes[0].seatString(),ShiftsDayHolder.current);
-
+                        var events = $filter('eventsBySeatAndShiftsDay')(null,scope.highlightedShapes[0].seatString(),ShiftsDayHolder.currentDay);
 
                         var pastEvents = [], nowEvents = [], futureEvents =[];
-                        var currentClockMoment = moment(DateHolder.currentClock);
-                        angular.forEach(events, function(event){
-                            var startTimeMoment = moment(event.startTime);
-                            var endTimeMoment = moment(event.endTime);
+                        var currentClockMoment = DateHolder.currentClock;
+                        var key, currentEvent;
 
-                            if(startTimeMoment.isBefore(currentClockMoment, 'minutes') && (endTimeMoment.isBefore(currentClockMoment, 'minutes') || endTimeMoment.isSame(currentClockMoment, 'minutes'))){
-                                if(pastEvents.indexOf(event) == -1)pastEvents.push(event);
-                            } else if (startTimeMoment.isSame(currentClockMoment, 'minutes') || (startTimeMoment.isBefore(currentClockMoment, 'minutes') && endTimeMoment.isAfter(currentClockMoment, 'minutes'))){
-                                if(nowEvents.indexOf(event) == -1) nowEvents.push(event);
+                        for (var i = 0; i < events.length; ++i) {
+                            currentEvent = events[i];
+
+
+                            if(currentEvent.data.startTime.isBefore(currentClockMoment, 'minutes') && (currentEvent.data.endTime.isBefore(currentClockMoment, 'minutes') || currentEvent.data.endTime.isSame(currentClockMoment, 'minutes'))){
+                                if(pastEvents.indexOf(currentEvent) == -1)pastEvents.push(currentEvent);
+                            } else if (currentEvent.data.startTime.isSame(currentClockMoment, 'minutes') || (currentEvent.data.startTime.isBefore(currentClockMoment, 'minutes') && currentEvent.data.endTime.isAfter(currentClockMoment, 'minutes'))){
+                                if(nowEvents.indexOf(currentEvent) == -1) nowEvents.push(currentEvent);
                             }else{
-                                if(futureEvents.indexOf(event) == -1) futureEvents.push(event);
+                                if(futureEvents.indexOf(currentEvent) == -1) futureEvents.push(currentEvent);
                             }
-                        });
+
+                        }
+
+
                         scope.highlightedPastEvents = _.sortBy(pastEvents, function(event){
-                            return event.startTime;
+                            return event.data.startTime;
                         });
+
                         scope.highlightedNowEvents = _.sortBy(nowEvents, function(event){
-                            return event.startTime;
+                            return event.data.startTime;
                         });
 
                         scope.highlightedFutureEvents = _.sortBy(futureEvents, function(event){
-                            return event.startTime;
+                            return event.data.startTime;
                         });
 
                         if(!scope.highlightedNowEvents.length && scope.highlightedFutureEvents.length){
@@ -302,7 +302,7 @@ zedAlphaDirectives
                         color = getEventStatusColor(event.data.status);
                         for(seatNumber  in  event.data.seats){
                             seatsWithBackground[seatNumber] = color;
-                            if(event.editing && event.editing || !event.$isNew()){
+                            if(event.editing && event.editing || event.$isNew()){
                                 highlightedSeats[seatNumber] = true;
                             }
 
@@ -315,6 +315,7 @@ zedAlphaDirectives
                             if(!seatsWithBackground[seatNumber]) seatsWithUpcomingBackground[seatNumber] = color;
                         }
                     });
+
 
                     for (var i = 0;i < shapes.length; ++i){
                         theShape = shapes[i];
