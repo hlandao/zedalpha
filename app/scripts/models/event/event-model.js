@@ -3,7 +3,7 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 zedAlphaServices
     .value('NotCollidingEventStatuses', ['NO_SHOW', 'FINISHED', 'CANCELED'])
-    .factory('Event', function ($q, DateHolder, DateHelpers, $injector, $filter, BusinessHolder, ShiftsDayHolder, NotCollidingEventStatuses) {
+    .factory('Event', function ($q, DateHolder, DateHelpers, $injector, $filter, BusinessHolder, ShiftsDayHolder, NotCollidingEventStatuses,DateFormatFirebase) {
 
         function Event(snapshot, newEventData) {
             if (snapshot) {
@@ -25,6 +25,7 @@ zedAlphaServices
                 this.data = angular.extend({}, snapshot.val());
                 this.data.startTime = moment(this.data.startTime);
                 this.data.endTime = moment(this.data.endTime);
+                this.data.guests = this.data.guests || 0;
 
                 return this;
             },
@@ -38,11 +39,15 @@ zedAlphaServices
                 this.data.isOccasional = (data.occasionalOrDestination && data.occasionalOrDestination == 'occasional')
                 this.data.status = this.data.isOccasional ? 'OCCASIONAL' : 'ORDERED';
 
+
                 // set the start time
                 var startTime = data.startTime || (this.data.isOccasional ? moment(Date.now()) : DateHolder.currentClock.clone());
                 if (!startTime || !startTime.isValid || !startTime.isValid()) throw new TypeError("cannot create new event due to invalid start time, should be a moment obj.");
                 startTime.minute(DateHelpers.findClosestIntervalToDate(startTime));
                 this.data.startTime = startTime.seconds(0);
+
+                var baseDate = data.baseDate || DateHolder.currentDate || this.data.startTime;
+                this.data.baseDate = baseDate.format(DateFormatFirebase);
 
                 // find the duration for the event and set the end time
                 var duration = BusinessHolder.business.eventsDurationForGuests.default || 120;
@@ -89,7 +94,7 @@ zedAlphaServices
             $validateSeats: function (value) {
                 value = value || this.data.seats;
                 var defer = $q.defer();
-                if (this.$noSeats() && (BusinessHolder.businessType != 'Bar' || !this.data.isOccasional)) {
+                if (this.$noSeats() && (BusinessHolder.businessType != 'Bar' && !this.data.isOccasional)) {
                     defer.reject({error: "ERROR_EVENT_MSG_SEATS"});
                 } else {
                     defer.resolve();
@@ -255,6 +260,7 @@ zedAlphaServices
 
             toJSON: function () {
                 output = angular.extend({},this.data);
+                if(!output.seats) output.seats = null;
                 output.startTime = output.startTime.toJSON();
                 output.endTime = output.endTime.toJSON();
                 return output;
@@ -262,6 +268,7 @@ zedAlphaServices
 
             toObject: function () {
                 output = angular.extend({},this.data);
+                if(!output.seats) output.seats = null;
                 output.startTime = output.startTime.toJSON();
                 output.endTime = output.endTime.toJSON();
                 return output;

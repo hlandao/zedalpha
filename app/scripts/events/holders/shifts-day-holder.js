@@ -14,9 +14,10 @@ zedAlphaServices
             if (theDateShifts.isContainingEvent(event)) {
                 defer.resolve(true);
             } else {
-                var theDayBefore = event.startTime.clone().subtract(1, 'days');
+                var theDayBefore = event.data.startTime.clone().subtract(1, 'days');
                 theDateShifts = ReadOnlyShiftsDayGenerator.byDate(theDayBefore, {
-                    tryBasicShifts : true
+                    tryBasicShifts : true,
+                    extendProto : true
                 });
                 if (theDateShifts.isContainingEvent(event)) {
                     defer.resolve(true);

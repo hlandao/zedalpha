@@ -29,8 +29,6 @@ zedAlphaFilters
                 isUpcomingEvent = !!((startTimeDiffInMinutes > 0 && startTimeDiffInMinutes <= EVENT_TIME_FRAME_IN_MINUTES));
                 isDeadEvent = !!(DEAD_EVENTS_STATUSES.indexOf(status) >= 0);
 
-                console.log('DEAD_EVENTS_STATUSES',DEAD_EVENTS_STATUSES,'isDeadEvent',isDeadEvent, 'status',status);
-
                 if(isDeadEvent && isNowEvent){
                     deadEvents.push(currentEvent);
                     continue;

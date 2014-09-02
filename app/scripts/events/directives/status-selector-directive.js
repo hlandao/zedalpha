@@ -7,8 +7,6 @@ zedAlphaDirectives
         var EventsStatusesHolder = BusinessHolder.business.eventsStatuses;
 
         var ngModel;
-        var dateMoment;
-        console.log('BusinessHolder',BusinessHolder);
 
         $scope.EventsStatusesHolder = EventsStatusesHolder;
 
@@ -19,7 +17,6 @@ zedAlphaDirectives
         };
 
         $scope.selectStatus = function(selectedStatus, e){
-            console.log('selectedStatus',selectedStatus);
             ngModel.$setViewValue(selectedStatus    );
             $scope.status = findStatusByStatus(selectedStatus);
         };

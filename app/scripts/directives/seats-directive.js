@@ -11,7 +11,6 @@ zedAlphaDirectives
                 var ngModel = ctrls[0];
 
                 ngModel.$formatters.push(function(modelValue){
-                    console.log('ngModel.$formatters',modelValue);
                     var arr = [];
                     for(var i  in modelValue){
                         if(modelValue[i]){
@@ -23,7 +22,6 @@ zedAlphaDirectives
 
 
                 ngModel.$render = function(){
-                    console.log('ngModel.$render');
                     element.val(ngModel.$viewValue);
                 };
 

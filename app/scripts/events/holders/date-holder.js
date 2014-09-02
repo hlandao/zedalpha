@@ -8,10 +8,13 @@ zedAlphaServices
             clockInitialized = false,
             dateInitialized = false;
         this.goToNow = function(init){
-            var now = moment(), newDateMoment;
+            var now = moment(), newDateMoment, updateOnlyClock;
 
             if(init && now.hour() < 6){
                 newDateMoment = now.subtract('days',1).hour(23).minute(0);
+            }else if(!init && now.hour() < 6){
+                updateOnlyClock = true;
+                newDateMoment = now;
             }else{
                 newDateMoment = now;
             }
@@ -19,9 +22,13 @@ zedAlphaServices
             newDateMoment.minute(DateHelpers.findClosestIntervalToDate(newDateMoment)).seconds(0);
 
 
+            console.log('newDateMoment',newDateMoment);
             this.currentClock = newDateMoment;
-            var currentDate = newDateMoment.clone().hour(0).minute(0);
-            this.currentDate = currentDate;
+            if(!updateOnlyClock){
+                var currentDate = newDateMoment.clone().hour(0).minute(0);
+                this.currentDate = currentDate;
+            }
+
         }
 
         $rootScope.$watch(function(){

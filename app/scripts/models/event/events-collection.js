@@ -76,7 +76,6 @@ zedAlphaServices
         }
 
         this.sortEvents = function(statusFilter, query){
-            console.log('this.sortEvents');
             if(self.collection && self.collection.length){
                 var sorted = $filter('sortDayEvents')(self.collection, DateHolder.currentClock, statusFilter, query);
                 angular.extend(self.sorted, sorted);
@@ -121,7 +120,7 @@ zedAlphaServices
          * @returns {promise}
          */
         this.validateCollision = function (event, extra) {
-            if(self.collection.subName != subNameByDate(event.data.startTime)){
+            if(self.collection.subName != event.data.baseDate){
                 throw new TypeError('this.collection is not same day as event');
             }
             var defer = $q.defer();
@@ -179,8 +178,9 @@ zedAlphaServices
             var guestPer15Value = parseInt(BusinessHolder.business.guestsPer15);
             if (!guestPer15Value || guestPer15Value === 0 || !eventGuestsPer15Value) return true;
             if (!eventStartTime) return true;
-            var count = eventGuestsPer15Value, currentEvent;
-            for (var key = 0; key < self.collection.length; ++key) {
+            var count = eventGuestsPer15Value, currentEvent,key;
+            for (var i = 0; i < self.collection.length; ++i) {
+                key = self.collection.$keyAt(i);
                 currentEvent = self.collection.$getRecord(key);
                 if (!currentEvent.data.isOccasional && eventStartTime.isSame(currentEvent.data.startTime, 'minutes')) {
                     count += parseInt(currentEvent.guests);
@@ -262,7 +262,6 @@ zedAlphaServices
         });
 
         $rootScope.$on('$dateWasChanged', function(){
-            console.log('$dateWasChanged',DateHolder.currentDate);
             self.updateEvents();
         });
 
