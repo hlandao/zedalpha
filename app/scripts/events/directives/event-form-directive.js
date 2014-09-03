@@ -337,7 +337,7 @@ zedAlphaDirectives
                 });
             }
         }
-    }).directive('eventEndTimeValidator', function(){
+    }).directive('eventEndTimeValidator', function(EventsCollection){
         return {
             priority : 0,
             require : ['ngModel'],
