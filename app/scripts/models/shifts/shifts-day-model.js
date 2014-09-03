@@ -368,19 +368,19 @@ zedAlphaServices
             var dateMoment;
 
             if(DateHolder.currentDate){
-                dateMoment = moment(DateHolder.currentDate);
+                dateMoment = DateHolder.currentDate.clone()
             }else{
                 dateMoment = moment();
             }
 
-            var defaultTime = new Date(dateMoment.format(FullDateFormat));
-            var startTime = new Date(dateMoment.hour(0).minutes(0).seconds(0).format(FullDateFormat));
-            var endTime = new Date(dateMoment.hour(23).minutes(59).seconds(0).format(FullDateFormat));
+            var defaultTime = dateMoment;
+            var startTime = dateMoment.clone().hour(0).minutes(0).seconds(0);
+            var duration = 24*60;
 
 
             return angular.extend(defaults, {
                 startTime : startTime,
-                endTime : endTime,
+                duration : duration,
                 defaultTime : defaultTime
             })
         }

@@ -161,7 +161,8 @@ zedAlphaDirectives
                         });
 
                         if(!scope.highlightedNowEvents.length && scope.highlightedFutureEvents.length){
-                            scope.nextEventInXMinutes = moment(scope.highlightedFutureEvents[0].startTime).diff(moment(DateHolder.currentClock), 'seconds');
+                            scope.nextEventInXMinutes = scope.highlightedFutureEvents[0].data.startTime.diff(moment(DateHolder.currentClock), 'seconds');
+                            console.log('scope.nextEventInXMinutes',scope.nextEventInXMinutes)
                             if(scope.nextEventInXMinutes >  3600 * 6){
                                 scope.nextEventInXMinutes = null;
                             }
@@ -206,10 +207,12 @@ zedAlphaDirectives
 
                 var shapeSeatIsAvailable = function(shape){
                     var seatNumber = shape.seatNumber, event,seatNumberToCheck;
-                    for(var j = 0; j < EventsCollection.sorted.nowEvents.length; ++j){
-                        event = EventsCollection.sorted.nowEvents[j];
-                        for(seatNumberToCheck  in  event.seats){
-                            if(seatNumberToCheck == seatNumber) return false;
+                    if(EventsCollection.sorted.nowEvents){
+                        for(var j = 0; j < EventsCollection.sorted.nowEvents.length; ++j){
+                            event = EventsCollection.sorted.nowEvents[j];
+                            for(seatNumberToCheck  in  event.seats){
+                                if(seatNumberToCheck == seatNumber) return false;
+                            }
                         }
                     }
                     return true;
@@ -275,9 +278,10 @@ zedAlphaDirectives
 
 
                 var renderMapWithEvents = _.throttle(function(newVal){
-                    var nowEvents = EventsCollection.sorted.nowEvents,
+                    var nowEvents = angular.copy(EventsCollection.sorted.nowEvents),
                         upcomingEvents = EventsCollection.sorted.upcomingEvents;
 
+                    console.log('nowEvents',nowEvents);
                     if(scope.$parent.newEvent){
                         nowEvents = nowEvents || [];
                         nowEvents.push(scope.$parent.newEvent);
@@ -293,6 +297,7 @@ zedAlphaDirectives
 
                     var event, color, seatNumber, theShape, seatsWithBackground = {},seatsWithUpcomingBackground = {}, highlightedSeats = {}, upcomingHighlightedShapes = {};
                     angular.forEach(nowEvents, function(event){
+                        console.log('event',event)
                         color = getEventStatusColor(event.data.status);
                         for(seatNumber  in  event.data.seats){
                             seatsWithBackground[seatNumber] = color;

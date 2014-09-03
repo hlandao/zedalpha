@@ -57,6 +57,7 @@ zedAlphaServices
                 }
 
                 self.collection && self.collection.$destroy && self.collection.$destroy();
+                self.latestEvent = null;
                 self.collection = null;
 
                 getCollectionForDate(BusinessHolder.business.$id, DateHolder.currentDate).then(function(collection){
@@ -64,11 +65,24 @@ zedAlphaServices
                     lastBusinessId = BusinessHolder.business.$id;
 
                     self.collection = collection;
+                    self.findLatestEvent();
                     self.sortEvents();
                     self.resetFilters();
                 });
             }
         };
+
+        this.findLatestEvent = function(){
+            var currentEvent, key, output = null;
+            if(self.collection && self.collection.length){
+                for (var i = 0; i< this.collection.length; ++i) {
+                    key = this.collection.$keyAt(i);
+                    currentEvent = this.collection.$getRecord(key);
+                    output = output ? (currentEvent.isAfter(output,'minutes') ? currentEvent : output) : currentEvent ;
+                }
+            }
+           self.latestEvent = output;
+        }
 
         this.resetFilters = function(){
             this.filters.name = null;

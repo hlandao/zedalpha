@@ -8,9 +8,9 @@
             <tr ng-show="highlightedFutureEvents.length && !highlightedNowEvents.length && nextEventInXMinutes" class="highlighted-events-title-row text-danger">
                 <td colspan="3"> {{'NEXT_EVENT' | translate }} {{nextEventInXMinutes | duration : 'second' : 'minute'}}</td>
             </tr>
-            <tr ng-show="highlightedNowEvents.length" class="highlighted-events-title-row text-danger">
-                <td colspan="3"> {{'NOW_EVENTS' | translate }} </td>
-            </tr>
+            <!--<tr ng-show="highlightedNowEvents.length" class="highlighted-events-title-row text-danger">-->
+                <!--<td colspan="3"> {{'NOW_EVENTS' | translate }} </td>-->
+            <!--</tr>-->
             <tr ng-repeat="event in highlightedNowEvents">
                 <td class="one-liner-text"><span class="label label-info" style="background: {{event.data.status | colorForStatus}}"> {{event.data.status | translate}} </span></td>
                 <td class="one-liner-text">{{event.data.name}}</td>
