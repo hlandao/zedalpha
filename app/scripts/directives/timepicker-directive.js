@@ -52,7 +52,6 @@ zedAlphaDirectives
 
                     $scope.$watch('settings', function(newVal,oldVal){
                         settings = angular.extend(defaultSettings, $scope.settings);
-                        console.log('newVal',newVal);
                         var max = (newVal && newVal.min && newVal.range) ? newVal.min.clone().add(newVal.range, 'minutes') : null ;
                         if(newVal && newVal.min && newVal.min.isAfter && newVal.min.isAfter(ngModel.$modelValue)){
                             ngModel.$modelValue = newVal.min.clone();
