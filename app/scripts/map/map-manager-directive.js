@@ -81,11 +81,11 @@ zedAlphaDirectives
                     if(index == -1){
                         if(shapeSeatIsAvailable(shape)){
                             scope.highlightedShapes.push(shape);
-                            shape.toggleHighlight();
+                            shape.highlight();
                         }
                     }else if(index > -1){
                         scope.highlightedShapes.splice(index,1);
-                        shape.toggleHighlight();
+                        shape.cancelHighlight();
                     }
                     updateNewEventSeats();
                     renderMapWithEvents();
@@ -271,7 +271,7 @@ zedAlphaDirectives
 
 
                 var updateNewEventSeats = function (){
-                    scope.$parent.newEvent.seats = shapesArrToSeatsDic();
+                    scope.$parent.newEvent.data.seats = shapesArrToSeatsDic();
                 }
 
 
