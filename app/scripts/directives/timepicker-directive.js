@@ -38,7 +38,7 @@ zedAlphaDirectives
                     settings = angular.extend(defaultSettings, $scope.settings);
 
                     ngModel.$render = function(){
-                        $scope.selected = getTimeObject(ngModel.$modelValue);
+                        setDefaultModelValue();
                         generateTimesArray();
                     };
 
@@ -60,12 +60,16 @@ zedAlphaDirectives
                             ngModel.$modelValue = max;
                         }
 
+                        setDefaultModelValue();
                         generateTimesArray();
                     }, true);
 
 
                 };
 
+                var setDefaultModelValue = function(){
+                    $scope.selected = getTimeObject(ngModel.$modelValue);
+                }
 
 
                 $scope.setNewTime = function(timeObj, e){

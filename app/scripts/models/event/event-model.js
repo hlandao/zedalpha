@@ -237,12 +237,16 @@ zedAlphaServices
             $maxDurationForEventInRegardToAnotherEvent: function (anotherEvent) {
                 if (!anotherEvent) return false;
 
-                var startTimeDiff = anotherEvent.data.startTime.diff(this.data.startTime, 'minutes');
+                var startTimeDiff = this.data.startTime.diff(anotherEvent.data.startTime, 'minutes');
+                var startTimeEndTimeDiff = this.data.startTime.diff(anotherEvent.data.endTime, 'minutes');
+                var endTimeStartTimeDiff = this.data.endTime.diff(anotherEvent.data.startTime, 'minutes');
+
+
 
                 if (startTimeDiff > 0) {
-                    // this start before anotherEvent begins
+                    // anotherEvent starts before this even begins
                     return startTimeDiff;
-                } else if (this.data.startTime.isAfter(anotherEvent.data.endTime, 'minutes') || anotherEvent.data.endTime.isSame(this.data.startTime, 'minutes')) {
+                } else if (startTimeEndTimeDiff >= 0 || endTimeStartTimeDiff <= 0) {
                     // this start after anotherEvent ends
                     return -1;
                 } else {

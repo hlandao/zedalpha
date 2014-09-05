@@ -159,12 +159,14 @@ zedAlphaServices
          * @returns {boolean}
          */
         this.checkCollisionsForEvent = function(event, extra){
+            console.log('checkCollisionsForEvent');
             var eventToCheck, key;
             var extraSeats = extra ? extra.seats : null;
 
             for (var i = 0; i < self.collection.length; ++i) {
                 key = self.collection.$keyAt(i);
                 eventToCheck = self.collection.$getRecord(key);
+                debugger;
                 if(eventToCheck === event) continue;
                 if(eventToCheck.$shouldCollide() && eventToCheck.$sharingTheSameSeatsWithAnotherEvent(event, extraSeats)){
                     if(eventToCheck.$maxDurationForEventInRegardToAnotherEvent(event) === 0){
