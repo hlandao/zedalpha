@@ -174,7 +174,26 @@ zedAlphaDirectives
                 }
             }
         };
-    }).directive('eventPhoneValidator', function(){
+    }).directive('eventFormBaseDatePicker', function(DateFormatFirebase){
+        return {
+            replace : false,
+            require : ['ngModel'],
+            restrict : 'E',
+            template : '<input type="text" class="datepicker-input" pick-a-date="date"/>',
+            link : function(scope, element, attrs, ctrls){
+                var ngModel = ctrls[0];
+
+                ngModel.$render = function(){
+                    scope.date = moment(ngModel.$modelValue);
+                }
+
+                ngModel.$parsers.push(function(viewValue){
+                    return viewValue.format(DateFormatFirebase);
+                });
+            }
+        }
+    })
+    .directive('eventPhoneValidator', function(){
         return {
             priority : 0,
             require : ['ngModel'],

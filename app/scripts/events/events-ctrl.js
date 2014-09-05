@@ -57,8 +57,10 @@ zedAlphaControllers
             if($scope.editedEvent === event){
                 return;
             }else if($scope.editedEvent){
+                $scope.editedEvent.$exitEditingMode();
                 $scope.editedEvent = null;
             }
+            event.$enterEditingMode();
             $scope.editedEvent = event;
         };
 

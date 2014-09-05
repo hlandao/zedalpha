@@ -79,10 +79,11 @@
                 <table class="table table-responsive table-event-duration">
                     <tr>
                         <td class="the-date">
-                            <input type="text" class="datepicker-input" pick-a-date="event.startTime"/>
+                            <!--<input type="text" class="datepicker-input" pick-a-date="event.startTime"/>-->
+                            <event-form-base-date-picker ng-model="event.baseDate"></event-form-base-date-picker>
                         </td>
                         <td class="start-time">
-                            <input event-start-time-validator hl-timepicker ng-model="event.startTime" >
+                            <input event-start-time-validator hl-timepicker ng-model="event.startTime" settings="{baseDate : event.baseDate}">
                         </td>
                         <td class="to-text">
                             <span> {{ 'TO' | translate }} </span>

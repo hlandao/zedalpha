@@ -63,10 +63,13 @@ zedAlphaDirectives
                     if(!shape.seatNumber) return;
                     scope.$apply(function(){
                         if(isAddingNewEvent()){
+                            console.log('Clicked on event while adding new event');
                             clickHandlerForAddingNewEventState(shape);
                         } else if(isEditingEvent()){
+                            console.log('Clicked on event while editing existing event');
                             clickHandlerForEditingEventState(shape);
                         }else{
+                            console.log('Clicked on event');
                             clickHandlerForNormalState(shape);
                         }
                     });
@@ -93,11 +96,11 @@ zedAlphaDirectives
                     if(index == -1){
                         if(shapeSeatIsAvailable(shape)){
                             scope.highlightedShapes.push(shape);
-                            shape.toggleHighlight();
+                            shape.highlight();
                         }
                     }else if(index > -1){
                         scope.highlightedShapes.splice(index,1);
-                        shape.toggleHighlight();
+                        shape.cancelHighlight();
                     }
                     updateEditedEventSeats();
                 }
@@ -210,7 +213,7 @@ zedAlphaDirectives
                     if(EventsCollection.sorted.nowEvents){
                         for(var j = 0; j < EventsCollection.sorted.nowEvents.length; ++j){
                             event = EventsCollection.sorted.nowEvents[j];
-                            for(seatNumberToCheck  in  event.seats){
+                            for(seatNumberToCheck  in  event.data.seats){
                                 if(seatNumberToCheck == seatNumber) return false;
                             }
                         }
@@ -273,7 +276,7 @@ zedAlphaDirectives
 
 
                 var updateEditedEventSeats = function (){
-                    scope.$parent.editedEvent.seats = shapesArrToSeatsDic();
+                    scope.$parent.editedEvent.data.seats = shapesArrToSeatsDic();
                 }
 
 
@@ -281,7 +284,6 @@ zedAlphaDirectives
                     var nowEvents = angular.copy(EventsCollection.sorted.nowEvents),
                         upcomingEvents = EventsCollection.sorted.upcomingEvents;
 
-                    console.log('nowEvents',nowEvents);
                     if(scope.$parent.newEvent){
                         nowEvents = nowEvents || [];
                         nowEvents.push(scope.$parent.newEvent);
@@ -297,11 +299,10 @@ zedAlphaDirectives
 
                     var event, color, seatNumber, theShape, seatsWithBackground = {},seatsWithUpcomingBackground = {}, highlightedSeats = {}, upcomingHighlightedShapes = {};
                     angular.forEach(nowEvents, function(event){
-                        console.log('event',event)
                         color = getEventStatusColor(event.data.status);
                         for(seatNumber  in  event.data.seats){
                             seatsWithBackground[seatNumber] = color;
-                            if(event.editing && event.editing || event.$isNew()){
+                            if(event.$isEditing() || event.$isNew()){
                                 highlightedSeats[seatNumber] = true;
                             }
 
@@ -312,6 +313,9 @@ zedAlphaDirectives
                         color = getEventStatusColor(event.data.status);
                         for(seatNumber  in  event.data.seats){
                             if(!seatsWithBackground[seatNumber]) seatsWithUpcomingBackground[seatNumber] = color;
+                            if(event.$isEditing()){
+                                highlightedSeats[seatNumber] = true;
+                            }
                         }
                     });
 
@@ -336,6 +340,8 @@ zedAlphaDirectives
                         }
 
                     }
+
+                    console.log('scope.highlightedShapes',scope.highlightedShapes);
 
                     hideSeatMenu();
 

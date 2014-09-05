@@ -36,6 +36,10 @@ zedAlphaDirectives
                 scope.addShape = function(){
                     if(!scope.selectedNewShape) return;
                     if(scope.selectedNewShape.isSeat){
+                        if(isSeatNumberAlreadyExist(scope.seatNumber)){
+                            alert('Seat number already exists');
+                        }
+
                         shapes.push(new SeatShape(paper, {
                             shapeObject : scope.selectedNewShape,
                             seatNumber : scope.seatNumber,
@@ -171,6 +175,23 @@ zedAlphaDirectives
 
 
 
+
+                var isSeatNumberAlreadyExist = function(seatNumber){
+                    var output = false;
+                    paper.forEach(function(el){
+                        var data = el.data();
+                        if(!data || !data.type){
+                            el.remove();
+                            return;
+                        }
+                        var _seatNumber = el.data('seatNumber');
+
+                        if(_seatNumber == seatNumber){
+                            output = true;
+                        }
+                    });
+                    return output;
+                };
 
                 var renderMapJson = function(map){
                     paper.fromJSON(map, function(el, data){

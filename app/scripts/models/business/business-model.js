@@ -1,16 +1,8 @@
 var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', []);
 zedAlphaServices
-    .factory('Business', function($FirebaseObject){
-        function Business(firebase, destroyFunction, readyPromise){
-            $FirebaseObject.call(this, firebase, destroyFunction, readyPromise);
-        }
-        return Business;
-    })
-    .factory("BusinessFactory",function ($FirebaseObject, Business) {
-        return $FirebaseObject.$extendFactory(Business);
-    }).factory("BusinessObject",function ($firebase, BusinessFactory) {
+    .factory("BusinessObject",function ($firebase) {
         return function (ref) {
-            return $firebase(ref, {objectFactory: BusinessFactory}).$asObject();
+            return $firebase(ref).$asObject();
         }
     })
     .service("BusinessesCollection",function ($firebase, UserHolder) {
@@ -29,7 +21,10 @@ zedAlphaServices
                 self.business = BusinessObject(ref)
                 return self.business.$loaded();
             }else{
-                return self.business && self.business.$loaded()
+                return self.business && self.business.$loaded().then(function(business){
+                    $rootScope.$emit('$businessHolderChanged');
+                    return business;
+                })
             }
         };
 
@@ -37,6 +32,6 @@ zedAlphaServices
            self.business = null;
         });
 
-        $rootScope.$on('$businessHolderChanged', self.init);
+
     });
 

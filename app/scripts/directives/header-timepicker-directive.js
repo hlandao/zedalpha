@@ -16,7 +16,6 @@ zedAlphaDirectives
                     }else if(ShiftsDayHolder.selectedShift){
                         scope.calculatedRange = ShiftsDayHolder.selectedShift.duration;
                     }
-                    console.log('scope.calculatedRange',scope.calculatedRange);
                 }
 
                 $rootScope.$watch(function(){

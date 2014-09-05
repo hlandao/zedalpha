@@ -279,6 +279,9 @@ zedAlphaServices
             },
             $exitEditingMode: function(){
                 this.editing = false;
+            },
+            $isEditing : function(){
+                return this.editing;
             }
 
         };

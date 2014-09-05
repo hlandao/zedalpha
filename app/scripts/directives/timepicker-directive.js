@@ -14,15 +14,19 @@ zedAlphaDirectives
             controller: function ($scope) {
                 var timeFormat = 'HH:mm',
                     intialized,
+                    opened,
                     ngModel,
                     linkFN,
                     attrs,
+                    lastMinDate,
                     defaultSettings = {
+                        baseDate : null,
                         min: null,
                         max: null,
                         range : null,
                         intervalInMinutes : 15,
-                        showDurationFromDate : null
+                        showDurationFromDate : null,
+                        showOverlappingLabel : true
                     },
                     settings = defaultSettings;
 
@@ -34,6 +38,7 @@ zedAlphaDirectives
                     settings = angular.extend(defaultSettings, $scope.settings);
 
                     ngModel.$render = function(){
+                        $scope.selected = getTimeObject(ngModel.$viewValue);
                         generateTimesArray();
                     };
 
@@ -81,22 +86,44 @@ zedAlphaDirectives
                     $scope.times = [];
                 }
 
+
                 var generateTimesArray  = function () {
+                    if(!opened) return;
                     if(!settings.min && !ngModel.$modelValue){
                         return;
                     }
-
                     var currentMoment,
                         interval = settings.intervalInMinutes,
-                        min = (settings.min && settings.min.isValid && settings.min.isValid()) ? settings.min.clone() : ngModel.$modelValue.clone().hour(0).minute(0).seconds(0),
-                        max = settings.max ? settings.max.clone() : (ngModel.$modelValue) ? (ngModel.$modelValue.clone().hour(23).minute(59).seconds(0)) : min.clone().hour(23).minute(59).seconds(0),
+                        min,// = (settings.min && settings.min.isValid && settings.min.isValid()) ?  : (settings.baseDate ? settings.baseDate.clone().hour(0).minute(0).seconds(0) : ngModel.$modelValue.clone().hour(0).minute(0).seconds(0)),
+                        max,// = settings.max ? settings.max.clone() : (ngModel.$modelValue) ? (ngModel.$modelValue.clone().hour(23).minute(59).seconds(0)) : min.clone().hour(23).minute(59).seconds(0),
+                        currentMoment,// = min.clone(),
+//                        v = min,
+                        rangeInMinutes;// = settings.range || max.diff(min, 'minutes');
 
-                        currentMoment = min.clone(),
-                        v = min,
-                        rangeInMinutes = settings.range || max.diff(min, 'minutes');
+
+                    if(settings.min && DateHelpers.isMomentValid(settings.min)){
+                        min = settings.min.clone();
+                    }else if(settings.baseDate && DateHelpers.isMomentValid(settings.baseDate)){
+                        min = settings.baseDate.clone().hour(0).minute(0).seconds(0);
+                    }else if(ngModel.$modelValue && DateHelpers.isMomentValid(ngModel.$modelValue)){
+                        min = ngModel.$modelValue.clone().hour(0).minute(0).seconds(0);
+                    }else{
+                        return;
+                    }
+
+                    if(settings.max && DateHelpers.isMomentValid(settings.max)){
+                        max = settings.max.clone();
+                    }else if (ngModel.$modelValue && DateHelpers.isMomentValid(ngModel.$modelValue)){
+                        max = ngModel.$modelValue.clone().hour(23).minute(59).seconds(0);
+                    }else{
+                        max = min.clone().hour(23).minute(59).seconds(0);
+                    }
+
+                    currentMoment = min.clone();
+                    rangeInMinutes = settings.range || max.diff(min, 'minutes');
 
                     resetTimesArray();
-
+                    lastMinDate = min;
                     var timeObj;
                     do{
                         timeObj = getTimeObject(currentMoment);
@@ -110,10 +137,17 @@ zedAlphaDirectives
                 };
 
 
+
                 var getTimeObject = function (m) {
                     var timeString = m.format(timeFormat);
                     var label = timeString;
-                    label += (settings.showDurationFromDate) ? (" " + getDurationString(settings.showDurationFromDate, m)) : "" ;
+                    if(settings.showDurationFromDate){
+                        label += " " + getDurationString(settings.showDurationFromDate, m);
+                    }else if(settings.showOverlappingLabel && lastMinDate){
+                        if(m.isAfter(lastMinDate, 'day')){
+                            label += " (+" + $filter('translate')('DAY') + ")";
+                        }
+                    }
                     return {
                         time: m.toISOString(),
                         label: label
@@ -123,6 +157,11 @@ zedAlphaDirectives
 
                 var getDurationString = function (timeRef, time) {
                     if (!timeRef || !time) return "";
+
+                    var overlappingLabel = "";
+                    if(time.isAfter(lastMinDate, 'day')){
+                        overlappingLabel = " +" + $filter('translate')('DAY') + " ";
+                    }
 
                     var diff = time.diff(timeRef, 'minutes');
                     var hours = Math.floor(diff / 60);
@@ -138,14 +177,17 @@ zedAlphaDirectives
                     if (diff < 0) {
                         return "";
                     } else if (hours === 0) {
-                        return "(" + minutes + " " + $filter('translate')('MINUTES_SHORT') + ")";
+                        return "(" + overlappingLabel + minutes + " " + $filter('translate')('MINUTES_SHORT') + ")";
                     } else {
-                        return "(" + hours + ((minutes > 0) ? (":" + minutes) : "") + " " + $filter('translate')('HOURS_SHORT') + ")";
+                        return "(" + overlappingLabel + hours + ((minutes > 0) ? (":" + minutes) : "") + " " + $filter('translate')('HOURS_SHORT') + ")";
                     }
                 }
 
                 this.open = function(){
-                    if(!$scope.times) generateTimesArray();
+                    if(!opened){
+                        opened = true;
+                        generateTimesArray();
+                    }else if(!$scope.times) generateTimesArray();
                     $scope.opened = true;
                 }
 

@@ -6,15 +6,13 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 zedAlphaServices
     .factory('EventsSeatsHolder', function($rootScope, BusinessHolder){
 
-        var $seats = {};
+        var _seats = {};
 
         var update = function(){
-            var $mapRef = BusinessHolder.$business.$child('map').$on('loaded', function(){
-                $mapRef.$off('loaded');
-                if($mapRef.$value){
-                    $seats.seats = extractSeatsFromMap($mapRef.$value);
+            var map = BusinessHolder.business.map;
+                if(map){
+                    _seats.seats = extractSeatsFromMap(map);
                 }
-            });
         };
 
         var extractSeatsFromMap = function(mapJSON){
@@ -29,12 +27,12 @@ zedAlphaServices
             return output;
         };
 
-        if(BusinessHolder.$business) update();
+        if(BusinessHolder.business) update();
 
         $rootScope.$on('$businessHolderChanged', function(){
            update();
         });
 
-        return $seats;
+        return _seats;
     });
 
