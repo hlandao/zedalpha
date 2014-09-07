@@ -30,6 +30,7 @@ zedAlphaDirectives
 
                 $scope.save = function(){
                     EventsCollection.saveWithValidation($scope.eventObj).then(function(output){
+                        debugger;
                         if(output && output.warnings && output.warnings.length){
                             var promises = [];
                             for (var i = 0; i < output.warnings.length; ++i){
@@ -235,7 +236,7 @@ zedAlphaDirectives
 
                 var validate = function(value){
                     value = value || ngModel.$modelValue;
-                    EventsCollection.checkGuestsPer15Minutes(scope.event.startTime, value).then(function(warning){
+                    EventsCollection.checkGuestsPer15Minutes(scope.eventObj, value).then(function(warning){
                         ngModel.$setValidity('guests', true);
                     },function(error){
                         ngModel.$setValidity('guests', false);
@@ -303,7 +304,7 @@ zedAlphaDirectives
                 var ngModel = ctrls[0];
             }
         }
-    }).directive('eventFormBaseDatePicker', function(DateFormatFirebase, EventsCollection){
+    }).directive('eventFormBaseDatePicker', function(DateFormatFirebase, EventsCollection, areYouSureModalFactory, $filter){
         return {
             replace : false,
             require : ['ngModel'],
@@ -323,8 +324,9 @@ zedAlphaDirectives
                 scope.dateChanged = function(){
                     EventsCollection.changeBaseDateForEvent(scope.eventObj, scope.date).then(function(){
 
-                    }).catch(function(){
-                        alert('Error, cannot change base date for event');
+                    }).catch(function(error){
+                        var localizedError = $filter('translate')(error.error);
+                        areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
                     });
 //                    var oldVal = ngModel.$modelValue;
 //                    ngModel.$setViewValue(scope.date);
@@ -332,7 +334,7 @@ zedAlphaDirectives
                 }
             }
         }
-    }).directive('eventStartTimeValidator', function(EventsCollection){
+    }).directive('eventStartTimeValidator', function(EventsCollection, areYouSureModalFactory, $filter){
         return {
             priority : 0,
             require : ['ngModel'],
@@ -360,15 +362,17 @@ zedAlphaDirectives
                     validate(viewValue).then(function(){
                         var maxDurationForEvent = EventsCollection.maxEventDurationForEvent(viewValue);
                         scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore);
-                    }).catch(function(){
+                    }).catch(function(error){
                         ngModel.$setValidity('startTime', false);
                         ngModel.$setViewValue(valueStartTimeBefore);
+                        var localizedError = $filter('translate')(error.error);
+                        areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
                     });
                     return viewValue;
                 });
             }
         }
-    }).directive('eventEndTimeValidator', function(EventsCollection){
+    }).directive('eventEndTimeValidator', function(EventsCollection, areYouSureModalFactory, $filter ){
         return {
             priority : 0,
             require : ['ngModel'],
@@ -392,9 +396,11 @@ zedAlphaDirectives
                 ngModel.$parsers.push(function(viewValue){
                     var valueEndTimeBefore = ngModel.$modelValue;
                     validate(viewValue).then(function(){
-                    }).catch(function(){
+                    }).catch(function(error){
                             ngModel.$setValidity('startTime', false);
                             ngModel.$setViewValue(valueEndTimeBefore);
+                            var localizedError = $filter('translate')(error.error);
+                            areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
                     });
                     return viewValue;
                 });

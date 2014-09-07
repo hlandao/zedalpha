@@ -16,6 +16,6 @@ describe('controllers', function(){
       $scope: scope
   	})
 
-    
+
   }));
 });

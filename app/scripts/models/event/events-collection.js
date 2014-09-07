@@ -173,8 +173,9 @@ zedAlphaServices
 
             return getCollectionForDate(null, null, event).then(function(collection){
                 var defer = $q.defer();
-                if (collection.$checkCollisionsForEvent(event, extra)) {
-                    defer.reject({error: "ERROR_EVENT_MSG_COLLISION"});
+                var collision = collection.$checkCollisionsForEvent(event, extra);
+                if (collision) {
+                    defer.reject({error: "ERROR_EVENT_MSG_COLLISION", withEvent : collision});
                 } else {
                     defer.resolve();
                 }
@@ -199,30 +200,37 @@ zedAlphaServices
          * @returns {promise}
          */
 
-        this.checkGuestsPer15Minutes = function (startTimeValue, guestPer15Value) {
-            var defer = $q.defer();
-            if (!self.isGuestsPer15ValidForNewEvent(startTimeValue, guestPer15Value)) {
-                defer.resolve({warning: "INVALID_GUESTS_PER_15_WARNING"});
-            } else {
-                defer.resolve();
-            }
-            return defer.promise;
+        this.checkGuestsPer15Minutes = function (event) {
+            console.log('event',event);
+            var guestPer15Value = parseInt(BusinessHolder.business.guestsPer15);
+
+            return self.isGuestsPer15ValidForNewEvent(event, guestPer15Value).then(function(result){
+                if(result){
+                    return null;
+                }else{
+                    return {warning: "INVALID_GUESTS_PER_15_WARNING"};
+                }
+            });
+
         };
 
 
-        this.isGuestsPer15ValidForNewEvent = function (eventStartTime, eventGuestsPer15Value) {
-            var guestPer15Value = parseInt(BusinessHolder.business.guestsPer15);
-            if (!guestPer15Value || guestPer15Value === 0 || !eventGuestsPer15Value) return true;
-            if (!eventStartTime) return true;
-            var count = eventGuestsPer15Value, currentEvent,key;
-            for (var i = 0; i < self.collection.length; ++i) {
-                key = self.collection.$keyAt(i);
-                currentEvent = self.collection.$getRecord(key);
-                if (!currentEvent.data.isOccasional && eventStartTime.isSame(currentEvent.data.startTime, 'minutes')) {
-                    count += parseInt(currentEvent.guests);
+        this.isGuestsPer15ValidForNewEvent = function (event, guestPer15Value) {
+//            if (!guestPer15Value || guestPer15Value === 0 || !eventGuestsPer15Value) return true;
+            return getCollectionForDate(null,null,event).then(function(collection){
+                var count = guestPer15Value,
+                    currentEvent,
+                    key;
+
+                for (var i = 0; i < collection.length; ++i) {
+                    key = collection.$keyAt(i);
+                    currentEvent = collection.$getRecord(key);
+                    if (!currentEvent.data.isOccasional && event.data.startTime.isSame(currentEvent.data.startTime, 'minutes')) {
+                        count += parseInt(currentEvent.guests);
+                    }
                 }
-            }
-            return count <= guestPer15Value;
+                return count <= guestPer15Value;
+            });
         };
 
 
@@ -234,7 +242,7 @@ zedAlphaServices
          */
         this.checkAllWarnings = function (event) {
             var warnings = {warnings: []};
-            var promises = [self.checkGuestsPer15Minutes(), event.$checkIfEventFitsShifts()];
+            var promises = [self.checkGuestsPer15Minutes(event), event.$checkIfEventFitsShifts()];
 
             return $q.all(promises).then(function (result) {
                 for (var i = 0; i < result.length; ++i) {
@@ -311,9 +319,10 @@ zedAlphaServices
 
 
             return getCollectionForDate(BusinessHolder.business.$id, newBaseDateMoment).then(function(collection){
-                if(collection.$checkCollisionsForEvent(event, null)){
+                var collision = collection.$checkCollisionsForEvent(event, null);
+                if(collision){
                     event.$changeBaseDate(oldBaseDate);
-                    return false;
+                    return $q.reject({error : 'ERROR_MSG_COLLISION', withEvent : collision});
                 }else{
                     event.myNewCollection = collection;
                     event.changedBaseDate = true;
