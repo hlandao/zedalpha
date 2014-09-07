@@ -21,14 +21,10 @@ zedAlphaDirectives
                             return;
                         }
                         $timeout(function(){
-                            if (context.hasOwnProperty('clear')) {
-                                scope.pickADate = null;
-                                return;
-                            }
-
-                            var newDate = new Date(context.select);
+                            var newDate = new Date(context.select),
+                                newMoment = moment(newDate);
                             updatedByUser = true;
-                            scope.pickADate = moment(newDate);
+                            scope.pickADate.date(newMoment.date()).month(newMoment.month()).year(newMoment.year());
                             attrs.onChange && scope.$parent.$eval(attrs.onChange);
                         },0);
                     },
@@ -42,8 +38,8 @@ zedAlphaDirectives
 
                 var update = function(newVal){
                     var date = new Date(newVal.format(FullDateFormat));
-                    picker.set('select', date);
                     updatedModel = true;
+                    picker.set('select', date);
                 };
                 scope.$watch('pickADate', function(){
                     if(updatedByUser){

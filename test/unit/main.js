@@ -12,11 +12,10 @@ describe('controllers', function(){
   it('should define 3 awesome things', inject(function($controller) {
     expect(scope.awesomeThings).toBeUndefined()
 
-    $controller('MainCtrl', {
+    $controller('EventsCtrl', {
       $scope: scope
   	})
 
-    expect(angular.isArray(scope.awesomeThings)).toBeTruthy();
-    expect(scope.awesomeThings.length).toBe(3);
+    
   }));
 });

@@ -15,9 +15,12 @@ gulp.task('test', function() {
   });
 
   var testFiles = bowerDeps.js.concat([
+    "app/bower_components/angular-loggly-logger/angular-loggly-logger.js",
     'app/scripts/**/*.js',
     'test/unit/**/*.js'
   ]);
+
+    console.log(testFiles);
 
   return gulp.src(testFiles)
     .pipe($.karma({

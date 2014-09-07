@@ -46,6 +46,7 @@ zedAlphaDirectives
                             $scope.closeLinkFN();
                         }
                     }).catch(function(error){
+
                         if(error && error.error){
                             var localizedError = $filter('translate')(error.error);
                             $log.info('[EventForm] error saving event',error.error);
@@ -320,7 +321,11 @@ zedAlphaDirectives
                 });
 
                 scope.dateChanged = function(){
-                    EventsCollection.changeBaseDateForEvent(scope.eventObj, scope.date);
+                    EventsCollection.changeBaseDateForEvent(scope.eventObj, scope.date).then(function(){
+
+                    }).catch(function(){
+                        alert('Error, cannot change base date for event');
+                    });
 //                    var oldVal = ngModel.$modelValue;
 //                    ngModel.$setViewValue(scope.date);
 //                    scope.eventObj.$baseDateWasChangedByUser(oldVal);

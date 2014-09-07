@@ -15,13 +15,31 @@ zedAlphaServices
 
             $setSubName : function(subName){
                 this.$list.subName = subName;
+            },
+            $checkCollisionsForEvent : function(event, extra){
+                var eventToCheck,
+                    key,
+                    extraSeats = extra ? extra.seats : null,
+                    self = this;
+
+
+                for (var i = 0; i < self.$list.length; ++i) {
+                    eventToCheck = self.$list[i];
+                    if(eventToCheck === event) continue;
+                    if(eventToCheck.$shouldCollide() && eventToCheck.$sharingTheSameSeatsWithAnotherEvent(event, extraSeats)){
+                        if(eventToCheck.$collideWithAnotherEvent(event)){
+                            return eventToCheck;
+                        }
+                    }
+                }
+                return false;
             }
         });
     }).factory("EventsCollectionGenerator",function ($firebase, $log, EventsFactory) {
         return function (ref) {
             return $firebase(ref, {arrayFactory : EventsFactory}).$asArray();
         }
-    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters) {
+    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase) {
         var self = this,
             lastSubName = null,
             lastBusinessId = null;
@@ -34,8 +52,18 @@ zedAlphaServices
             return date.format('YYYY-MM-DD');
         };
 
-        var getCollectionForDate = function(businessId, date){
-            var subName = subNameByDate(date);
+        var getCollectionForDate = function(businessId, date, event){
+            var subName;
+            if(date){
+                subName = subNameByDate(date);
+            }else if(event){
+                subName = event.data.baseDate;
+                if(event.myCollection && event.myCollection.subName == subName){
+                    var defer = $q.defer;
+                    defer.resolve(event.myCollection);
+                    return defer.promise;
+                }
+            }
             businessId = businessId || BusinessHolder.business.$id;
 
             if(subName == lastSubName && lastBusinessId == businessId){
@@ -43,9 +71,11 @@ zedAlphaServices
                 defer.resolve(self.collection);
                 return defer.promise;
             }
+
+
             var ref = firebaseRef('events/').child(businessId).child(subName);
             return EventsCollectionGenerator(ref).$loaded().then(function(collection){
-                collection.$setSubName(lastSubName);
+                collection.$setSubName(subName);
                 return collection;
             });
         };
@@ -70,6 +100,8 @@ zedAlphaServices
                     findLatestEvent();
                     sortEvents();
                     resetFilters();
+                }, function(){
+
                 });
             }
         };
@@ -138,21 +170,16 @@ zedAlphaServices
          * @returns {promise}
          */
         this.validateCollision = function (event, extra) {
-            event.getCollectionAsync(function(collection){
 
+            return getCollectionForDate(null, null, event).then(function(collection){
+                var defer = $q.defer();
+                if (collection.$checkCollisionsForEvent(event, extra)) {
+                    defer.reject({error: "ERROR_EVENT_MSG_COLLISION"});
+                } else {
+                    defer.resolve();
+                }
+                return defer.promise;
             });
-
-//            var collection = event.$getCollection() || self.collection;
-//            if(collection.subName != event.data.baseDate){
-//
-//            }
-            var defer = $q.defer();
-            if (self.collection.length && self.checkCollisionsForEvent(event, extra)) {
-                defer.reject({error: "ERROR_EVENT_MSG_COLLISION"});
-            } else {
-                defer.resolve();
-            }
-            return defer.promise;
         },
 
         //------- COLLISIONS & DURATIONS --------//
@@ -162,23 +189,8 @@ zedAlphaServices
          * @returns {boolean}
          */
         this.checkCollisionsForEvent = function(event, extra, collection){
-            var eventToCheck, key;
-            var extraSeats = extra ? extra.seats : null;
-
             collection = collection || self.collection;
-
-            for (var i = 0; i < self.collection.length; ++i) {
-                key = collection.$keyAt(i);
-                eventToCheck = collection.$getRecord(key);
-                debugger;
-                if(eventToCheck === event) continue;
-                if(eventToCheck.$shouldCollide() && eventToCheck.$sharingTheSameSeatsWithAnotherEvent(event, extraSeats)){
-                    if(eventToCheck.$maxDurationForEventInRegardToAnotherEvent(event) === 0){
-                        return true;
-                    }
-                }
-            }
-            return false;
+            return collection.$checkCollisionsForEvent(event,extra);
         };
 
 
@@ -262,16 +274,26 @@ zedAlphaServices
 
                 });
             } else {
-                return self.collection.$save(event).then(function(){
-                    sortEvents();
-                }, function(){
+                return getCollectionForDate(null, null, event).then(function(collection){
+                    if(event.changedBaseDate){
+                        var eventDataCloned = event.toObject();
+                        return self.collection.$remove(event).then(function(){
+                            return collection.$add(eventDataCloned).then(function(){
+                                sortEvents();
+                            });
+                        });
+                    }else{
+                        return collection.$save(event).then(function(){
+                            sortEvents();
+                        });
+                    }
 
                 });
             }
         };
 
         this.remove = function(event){
-            return getCollectionForDate(null, event.data.startTime).then(function(collection){
+            return getCollectionForDate(null, null, event).then(function(collection){
                 collection.$remove(event).then(function(){
                     sortEvents();
                 });
@@ -281,14 +303,21 @@ zedAlphaServices
         };
 
 
-        this.changeBaseDateForEvent = function(event, newBaseDateVal){
-            var baseDate = newBaseDateVal.format(DateFormatFirebase);
-            var eventCopy = event.toObject();
-            getCollectionForDate(BusinessHolder.business.$id, newBaseDateVal).then(function(collection){
-                if(self.checkCollisionsForEvent(eventCopy, null, collection)){
+        this.changeBaseDateForEvent = function(event, newBaseDateMoment){
+            var oldBaseDate = moment(event.data.baseDate);
 
+
+            event.$changeBaseDate(newBaseDateMoment);
+
+
+            return getCollectionForDate(BusinessHolder.business.$id, newBaseDateMoment).then(function(collection){
+                if(collection.$checkCollisionsForEvent(event, null)){
+                    event.$changeBaseDate(oldBaseDate);
+                    return false;
                 }else{
-
+                    event.myNewCollection = collection;
+                    event.changedBaseDate = true;
+                    return true;
                 }
             });
         };

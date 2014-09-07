@@ -11,7 +11,7 @@ zedAlphaServices
             } else if (newEventData) {
                 return this.$initNewEvent(newEventData);
             } else {
-                throw new TypeError("please provide either a valid snapshot object or new event data");
+                return this;
             }
         };
 
@@ -29,24 +29,24 @@ zedAlphaServices
 
                 return this;
             },
-            $initNewEvent: function (data) {
+            $initNewEvent: function (newEventData) {
                 if (this.initialized) throw new TypeError("init methods can be called only once");
                 this.initialized = true;
 
                 this.data = {};
 
                 // determine if the event is 'destination' or 'occasional'
-                this.data.isOccasional = (data.occasionalOrDestination && data.occasionalOrDestination == 'occasional')
+                this.data.isOccasional = (newEventData.occasionalOrDestination && newEventData.occasionalOrDestination == 'occasional')
                 this.data.status = this.data.isOccasional ? 'OCCASIONAL' : 'ORDERED';
 
 
                 // set the start time
-                var startTime = data.startTime || (this.data.isOccasional ? moment(Date.now()) : DateHolder.currentClock.clone());
+                var startTime = newEventData.startTime || (this.data.isOccasional ? moment(Date.now()) : DateHolder.currentClock.clone());
                 if (!startTime || !startTime.isValid || !startTime.isValid()) throw new TypeError("cannot create new event due to invalid start time, should be a moment obj.");
                 startTime.minute(DateHelpers.findClosestIntervalToDate(startTime));
                 this.data.startTime = startTime.seconds(0);
 
-                var baseDate = data.baseDate || DateHolder.currentDate || this.data.startTime;
+                var baseDate = newEventData.baseDate || DateHolder.currentDate || this.data.startTime;
                 this.data.baseDate = baseDate.format(DateFormatFirebase);
 
                 // find the duration for the event and set the end time
@@ -55,7 +55,7 @@ zedAlphaServices
                 if (!this.data.endTime || !this.data.endTime.isValid || !this.data.endTime.isValid()) throw new TypeError("cannot create new event due to failure in setting the end time,should be a moment obj.");
 
                 // set the events seats dictionary
-                this.data.seats = data.seatsDic;
+                this.data.seats = newEventData.seatsDic;
 
                 // set name
                 this.data.name = this.data.isOccasional ? $filter('translate')('OCCASIONAL') : '';
@@ -234,25 +234,34 @@ zedAlphaServices
                 return false;
             },
 
-            $maxDurationForEventInRegardToAnotherEvent: function (anotherEvent) {
+            $collideWithAnotherEvent : function(anotherEvent){
+                var startTimeToStartTimeDiff = anotherEvent.data.startTime.diff(this.data.startTime, 'minutes'),
+                    startTimeToEndTimeDiff = anotherEvent.data.startTime.diff(this.data.endTime, 'minutes'),
+                    endTimeToStartTimeDiff = anotherEvent.data.endTime.diff(this.data.startTime, 'minutes'),
+                    endTimeToEndTimeDiff  = anotherEvent.data.endTime.diff(this.data.endTime, 'minutes');
+
+                if((startTimeToStartTimeDiff >= 0 && startTimeToEndTimeDiff <= 0) || (endTimeToStartTimeDiff >= 0 && endTimeToEndTimeDiff <= 0)){
+                    return true;
+                }
+
+                return false;
+            },
+
+            $maxDurationInRegardToAnotherEvent: function (anotherEvent) {
                 if (!anotherEvent) return false;
 
-                var startTimeDiff = this.data.startTime.diff(anotherEvent.data.startTime, 'minutes');
-                var startTimeEndTimeDiff = this.data.startTime.diff(anotherEvent.data.endTime, 'minutes');
-                var endTimeStartTimeDiff = this.data.endTime.diff(anotherEvent.data.startTime, 'minutes');
-
-
+                var startTimeDiff = anotherEvent.data.startTime.diff(this.data.startTime, 'minutes');
+                var startTimeEndTimeDiff = anotherEvent.data.startTime.diff(this.data.endTime, 'minutes');
 
                 if (startTimeDiff > 0) {
-                    // anotherEvent starts before this even begins
+                    // anotherEvent starts and ends before this event begins
                     return startTimeDiff;
-                } else if (startTimeEndTimeDiff >= 0 || endTimeStartTimeDiff <= 0) {
+                } else if (startTimeEndTimeDiff >= 0) {
                     // this start after anotherEvent ends
                     return -1;
                 } else {
                     return 0;
                 }
-
             },
 
 
@@ -278,24 +287,31 @@ zedAlphaServices
                 return output;
             },
 
+            $clone : function(){
+                var newEvent = new Event();
+                newEvent.data = angular.extend({}, this.data);
+                return newEvent;
+            },
+
             $enterEditingMode: function(){
                 this.editing = true;
+//                this.clonedData = angular.extend({}, this.data);
             },
-            $exitEditingMode: function(){
+            $exitEditingMode: function(restoreData){
                 this.editing = false;
+                if(restoreData && this.clonedData){
+                    this.data = angular.extend({}, this.clonedData);
+                }
+                this.clonedData = null;
             },
             $isEditing : function(){
                 return this.editing;
             },
-            $baseDateWasChangedByUser : function(oldVal){
-              var daysDiff = moment(oldVal).diff(moment(this.data.baseDate), 'days');
-               if(daysDiff > 0){
-                   this.data.startTime.add(daysDiff, 'days');
-                   this.data.endTime.add(daysDiff, 'days');
-               }else if(daysDiff < 0){
-                   this.data.startTime.subtract(daysDiff, 'days');
-                   this.data.endTime.subtract(daysDiff, 'days');
-               }
+            $changeBaseDate : function(newVal){
+              var daysDiff = moment(newVal).diff(moment(this.data.baseDate), 'days');
+                this.data.startTime.add(daysDiff, 'days');
+                this.data.endTime.add(daysDiff, 'days');
+                this.data.baseDate = moment(newVal).format(DateFormatFirebase);
             },
             getCollectionAsync : function(){
                 var defer = $q.defer();

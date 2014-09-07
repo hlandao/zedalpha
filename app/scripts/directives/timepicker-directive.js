@@ -142,7 +142,6 @@ zedAlphaDirectives
 
 
                 var getTimeObject = function (m) {
-                    if(!m.format) debugger;
                     if(!m) return;
                     var timeString = m.format(timeFormat);
                     var label = timeString;

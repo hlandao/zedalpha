@@ -165,7 +165,6 @@ zedAlphaDirectives
 
                         if(!scope.highlightedNowEvents.length && scope.highlightedFutureEvents.length){
                             scope.nextEventInXMinutes = scope.highlightedFutureEvents[0].data.startTime.diff(moment(DateHolder.currentClock), 'seconds');
-                            console.log('scope.nextEventInXMinutes',scope.nextEventInXMinutes)
                             if(scope.nextEventInXMinutes >  3600 * 6){
                                 scope.nextEventInXMinutes = null;
                             }
@@ -341,7 +340,6 @@ zedAlphaDirectives
 
                     }
 
-                    console.log('scope.highlightedShapes',scope.highlightedShapes);
 
                     hideSeatMenu();
 

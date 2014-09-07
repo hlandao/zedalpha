@@ -299,7 +299,7 @@ zedAlphaServices
          * @param event
          * @returns {boolean}
          */
-        var checkCollisionsForEvent = function(event){
+        var checkCollisionsForEvent1 = function(event){
             var eventToCheck, sharedSeats, isCollidingStatus;
             for(var i in EventsHolder.$allEvents){
                 eventToCheck = EventsHolder.$allEvents[i];
@@ -486,7 +486,7 @@ zedAlphaServices
             isInvalidEventBeforeSave : isInvalidEventBeforeSave,
             isInvalidEventWhileEdit : isInvalidEventWhileEdit,
             validateEventsSwitching : validateEventsSwitching,
-            checkCollisionsForEvent : checkCollisionsForEvent,
+            checkCollisionsForEvent1 : checkCollisionsForEvent1,
             endTimeForNewEventWithStartTimeAndMaxDuration : endTimeForNewEventWithStartTimeAndMaxDuration,
             maxDurationForEventInMinutes : maxDurationForEventInMinutes,
             isGuestsPer15Valid : isGuestsPer15Valid,
