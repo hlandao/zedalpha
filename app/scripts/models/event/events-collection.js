@@ -45,7 +45,6 @@ zedAlphaServices
             }
             var ref = firebaseRef('events/').child(businessId).child(subName);
             return EventsCollectionGenerator(ref).$loaded().then(function(collection){
-                console.log('collection',collection);
                 collection.$setSubName(lastSubName);
                 return collection;
             });
@@ -139,6 +138,10 @@ zedAlphaServices
          * @returns {promise}
          */
         this.validateCollision = function (event, extra) {
+            event.getCollectionAsync(function(collection){
+
+            });
+
 //            var collection = event.$getCollection() || self.collection;
 //            if(collection.subName != event.data.baseDate){
 //
@@ -158,14 +161,15 @@ zedAlphaServices
          * @param event
          * @returns {boolean}
          */
-        this.checkCollisionsForEvent = function(event, extra){
-            console.log('checkCollisionsForEvent');
+        this.checkCollisionsForEvent = function(event, extra, collection){
             var eventToCheck, key;
             var extraSeats = extra ? extra.seats : null;
 
+            collection = collection || self.collection;
+
             for (var i = 0; i < self.collection.length; ++i) {
-                key = self.collection.$keyAt(i);
-                eventToCheck = self.collection.$getRecord(key);
+                key = collection.$keyAt(i);
+                eventToCheck = collection.$getRecord(key);
                 debugger;
                 if(eventToCheck === event) continue;
                 if(eventToCheck.$shouldCollide() && eventToCheck.$sharingTheSameSeatsWithAnotherEvent(event, extraSeats)){
@@ -173,8 +177,6 @@ zedAlphaServices
                         return true;
                     }
                 }
-
-
             }
             return false;
         };
@@ -276,6 +278,19 @@ zedAlphaServices
 
             });
 
+        };
+
+
+        this.changeBaseDateForEvent = function(event, newBaseDateVal){
+            var baseDate = newBaseDateVal.format(DateFormatFirebase);
+            var eventCopy = event.toObject();
+            getCollectionForDate(BusinessHolder.business.$id, newBaseDateVal).then(function(collection){
+                if(self.checkCollisionsForEvent(eventCopy, null, collection)){
+
+                }else{
+
+                }
+            });
         };
 
 

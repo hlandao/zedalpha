@@ -286,6 +286,21 @@ zedAlphaServices
             },
             $isEditing : function(){
                 return this.editing;
+            },
+            $baseDateWasChangedByUser : function(oldVal){
+              var daysDiff = moment(oldVal).diff(moment(this.data.baseDate), 'days');
+               if(daysDiff > 0){
+                   this.data.startTime.add(daysDiff, 'days');
+                   this.data.endTime.add(daysDiff, 'days');
+               }else if(daysDiff < 0){
+                   this.data.startTime.subtract(daysDiff, 'days');
+                   this.data.endTime.subtract(daysDiff, 'days');
+               }
+            },
+            getCollectionAsync : function(){
+                var defer = $q.defer();
+                defer.resolve(this.collection);
+                return defer.promise;
             }
 
         };

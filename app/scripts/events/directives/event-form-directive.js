@@ -174,24 +174,6 @@ zedAlphaDirectives
                 }
             }
         };
-    }).directive('eventFormBaseDatePicker', function(DateFormatFirebase){
-        return {
-            replace : false,
-            require : ['ngModel'],
-            restrict : 'E',
-            template : '<input type="text" class="datepicker-input" pick-a-date="date"/>',
-            link : function(scope, element, attrs, ctrls){
-                var ngModel = ctrls[0];
-
-                ngModel.$render = function(){
-                    scope.date = moment(ngModel.$modelValue);
-                }
-
-                ngModel.$parsers.push(function(viewValue){
-                    return viewValue.format(DateFormatFirebase);
-                });
-            }
-        }
     })
     .directive('eventPhoneValidator', function(){
         return {
@@ -318,6 +300,31 @@ zedAlphaDirectives
             require : ['ngModel'],
             link : function(scope, elem, attrs, ctrls){
                 var ngModel = ctrls[0];
+            }
+        }
+    }).directive('eventFormBaseDatePicker', function(DateFormatFirebase, EventsCollection){
+        return {
+            replace : false,
+            require : ['ngModel'],
+            restrict : 'E',
+            template : '<input type="text" class="datepicker-input" pick-a-date="date" on-change="dateChanged()"/>',
+            link : function(scope, element, attrs, ctrls){
+                var ngModel = ctrls[0];
+
+                ngModel.$render = function(){
+                    scope.date = moment(ngModel.$modelValue);
+                }
+
+                ngModel.$parsers.push(function(viewValue){
+                    return viewValue.format(DateFormatFirebase);
+                });
+
+                scope.dateChanged = function(){
+                    EventsCollection.changeBaseDateForEvent(scope.eventObj, scope.date);
+//                    var oldVal = ngModel.$modelValue;
+//                    ngModel.$setViewValue(scope.date);
+//                    scope.eventObj.$baseDateWasChangedByUser(oldVal);
+                }
             }
         }
     }).directive('eventStartTimeValidator', function(EventsCollection){
