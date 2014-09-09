@@ -72,16 +72,20 @@ zedAlphaServices
                 return defer.promise;
             }
 
-
+            console.log('Get collection for sub name', subName);
             var ref = firebaseRef('events/').child(businessId).child(subName);
-            return EventsCollectionGenerator(ref).$loaded().then(function(collection){
+            var $EventCollection = EventsCollectionGenerator(ref);
+            console.log('$EventCollection',$EventCollection);
+            return $EventCollection.$loaded().then(function(collection){
+                console.log('get collection done');
                 collection.$setSubName(subName);
                 return collection;
             });
         };
 
 
-        var updateEvents = function () {
+        var updateEvents = this.updateEvents = function () {
+            console.log('updateEvents',BusinessHolder.business.$id);
             if (BusinessHolder.business) {
                 var newSubName = subNameByDate(DateHolder.currentDate);
                 if(newSubName == lastSubName && lastBusinessId == BusinessHolder.business.$id){
@@ -92,7 +96,10 @@ zedAlphaServices
                 self.latestEvent = null;
                 self.collection = null;
 
-                getCollectionForDate(BusinessHolder.business.$id, DateHolder.currentDate).then(function(collection){
+
+                return getCollectionForDate(BusinessHolder.business.$id, DateHolder.currentDate).then(function(collection){
+                    console.log('getCollectionForDate result', collection);
+
                     lastSubName = newSubName;
                     lastBusinessId = BusinessHolder.business.$id;
 
@@ -100,8 +107,6 @@ zedAlphaServices
                     findLatestEvent();
                     sortEvents();
                     resetFilters();
-                }, function(){
-
                 });
             }
         };
@@ -137,7 +142,7 @@ zedAlphaServices
 
         this.maxEventDurationForEvent = function (event) {
             var maxDuration = -1, tempMaxDuration, currentEvent, key;
-            for (var i = 0; i< this.collection.length; ++i) {
+            for (var i = 0; i< this.corrgllection.length; ++i) {
                 key = this.collection.$keyAt(i);
                 currentEvent = this.collection.$getRecord(key);
 

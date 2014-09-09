@@ -147,11 +147,12 @@ zedAlphaDirectives
                     var label = timeString;
                     if(settings.showDurationFromDate){
                         label += " " + getDurationString(settings.showDurationFromDate, m);
-                    }else if(settings.showOverlappingLabel && lastMinDate){
-                        if(m.isAfter(lastMinDate, 'day')){
-                            label += " (+" + $filter('translate')('DAY') + ")";
-                        }
                     }
+//                    }else if(settings.showOverlappingLabel && lastMinDate){
+//                        if(m.isAfter(lastMinDate, 'day')){
+//                            label += " (+" + $filter('translate')('DAY') + ")";
+//                        }
+//                    }
                     return {
                         time: m.toISOString(),
                         label: label
@@ -163,9 +164,9 @@ zedAlphaDirectives
                     if (!timeRef || !time) return "";
 
                     var overlappingLabel = "";
-                    if(time.isAfter(lastMinDate, 'day')){
-                        overlappingLabel = " +" + $filter('translate')('DAY') + " ";
-                    }
+//                    if(settings.showOverlappingLabel && time.isAfter(lastMinDate, 'day')){
+//                        overlappingLabel = " +" + $filter('translate')('DAY') + " ";
+//                    }
 
                     var diff = time.diff(timeRef, 'minutes');
                     var hours = Math.floor(diff / 60);

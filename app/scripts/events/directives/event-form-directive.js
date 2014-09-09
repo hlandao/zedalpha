@@ -51,7 +51,7 @@ zedAlphaDirectives
                         if(error && error.error){
                             var localizedError = $filter('translate')(error.error);
                             $log.info('[EventForm] error saving event',error.error);
-                            alert(localizedError);
+                            areYouSureModalFactory(null, localizedError, {ok : true, cancel : false});
                         }
                     });
                };

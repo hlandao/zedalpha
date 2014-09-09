@@ -19,7 +19,10 @@ module.exports = function(config){
 
     plugins : [
         'karma-phantomjs-launcher',
-        'karma-jasmine'
-    ]
+        'karma-jasmine',
+        'karma-growl-reporter',
+        'karma-mocha-reporter'
+    ],
 
+    reporters : ['mocha']
 })}
