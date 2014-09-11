@@ -50,8 +50,8 @@ zedAlphaDirectives
 
                         if(error && error.error){
                             var localizedError = $filter('translate')(error.error);
-                            $log.info('[EventForm] error saving event',error.error);
-                            areYouSureModalFactory(null, localizedError, {ok : true, cancel : false});
+                            $log.info('[EventForm] error saving event',error);
+                            areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
                         }
                     });
                };
@@ -359,10 +359,15 @@ zedAlphaDirectives
                     var valueStartTimeBefore = ngModel.$modelValue;
                     var valueEndtimeBefore = scope.event.endTime;
                     var valueDurationBefore = scope.eventObj.$getDuration();
+                    var maxDurationForEvent = EventsCollection.maxDurationForStartTime(viewValue);
+                    debugger;
+                    scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore);
                     validate(viewValue).then(function(){
-                        var maxDurationForEvent = EventsCollection.maxEventDurationForEvent(viewValue);
+                        debugger;
+                        var maxDurationForEvent = EventsCollection.maxDurationForStartTime(viewValue);
                         scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore);
                     }).catch(function(error){
+                        debugger;
                         ngModel.$setValidity('startTime', false);
                         ngModel.$setViewValue(valueStartTimeBefore);
                         var localizedError = $filter('translate')(error.error);

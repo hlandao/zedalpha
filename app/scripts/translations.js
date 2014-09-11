@@ -105,6 +105,7 @@ zedAlphaConfigModule
         "SWITCH_TABLES" : "Switch",
         "SWITCH_MODE_TITLE" : "Switch Mode - Pick 2 events",
         "MAX_DURATION_FOR_EVENT_LABEL" : "Maximum duration for this seats",
+        "EVENT_DETAILS" : "Event Details : ",
         // ERRORS
         "ERROR_EVENT_MSG_NAME": "Please enter the event name",
         "ERROR_EVENT_MSG_SEATS": "Please pick at least one seat for the event",
@@ -246,6 +247,7 @@ zedAlphaConfigModule
                 "evening" : 'ערב',
                 "SHIFTS_EDITOR" : 'עריכת משמרות',
                 "BASIC_SHIFTS" : 'משמרות בסיס',
+                "EVENT_DETAILS" : "פרטי הארוע",
 
                 "TO" : 'עד',
                 "MIN" : 'דקות',

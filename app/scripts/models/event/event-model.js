@@ -224,8 +224,9 @@ zedAlphaServices
             },
 
             $sharingTheSameSeatsWithAnotherEvent: function (anotherEvent, seats) {
-                if(!anotherEvent || !anotherEvent.data || !anotherEvent.data.seats) return;
-                seats = seats || anotherEvent.data.seats;
+                seats = anotherEvent ? anotherEvent.data.seats : seats;
+                if(!seats) return;
+
                 if(seats && !isEmptyObject(seats)){
                     for (var i  in this.data.seats) {
                         if (seats[i]) return true;
@@ -240,19 +241,19 @@ zedAlphaServices
                     endTimeToStartTimeDiff = anotherEvent.data.endTime.diff(this.data.startTime, 'minutes'),
                     endTimeToEndTimeDiff  = anotherEvent.data.endTime.diff(this.data.endTime, 'minutes');
 
-                if((startTimeToStartTimeDiff >= 0 && startTimeToEndTimeDiff <= 0) || (endTimeToStartTimeDiff >= 0 && endTimeToEndTimeDiff <= 0)){
+                if((startTimeToStartTimeDiff >= 0 && startTimeToEndTimeDiff <= 0) || (endTimeToStartTimeDiff > 0 && endTimeToEndTimeDiff <= 0)){
                     return true;
                 }
 
                 return false;
             },
 
-            $maxDurationInRegardToAnotherEvent: function (anotherEvent) {
-                if (!anotherEvent) return false;
+            $maxDurationInRegardToAnotherEvent: function (anotherEvent, startTime) {
+                startTime = anotherEvent ? anotherEvent.data.startTime : startTime;
+                if (!startTime) return false;
 
-                var startTimeDiff = anotherEvent.data.startTime.diff(this.data.startTime, 'minutes');
-                var startTimeEndTimeDiff = anotherEvent.data.startTime.diff(this.data.endTime, 'minutes');
-
+                var startTimeDiff = Math.round(this.data.startTime.diff(startTime, 'minutes',true));
+                var startTimeEndTimeDiff = Math.round(startTime.diff(this.data.endTime, 'minutes',true));
                 if (startTimeDiff > 0) {
                     // anotherEvent starts and ends before this event begins
                     return startTimeDiff;

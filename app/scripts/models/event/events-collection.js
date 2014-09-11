@@ -141,14 +141,32 @@ zedAlphaServices
         };
 
 
-        this.maxEventDurationForEvent = function (event) {
+        this.maxDurationForEvent = function (event) {
             var maxDuration = -1, tempMaxDuration, currentEvent, key;
             for (var i = 0; i< this.collection.length; ++i) {
                 key = this.collection.$keyAt(i);
                 currentEvent = this.collection.$getRecord(key);
-
                 if (currentEvent.$shouldCollide() && currentEvent.$sharingTheSameSeatsWithAnotherEvent(event)) {
-                    tempMaxDuration = currentEvent.$maxDurationForEventInRegardToAnotherEvent(event);
+                    tempMaxDuration = currentEvent.$maxDurationInRegardToAnotherEvent(event);
+
+                    if (tempMaxDuration === 0) {
+                        return 0;
+                    } else if (tempMaxDuration > 0) {
+                        maxDuration = (maxDuration == -1) ? tempMaxDuration : Math.min(tempMaxDuration, maxDuration);
+                    }
+                }
+            }
+            return maxDuration;
+        };
+
+        this.maxDurationForStartTime = function (startTime, seats) {
+            var maxDuration = -1, tempMaxDuration, currentEvent, key;
+            for (var i = 0; i< this.collection.length; ++i) {
+                key = this.collection.$keyAt(i);
+                currentEvent = this.collection.$getRecord(key);
+                if (currentEvent.$shouldCollide() && currentEvent.$sharingTheSameSeatsWithAnotherEvent(null, seats)) {
+                    tempMaxDuration = currentEvent.$maxDurationInRegardToAnotherEvent(null, startTime);
+
                     if (tempMaxDuration === 0) {
                         return 0;
                     } else if (tempMaxDuration > 0) {
@@ -160,10 +178,11 @@ zedAlphaServices
         };
 
 
+
         this.createNewEvent = function(data){
             // find the duration for the event and set the end time
             var tempEvent = new Event(null, data);
-            var maxDurationForEvent = self.maxEventDurationForEvent(tempEvent);
+            var maxDurationForEvent = self.maxDurationForEvent(tempEvent);
             if (maxDurationForEvent === 0) throw new TypeError("cannot create new event with the current startTime due to possible collisions");
             else if(maxDurationForEvent > 0) tempEvent.$setEndTimeWithDuration(maxDurationForEvent);
             return tempEvent;
@@ -176,8 +195,9 @@ zedAlphaServices
          * @returns {promise}
          */
         this.validateCollision = function (event, extra) {
-
+            debugger;
             return getCollectionForDate(null, null, event).then(function(collection){
+                debugger;
                 var defer = $q.defer();
                 var collision = collection.$checkCollisionsForEvent(event, extra);
                 if (collision) {
