@@ -11,18 +11,20 @@ module.exports = function(config){
         'test/unit/** /*.js'
     ],
 
-    autoWatch : false,
 
     frameworks: ['jasmine'],
 
-    browsers : ['PhantomJS'],
+    browsers : ['Chrome'],
 
     plugins : [
         'karma-phantomjs-launcher',
+        'karma-chrome-launcher',
         'karma-jasmine',
         'karma-growl-reporter',
         'karma-mocha-reporter'
     ],
 
-    reporters : ['mocha']
+    reporters : ['mocha'],
+
+      showStack : true
 })}

@@ -75,7 +75,8 @@ zedAlphaServices
             console.log('Get collection for sub name', subName);
             var ref = firebaseRef('events/').child(businessId).child(subName);
             var $EventCollection = EventsCollectionGenerator(ref);
-            console.log('$EventCollection',$EventCollection);
+
+            console.log('Get collection for sub name', ref.toString());
             return $EventCollection.$loaded().then(function(collection){
                 console.log('get collection done');
                 collection.$setSubName(subName);
@@ -142,7 +143,7 @@ zedAlphaServices
 
         this.maxEventDurationForEvent = function (event) {
             var maxDuration = -1, tempMaxDuration, currentEvent, key;
-            for (var i = 0; i< this.corrgllection.length; ++i) {
+            for (var i = 0; i< this.collection.length; ++i) {
                 key = this.collection.$keyAt(i);
                 currentEvent = this.collection.$getRecord(key);
 

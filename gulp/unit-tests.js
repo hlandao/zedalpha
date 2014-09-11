@@ -15,7 +15,9 @@ gulp.task('test', function() {
   });
 
   var testFiles = bowerDeps.js.concat([
-    "app/bower_components/angular-loggly-logger/angular-loggly-logger.js",
+    "test/mock.firebase.js",
+    "test/mock.utils.js",
+    "app/bower_components/                                                                                                                                                                               /angular-loggly-logger.js",
     'app/scripts/**/*.js',
     'test/unit/**/*.js'
   ]);
@@ -24,10 +26,12 @@ gulp.task('test', function() {
   return gulp.src(testFiles)
     .pipe($.karma({
       configFile: 'test/karma.conf.js',
-      action: 'run'
+      action: 'run',
+      singleRun: false,
+      transports: ['xhr-polling']
     }))
     .on('error', function(err) {
       // Make sure failed tests cause gulp to exit non-zero
-      throw err;
+      console.error('error with karma',err);
     });
 });
