@@ -188,19 +188,20 @@ zedAlphaServices
              * @param minutes
              * @returns {*}
              */
-            $setEndTimeWithDuration: function (minutes) {
-                this.data.endTime = this.$getEndTimeWithDuration(minutes);
+            $setEndTimeWithDuration: function (minutes, startTime) {
+                this.data.endTime = this.$getEndTimeWithDuration(minutes, startTime);
             },
-            $getEndTimeWithDuration: function (minutes) {
+            $getEndTimeWithDuration: function (minutes, startTime) {
+                startTime = startTime || this.data.startTime;
                 if (!minutes || minutes == 0) return false;
-                if (!this.data.startTime) return false;
-                return this.data.startTime.clone().add(minutes, 'minutes');
+                if (!startTime) return false;
+                return startTime.clone().add(minutes, 'minutes');
             },
 
-            $setEndTimeByMaxDuartion: function(maxDuration, duration){
+            $setEndTimeByMaxDuartion: function(maxDuration, duration, startTime){
                 duration = duration || this.$getDuration();
-                duration = maxDuration > 0 ? Math.min(duration, maxDuration) : duration;
-                this.$setEndTimeWithDuration(duration);
+                duration = maxDuration >= 0 ? Math.min(duration, maxDuration) : duration;
+                this.$setEndTimeWithDuration(duration, startTime);
             },
 
             $getDuration : function(){
@@ -235,11 +236,17 @@ zedAlphaServices
                 return false;
             },
 
-            $collideWithAnotherEvent : function(anotherEvent){
-                var startTimeToStartTimeDiff = anotherEvent.data.startTime.diff(this.data.startTime, 'minutes'),
-                    startTimeToEndTimeDiff = anotherEvent.data.startTime.diff(this.data.endTime, 'minutes'),
-                    endTimeToStartTimeDiff = anotherEvent.data.endTime.diff(this.data.startTime, 'minutes'),
-                    endTimeToEndTimeDiff  = anotherEvent.data.endTime.diff(this.data.endTime, 'minutes');
+            $collideWithAnotherEvent : function(anotherEvent, anotherStartTime, anotherEndTime){
+                if(!anotherEvent) return false;
+
+                anotherStartTime = anotherStartTime || anotherEvent.data.startTime;
+                anotherEndTime = anotherEndTime || anotherEvent.data.endTime;
+
+
+                var startTimeToStartTimeDiff = anotherStartTime.diff(this.data.startTime, 'minutes'),
+                    startTimeToEndTimeDiff = anotherStartTime.diff(this.data.endTime, 'minutes'),
+                    endTimeToStartTimeDiff = anotherEndTime.diff(this.data.startTime, 'minutes'),
+                    endTimeToEndTimeDiff  = anotherEndTime.diff(this.data.endTime, 'minutes');
 
                 if((startTimeToStartTimeDiff >= 0 && startTimeToEndTimeDiff <= 0) || (endTimeToStartTimeDiff > 0 && endTimeToEndTimeDiff <= 0)){
                     return true;

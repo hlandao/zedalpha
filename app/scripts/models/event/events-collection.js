@@ -20,14 +20,18 @@ zedAlphaServices
                 var eventToCheck,
                     key,
                     extraSeats = extra ? extra.seats : null,
+                    newStartTime = extra.startTime,
+                    newEndTime = extra.endTime,
                     self = this;
+
+
 
 
                 for (var i = 0; i < self.$list.length; ++i) {
                     eventToCheck = self.$list[i];
                     if(eventToCheck === event) continue;
                     if(eventToCheck.$shouldCollide() && eventToCheck.$sharingTheSameSeatsWithAnotherEvent(event, extraSeats)){
-                        if(eventToCheck.$collideWithAnotherEvent(event)){
+                        if(eventToCheck.$collideWithAnotherEvent(event, newStartTime, newEndTime)){
                             return eventToCheck;
                         }
                     }
@@ -161,6 +165,7 @@ zedAlphaServices
 
         this.maxDurationForStartTime = function (startTime, seats) {
             var maxDuration = -1, tempMaxDuration, currentEvent, key;
+
             for (var i = 0; i< this.collection.length; ++i) {
                 key = this.collection.$keyAt(i);
                 currentEvent = this.collection.$getRecord(key);
@@ -195,10 +200,18 @@ zedAlphaServices
          * @returns {promise}
          */
         this.validateCollision = function (event, extra) {
-            debugger;
             return getCollectionForDate(null, null, event).then(function(collection){
-                debugger;
                 var defer = $q.defer();
+
+                if(extra && extra.startTime && !extra.endTime){
+                    var extraSeats = extra.seats || event.data.seats;
+                    var valueDurationBefore = event.$getDuration();
+                    var maxDurationForEvent = self.maxDurationForStartTime(extra.startTime, extraSeats);
+                    var newDuration = maxDurationForEvent >= 0 ? Math.min(maxDurationForEvent, valueDurationBefore) : valueDurationBefore;
+                    extra.endTime = extra.startTime.clone().add(newDuration, 'minutes');
+                }
+
+
                 var collision = collection.$checkCollisionsForEvent(event, extra);
                 if (collision) {
                     defer.reject({error: "ERROR_EVENT_MSG_COLLISION", withEvent : collision});
@@ -208,6 +221,8 @@ zedAlphaServices
                 return defer.promise;
             });
         },
+
+
 
         //------- COLLISIONS & DURATIONS --------//
         /**

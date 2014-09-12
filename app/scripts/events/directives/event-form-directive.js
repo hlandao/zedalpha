@@ -30,7 +30,6 @@ zedAlphaDirectives
 
                 $scope.save = function(){
                     EventsCollection.saveWithValidation($scope.eventObj).then(function(output){
-                        debugger;
                         if(output && output.warnings && output.warnings.length){
                             var promises = [];
                             for (var i = 0; i < output.warnings.length; ++i){
@@ -334,50 +333,85 @@ zedAlphaDirectives
                 }
             }
         }
-    }).directive('eventStartTimeValidator', function(EventsCollection, areYouSureModalFactory, $filter){
+    }).directive('eventStartTimeValidator', function(EventsCollection, areYouSureModalFactory, $filter, $q, $timeout){
         return {
-            priority : 0,
             require : ['ngModel'],
             link : function(scope, elem, attrs, ctrls){
                 var ngModel = ctrls[0];
 
-                var validate = function(value){
-                    return validateStartTime(value).then(validateCollisions);
+//                var validate = function(value){
+//                    return validateStartTime(value).then(validateCollisions);
+//                };
+
+//                var validateStartTime  = function(viewValue){
+//                    value = viewValue || ngModel.$modelValue;
+//                    return scope.eventObj.$validateStartTime(value);
+//                }
+
+//                var validateCollisions  =  function(){
+//
+//                }
+
+                var rejectedPreviousValue = null;
+
+                ngModel.$asyncValidators.validateCollisions = function(modelValue, viewValue) {
+                    var value = modelValue || viewValue;
+                    if(!value){
+                        var defer = $q.defer();
+                        defer.resolve(true);
+                        return defer.promise;
+                    }
+
+                    var valueBeforeClone = scope.eventObj.data.startTime ? scope.eventObj.data.startTime.clone() : null;
+                    var seats = scope.eventObj.data.seats;
+                    return EventsCollection.validateCollision(scope.eventObj, {startTime : value}).then(function(){
+                        rejectedPreviousValue = null;
+                        var valueDurationBefore = scope.eventObj.$getDuration();
+                        var maxDurationForEvent = EventsCollection.maxDurationForStartTime(value, seats);
+                        scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore, value);
+                        return true;
+                    }, function(error){
+                        if(error){
+                            var localizedError = $filter('translate')(error.error);
+                            areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
+                        }
+                        rejectedPreviousValue = valueBeforeClone;
+                        return $q.reject('hadar');
+                    });
                 };
 
-                var validateStartTime  = function(viewValue){
-                    value = viewValue || ngModel.$modelValue;
-                    return scope.eventObj.$validateStartTime(value);
-                }
-
-                var validateCollisions  =  function(){
-                    return EventsCollection.validateCollision(scope.eventObj);
-                }
-
-
-                ngModel.$parsers.push(function(viewValue){
-                    var valueStartTimeBefore = ngModel.$modelValue;
-                    var valueEndtimeBefore = scope.event.endTime;
-                    var valueDurationBefore = scope.eventObj.$getDuration();
-                    var maxDurationForEvent = EventsCollection.maxDurationForStartTime(viewValue);
-                    debugger;
-                    scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore);
-                    validate(viewValue).then(function(){
-                        debugger;
-                        var maxDurationForEvent = EventsCollection.maxDurationForStartTime(viewValue);
-                        scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore);
-                    }).catch(function(error){
-                        debugger;
-                        ngModel.$setValidity('startTime', false);
-                        ngModel.$setViewValue(valueStartTimeBefore);
-                        var localizedError = $filter('translate')(error.error);
-                        areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
-                    });
-                    return viewValue;
+                ngModel.$viewChangeListeners.push(function(){
+                    if(rejectedPreviousValue){
+                        $timeout(function(){
+                            scope.eventObj.data.startTime = rejectedPreviousValue;
+                            rejectedPreviousValue = null;
+                        });
+                    }
                 });
+
+//                ngModel.$parsers.push(function(viewValue){
+//                    var valueStartTimeBefore = ngModel.$modelValue;
+//                    var valueEndtimeBefore = scope.event.endTime;
+//                    var valueDurationBefore = scope.eventObj.$getDuration();
+//                    var maxDurationForEvent = EventsCollection.maxDurationForStartTime(viewValue);
+//                    debugger;
+//                    scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore);
+//                    validate(viewValue).then(function(){
+//                        debugger;
+//                        var maxDurationForEvent = EventsCollection.maxDurationForStartTime(viewValue);
+//                        scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore);
+//                    }).catch(function(error){
+//                        debugger;
+//                        ngModel.$setValidity('startTime', false);
+//                        ngModel.$setViewValue(valueStartTimeBefore);
+//                        var localizedError = $filter('translate')(error.error);
+//                        areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
+//                    });
+//                    return viewValue;
+//                });
             }
         }
-    }).directive('eventEndTimeValidator', function(EventsCollection, areYouSureModalFactory, $filter ){
+    }).directive('eventEndTimeValidator1', function(EventsCollection, areYouSureModalFactory, $filter ){
         return {
             priority : 0,
             require : ['ngModel'],

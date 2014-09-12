@@ -10,6 +10,7 @@ zedAlphaDirectives
                 settings: "=",
                 ngModel: "="
             },
+            priority :1,
             templateUrl: "/partials/directives/timepicker-directive.html",
             controller: function ($scope) {
                 var timeFormat = 'HH:mm',
@@ -43,6 +44,7 @@ zedAlphaDirectives
                     };
 
                     ngModel.$parsers.unshift(function(viewValue){
+
                         if(viewValue){
                             return moment(viewValue);
                         }else{
@@ -62,6 +64,11 @@ zedAlphaDirectives
                         setDefaultModelValue();
                         generateTimesArray();
                     }, true);
+
+                    $scope.$watch('ngModel', function(newVal,oldVal){
+                        ngModel.$render();
+                    }, true);
+
 
 
                 };
