@@ -72,11 +72,20 @@ ShapeGroup.prototype.addSet = function(newSet){
 ShapeGroup.prototype.seatString = function(){
     var output = "";
     for (var i = 0; i < this.shapesArr.length; ++i){
-        if(output) output += ', ';
+        if(output) output += ',';
         output += this.shapesArr[i].seatNumber;
     }
     return output;
 }
+
+ShapeGroup.prototype.seatObject = function(){
+    var output = {};
+    for (var i = 0; i < this.shapesArr.length; ++i){
+        output[this.shapesArr[i].seatNumber] = true;
+    }
+    return output;
+}
+
 
 ShapeGroup.prototype.removeFromPaper = function(){
     this.ft.unplug();
@@ -290,6 +299,13 @@ SeatShape.prototype.hideHandles = function(){
 SeatShape.prototype.seatString = function(){
     return this.seatNumber;
 }
+
+SeatShape.prototype.seatObject = function(){
+    var output = {};
+    output[this.seatNumber]= true;
+    return output;
+}
+
 
 SeatShape.prototype.updateSeatNumber = function(){
     this.shapesSet.data('seatNumber', this.seatNumber);

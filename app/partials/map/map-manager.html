@@ -5,9 +5,6 @@
         </div>
         <table class="table">
             <tbody>
-            <tr ng-show="highlightedFutureEvents.length && !highlightedNowEvents.length && nextEventInXMinutes" class="highlighted-events-title-row text-danger">
-                <td colspan="3"> {{'NEXT_EVENT' | translate }} {{nextEventInXMinutes | duration : 'second' : 'minute'}}</td>
-            </tr>
             <!--<tr ng-show="highlightedNowEvents.length" class="highlighted-events-title-row text-danger">-->
                 <!--<td colspan="3"> {{'NOW_EVENTS' | translate }} </td>-->
             <!--</tr>-->
@@ -18,7 +15,7 @@
             </tr>
 
             <tr ng-show="highlightedFutureEvents.length > 0" class="highlighted-events-title-row text-success">
-                <td colspan="3"> {{'FUTURE_EVENTS' | translate }} </td>
+                <td colspan="3"> {{'FUTURE_EVENTS' | translate }} <span ng-show="nextEventInXMinutes && !highlightedNowEvents.length"> ({{'NEXT_EVENT' | translate }} {{nextEventInXMinutes | duration : 'second' : 'minute'}}) </span></td>
             </tr>
             <tr ng-repeat="event in highlightedFutureEvents">
 

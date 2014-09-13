@@ -44,7 +44,7 @@ zedAlphaServices
         return function (ref) {
             return $firebase(ref, {arrayFactory : EventsFactory}).$asArray();
         }
-    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase) {
+    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase,DateHelpers,$timeout) {
         var self = this,
             lastSubName = null,
             lastBusinessId = null;
@@ -353,8 +353,12 @@ zedAlphaServices
 
 
         this.changeBaseDateForEvent = function(event, newBaseDateMoment){
-            var oldBaseDate = moment(event.data.baseDate);
-
+            var oldBaseDate = moment(event.data.baseDate, DateFormatFirebase);
+            if(DateHelpers.isMomentSameDate(oldBaseDate), newBaseDateMoment ){
+                var defer = $q.defer();
+                defer.resolve();
+                return defer.promise;
+            }
 
             event.$changeBaseDate(newBaseDateMoment);
 

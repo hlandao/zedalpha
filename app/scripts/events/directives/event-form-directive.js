@@ -57,12 +57,12 @@ zedAlphaDirectives
 
                             $q.all(promises).then(function(){
                                 EventsCollection.saveWithValidation($scope.eventObj, true);
-                                $scope.closeLinkFN();
+                                $scope.closeLinkFN(true);
                             }, function(){
 
                             });
                         }else{
-                            $scope.closeLinkFN();
+                            $scope.closeLinkFN(true);
                         }
                     }).catch(function(error){
 

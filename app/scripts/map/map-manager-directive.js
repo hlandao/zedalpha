@@ -135,25 +135,20 @@ zedAlphaDirectives
 
 
                 var eventsForHighlightedShapes = function(){
+                    console.log('eventsForHighlightedShapes',scope.highlightedShapes);
                     if(scope.highlightedShapes.length == 1){
-                        var events = $filter('eventsBySeatAndShiftsDay')(null,scope.highlightedShapes[0].seatString(),ShiftsDayHolder.currentDay);
 
-                        var nowEvents = [], futureEvents =[];
-                        var currentClockMoment = DateHolder.currentClock;
-                        var key, currentEvent;
+                        var nowEvents, futureEvents,
+                            seats = scope.highlightedShapes[0].seatObject();
 
-                        for (var i = 0; i < events.length; ++i) {
-                            currentEvent = events[i];
+                        nowEvents = _.filter(EventsCollection.sorted.nowEvents, function(event){
+                            return event.$sharingTheSameSeatsWithAnotherEvent(null, seats);
+                        });
 
-
-                            if (currentEvent.data.startTime.isSame(currentClockMoment, 'minutes') || (currentEvent.data.startTime.isBefore(currentClockMoment, 'minutes') && currentEvent.data.endTime.isAfter(currentClockMoment, 'minutes'))){
-                                if(nowEvents.indexOf(currentEvent) == -1) nowEvents.push(currentEvent);
-                            }else{
-                                if(futureEvents.indexOf(currentEvent) == -1) futureEvents.push(currentEvent);
-                            }
-
-                        }
-
+                        futureEvents = _.filter(EventsCollection.sorted.upcomingEvents, function(event){
+                            console.log('event',event,seats);
+                            return event.$sharingTheSameSeatsWithAnotherEvent(null, seats);
+                        });
 
                         scope.highlightedNowEvents = _.sortBy(nowEvents, function(event){
                             return event.data.startTime;
@@ -164,11 +159,16 @@ zedAlphaDirectives
                         });
 
                         if(!scope.highlightedNowEvents.length && scope.highlightedFutureEvents.length){
-                            scope.nextEventInXMinutes = scope.highlightedFutureEvents[0].data.startTime.diff(moment(DateHolder.currentClock), 'seconds');
+                            scope.nextEventInXMinutes = scope.highlightedFutureEvents[0].data.startTime.diff(DateHolder.currentClock, 'seconds');
                             if(scope.nextEventInXMinutes >  3600 * 6){
                                 scope.nextEventInXMinutes = null;
+                            }else if(scope.nextEventInXMinutes <= 0){
+                                scope.nextEventInXMinutes = null;
                             }
+
                         }
+
+                        console.log('scope.nextEventInXMinutes',scope.nextEventInXMinutes);
 
                     }else{
                         emptyEventsForHighlightedShapes();

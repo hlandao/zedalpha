@@ -35,7 +35,10 @@ zedAlphaControllers
             if($scope.newEvent.isOccasional) $scope.goToNow();
         };
 
-        $scope.closeNewEvent = function(){
+        $scope.closeNewEvent = function(success){
+            if(success){
+                DateHolder.goToClock($scope.newEvent.data.startTime);
+            }
             $scope.newEvent = null;
         }
 
@@ -64,7 +67,12 @@ zedAlphaControllers
             $scope.editedEvent = event;
         };
 
-        $scope.closeEditedEvent = function(){
+        $scope.closeEditedEvent = function(success){
+            console.log('$scope.closeEditedEvent',success);
+            if(success){
+                debugger;
+                DateHolder.goToClock($scope.editedEvent.data.startTime);
+            }
             $scope.editedEvent = null;
         }
 

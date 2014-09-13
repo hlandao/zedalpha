@@ -72,13 +72,22 @@ zedAlphaServices
             return m && m.isValid && m.isValid();
         }
 
+        var isMomentSameDate = function(m1,m2){
+            if(isMomentValid(m1) && isMomentValid(m2)){
+                return (m1.year() == m2.year() && m1.month() == m2.month() && m1.date() == m2.date());
+            }
+            return false;
+        }
+
+
 
         return {
             changeDateHourAndMinutes : changeDateHourAndMinutes,
             hourAndMinutesArrFromString : hourAndMinutesArrFromString,
             findClosestIntervalToDate : findClosestIntervalToDate,
             resetDateSeconds : resetDateSeconds,
-            isMomentValid : isMomentValid
+            isMomentValid : isMomentValid,
+            isMomentSameDate : isMomentSameDate
         };
     })
     .filter('numberFixedLen', function () {

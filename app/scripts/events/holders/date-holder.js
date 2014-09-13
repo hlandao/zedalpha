@@ -24,24 +24,28 @@ zedAlphaServices
 
 
             this.currentClock = newDateMoment;
-            if(!updateOnlyClock){
-                var currentDate = newDateMoment.clone().hour(0).minute(0);
-                this.currentDate = currentDate;
+            if(updateOnlyClock) return;
+            var currentDate = newDateMoment.clone().hour(0).minute(0);
+            this.currentDate = currentDate;
+        }
+
+        this.goToClock = function(clock){
+            if(DateHelpers.isMomentValid(clock)){
+                if(!DateHelpers.isMomentSameDate(clock, self.currentDate)){
+                    self.currentDate = clock.clone().hour(0).minute(0);
+                }
+                self.currentClock = clock.clone();
             }
-            debugger;
-
         }
 
-        this.goTo = function(date, clock){
-//            if(DateHelpers.isMomentValid(date)){
-//
-//            }else if(DateHelpers.isMomentValid(clock)){
-//                if(goToMoment.isSame(self.currentDate, 'day')){
-//
-//                }
-//                self.currentClock = goToMoment.clone();
-//            }
+        this.goToDate = function(date){
+            if(DateHelpers.isMomentValid(date)){
+                var newClock = date.clone().hour(self.currentClock.hour()).minute(self.currentClock.minute()).seconds(0);
+                self.currentClock = newClock;
+                self.currentDate = date.hour(0).minute(0);
+            }
         }
+
 
         $rootScope.$watch(function(){
             return self.currentClock;
