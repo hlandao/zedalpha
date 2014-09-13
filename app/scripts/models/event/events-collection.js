@@ -376,6 +376,27 @@ zedAlphaServices
             });
         };
 
+        this.switchEventsSeatsWithValidation = function(e1, e2){
+            var e1OriginalSeats = angular.copy(e1.data.seats),
+                e2OriginalSeats = angular.copy(e2.data.seats),
+                checkPromises = [];
+
+            e1.data.seats = e2OriginalSeats;
+            e2.data.seats = e1OriginalSeats;
+
+            checkPromises.push(self.validateCollision(e1));
+            checkPromises.push(self.validateCollision(e2));
+
+            return $q.all(checkPromises).then(function(){
+                var savePromises = [self.saveWithValidation(e1, true), self.saveWithValidation(e1, true)];
+                return $q.all(savePromises);
+            }, function(){
+                e1.data.seats = e1OriginalSeats;
+                e2.data.seats = e2OriginalSeats;
+            });
+
+        }
+
 
         $rootScope.$on('$businessHolderChanged', function(){
             updateEvents();

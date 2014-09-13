@@ -114,7 +114,9 @@ zedAlphaControllers
 
 
         // --------- switch mode -------//
-        $scope.toggleSwitchMode = function(){
+        $scope.toggleSwitchMode = function(e){
+            e.preventDefault();
+            e.stopPropagation();
             if(!$scope.switchMode){
                 if($scope.editedEvent){
                     var localizedError = $filter('translate')('EDIT_EVENT_WARNING');
@@ -140,16 +142,16 @@ zedAlphaControllers
                     $scope.eventToSwitch = null;
                     return;
                 }
-                var validationError = EventsLogic.validateEventsSwitching($scope.eventToSwitch, event);
-                if(validationError){
-                    alert(validationError);
-                    $scope.eventToSwitch = null;
-                }else{
-                    $scope.saveEvent($scope.eventToSwitch, true);
-                    $scope.saveEvent(event, true);
-                }
-                $scope.eventToSwitch = null;
-                $scope.switchMode = false;
+                EventsCollection.switchEventsSeatsWithValidation($scope.eventToSwitch, event)
+                    .then(function(){
+                    console.log('switch is sucess');
+                        $scope.eventToSwitch = null;
+                        $scope.switchMode = false;
+                    }, function(error){
+                        console.log('switch is error',error);
+                        $scope.eventToSwitch = null;
+                        $scope.switchMode = false;
+                    });
             } else{
                 $scope.eventToSwitch = event;
             }

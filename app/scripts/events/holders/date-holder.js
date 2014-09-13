@@ -9,15 +9,17 @@ zedAlphaServices
             dateInitialized = false;
         this.goToNow = function(init){
             console.log('goToNow');
-            var now = moment(), newDateMoment, updateOnlyClock;
+            var now = moment(), newDateMoment, updateOnlyClock, currentDate;
 
             if(init && now.hour() < 6){
                 newDateMoment = now.subtract('days',1).hour(23).minute(0);
+                currentDate = newDateMoment.clone().hour(0).minute(0);
             }else if(!init && now.hour() < 6){
-                updateOnlyClock = true;
                 newDateMoment = now;
+                currentDate = newDateMoment.clone().hour(0).minute(0).subtract('days',1);
             }else{
                 newDateMoment = now;
+                currentDate = newDateMoment.clone().hour(0).minute(0);
             }
 
             newDateMoment.minute(DateHelpers.findClosestIntervalToDate(newDateMoment)).seconds(0);
@@ -25,7 +27,6 @@ zedAlphaServices
 
             this.currentClock = newDateMoment;
             if(updateOnlyClock) return;
-            var currentDate = newDateMoment.clone().hour(0).minute(0);
             this.currentDate = currentDate;
         }
 
