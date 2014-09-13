@@ -36,6 +36,7 @@ zedAlphaDirectives
                     }else{
                         $scope.requiredInputs = requiredInputsForDest;
                     }
+
                 }
 
 
@@ -181,7 +182,7 @@ zedAlphaDirectives
 
                 var rejectedPreviousValue = null;
 
-                ngModel.$asyncValidators.seatsCollision = function(modelValue, viewValue){
+                ngModel.$asyncValidators.validateCollision = function(modelValue, viewValue){
                     var value = modelValue || viewValue;
                     var beforeValue = scope.eventObj.data.seats;
                     return EventsCollection.validateCollision(scope.eventObj, {seats : value}).then(function(){
@@ -205,6 +206,7 @@ zedAlphaDirectives
                         });
                     }
                 });
+
             }
         }
     }).directive('eventEmailValidator', function(){
@@ -385,8 +387,6 @@ zedAlphaDirectives
                         });
                     }
                 });
-
-
             }
         }
     });

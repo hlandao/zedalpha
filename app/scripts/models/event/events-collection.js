@@ -72,9 +72,9 @@ zedAlphaServices
             businessId = businessId || BusinessHolder.business.$id;
 
             if(subName == lastSubName && lastBusinessId == businessId){
-                var defer = $q.defer();
-                defer.resolve(self.collection);
-                return defer.promise;
+                return $timeout(function(){
+                    return self.collection;
+                });
             }
 
             console.log('ref = firebaseRef',businessId,subName);
@@ -206,7 +206,7 @@ zedAlphaServices
 
                 var extraSeats = extra && extra.seats ? extra.seats : event.data.seats,
                     extraStartTime = extra&&extra.startTime ? extra.startTime : event.data.startTime;
-                self.maxDurationForStartTime(extraStartTime, extraSeats, event).then(function(maxDurationForEvent){
+                return self.maxDurationForStartTime(extraStartTime, extraSeats, event).then(function(maxDurationForEvent){
                     if(extra && extra.startTime && !extra.endTime){
                         var valueDurationBefore = event.$getDuration();
                         var newDuration = maxDurationForEvent >= 0 ? Math.min(maxDurationForEvent, valueDurationBefore) : valueDurationBefore;
@@ -306,9 +306,10 @@ zedAlphaServices
 
         this.saveWithValidation = function (event, approveAllWarnings) {
             return self.beforeSave(event).then(function (result) {
-                if (!approveAllWarnings && (result.warnings && result.warnings.length)) {
+                if (!approveAllWarnings && (result && result.warnings && result.warnings.length)) {
                     return result;
                 } else {
+
                     return self.saveAfterValidation(event);
                 }
             });

@@ -77,6 +77,7 @@ zedAlphaServices
             // ------ Async Validators (major errors) ------ //
 
             $runAllSyncValidatorsWithPromise : function(){
+                debugger;
                 var self = this;
                 var nameAsyncValidator = angular.bind(self, self.$validateAsync, '$validateName');
                 var seatsAsyncValidator = angular.bind(self, self.$validateAsync, '$validateSeats');

@@ -79,7 +79,7 @@ zedAlphaControllers
 
         $scope.eventStatusChanged = function(event){
             console.log('event',event);
-            EventsCollection.saveWithValidation(event).then(function(){
+            EventsCollection.saveWithValidation(event, true).then(function(){
                 console.log('Saved');
             }, function(error){
                 console.log('error',error);

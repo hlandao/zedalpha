@@ -29,7 +29,7 @@ zedAlphaFilters
                 isUpcomingEvent = !!((startTimeDiffInMinutes > 0 && startTimeDiffInMinutes <= EVENT_TIME_FRAME_IN_MINUTES));
                 isDeadEvent = !!(DEAD_EVENTS_STATUSES.indexOf(status) >= 0);
 
-                if(isDeadEvent && isNowEvent){
+                if(isDeadEvent){
                     deadEvents.push(currentEvent);
                     continue;
                 }
@@ -40,7 +40,7 @@ zedAlphaFilters
 
                 if (isNowEvent) {
                     nowEvents.push(currentEvent);
-                } else if (isUpcomingEvent && !isDeadEvent) {
+                } else if (isUpcomingEvent) {
                     upcomingEvents.push(currentEvent);
                 }
             }
