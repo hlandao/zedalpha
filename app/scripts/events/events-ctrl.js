@@ -157,6 +157,7 @@ zedAlphaControllers
             }
         }
 
+        $scope.showDeadEvents = true;
         $scope.toggleDeadEvents = function(e){
             e.preventDefault();
             if($scope.showDeadEvents){

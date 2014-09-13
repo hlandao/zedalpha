@@ -93,13 +93,13 @@
                 <td ng-click="clickOnEvent(event)" > <span>{{event.data.seats | seats}}</span> <i class="glyphicon glyphicon-asterisk" style="color:#ffda5c;" ng-show="event.data.comment || event.data.contactComment"></i> </td>
             </tr>
 
-            <tr class="dead-events-title" ng-class="{showed : showDeadEvents}" ng-if="sortedEvents.deadEvents">
+            <tr class="dead-events-title" ng-class="{showed : showDeadEvents}" ng-if="sortedEvents.deadEvents.length">
                 <td colspan="5">
-                    <a href="#" ng-show="!showDeadEvents" ng-click="toggleDeadEvents($event)"> {{"SHOW_DEAD_EVENTS" | translate }} </a>
-                    <a href="#" ng-show="showDeadEvents" ng-click="toggleDeadEvents($event)"> {{"HIDE_DEAD_EVENTS" | translate }} </a>
+                    <a href="#" ng-show="!showDeadEvents" ng-click="toggleDeadEvents($event)"> {{"DEAD_EVENTS" | translate }} </a>
+                    <a href="#" ng-show="showDeadEvents" ng-click="toggleDeadEvents($event)"> {{"DEAD_EVENTS" | translate }} </a>
                 </td>
             </tr>
-            <tr class="dead-events-row event-row" ng-repeat="event in sortedEvents.deadEvents | orderBy : 'startTime'" ng-hide="event === editedEvent" ng-if="showDeadEvents">
+            <tr class="dead-events-row event-row" ng-repeat="event in sortedEvents.deadEvents | orderBy : 'startTime'" ng-hide="event === editedEvent" ng-if="sortedEvents.deadEvents.length && showDeadEvents">
                 <td class="status-col"><hl-status-selector ng-model="event.data.status" ng-change="eventStatusChanged(event)"></hl-status-selector></td>
                 <td ng-click="clickOnEvent(event)" > {{event.data.startTime | momentFilter : 'HH:mm'}} </td>
                 <td ng-click="clickOnEvent(event)" > <span  class="badge">{{event.data.guests}}</span> </td>
