@@ -19,9 +19,9 @@ zedAlphaServices
             $checkCollisionsForEvent : function(event, extra){
                 var eventToCheck,
                     key,
-                    extraSeats = extra ? extra.seats : null,
-                    newStartTime = extra.startTime,
-                    newEndTime = extra.endTime,
+                    extraSeats = extra && extra.seats,
+                    newStartTime = extra && extra.startTime,
+                    newEndTime = extra && extra.endTime,
                     self = this;
 
 
@@ -76,13 +76,10 @@ zedAlphaServices
                 return defer.promise;
             }
 
-            console.log('Get collection for sub name', subName);
             var ref = firebaseRef('events/').child(businessId).child(subName);
             var $EventCollection = EventsCollectionGenerator(ref);
 
-            console.log('Get collection for sub name', ref.toString());
             return $EventCollection.$loaded().then(function(collection){
-                console.log('get collection done');
                 collection.$setSubName(subName);
                 return collection;
             });
@@ -90,7 +87,6 @@ zedAlphaServices
 
 
         var updateEvents = this.updateEvents = function () {
-            console.log('updateEvents',BusinessHolder.business.$id);
             if (BusinessHolder.business) {
                 var newSubName = subNameByDate(DateHolder.currentDate);
                 if(newSubName == lastSubName && lastBusinessId == BusinessHolder.business.$id){
@@ -103,7 +99,6 @@ zedAlphaServices
 
 
                 return getCollectionForDate(BusinessHolder.business.$id, DateHolder.currentDate).then(function(collection){
-                    console.log('getCollectionForDate result', collection);
 
                     lastSubName = newSubName;
                     lastBusinessId = BusinessHolder.business.$id;
@@ -242,7 +237,6 @@ zedAlphaServices
          */
 
         this.checkGuestsPer15Minutes = function (event) {
-            console.log('event',event);
             var guestPer15Value = parseInt(BusinessHolder.business.guestsPer15);
 
             return self.isGuestsPer15ValidForNewEvent(event, guestPer15Value).then(function(result){
@@ -257,17 +251,18 @@ zedAlphaServices
 
 
         this.isGuestsPer15ValidForNewEvent = function (event, guestPer15Value) {
+            console.log('guestPer15Value',guestPer15Value);
 //            if (!guestPer15Value || guestPer15Value === 0 || !eventGuestsPer15Value) return true;
             return getCollectionForDate(null,null,event).then(function(collection){
-                var count = guestPer15Value,
+                var count = parseInt(event.data.guests),
                     currentEvent,
                     key;
 
                 for (var i = 0; i < collection.length; ++i) {
                     key = collection.$keyAt(i);
                     currentEvent = collection.$getRecord(key);
-                    if (!currentEvent.data.isOccasional && event.data.startTime.isSame(currentEvent.data.startTime, 'minutes')) {
-                        count += parseInt(currentEvent.guests);
+                    if (currentEvent !== event && !currentEvent.data.isOccasional && event.data.startTime.isSame(currentEvent.data.startTime, 'minutes')) {
+                        count += parseInt(currentEvent.data.guests);
                     }
                 }
                 return count <= guestPer15Value;
@@ -295,12 +290,7 @@ zedAlphaServices
 
         this.beforeSave = function (event) {
             return self.validateCollision(event).
-                then(angular.bind(event, event.$validatePhone)).
-                then(angular.bind(event,event.$validateName)).
-                then(angular.bind(event,event.$validateStartTime)).
-                then(angular.bind(event,event.$validateEndTime)).
-                then(angular.bind(event,event.$validateSeats)).
-                then(angular.bind(event,event.$validateHostess)).
+                then(angular.bind(event, event.$runAllSyncValidatorsWithPromise)).
                 then(angular.bind(self,self.checkAllWarnings, event));
         };
 

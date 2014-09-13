@@ -72,20 +72,60 @@ zedAlphaServices
             },
 
 
-            // ------ Validators (major errors) ------ //
+
+
+            // ------ Async Validators (major errors) ------ //
+
+            $runAllSyncValidatorsWithPromise : function(){
+                var self = this;
+                var nameAsyncValidator = angular.bind(self, self.$validateAsync, '$validateName');
+                var seatsAsyncValidator = angular.bind(self, self.$validateAsync, '$validateSeats');
+                var hostessAsyncValidator = angular.bind(self, self.$validateAsync, '$validateHostess');
+                var phoneAsyncValidator = angular.bind(self, self.$validateAsync, '$validatePhone');
+                var startTimeAsyncValidator = angular.bind(self, self.$validateAsync, '$validateStartTime');
+                var endTimeAsyncValidator = angular.bind(self, self.$validateAsync, '$validateEndTime');
+
+                return nameAsyncValidator()
+                    .then(phoneAsyncValidator)
+                    .then(nameAsyncValidator)
+                    .then(startTimeAsyncValidator)
+                    .then(endTimeAsyncValidator)
+                    .then(seatsAsyncValidator)
+                    .then(hostessAsyncValidator);
+            },
+
+            /**
+             * run one of the validtors async with promise
+             * @param validatorFN
+             * @param value
+             * @returns {*}
+             */
+            $validateAsync : function (validatorFN, value){
+                var defer  = $q.defer();
+                if(!angular.isFunction(validatorFN)){
+                    validatorFN = this[validatorFN];
+                }
+                if(angular.isFunction(validatorFN)){
+                    var errorResult = validatorFN.call(this, value);
+                    if(errorResult && errorResult.error){
+                        defer.reject(errorResult);
+                    }else{
+                        defer.resolve();
+                    }
+                }else{
+                    defer.resolve();
+                }
+                return defer.promise;
+            },
             /**
              * validates  this.name
              * @returns {promise}
              */
             $validateName: function (value) {
                 value = value || this.data.name;
-                var defer = $q.defer();
                 if (!value) {
-                    defer.reject({error: "ERROR_EVENT_MSG_NAME"});
-                } else {
-                    defer.resolve();
+                    return {error: "ERROR_EVENT_MSG_NAME"}
                 }
-                return defer.promise;
             },
             /**
              * validates this.seats
@@ -93,27 +133,20 @@ zedAlphaServices
              */
             $validateSeats: function (value) {
                 value = value || this.data.seats;
-                var defer = $q.defer();
-                if (this.$noSeats() && (BusinessHolder.businessType != 'Bar' && !this.data.isOccasional)) {
-                    defer.reject({error: "ERROR_EVENT_MSG_SEATS"});
-                } else {
-                    defer.resolve();
+                if (this.$noSeats(value) && (BusinessHolder.businessType != 'Bar' && !this.data.isOccasional)) {
+                    return {error: "ERROR_EVENT_MSG_SEATS"};
                 }
-                return defer.promise;
             },
 
             /**
              * validate this.hostess
              * @returns {promise}
              */
-            $validateHostess: function () {
-                var defer = $q.defer();
-                if (!this.data.hostess && BusinessHolder.businessType != 'Bar' && !this.data.isOccasional) {
-                    defer.reject({error: "ERROR_EVENT_MSG_HOST"});
-                } else {
-                    defer.resolve();
+            $validateHostess: function (value) {
+                value = value || this.data.hostess;
+                if (!value && BusinessHolder.businessType != 'Bar' && !this.data.isOccasional) {
+                    return {error: "ERROR_EVENT_MSG_HOST"};
                 }
-                return defer.promise;
             },
             /**
              * validates this.phone
@@ -121,43 +154,32 @@ zedAlphaServices
              */
             $validatePhone: function (value) {
                 value = value || this.data.phone;
-                var defer = $q.defer();
                 if (!this.data.isOccasional && !value) {
-                    defer.reject({error: "ERROR_EVENT_MSG_PHONE"});
-                } else {
-                    defer.resolve();
+                    return {error: "ERROR_EVENT_MSG_PHONE"};
                 }
-                return defer.promise;
             },
             /**
              * validates this.startTime
              * @returns {promise}
              */
-            $validateStartTime: function () {
-                var defer = $q.defer();
-                if (!this.data.startTime || !this.data.startTime.isValid || !this.data.startTime.isValid()) {
-                    defer.reject({error: "ERROR_EVENT_MSG_STARTTIME"});
-                } else {
-                    defer.resolve();
+            $validateStartTime: function (value) {
+                value = value || this.data.startTime;
+                if (!value || !value.isValid || !value.isValid()) {
+                    return {error: "ERROR_EVENT_MSG_STARTTIME"};
                 }
-                return defer.promise;
             },
             /**
              * validates this.endTime
              * @returns {promise}
              */
-            $validateEndTime: function () {
-                var defer = $q.defer();
-                if (!this.data.endTime || !this.data.endTime.isValid || !this.data.endTime.isValid()) {
-                    defer.reject({error: "ERROR_EVENT_MSG_ENDTIME"});
-                } else if (!this.data.endTime.isAfter(this.data.startTime, 'minutes')) {
-                    defer.reject({error: "ERROR_EVENT_MSG_ENDTIME_LT_STARTTIME"});
-                } else {
-                    defer.resolve();
+            $validateEndTime: function (value) {
+                value = value || this.data.endTime;
+                if (!value || !value.isValid || !value.isValid()) {
+                    return {error: "ERROR_EVENT_MSG_ENDTIME"};
+                } else if (!value.isAfter(this.data.startTime, 'minutes')) {
+                    return {error: "ERROR_EVENT_MSG_ENDTIME_LT_STARTTIME"};
                 }
-                return defer.promise;
             },
-
 
 
             // ------ Checks (warnings) ------ //
@@ -189,7 +211,15 @@ zedAlphaServices
              * @returns {*}
              */
             $setEndTimeWithDuration: function (minutes, startTime) {
-                this.data.endTime = this.$getEndTimeWithDuration(minutes, startTime);
+                var newEndTime = this.$getEndTimeWithDuration(minutes, startTime);
+                if(newEndTime){
+                    this.data.endTime = newEndTime;
+                    return newEndTime;
+                }else{
+                    return false;
+                }
+
+
             },
             $getEndTimeWithDuration: function (minutes, startTime) {
                 startTime = startTime || this.data.startTime;
@@ -212,8 +242,9 @@ zedAlphaServices
              * helper function to determine if the event has seats
              * @returns {*}
              */
-            $noSeats: function () {
-                return isEmptyObject(this.data.seats)
+            $noSeats: function (value) {
+                value = value || this.data.seats;
+                return isEmptyObject(value)
             },
             /**
              * return TRUE if the event is a colliding event
@@ -225,7 +256,7 @@ zedAlphaServices
             },
 
             $sharingTheSameSeatsWithAnotherEvent: function (anotherEvent, seats) {
-                seats = anotherEvent ? anotherEvent.data.seats : seats;
+                seats = seats || anotherEvent.data.seats;
                 if(!seats) return;
 
                 if(seats && !isEmptyObject(seats)){
@@ -242,13 +273,12 @@ zedAlphaServices
                 anotherStartTime = anotherStartTime || anotherEvent.data.startTime;
                 anotherEndTime = anotherEndTime || anotherEvent.data.endTime;
 
-
                 var startTimeToStartTimeDiff = anotherStartTime.diff(this.data.startTime, 'minutes'),
                     startTimeToEndTimeDiff = anotherStartTime.diff(this.data.endTime, 'minutes'),
                     endTimeToStartTimeDiff = anotherEndTime.diff(this.data.startTime, 'minutes'),
                     endTimeToEndTimeDiff  = anotherEndTime.diff(this.data.endTime, 'minutes');
 
-                if((startTimeToStartTimeDiff >= 0 && startTimeToEndTimeDiff <= 0) || (endTimeToStartTimeDiff > 0 && endTimeToEndTimeDiff <= 0)){
+                if((startTimeToStartTimeDiff >= 0 && startTimeToEndTimeDiff <= 0) || (endTimeToStartTimeDiff > 0 && endTimeToEndTimeDiff <= 0) || (startTimeToStartTimeDiff <= 0 && endTimeToEndTimeDiff >= 0)){
                     return true;
                 }
 

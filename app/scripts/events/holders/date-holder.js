@@ -27,7 +27,17 @@ zedAlphaServices
                 var currentDate = newDateMoment.clone().hour(0).minute(0);
                 this.currentDate = currentDate;
             }
+        }
 
+        this.goTo = function(date, clock){
+//            if(DateHelpers.isMomentValid(date)){
+//
+//            }else if(DateHelpers.isMomentValid(clock)){
+//                if(goToMoment.isSame(self.currentDate, 'day')){
+//
+//                }
+//                self.currentClock = goToMoment.clone();
+//            }
         }
 
         $rootScope.$watch(function(){
