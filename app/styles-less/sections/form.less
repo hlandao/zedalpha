@@ -2,7 +2,11 @@
 // form validation
 .form-validation{
     .ng-pristine {} // When it is first initialized
-    .ng-dirty {} // When the view changes
+    .ng-pristine.ng-required.ng-invalid{
+    border-color: @brand-warning;
+    }
+
+  .ng-dirty {} // When the view changes
     .ng-valid.ng-dirty {
         border-color: @brand-success;
     }

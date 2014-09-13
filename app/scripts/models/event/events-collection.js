@@ -1,5 +1,6 @@
 var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', []);
 
+console.log('new version!');
 
 zedAlphaServices
     .factory("EventsFactory",function ($FirebaseArray, Event) {
@@ -19,9 +20,9 @@ zedAlphaServices
             $checkCollisionsForEvent : function(event, extra){
                 var eventToCheck,
                     key,
-                    extraSeats = extra && extra.seats,
-                    newStartTime = extra && extra.startTime,
-                    newEndTime = extra && extra.endTime,
+                    extraSeats = extra && extra.seats ? extra.seats : null,
+                    newStartTime = extra && extra.startTime ? extra.startTime : null,
+                    newEndTime = extra && extra.endTime ? extra.endTime : null,
                     self = this;
 
 
@@ -76,6 +77,7 @@ zedAlphaServices
                 return defer.promise;
             }
 
+            console.log('ref = firebaseRef',businessId,subName);
             var ref = firebaseRef('events/').child(businessId).child(subName);
             var $EventCollection = EventsCollectionGenerator(ref);
 
@@ -140,41 +142,46 @@ zedAlphaServices
         };
 
 
-        this.maxDurationForEvent = function (event) {
-            var maxDuration = -1, tempMaxDuration, currentEvent, key;
-            for (var i = 0; i< this.collection.length; ++i) {
-                key = this.collection.$keyAt(i);
-                currentEvent = this.collection.$getRecord(key);
-                if (currentEvent.$shouldCollide() && currentEvent.$sharingTheSameSeatsWithAnotherEvent(event)) {
-                    tempMaxDuration = currentEvent.$maxDurationInRegardToAnotherEvent(event);
+//        this.maxDurationForEvent = function (event) {
+//            var maxDuration = -1, tempMaxDuration, currentEvent, key;
+//            for (var i = 0; i< this.collection.length; ++i) {
+//                key = this.collection.$keyAt(i);
+//                currentEvent = this.collection.$getRecord(key);
+//                if (currentEvent.$shouldCollide() && currentEvent.$sharingTheSameSeatsWithAnotherEvent(event)) {
+//                    tempMaxDuration = currentEvent.$maxDurationInRegardToAnotherEvent(event);
+//
+//                    if (tempMaxDuration === 0) {
+//                        return 0;
+//                    } else if (tempMaxDuration > 0) {
+//                        maxDuration = (maxDuration == -1) ? tempMaxDuration : Math.min(tempMaxDuration, maxDuration);
+//                    }
+//                }
+//            }
+//            return maxDuration;
+//        };
 
-                    if (tempMaxDuration === 0) {
-                        return 0;
-                    } else if (tempMaxDuration > 0) {
-                        maxDuration = (maxDuration == -1) ? tempMaxDuration : Math.min(tempMaxDuration, maxDuration);
+        this.maxDurationForStartTime = function (startTime, seats, event) {
+            seats = seats || event.data.seats;
+            startTime = startTime || event.startTime;
+            return getCollectionForDate(null, null, event).then(function(collection){
+                var maxDuration = -1, tempMaxDuration, currentEvent, key;
+
+                for (var i = 0; i< collection.length; ++i) {
+                    key = collection.$keyAt(i);
+                    currentEvent = collection.$getRecord(key);
+                    if (currentEvent !== event && currentEvent.$shouldCollide() && currentEvent.$sharingTheSameSeatsWithAnotherEvent(null, seats)) {
+                        tempMaxDuration = currentEvent.$maxDurationInRegardToAnotherEvent(null, startTime);
+
+                        if (tempMaxDuration === 0) {
+                            return 0;
+                        } else if (tempMaxDuration > 0) {
+                            maxDuration = (maxDuration == -1) ? tempMaxDuration : Math.min(tempMaxDuration, maxDuration);
+                        }
                     }
                 }
-            }
-            return maxDuration;
-        };
+                return maxDuration;
 
-        this.maxDurationForStartTime = function (startTime, seats) {
-            var maxDuration = -1, tempMaxDuration, currentEvent, key;
-
-            for (var i = 0; i< this.collection.length; ++i) {
-                key = this.collection.$keyAt(i);
-                currentEvent = this.collection.$getRecord(key);
-                if (currentEvent.$shouldCollide() && currentEvent.$sharingTheSameSeatsWithAnotherEvent(null, seats)) {
-                    tempMaxDuration = currentEvent.$maxDurationInRegardToAnotherEvent(null, startTime);
-
-                    if (tempMaxDuration === 0) {
-                        return 0;
-                    } else if (tempMaxDuration > 0) {
-                        maxDuration = (maxDuration == -1) ? tempMaxDuration : Math.min(tempMaxDuration, maxDuration);
-                    }
-                }
-            }
-            return maxDuration;
+            });
         };
 
 
@@ -182,7 +189,7 @@ zedAlphaServices
         this.createNewEvent = function(data){
             // find the duration for the event and set the end time
             var tempEvent = new Event(null, data);
-            var maxDurationForEvent = self.maxDurationForEvent(tempEvent);
+            var maxDurationForEvent = self.maxDurationForStartTime(null, null, tempEvent);
             if (maxDurationForEvent === 0) throw new TypeError("cannot create new event with the current startTime due to possible collisions");
             else if(maxDurationForEvent > 0) tempEvent.$setEndTimeWithDuration(maxDurationForEvent);
             return tempEvent;
@@ -196,24 +203,27 @@ zedAlphaServices
          */
         this.validateCollision = function (event, extra) {
             return getCollectionForDate(null, null, event).then(function(collection){
-                var defer = $q.defer();
 
-                if(extra && extra.startTime && !extra.endTime){
-                    var extraSeats = extra.seats || event.data.seats;
-                    var valueDurationBefore = event.$getDuration();
-                    var maxDurationForEvent = self.maxDurationForStartTime(extra.startTime, extraSeats);
-                    var newDuration = maxDurationForEvent >= 0 ? Math.min(maxDurationForEvent, valueDurationBefore) : valueDurationBefore;
-                    extra.endTime = extra.startTime.clone().add(newDuration, 'minutes');
-                }
+                var extraSeats = extra && extra.seats ? extra.seats : event.data.seats,
+                    extraStartTime = extra&&extra.startTime ? extra.startTime : event.data.startTime;
+                self.maxDurationForStartTime(extraStartTime, extraSeats, event).then(function(maxDurationForEvent){
+                    if(extra && extra.startTime && !extra.endTime){
+                        var valueDurationBefore = event.$getDuration();
+                        var newDuration = maxDurationForEvent >= 0 ? Math.min(maxDurationForEvent, valueDurationBefore) : valueDurationBefore;
+                        extra.endTime = extra.startTime.clone().add(newDuration, 'minutes');
+                    }
 
 
-                var collision = collection.$checkCollisionsForEvent(event, extra);
-                if (collision) {
-                    defer.reject({error: "ERROR_EVENT_MSG_COLLISION", withEvent : collision});
-                } else {
-                    defer.resolve();
-                }
-                return defer.promise;
+                    var collision = collection.$checkCollisionsForEvent(event, extra);
+                    if (collision) {
+                        return $q.reject({error: "ERROR_EVENT_MSG_COLLISION", withEvent : collision});
+                    } else {
+                       return true;
+                    }
+
+
+                });
+
             });
         },
 

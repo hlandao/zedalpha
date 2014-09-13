@@ -122,7 +122,8 @@ zedAlphaServices
              * @returns {promise}
              */
             $validateName: function (value) {
-                value = value || this.data.name;
+                value = value  === undefined ? this.data.name : value;
+
                 if (!value) {
                     return {error: "ERROR_EVENT_MSG_NAME"}
                 }
@@ -132,7 +133,7 @@ zedAlphaServices
              * @returns {promise}
              */
             $validateSeats: function (value) {
-                value = value || this.data.seats;
+                value = value  === undefined ? this.data.seats : value;
                 if (this.$noSeats(value) && (BusinessHolder.businessType != 'Bar' && !this.data.isOccasional)) {
                     return {error: "ERROR_EVENT_MSG_SEATS"};
                 }
@@ -153,7 +154,7 @@ zedAlphaServices
              * @returns {promise}
              */
             $validatePhone: function (value) {
-                value = value || this.data.phone;
+                value = value  === undefined ? this.data.phone : value;
                 if (!this.data.isOccasional && !value) {
                     return {error: "ERROR_EVENT_MSG_PHONE"};
                 }
@@ -163,7 +164,7 @@ zedAlphaServices
              * @returns {promise}
              */
             $validateStartTime: function (value) {
-                value = value || this.data.startTime;
+                value = value  === undefined ? this.data.startTime : value;
                 if (!value || !value.isValid || !value.isValid()) {
                     return {error: "ERROR_EVENT_MSG_STARTTIME"};
                 }
@@ -173,7 +174,7 @@ zedAlphaServices
              * @returns {promise}
              */
             $validateEndTime: function (value) {
-                value = value || this.data.endTime;
+                value = value  === undefined ? this.data.endTime : value;
                 if (!value || !value.isValid || !value.isValid()) {
                     return {error: "ERROR_EVENT_MSG_ENDTIME"};
                 } else if (!value.isAfter(this.data.startTime, 'minutes')) {
@@ -278,7 +279,13 @@ zedAlphaServices
                     endTimeToStartTimeDiff = anotherEndTime.diff(this.data.startTime, 'minutes'),
                     endTimeToEndTimeDiff  = anotherEndTime.diff(this.data.endTime, 'minutes');
 
-                if((startTimeToStartTimeDiff >= 0 && startTimeToEndTimeDiff <= 0) || (endTimeToStartTimeDiff > 0 && endTimeToEndTimeDiff <= 0) || (startTimeToStartTimeDiff <= 0 && endTimeToEndTimeDiff >= 0)){
+                var startBeforeAndEndAfter = (startTimeToStartTimeDiff <= 0 && endTimeToEndTimeDiff >= 0),
+                    startAtTheSameTime = startTimeToStartTimeDiff == 0,
+                    startInTheMiddle = (startTimeToStartTimeDiff > 0 && startTimeToEndTimeDiff < 0),
+                    endInTheMiddle = (endTimeToStartTimeDiff > 0 && endTimeToEndTimeDiff < 0);
+
+
+                if(startBeforeAndEndAfter||startAtTheSameTime||startInTheMiddle||endInTheMiddle ){
                     return true;
                 }
 

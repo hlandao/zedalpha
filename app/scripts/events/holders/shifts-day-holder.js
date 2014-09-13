@@ -36,7 +36,7 @@ zedAlphaServices
 
 
         var loadShiftWithDate = function(date){
-            var wasInitialized = !!this.currentDay;
+            var wasInitialized = !!self.currentDay;
             var _shiftDay = ReadOnlyShiftsDayGenerator.byDate(date, {
                 tryBasicShifts : true,
                 extendProto : true

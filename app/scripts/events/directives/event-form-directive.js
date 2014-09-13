@@ -13,10 +13,29 @@ zedAlphaDirectives
             templateUrl : '/partials/events/event-form-directive.html',
             controller : function($scope){
                var eventClone;
+                var requiredInputsForDest = {
+                        name : true,
+                        phone : true,
+                        hostess : true,
+                        seats : true
+                    },
+                    requiredInputsForOccasional = {
+                        name : true,
+                        phone : false,
+                        hostess : false,
+                        seats : true
+                    };
+
 
                 var init = function(){
+
                     $scope.event = $scope.eventObj.data;
                     eventClone = angular.copy($scope.event);
+                    if($scope.event.isOccasional){
+                        $scope.requiredInputs = requiredInputsForOccasional;
+                    }else{
+                        $scope.requiredInputs = requiredInputsForDest;
+                    }
                 }
 
 
@@ -99,8 +118,10 @@ zedAlphaDirectives
                 var ngModel = ctrls[0];
 
                 ngModel.$validators.invalidPhone = function(modelValue, viewValue){
+                    console.log('modelValue, viewValue',modelValue, viewValue);
                     var value = modelValue || viewValue;
                     var resultError = scope.eventObj.$validatePhone(value);
+                    console.log('resultError',resultError);
                     if(resultError && resultError.error){
                         return false;
                     }else{
@@ -202,6 +223,26 @@ zedAlphaDirectives
                 var ngModel = ctrls[0];
             }
         }
+    }).directive('eventHostessValidator', function(){
+        return {
+            priority : 0,
+            require : ['ngModel'],
+            link : function(scope, elem, attrs, ctrls){
+                var ngModel = ctrls[0];
+
+
+                ngModel.$validators.invalidHostess = function(modelValue, viewValue){
+                    var value = modelValue || viewValue;
+                    var resultError = scope.eventObj.$validateHostess(value);
+                    if(resultError && resultError.error){
+                        return false;
+                    }else{
+                        return true;
+                    }
+                }
+
+            }
+        }
     }).directive('eventFormBaseDatePicker', function(DateFormatFirebase, EventsCollection, areYouSureModalFactory, $filter){
         return {
             replace : false,
@@ -212,7 +253,8 @@ zedAlphaDirectives
                 var ngModel = ctrls[0];
 
                 ngModel.$render = function(){
-                    scope.date = moment(ngModel.$modelValue);
+                    console.log('base date',ngModel.$modelValue, DateFormatFirebase);
+                    scope.date = moment(ngModel.$modelValue, DateFormatFirebase);
                 }
 
                 ngModel.$parsers.push(function(viewValue){
@@ -223,7 +265,7 @@ zedAlphaDirectives
                     EventsCollection.changeBaseDateForEvent(scope.eventObj, scope.date).then(function(){
 
                     }).catch(function(error){
-                        if(error.error){
+                        if(error && error.error){
                             var localizedError = $filter('translate')(error.error);
                             areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
                         }
@@ -266,8 +308,10 @@ zedAlphaDirectives
                     return EventsCollection.validateCollision(scope.eventObj, {startTime : value}).then(function(){
                         rejectedPreviousValue = null;
                         var valueDurationBefore = scope.eventObj.$getDuration();
-                        var maxDurationForEvent = EventsCollection.maxDurationForStartTime(value, scope.eventObj.data.seats);
-                        scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore, value);
+                            EventsCollection.maxDurationForStartTime(value, scope.eventObj.data.seats, scope.eventObj).then(function(maxDurationForEvent){
+                                scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore, value);
+                            });
+
                         return true;
                     }, function(error){
                         if(error && error.error){

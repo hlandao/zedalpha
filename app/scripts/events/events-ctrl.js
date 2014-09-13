@@ -73,8 +73,9 @@ zedAlphaControllers
             console.log('event',event);
             EventsCollection.saveWithValidation(event).then(function(){
                 console.log('Saved');
-            }, function(){
-                alert('Error!');
+            }, function(error){
+                console.log('error',error);
+//                alert('Error!');
             });
         };
 

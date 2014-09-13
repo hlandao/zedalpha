@@ -23,10 +23,12 @@ var awsPublisherProduction = awspublish.create({
 
 var awsHeaders = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
 
+console.log('awsDetails',awsDetails);
 
 // aws staging deployment
-gulp.task('deploy:staging',['build'], function(){
+gulp.task('deploy:staging', function(){
     return gulp.src('./dist/**')
+
         .pipe(awsPublisherStaging.publish(awsHeaders))
         .pipe(awsPublisherStaging.sync())  // sync local directory with bucket
         //.pipe(awsPublisher.cache()) // create a cache file to speed up next uploads

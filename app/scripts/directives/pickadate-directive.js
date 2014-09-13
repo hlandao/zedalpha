@@ -12,7 +12,10 @@ zedAlphaDirectives
             },
             link: function (scope, element, attrs) {
                 var updatedModel = false,
-                    updatedByUser = false;
+                    updatedByUser = false,
+                    FORMAT_PICKADATE = 'dd/mm/yyyy',
+                    FORMAT_MOMENT = 'DD/MM/YYYY';
+
                 element.pickadate({
                     onSet: function (context) {
                         if(updatedModel){
@@ -31,15 +34,15 @@ zedAlphaDirectives
                     onClose: function () {
                         element[0].blur();
                     },
-                    format : 'dd/mm/yyyy'
+                    format : FORMAT_PICKADATE
                 });
 
                 var picker = element.pickadate('picker');
 
                 var update = function(newVal){
-                    var date = new Date(newVal.format(FullDateFormat));
+                    var date = newVal.format(FORMAT_MOMENT);
                     updatedModel = true;
-                    picker.set('select', date);
+                    picker.set('select', date, { format: FORMAT_PICKADATE });
                 };
                 scope.$watch('pickADate', function(){
                     if(updatedByUser){
