@@ -5,7 +5,7 @@ var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.contro
 
 zedAlphaControllers
     .value('StatusFilters', ['ALL','SEATED','ORDERED','OCCASIONAL'])
-    .controller('EventsCtrl', function($scope, $log, DateHolder, Event, $filter, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder, EventsCollection, StatusFilters){
+    .controller('EventsCtrl', function($scope, $log, DateHolder, Event, $filter, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder, EventsCollection, StatusFilters, areYouSureModalFactory){
 
         $scope.DateHolder = DateHolder;
         $scope.ShiftsDayHolder = ShiftsDayHolder;
@@ -68,7 +68,6 @@ zedAlphaControllers
         };
 
         $scope.closeEditedEvent = function(success){
-            console.log('$scope.closeEditedEvent',success);
             if(success){
                 debugger;
                 DateHolder.goToClock($scope.editedEvent.data.startTime);
@@ -78,11 +77,14 @@ zedAlphaControllers
 
 
         $scope.eventStatusChanged = function(event){
-            console.log('event',event);
+            console.log('eventStatusChanged');
+            var previous
             EventsCollection.saveWithValidation(event, true).then(function(){
-                console.log('Saved');
             }, function(error){
-                console.log('error',error);
+                if(error && error.error){
+                    var localizedError = $filter('translate')(error.error);
+                    areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
+                }
 //                alert('Error!');
             });
         };
@@ -144,13 +146,15 @@ zedAlphaControllers
                 }
                 EventsCollection.switchEventsSeatsWithValidation($scope.eventToSwitch, event)
                     .then(function(){
-                    console.log('switch is sucess');
                         $scope.eventToSwitch = null;
                         $scope.switchMode = false;
                     }, function(error){
-                        console.log('switch is error',error);
                         $scope.eventToSwitch = null;
                         $scope.switchMode = false;
+                        if(error && error.error){
+                            var localizedError = $filter('translate')(error.error);
+                            areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
+                        }
                     });
             } else{
                 $scope.eventToSwitch = event;

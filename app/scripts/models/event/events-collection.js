@@ -1,6 +1,5 @@
 var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', []);
 
-console.log('new version!');
 
 zedAlphaServices
     .factory("EventsFactory",function ($FirebaseArray, Event) {
@@ -50,7 +49,11 @@ zedAlphaServices
             lastBusinessId = null;
 
         this.sorted = {};
-        this.filters = {};
+        this.filters = {
+            status : null,
+            query : null
+
+        };
 
 
         var subNameByDate = function(date){
@@ -77,7 +80,6 @@ zedAlphaServices
                 });
             }
 
-            console.log('ref = firebaseRef',businessId,subName);
             var ref = firebaseRef('events/').child(businessId).child(subName);
             var $EventCollection = EventsCollectionGenerator(ref);
 
@@ -131,6 +133,8 @@ zedAlphaServices
         }
 
         var sortEvents = function(statusFilter, query){
+            statusFilter = statusFilter || self.filters.status;
+            query = query || self.filters.query;
             if(self.collection && self.collection.length){
                 var sorted = $filter('sortDayEvents')(self.collection, DateHolder.currentClock, statusFilter, query);
                 angular.extend(self.sorted, sorted);
@@ -261,7 +265,6 @@ zedAlphaServices
 
 
         this.isGuestsPer15ValidForNewEvent = function (event, guestPer15Value) {
-            console.log('guestPer15Value',guestPer15Value);
 //            if (!guestPer15Value || guestPer15Value === 0 || !eventGuestsPer15Value) return true;
             return getCollectionForDate(null,null,event).then(function(collection){
                 var count = parseInt(event.data.guests),
@@ -410,6 +413,20 @@ zedAlphaServices
         $rootScope.$on('$clockWasChanged', function(){
             sortEvents();
         });
+
+        $rootScope.$watch(function(){
+            return self.filters.query;
+        }, function(){
+            sortEvents();
+        });
+
+        $rootScope.$watch(function(){
+            return self.filters.status;
+        }, function(){
+            sortEvents();
+        });
+
+
 //        self.updateEvents();
     });
 

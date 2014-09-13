@@ -6,7 +6,6 @@ zedAlphaFilters
     .value('DEAD_EVENTS_STATUSES', ["FINISHED", "NO_SHOW","CANCELED"])
     .filter('sortDayEvents', function ($filter, EVENT_TIME_FRAME_IN_MINUTES, DEAD_EVENTS_STATUSES) {
         return function (eventsCollection, dateMoment, statusFilter, nameQuery) {
-
             var _dateMoment = dateMoment.clone();
             var upcomingEvents = [], nowEvents = [], deadEvents = [];
             var currentEvent,key, status, isStartTimeSameAsCurrent, isStartingBefore, startTimeDiffInMinutes, isEndingAfterCurrentDate, isNowEvent, isUpcomingEvent, isDeadEvent;
@@ -16,7 +15,7 @@ zedAlphaFilters
                 currentEvent = eventsCollection.$getRecord(key);
                 status = currentEvent.data.status;
 
-                if(nameQuery && (currentEvent.name.indexOf(nameQuery) === -1)){
+                if(nameQuery && (currentEvent.data.name.indexOf(nameQuery) === -1)){
                     continue;
                 }
 
@@ -34,7 +33,7 @@ zedAlphaFilters
                     continue;
                 }
 
-                if(statusFilter && (status != statusFilter)){
+                if(statusFilter != 'ALL' && statusFilter && (status != statusFilter)){
                     continue;
                 }
 
