@@ -40,7 +40,7 @@ zedAlphaFilters
 
                 if (isNowEvent) {
                     nowEvents.push(currentEvent);
-                } else if (isUpcomingEvent) {
+                } else if (isUpcomingEvent && !isDeadEvent) {
                     upcomingEvents.push(currentEvent);
                 }
             }
