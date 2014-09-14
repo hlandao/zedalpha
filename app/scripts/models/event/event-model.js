@@ -61,7 +61,7 @@ zedAlphaServices
                 this.data.name = this.data.isOccasional ? $filter('translate')('OCCASIONAL') : '';
 
                 // set createdAt date
-                this.data.createdAt = new Date();
+                this.data.createdAt = moment().toJSON();
                 return this;
             },
 
