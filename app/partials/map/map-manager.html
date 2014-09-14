@@ -2,6 +2,7 @@
     <div class="panel panel-default" id="seat-menu">
         <div class="panel-heading">
             <span> {{highlightedShapes | highlightedShapesSeats}} </span>
+            <small ng-show="nextEventInXMinutes && !highlightedNowEvents.length"> ({{'NEXT_EVENT' | translate }} {{nextEventInXMinutes | duration : 'second' : 'minute'}}) </small>
         </div>
         <table class="table">
             <tbody>
@@ -14,9 +15,6 @@
                 <td class="one-liner-text">{{event.data.startTime | momentFilter : 'HH:mm'}}</td>
             </tr>
 
-            <tr ng-show="highlightedFutureEvents.length > 0" class="highlighted-events-title-row text-success">
-                <td colspan="3"> {{'FUTURE_EVENTS' | translate }} <span ng-show="nextEventInXMinutes && !highlightedNowEvents.length"> ({{'NEXT_EVENT' | translate }} {{nextEventInXMinutes | duration : 'second' : 'minute'}}) </span></td>
-            </tr>
             <tr ng-repeat="event in highlightedFutureEvents">
 
                 <td class="one-liner-text"><span class="label label-info" style="background: {{event.data.tatus | colorForStatus}}"> {{event.data.status | translate}} </span></td>
