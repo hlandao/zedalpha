@@ -266,9 +266,9 @@ zedAlphaServices
 
         this.isGuestsPer15ValidForNewEvent = function (event, guestPer15Value) {
 //            if (!guestPer15Value || guestPer15Value === 0 || !eventGuestsPer15Value) return true;
-            if(!event.data.guests || event.data.guests == 0){
+            if(event && event.data && (!event.data.guests || event.data.guests == 0)){
                 var defer = $q.defer();
-                defer.resolve();
+                defer.resolve(true);
                 return defer.promise;
             }
             return getCollectionForDate(null,null,event).then(function(collection){

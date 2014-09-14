@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="420b4880-39d3-472c-ac13-fe48b98e1b80" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/events/holders/date-holder.js" afterPath="$PROJECT_DIR$/app/scripts/events/holders/date-holder.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/events/directives/event-form-directive.js" afterPath="$PROJECT_DIR$/app/scripts/events/directives/event-form-directive.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/models/event/events-collection.js" afterPath="$PROJECT_DIR$/app/scripts/models/event/events-collection.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/map/map-manager-directive.js" afterPath="$PROJECT_DIR$/app/scripts/map/map-manager-directive.js" />
     </list>
     <ignored path="zedalpha.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -31,8 +29,18 @@
       <file leaf-file-name="event-form-directive.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/scripts/events/directives/event-form-directive.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.3321617" vertical-offset="2601" max-vertical-offset="5895">
-              <caret line="186" column="0" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.3321617" vertical-offset="2316" max-vertical-offset="6105">
+              <caret line="167" column="0" selection-start-line="167" selection-start-column="0" selection-end-line="167" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="event-model.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/scripts/models/event/event-model.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-2.0769231" vertical-offset="3096" max-vertical-offset="5685">
+              <caret line="210" column="29" selection-start-line="210" selection-start-column="29" selection-end-line="210" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -41,8 +49,8 @@
       <file leaf-file-name="events-collection.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/scripts/models/event/events-collection.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-13.038462" vertical-offset="3681" max-vertical-offset="6675">
-              <caret line="268" column="59" selection-start-line="268" selection-start-column="59" selection-end-line="268" selection-end-column="59" />
+            <state vertical-scroll-proportion="-3.2307692" vertical-offset="3711" max-vertical-offset="6675">
+              <caret line="253" column="25" selection-start-line="253" selection-start-column="0" selection-end-line="254" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -109,9 +117,9 @@
         <option value="$PROJECT_DIR$/app/scripts/translations.js" />
         <option value="$PROJECT_DIR$/app/partials/events/event-form-directive.html" />
         <option value="$PROJECT_DIR$/app/styles-less/direcitves/event-form-v2.less" />
-        <option value="$PROJECT_DIR$/app/scripts/models/event/events-collection.js" />
         <option value="$PROJECT_DIR$/app/scripts/map/map-manager-directive.js" />
         <option value="$PROJECT_DIR$/app/scripts/events/holders/date-holder.js" />
+        <option value="$PROJECT_DIR$/app/scripts/models/event/events-collection.js" />
         <option value="$PROJECT_DIR$/app/scripts/events/directives/event-form-directive.js" />
       </list>
     </option>
@@ -713,14 +721,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/models/event/event-model.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.42179263" vertical-offset="705" max-vertical-offset="5685">
-          <caret line="63" column="56" selection-start-line="63" selection-start-column="46" selection-end-line="63" selection-end-column="56" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/translations.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.27731094" vertical-offset="915" max-vertical-offset="4635">
@@ -753,14 +753,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/models/event/events-collection.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-13.038462" vertical-offset="3681" max-vertical-offset="6675">
-          <caret line="268" column="59" selection-start-line="268" selection-start-column="59" selection-end-line="268" selection-end-column="59" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/map/map-manager-directive.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-4.159091" vertical-offset="792" max-vertical-offset="6540">
@@ -777,10 +769,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/models/event/event-model.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.0769231" vertical-offset="3096" max-vertical-offset="5685">
+          <caret line="210" column="29" selection-start-line="210" selection-start-column="29" selection-end-line="210" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/models/event/events-collection.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.2307692" vertical-offset="3711" max-vertical-offset="6675">
+          <caret line="253" column="25" selection-start-line="253" selection-start-column="0" selection-end-line="254" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/events/directives/event-form-directive.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3321617" vertical-offset="2601" max-vertical-offset="5895">
-          <caret line="186" column="0" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.3321617" vertical-offset="2316" max-vertical-offset="6105">
+          <caret line="167" column="0" selection-start-line="167" selection-start-column="0" selection-end-line="167" selection-end-column="0" />
           <folding />
         </state>
       </provider>

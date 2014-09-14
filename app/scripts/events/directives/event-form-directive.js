@@ -147,7 +147,7 @@ zedAlphaDirectives
                 }
             }
         }
-    }).directive('eventGuestsValidator', function(EventsCollection){
+    }).directive('eventGuestsValidator', function(EventsCollection, BusinessHolder){
         return {
             priority : 0,
             require : ['ngModel'],
@@ -156,7 +156,21 @@ zedAlphaDirectives
 
                 ngModel.$asyncValidators.gusetsPer15 = function(modelValue, viewValue){
                     value = modelValue || viewValue;
-                    return EventsCollection.checkGuestsPer15Minutes(scope.eventObj, value);
+                    return EventsCollection.checkGuestsPer15Minutes(scope.eventObj, value).then(function(){
+                        updateEventDurationWithValue(value);
+                    });
+                }
+
+                var updateEventDurationWithValue = function(value){
+                    if(!value) return;
+                    var eventsDurationForGuests = BusinessHolder.business.eventsDurationForGuests;
+                    if(!eventsDurationForGuests) return;
+                    var suggestedDuration = eventsDurationForGuests[value];
+                    if(suggestedDuration){
+                        EventsCollection.maxDurationForStartTime(null, null, scope.eventObj).then(function(maxDurationForEvent){
+                            scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, suggestedDuration);
+                        });
+                    }
                 }
             }
         }
