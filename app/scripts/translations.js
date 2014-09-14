@@ -70,6 +70,7 @@ zedAlphaConfigModule
         default : 'Default',
         SHIFTS_EDITOR : 'Shifts Editor',
         BASIC_SHIFTS : 'Basic Shifts',
+        "CREATED_AT" : "Created At :",
 
 
         ORDERED: "Orderd",
@@ -248,6 +249,7 @@ zedAlphaConfigModule
                 "SHIFTS_EDITOR" : 'עריכת משמרות',
                 "BASIC_SHIFTS" : 'משמרות בסיס',
                 "EVENT_DETAILS" : "פרטי הארוע",
+                "CREATED_AT" : "נוצר בתאריך :",
 
                 "TO" : 'עד',
                 "MIN" : 'דקות',
