@@ -13,18 +13,15 @@
                         <td class="the-date">
                             <!--<input type="text" class="datepicker-input" pick-a-date="event.startTime"/>-->
                             <event-form-base-date-picker ng-model="event.baseDate"></event-form-base-date-picker>
-                            {{event.baseDate}}
                         </td>
                         <td class="start-time">
                             <input event-start-time-validator hl-timepicker ng-model="event.startTime" settings="{baseDate : event.baseDate}">
-                            {{event.startTime}}
                         </td>
                         <td class="to-text">
                             <span> {{ 'TO' | translate }} </span>
                         </td>
                         <td class="end-time">
                             <input event-end-time-validator hl-timepicker ng-model="event.endTime" settings="{min : event.startTime, showDurationFromDate : event.startTime, range : 300}">
-                            {{event.endTime}}
                         </td>
                     </tr>
                 </table>
