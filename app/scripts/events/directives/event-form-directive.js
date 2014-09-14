@@ -119,10 +119,8 @@ zedAlphaDirectives
                 var ngModel = ctrls[0];
 
                 ngModel.$validators.invalidPhone = function(modelValue, viewValue){
-                    console.log('modelValue, viewValue',modelValue, viewValue);
                     var value = modelValue || viewValue;
                     var resultError = scope.eventObj.$validatePhone(value);
-                    console.log('resultError',resultError);
                     if(resultError && resultError.error){
                         return false;
                     }else{
@@ -186,7 +184,6 @@ zedAlphaDirectives
                     var value = modelValue || viewValue;
                     var beforeValue = scope.eventObj.data.seats;
                     return EventsCollection.validateCollision(scope.eventObj, {seats : value}).then(function(){
-                        console.log('seats ok',value);
                         return true;
                     }, function(error){
                         if(error && error.error){
@@ -255,7 +252,6 @@ zedAlphaDirectives
                 var ngModel = ctrls[0];
 
                 ngModel.$render = function(){
-                    console.log('base date',ngModel.$modelValue, DateFormatFirebase);
                     scope.date = moment(ngModel.$modelValue, DateFormatFirebase);
                 }
 

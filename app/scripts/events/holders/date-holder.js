@@ -8,7 +8,6 @@ zedAlphaServices
             clockInitialized = false,
             dateInitialized = false;
         this.goToNow = function(init){
-            console.log('goToNow');
             var now = moment(), newDateMoment, updateOnlyClock, currentDate;
 
             if(init && now.hour() < 6){

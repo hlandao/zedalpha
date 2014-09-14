@@ -135,7 +135,6 @@ zedAlphaDirectives
 
 
                 var eventsForHighlightedShapes = function(){
-                    console.log('eventsForHighlightedShapes',scope.highlightedShapes);
                     if(scope.highlightedShapes.length == 1){
 
                         var nowEvents, futureEvents,
@@ -146,7 +145,6 @@ zedAlphaDirectives
                         });
 
                         futureEvents = _.filter(EventsCollection.sorted.upcomingEvents, function(event){
-                            console.log('event',event,seats);
                             return event.$sharingTheSameSeatsWithAnotherEvent(null, seats);
                         });
 
@@ -168,7 +166,6 @@ zedAlphaDirectives
 
                         }
 
-                        console.log('scope.nextEventInXMinutes',scope.nextEventInXMinutes);
 
                     }else{
                         emptyEventsForHighlightedShapes();
