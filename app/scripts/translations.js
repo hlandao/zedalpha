@@ -223,7 +223,7 @@ zedAlphaConfigModule
                 "ENTIRE_DAY_SHIFT" : "כל היום",
                 "ENTIRE_SHIFT" : "משמרת מלאה",
                 "NOW" : "עכשיו",
-                "GO_TO_NOW" : "עבור לעכשיו",
+                "GO_TO_NOW" : "עכשיו",
                 "TOTAL_EVENTS": "סה״כ אירועים",
                 "TOTAL_GUESTS": "סה״כ מוזמנים",
                 "SEARCH" : "חיפוש",

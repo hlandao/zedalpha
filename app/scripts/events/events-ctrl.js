@@ -98,11 +98,11 @@ zedAlphaControllers
 
         $scope.selectNewShift = function(shift, e){
             ShiftsDayHolder.$selectNewShift(shift)
-        }
+        };
 
         $scope.selectAllDayShift = function(){
             ShiftsDayHolder.selectedShift = AllDayShift();
-        }
+        };
 
 
         $scope.goToEntireShift = function(){
@@ -173,4 +173,25 @@ zedAlphaControllers
 
 
 
+    }).directive('eventsListSearchBox', function($timeout){
+        return function(scope, element, attrs){
+            console.log('!!');
+            element.focus(function(){
+                console.log('focus!');
+                scope.$apply(function(){
+                    scope.searchActive = true;
+                });
+            });
+
+            element.blur(function(){
+                scope.$apply(function(){
+                    scope.searchActive = false;
+                });
+            });
+
+            scope.$on('$destroy', function(){
+                element.off('blur');
+                element.off('focus');
+            });
+        }
     });

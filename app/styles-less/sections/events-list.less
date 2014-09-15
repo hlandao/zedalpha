@@ -39,6 +39,9 @@
     background-color: @link_active_bg;
     color:white;
     height: 40px;
+    .dropdown.filter-status{
+      width:113px;
+    }
     .pull-left{
      > a{
         padding: 10px;
@@ -75,6 +78,17 @@
     }
     .pull-right{
       &.search-events{
+        -webkit-transition :none;
+
+        &.active{
+          -webkit-transition : all 0.7s;
+
+          -webkit-transform : translateX(0px);
+          input{
+            width:232px;
+            color:white;
+          }
+        }
         i.glyphicon{
           color:#eee;
           font-size: 12px;
@@ -85,10 +99,13 @@
           outline: none;
           color: white;
           padding-left:3px;
-          width:80px;
+          width:50px;
           &::-webkit-input-placeholder{
             color:#eee;
           }
+        }
+        button{
+          outline:none;
         }
       }
     }

@@ -2,20 +2,21 @@
 <div id="events-list-wrapper">
     <div class="panel panel-default" id="events-list" data-collapse-nav data-slim-scroll>
         <div class="panel-heading">
-            <div class="dropdown pull-left filter-events">
+            <div class="dropdown pull-left filter-events filter-status">
 
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"> {{filters.status | translate}} <b class="caret"></b></a>
                 <ul class="dropdown-menu" role="menu">
                     <li ng-repeat="filter in StatusFilters" ng-click="selectFilter(filter)">
                         <span>{{filter | translate}}</span>
                     </li>
+                    <li ng-click="selectFilter('ENTIRE_SHIFT')"> <span> {{'ENTIRE_SHIFT' | translate }}</span></li>
                 </ul>
             </div>
-            <div class="pull-left filter-events">
+            <div class="pull-left filter-events"  ng-hide="searchActive">
                 <a href="#" ng-click="goToNow($event)"><i class="glyphicon glyphicon-time"></i> {{'GO_TO_NOW' | translate }}</a>
             </div>
 
-            <div class="dropdown pull-left filter-events">
+            <div class="dropdown pull-left filter-events"  ng-hide="searchActive">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-plus-sign"></i> {{'ADD_BUTTON_LABEL' | translate }}</a>
                 <ul class="dropdown-menu" role="menu">
                     <li  ng-click="newEventWithSeatsDic('destination')"> <span>{{'DESTINATION' | translate}}</span></li>
@@ -24,8 +25,8 @@
                 </ul>
             </div>
 
-            <div class="pull-left filter-events switch-button" ng-class="{active : (switchMode)}">
-                <a href="#" ng-click="toggleSwitchMode($event)"><i class="glyphicon glyphicon-refresh"></i> </a>
+            <div class="pull-left filter-events switch-button" ng-class="{active : (switchMode)}" ng-hide="searchActive">
+                <a href="#" ng-click="toggleSwitchMode($event)"><i class="glyphicon glyphicon-refresh"></i> {{'REPLACE_BUTTON_LABEL' | translate}}</a>
             </div>
 
 
@@ -33,10 +34,15 @@
 
 
 
-            <div class="pull-right search-events">
+            <div class="pull-right search-events" ng-class="{'active' : searchActive}">
                 <i class="glyphicon glyphicon-search"></i>
-                <input type="text" placeholder="{{'SEARCH' | translate }}" ng-model="filters.query">
+                <input type="text" placeholder="{{'SEARCH' | translate }}" ng-model="filters.query" events-list-search-box>
+                <button type="button" class="btn btn-primary btn-xs" ng-show="searchActive"><i class="glyphicon glyphicon-remove"></i></button>
+
             </div>
+            <div class="pull-right" >
+            </div>
+
         </div>
 
         <div ng-if="newEvent" hl-event-form event="newEvent" on-close="closeNewEvent()"></div>
