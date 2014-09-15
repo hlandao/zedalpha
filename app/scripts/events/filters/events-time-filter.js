@@ -4,9 +4,9 @@ var zedAlphaFilters = zedAlphaFilters || angular.module('zedalpha.filters', []);
 zedAlphaFilters
     .value('EVENT_TIME_FRAME_IN_MINUTES', 120)
     .value('DEAD_EVENTS_STATUSES', ["FINISHED", "NO_SHOW","CANCELED"])
-    .filter('sortDayEvents', function ($filter, EVENT_TIME_FRAME_IN_MINUTES, DEAD_EVENTS_STATUSES) {
+    .filter('sortDayEvents', function ($filter, EVENT_TIME_FRAME_IN_MINUTES, DEAD_EVENTS_STATUSES, DateHelpers) {
         return function (eventsCollection, dateMoment, statusFilter, nameQuery) {
-            var _dateMoment = dateMoment.clone();
+            var _dateMoment = DateHelpers.isMomentValid(dateMoment) ? dateMoment.clone() : null;
             var upcomingEvents = [], nowEvents = [], deadEvents = [];
             var currentEvent,key, status, isStartTimeSameAsCurrent, isStartingBefore, startTimeDiffInMinutes, isEndingAfterCurrentDate, isNowEvent, isUpcomingEvent, isDeadEvent;
 
