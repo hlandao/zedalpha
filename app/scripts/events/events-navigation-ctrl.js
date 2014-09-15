@@ -49,6 +49,11 @@ zedAlphaControllers
         },countAll);
 
         $scope.$watch(function(){
+            return EventsCollection.collection && EventsCollection.collection.length;
+        },countAll);
+
+
+        $scope.$watch(function(){
             return ShiftsDayHolder.selectedShift;
         },countAll);
 

@@ -365,7 +365,8 @@ zedAlphaServices
 
         this.changeBaseDateForEvent = function(event, newBaseDateMoment){
             var oldBaseDate = moment(event.data.baseDate, DateFormatFirebase);
-            if(DateHelpers.isMomentSameDate(oldBaseDate), newBaseDateMoment ){
+            debugger;
+            if(DateHelpers.isMomentSameDate(oldBaseDate, newBaseDateMoment) ){
                 var defer = $q.defer();
                 defer.resolve();
                 return defer.promise;

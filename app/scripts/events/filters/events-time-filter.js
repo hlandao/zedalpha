@@ -4,7 +4,13 @@ var zedAlphaFilters = zedAlphaFilters || angular.module('zedalpha.filters', []);
 zedAlphaFilters
     .value('EVENT_TIME_FRAME_IN_MINUTES', 120)
     .value('DEAD_EVENTS_STATUSES', ["FINISHED", "NO_SHOW","CANCELED"])
-    .filter('sortDayEvents', function ($filter, EVENT_TIME_FRAME_IN_MINUTES, DEAD_EVENTS_STATUSES, DateHelpers) {
+    .value('STATUS_FILTERS_TO_FILTER', {
+        ALL : ['ALL'],
+        SEATED : ['SEATED', 'CHEQUE', ''],
+        ORDERED : ['ORDERED', 'CONFIRMED'],
+        OCCASIONAL : ['OCCASIONAL']
+    })
+    .filter('sortDayEvents', function ($filter, EVENT_TIME_FRAME_IN_MINUTES, DEAD_EVENTS_STATUSES, DateHelpers, STATUS_FILTERS_TO_FILTER) {
         return function (eventsCollection, dateMoment, statusFilter, nameQuery) {
             var _dateMoment = DateHelpers.isMomentValid(dateMoment) ? dateMoment.clone() : null;
             var upcomingEvents = [], nowEvents = [], deadEvents = [];
@@ -33,8 +39,11 @@ zedAlphaFilters
                     continue;
                 }
 
-                if(statusFilter != 'ALL' && statusFilter && (status != statusFilter)){
-                    continue;
+                if(statusFilter && statusFilter != 'ALL'){
+                    var filter = STATUS_FILTERS_TO_FILTER[statusFilter];
+                    if(filter.indexOf(status) == -1){
+                        continue;
+                    }
                 }
 
                 if (isNowEvent) {
