@@ -46,7 +46,7 @@ zedAlphaServices
                 startTime.minute(DateHelpers.findClosestIntervalToDate(startTime));
                 this.data.startTime = startTime.seconds(0);
 
-                var baseDate = newEventData.baseDate || DateHolder.currentDate || this.data.startTime;
+                var baseDate = newEventData.baseDate || DateHolder.currentDate.clone() || this.data.startTime;
                 this.data.baseDate = baseDate.format(DateFormatFirebase);
 
                 // find the duration for the event and set the end time

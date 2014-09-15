@@ -364,6 +364,7 @@ zedAlphaServices
             active : true,
             name : "ENTIRE_DAY"
         }
+
         return function(){
             var dateMoment;
 
@@ -373,7 +374,7 @@ zedAlphaServices
                 dateMoment = moment();
             }
 
-            var defaultTime = dateMoment;
+            var defaultTime = dateMoment.clone();
             var startTime = dateMoment.clone().hour(0).minutes(0).seconds(0);
             var duration = 24*60;
 

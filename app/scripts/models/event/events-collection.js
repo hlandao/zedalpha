@@ -60,8 +60,10 @@ zedAlphaServices
             return date.format('YYYY-MM-DD');
         };
 
-        var getCollectionForDate = function(businessId, date, event){
+        var    getCollectionForDate = function(businessId, _date, event){
             var subName;
+            var date = DateHelpers.isMomentValid(_date) ? _date.clone() : null;
+
             if(date){
                 subName = subNameByDate(date);
             }else if(event){

@@ -54,7 +54,7 @@ zedAlphaFilters
     .filter('eventsByTime',function (DateHolder, EVENT_TIME_FRAME_IN_MINUTES) {
         return function (events) {
             // include events that starts X minutes after the current time
-            var currentDateMoment = moment(DateHolder.currentClock);
+            var currentDateMoment = DateHolder.currentClock.clone();
             currentDateMoment.seconds(0);
             var filteredEvents = [],
                 upcomingEvents = [];

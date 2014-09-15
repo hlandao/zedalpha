@@ -7,6 +7,9 @@ zedAlphaServices
         var self = this,
             clockInitialized = false,
             dateInitialized = false;
+
+        this.changedByUser = false;
+
         this.goToNow = function(init){
             var now = moment(), newDateMoment, updateOnlyClock, currentDate;
 
@@ -27,6 +30,7 @@ zedAlphaServices
             this.currentClock = newDateMoment;
             if(updateOnlyClock) return;
             this.currentDate = currentDate;
+            self.changedByUser = true;
         }
 
         this.goToClock = function(clock){
@@ -36,6 +40,7 @@ zedAlphaServices
                 }
                 self.currentClock = clock.clone();
             }
+            self.changedByUser = true;
         }
 
         this.goToDate = function(date){
@@ -44,6 +49,7 @@ zedAlphaServices
                 self.currentClock = newClock;
                 self.currentDate = date.hour(0).minute(0);
             }
+            self.changedByUser = true;
         }
 
 
@@ -60,19 +66,28 @@ zedAlphaServices
 
         $rootScope.$watch(function(){
             return self.currentDate;
-        }, function(newVal){
+        }, function(newVal, oldVal){
             if(!dateInitialized || !newVal){
                 dateInitialized = true;
                 return;
             }
 
-            if(self.currentClock){
-                self.currentClock = self.currentDate.clone().hour(self.currentClock.hour()).minute(self.currentClock.minute());
-            }else{
-                self.currentClock = self.currentDate.clone();
+
+            if(!self.changedByUser){
+                if(self.currentClock){
+                    if(self.currentClock.hour() < 6 && self.currentClock.diff(self.currentDate, 'days') === 1){
+                    }else{
+                        self.currentClock = self.currentDate.clone().hour(self.currentClock.hour()).minute(self.currentClock.minute());
+                    }
+                }else{
+                    self.currentClock = self.currentDate.clone();
+                }
             }
+
+            self.changedByUser = false;
             $rootScope.$emit('$dateWasChanged');
         }, true);
 
         this.goToNow(true);
     });
+
