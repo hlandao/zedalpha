@@ -5,7 +5,6 @@ var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.contro
 
 zedAlphaControllers
     .controller('BusinessCtrl', function($scope, BusinessHolder ,BusinessMetaData, $state, BusinessesCollection){
-        console.log('log!',BusinessMetaData);
         // get business meta data
         $scope.businessMetaData = BusinessMetaData;
         // get business data from business holder

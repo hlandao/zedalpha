@@ -6,8 +6,8 @@ var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.contro
 zedAlphaControllers
     .controller('BusinessesCtrl', function($scope, BusinessesCollection){
         $scope.showSpinner = true;
-        BusinessesCollection.readyPromise.then(function(_collection){
-            console.log('_collection',_collection);
+
+        BusinessesCollection.init().then(function(_collection){
             $scope.businesses = _collection;
             $scope.showSpinner = false;
         });
