@@ -8,6 +8,7 @@ zedAlphaDirectives
             replace : true,
             priority : 10,
             scope : {
+              onClose  : "&onClose",
               eventObj : "=event"
             },
             templateUrl : '/partials/events/event-form-directive.html',
@@ -24,7 +25,8 @@ zedAlphaDirectives
                         phone : false,
                         hostess : false,
                         seats : true
-                    };
+                    },
+                    isSaving = false;
 
 
                 var init = function(){
@@ -49,6 +51,10 @@ zedAlphaDirectives
                }
 
                 $scope.save = function(){
+                    if(isSaving){
+                        return;
+                    }
+                    isSaving = true;
                     EventsCollection.saveWithValidation($scope.eventObj).then(function(output){
                         if(output && output.warnings && output.warnings.length){
                             var promises = [];
@@ -60,13 +66,13 @@ zedAlphaDirectives
                                 EventsCollection.saveWithValidation($scope.eventObj, true);
                                 $scope.closeLinkFN(true);
                             }, function(){
-
+                                isSaving = false;
                             });
                         }else{
                             $scope.closeLinkFN(true);
                         }
                     }).catch(function(error){
-
+                        isSaving = false;
                         if(error && error.error){
                             var localizedError = $filter('translate')(error.error);
                             $log.info('[EventForm] error saving event',error);
@@ -105,8 +111,9 @@ zedAlphaDirectives
             link : function(scope, element, attrs){
                 element.find('input').eq(0).focus();
 
-                scope.closeLinkFN =  function(){
-                    attrs.onClose && scope.$parent.$eval(attrs.onClose);
+                scope.closeLinkFN =  function(result){
+                    scope.onClose({$result : result})
+//                    attrs.onClose && scope.$parent.$eval(attrs.onClose);
                 }
             }
         };
@@ -288,7 +295,7 @@ zedAlphaDirectives
                 }
             }
         }
-    }).directive('eventStartTimeValidator', function(EventsCollection, areYouSureModalFactory, $filter, $q, $timeout){
+    }).directive('eventStartTimeValidator', function(EventsCollection, areYouSureModalFactory, $filter, $q, $timeout, DateHolder){
         return {
             require : ['ngModel'],
             link : function(scope, elem, attrs, ctrls){
@@ -320,8 +327,10 @@ zedAlphaDirectives
                     return EventsCollection.validateCollision(scope.eventObj, {startTime : value}).then(function(){
                         rejectedPreviousValue = null;
                         var valueDurationBefore = scope.eventObj.$getDuration();
+
                             EventsCollection.maxDurationForStartTime(value, scope.eventObj.data.seats, scope.eventObj).then(function(maxDurationForEvent){
                                 scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore, value);
+                                DateHolder.goToEvent(scope.eventObj);
                             });
 
                         return true;

@@ -37,7 +37,7 @@ zedAlphaControllers
 
         $scope.closeNewEvent = function(success){
             if(success){
-                DateHolder.goToClock($scope.newEvent.data.startTime);
+                DateHolder.goToEvent($scope.newEvent);
             }
             $scope.newEvent = null;
         }
@@ -69,14 +69,13 @@ zedAlphaControllers
 
         $scope.closeEditedEvent = function(success){
             if(success){
-                DateHolder.goToClock($scope.editedEvent.data.startTime);
+                DateHolder.goToEvent($scope.editedEvent);
             }
             $scope.editedEvent = null;
         }
 
 
         $scope.eventStatusChanged = function(event){
-            console.log('eventStatusChanged');
             var previous
             EventsCollection.saveWithValidation(event, true).then(function(){
             }, function(error){
@@ -174,7 +173,6 @@ zedAlphaControllers
         return function(scope, element, attrs){
             console.log('!!');
             element.focus(function(){
-                console.log('focus!');
                 scope.$apply(function(){
                     scope.searchActive = true;
                 });
