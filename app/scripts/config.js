@@ -12,7 +12,7 @@ var zedAlphaConfigModule = zedAlphaConfigModule || angular.module('zedalpha.conf
     .constant('loginRedirectPath', 'home')
 
     // your Firebase URL goes here
-    .constant('FBURL', 'https://zedbeta.firebaseio.com')
+    .constant('FBURL', __CONFIG__.firebase_url)
 
     // Loggly key
     .constant('LOGGLY_KEY', '7bec49fa-7dc7-45a5-b7fb-d5137c2cca9a')
