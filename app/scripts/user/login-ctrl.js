@@ -11,7 +11,6 @@ zedAlphaControllers
     $scope.createMode = false;
 
     $scope.login = function(cb) {
-        console.log('login');
         $scope.err = null;
         if( !$scope.email ) {
             $scope.err = 'Please enter an email address';

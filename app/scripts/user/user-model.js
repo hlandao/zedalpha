@@ -35,6 +35,7 @@ zedAlphaServices
             _userHolder.auth = null;
             _userHolder.userProfileRef = null;
             _userHolder.$userProfile = null;
+
             if(!initialized){
                 initialized = true;
                 initting.resolve(_userHolder);

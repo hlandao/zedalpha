@@ -79,7 +79,6 @@ zedAlphaDirectives
 
 
                 $scope.setNewTime = function(timeObj, e){
-                    console.log('timeObj',timeObj);
                     e.stopPropagation();
                     ngModel.$setViewValue(timeObj.time);
                     ngModel.$render();
