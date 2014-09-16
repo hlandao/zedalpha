@@ -1,9 +1,11 @@
+
 <div class="container-fluid shifts-editor">
-    <div class="row" ng-show="msg">
+    <div class="" ng-show="msg">
         <div class="col-xs-12 col-sm-4" style="min-height: 71px;">
             <p class="alert alert-success" ng-show="err.val || msg.val">{{err.val}}{{msg.val}}</p>
         </div>
     </div>
+
     <div class="row">
         <div class="col-lg-6 col-lg-offset-3 day" ng-repeat="day in week.days">
             <div class="panel panel-default">
@@ -22,7 +24,7 @@
                     <div class="row shift" ng-repeat="shift in day.shifts">
                         <div class="col-xs-12">
                             <div class="row">
-                                <div class="col-xs-4 shiftlabel"><input type="checkbox" ng-model="shift.active"> {{shift.name | translate}}</div>
+                                <div class="col-xs-4 shiftlabel"><input type="checkbox" ng-model="shift.active" ng-change="dayWasChanged(day)"> {{shift.name | translate}}</div>
                                 <div class="col-xs-4" ng-hide="!shift.active">
                                     <label>{{'START_TIME' | translate }}</label>
                                     <input hl-timepicker ng-model="shift.startTime" on-change="dayWasChanged(day)" style="width:100%;">

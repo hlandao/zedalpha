@@ -13,7 +13,6 @@ zedAlphaDirectives
             restrict: 'E',
             templateUrl : '/partials/admin/shifts/shifts-editor.html',
             controller : function($scope, BusinessHolder, ShiftsWeek, Alert){
-                $scope.msg = new Alert(3000);
 
                 this.render = function(businessId, weekNumber){
                     if(!businessId || !weekNumber) return;
@@ -28,9 +27,14 @@ zedAlphaDirectives
                 $scope.dayWasChanged = function(day){
                     var shiftsDay = day.shiftsDay ? day.shiftsDay : day;
                     if(shiftsDay.$save) shiftsDay.$saveWithValidation().then(function(){
-                                $scope.msg.setMsg("Changes were Saved")
-                        });
-                }
+                        toastr.options = {
+                            "closeButton": true,
+                            "positionClass": "toast-bottom-right",
+                            "timeOut": "3000"
+                        };
+                        toastr.success("Changes were Saved")
+                    });
+                };
 
                 $scope.toggle = function(day){
                     day.$toggleEnabled();

@@ -13,14 +13,15 @@ zedAlphaControllers
         $scope.business = BusinessHolder.business;
         $scope.eventsStatuses = $scope.business.eventsStatuses;
 
-        $scope.msg = new Alert(4000);
 
         $scope.add = function(newStatus){
-            $scope.err = null;
-            $scope.msg.setMsg('');
             if(!newStatus || !newStatus.color || !newStatus.status || newStatus.length < 2){
-                $scope.err = "Please enter status and color";
-                return;
+                toastr.options = {
+                    "closeButton": true,
+                    "positionClass": "toast-bottom-right",
+                    "timeOut": "3000"
+                };
+                return toastr.error("Please enter status and color!")
             }
             $scope.eventsStatuses[newStatus.status] = {
                 color : newStatus.color
@@ -28,9 +29,20 @@ zedAlphaControllers
 
             return $scope.business.$save().then(function(){
                 newStatus = {};
-                $scope.msg.setMsg('Saved!');
+                toastr.options = {
+                    "closeButton": true,
+                    "positionClass": "toast-bottom-right",
+                    "timeOut": "3000"
+                };
+                return toastr.success("Saved!")
             }, function(){
-                $scope.err = "Error removing status!"
+                newStatus = {};
+                toastr.options = {
+                    "closeButton": true,
+                    "positionClass": "toast-bottom-right",
+                    "timeOut": "3000"
+                };
+                return toastr.success("Error removing status!")
             });
 
 
@@ -40,20 +52,48 @@ zedAlphaControllers
             if(statusId){
                 $scope.eventsStatuses[statusId] = null;
                 return $scope.business.$save().then(function(){
-                    $scope.msg.setMsg('Status was removed!');
+                    toastr.options = {
+                        "closeButton": true,
+                        "positionClass": "toast-bottom-right",
+                        "timeOut": "3000"
+                    };
+                    return toastr.success("Status was removed!")
+
                 }, function(){
-                    $scope.err = "Error removing status!"
+                    toastr.options = {
+                        "closeButton": true,
+                        "positionClass": "toast-bottom-right",
+                        "timeOut": "3000"
+                    };
+                    return toastr.error("Error removing status!")
                 });
 
             }
-            $scope.err = "Error removing status!"
+            toastr.options = {
+                "closeButton": true,
+                "positionClass": "toast-bottom-right",
+                "timeOut": "3000"
+            };
+            return toastr.error("Error removing status!")
+
         };
 
         $scope.changed = _.throttle(function(statusId, status){
             return $scope.business.$save().then(function(){
-                $scope.msg.setMsg('Status was changed!');
+                toastr.options = {
+                    "closeButton": true,
+                    "positionClass": "toast-bottom-right",
+                    "timeOut": "3000"
+                };
+                return toastr.success("Status was changed!")
+
             }, function(){
-                $scope.err = "Error!"
+                toastr.options = {
+                    "closeButton": true,
+                    "positionClass": "toast-bottom-right",
+                    "timeOut": "3000"
+                };
+                return toastr.success("Error!")
             });
 
         }, 100);

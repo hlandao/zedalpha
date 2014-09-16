@@ -15,47 +15,71 @@ zedAlphaControllers
         $scope.msg = new Alert(4000);
 
         $scope.addDuration = function(newDuration){
-            $scope.err = null;
-            $scope.msg.setMsg('');
             newDuration = parseInt(newDuration);
-            $scope.err = null;
-            $scope.msg.setMsg('');
             if(!newDuration || !angular.isNumber(newDuration)){
-                $scope.err = "Please enter duration as a number";
+                toastr.options = {
+                    "closeButton": true,
+                    "positionClass": "toast-bottom-right",
+                    "timeOut": "3000"
+                };
+                toastr.error("Please enter duration as a number")
                 return;
             }
             $scope.business.eventsDuration = $scope.business.eventsDuration || {};
             $scope.business.eventsDuration[newDuration] = true;
             $scope.business.$save().then(function(){
-                $scope.msg.setMsg('Saved!');
+                toastr.options = {
+                    "closeButton": true,
+                    "positionClass": "toast-bottom-right",
+                    "timeOut": "3000"
+                };
+                toastr.success("Saved!")
             });
         };
 
         $scope.removeDuration = function(duration){
-            $scope.err = null;
-            $scope.msg.setMsg('');
             if(duration){
                 $scope.business.eventsDuration = $scope.business.eventsDuration || {};
                 $scope.business.eventsDuration[duration] = null;
                 return $scope.business.$save().then(function(){
-                    $scope.msg.setMsg('Duration was Removed!');
+                    toastr.options = {
+                        "closeButton": true,
+                        "positionClass": "toast-bottom-right",
+                        "timeOut": "3000"
+                    };
+                    toastr.success("Duration was Removed!")
+
                 });
             }
-            $scope.err = "Error!"
+            toastr.options = {
+                "closeButton": true,
+                "positionClass": "toast-bottom-right",
+                "timeOut": "3000"
+            };
+            toastr.error("Error!")
         };
 
         $scope.addDurationForGuests = function(newDurationForGuests){
-            $scope.err = null;
-            $scope.msg.setMsg('');
             if(!newDurationForGuests || !newDurationForGuests.guests || !newDurationForGuests.duration){
-                return $scope.err = "Please enter duration as a number";
+                toastr.options = {
+                    "closeButton": true,
+                    "positionClass": "toast-bottom-right",
+                    "timeOut": "3000"
+                };
+                return toastr.error("Please enter duration as a number!")
             }
             if(!$scope.business.eventsDurationForGuests){
                 $scope.business.eventsDurationForGuests = $scope.business.eventsDurationForGuests = {};
             }
             $scope.business.eventsDurationForGuests[newDurationForGuests.guests] = newDurationForGuests.duration;
             return $scope.business.$save().then(function(){
-                $scope.msg.setMsg('Saved!');
+                toastr.options = {
+                    "closeButton": true,
+                    "positionClass": "toast-bottom-right",
+                    "timeOut": "3000"
+                };
+                toastr.success("Saved!")
+
             });
         };
 
@@ -63,15 +87,31 @@ zedAlphaControllers
             if(key){
                 $scope.business.eventsDurationForGuests[key] = null;
                 return $scope.business.$save().then(function(){
-                    $scope.msg.setMsg('Duration for guests was Removed!');
+                    toastr.options = {
+                        "closeButton": true,
+                        "positionClass": "toast-bottom-right",
+                        "timeOut": "3000"
+                    };
+                    toastr.success("Duration for guests was Removed!")
+
                 });
             }
-            $scope.err = "Error!"
+            toastr.options = {
+                "closeButton": true,
+                "positionClass": "toast-bottom-right",
+                "timeOut": "3000"
+            };
+            return toastr.error("Error!")
         };
 
         $scope.saveGuestsPer15 = function(){
             return $scope.business.$save().then(function(){
-                $scope.msg.setMsg('Guests per 15 minutes was saved!');
+                toastr.options = {
+                    "closeButton": true,
+                    "positionClass": "toast-bottom-right",
+                    "timeOut": "3000"
+                };
+                toastr.success("Guests per 15 minutes was saved!")
             });
         };
 

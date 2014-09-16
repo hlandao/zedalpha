@@ -27,7 +27,8 @@
     "raphael.free_transform": "*",
     "pickadate": "~3.5.3",
     "angular-loggly-logger": "*",
-    "raphael.json": "*"
+    "raphael.json": "*",
+    "toastr": "~2.0.1"
   },
   "devDependencies": {
     "angular-mocks": "1.2.x",
