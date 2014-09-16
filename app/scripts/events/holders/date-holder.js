@@ -2,7 +2,7 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .service('DateHolder', function($rootScope, DateHelpers){
+    .service('DateHolder', function($rootScope, DateHelpers, DateFormatFirebase){
 
         var self = this,
             clockInitialized = false,
@@ -52,6 +52,12 @@ zedAlphaServices
             self.changedByUser = true;
         }
 
+        this.goToEvent = function(event){
+            if(!event) return;
+            self.changedByUser = true;
+            self.currentClock = event.data.startTime.clone();
+            self.currentDate = moment(event.data.baseDate, DateFormatFirebase);
+        }
 
         $rootScope.$watch(function(){
             return self.currentClock;
