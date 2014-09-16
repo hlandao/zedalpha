@@ -21,6 +21,12 @@ gulp.task('vendorDist', function () {
         .pipe(gulp.dest('dist/vendor'))
 });
 
+gulp.task('config', function () {
+    return gulp.src('app/scripts/config.json')
+        .pipe(gulp.dest('dist/scripts/'))
+});
+
+
 
 
 gulp.task('scripts', function () {
@@ -84,8 +90,9 @@ gulp.task('images', function () {
     .pipe($.size());
 });
 
+var mainBowerFiles = require('main-bower-files');
 gulp.task('fonts', function () {
-  return $.bowerFiles()
+  return gulp.src(mainBowerFiles())
     .pipe($.filter('**/*.{eot,svg,ttf,woff}'))
     .pipe($.flatten())
     .pipe(gulp.dest('dist/fonts'))
@@ -104,4 +111,4 @@ gulp.task('clean', function () {
   return gulp.src(['.tmp', 'dist'], { read: false }).pipe($.clean());
 });
 
-gulp.task('build', ['html', 'partials', 'images', 'fonts','bootstrapFonts','vendorDist']);
+gulp.task('build', ['html', 'partials', 'images', 'fonts','bootstrapFonts','vendorDist','config']);
