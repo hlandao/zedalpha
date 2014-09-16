@@ -330,8 +330,6 @@ zedAlphaServices
             if (event.$isNew()) {
                 return self.collection.$add(event.toObject()).then(function(){
                     sortEvents();
-                }).catch(function(){
-
                 });
             } else {
                 return getCollectionForDate(null, null, event).then(function(collection){
@@ -439,6 +437,17 @@ zedAlphaServices
         });
 
 
+        $rootScope.$on('$firebaseSimpleLogin:logout', function(){
+            lastSubName = null,
+            lastBusinessId = null;
+
+            self.collection = null;
+            self.sorted = {};
+            self.filters = {
+                status : null,
+                query : null
+            };
+        });
 //        self.updateEvents();
     });
 
