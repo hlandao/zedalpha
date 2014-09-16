@@ -136,7 +136,23 @@ zedAlphaDirectives
 
                         var json = JSON.stringify(arr);
                         BusinessHolder.business.map = json;
-                        BusinessHolder.business.$save();
+                        BusinessHolder.business.$save().then(function(){
+                            toastr.options = {
+                                "closeButton": true,
+                                "positionClass": "toast-bottom-right",
+                                "timeOut": "3000"
+                            };
+                            return toastr.success("Saved!")
+
+                        }).catch(function(){
+                            toastr.options = {
+                                "closeButton": true,
+                                "positionClass": "toast-bottom-right",
+                                "timeOut": "3000"
+                            };
+                            return toastr.error("Error!")
+
+                        });
                     });
                 };
 
