@@ -51,7 +51,7 @@ zedAlphaDirectives
                     }else{
                         update.apply(this,arguments);
                     }
-                });
+                }, true);
             }
         };
     });

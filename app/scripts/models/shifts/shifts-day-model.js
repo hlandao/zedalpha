@@ -359,7 +359,7 @@ zedAlphaServices
 
 
         return EditableShiftsDay;
-    }).factory('AllDayShift', function(DateHolder,FullDateFormat){
+    }).factory('AllDayShift', function(DateHolder,FullDateFormat, ShiftsDayPrototypeHelpers){
         var defaults = {
             active : true,
             name : "ENTIRE_DAY"
@@ -383,7 +383,7 @@ zedAlphaServices
                 startTime : startTime,
                 duration : duration,
                 defaultTime : defaultTime
-            })
+            }, ShiftsDayPrototypeHelpers);
         }
     });
 

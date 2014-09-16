@@ -27,12 +27,12 @@ zedAlphaControllers
                 return;
             }
             CloseOpenControls();
+            if(occasionalOrDestination == 'occasional') $scope.goToNow();
             $scope.newEvent = EventsCollection.createNewEvent({
                 occasionalOrDestination : occasionalOrDestination,
                 startTime : startTime,
                 seatsDic : seatsDic
             });
-            if($scope.newEvent.isOccasional) $scope.goToNow();
         };
 
         $scope.closeNewEvent = function(success){
@@ -69,7 +69,6 @@ zedAlphaControllers
 
         $scope.closeEditedEvent = function(success){
             if(success){
-                debugger;
                 DateHolder.goToClock($scope.editedEvent.data.startTime);
             }
             $scope.editedEvent = null;
@@ -102,12 +101,10 @@ zedAlphaControllers
 
         $scope.selectAllDayShift = function(){
             ShiftsDayHolder.selectedShift = AllDayShift();
+            $scope.selectFilter('ENTIRE_SHIFT');
+            $scope.$emit('$requestSortEvents');
         };
 
-
-        $scope.goToEntireShift = function(){
-            DateHolder.isEntireShift = true;
-        };
 
         $scope.goToNow = function(e){
             if(e) e.preventDefault();
@@ -149,8 +146,8 @@ zedAlphaControllers
                         $scope.eventToSwitch = null;
                         $scope.switchMode = false;
                     }, function(error){
-                        $scope.eventToSwitch = null;
-                        $scope.switchMode = false;
+//                        $scope.eventToSwitch = null;
+//                        $scope.switchMode = false;
                         if(error && error.error){
                             var localizedError = $filter('translate')(error.error);
                             areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});

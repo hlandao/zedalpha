@@ -30,7 +30,7 @@ zedAlphaServices
             this.currentClock = newDateMoment;
             if(updateOnlyClock) return;
             this.currentDate = currentDate;
-            self.changedByUser = true;
+            if(!init) self.changedByUser = true;
         }
 
         this.goToClock = function(clock){
@@ -71,7 +71,6 @@ zedAlphaServices
                 dateInitialized = true;
                 return;
             }
-
 
             if(!self.changedByUser){
                 if(self.currentClock){

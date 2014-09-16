@@ -41,7 +41,7 @@ zedAlphaServices
 
 
                 // set the start time
-                var startTime = newEventData.startTime || (this.data.isOccasional ? moment(Date.now()) : DateHolder.currentClock.clone());
+                var startTime = newEventData.startTime || (this.data.isOccasional ? moment() : DateHolder.currentClock.clone());
                 if (!startTime || !startTime.isValid || !startTime.isValid()) throw new TypeError("cannot create new event due to invalid start time, should be a moment obj.");
                 startTime.minute(DateHelpers.findClosestIntervalToDate(startTime));
                 this.data.startTime = startTime.seconds(0);

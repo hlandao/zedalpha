@@ -365,7 +365,6 @@ zedAlphaServices
 
         this.changeBaseDateForEvent = function(event, newBaseDateMoment){
             var oldBaseDate = moment(event.data.baseDate, DateFormatFirebase);
-            debugger;
             if(DateHelpers.isMomentSameDate(oldBaseDate, newBaseDateMoment) ){
                 var defer = $q.defer();
                 defer.resolve();
@@ -402,9 +401,10 @@ zedAlphaServices
             return $q.all(checkPromises).then(function(){
                 var savePromises = [self.saveWithValidation(e1, true), self.saveWithValidation(e1, true)];
                 return $q.all(savePromises);
-            }, function(){
+            }, function(error){
                 e1.data.seats = e1OriginalSeats;
                 e2.data.seats = e2OriginalSeats;
+                return $q.reject(error);
             });
 
         }
@@ -419,6 +419,10 @@ zedAlphaServices
         });
 
         $rootScope.$on('$clockWasChanged', function(){
+            sortEvents();
+        });
+
+        $rootScope.$on('$requestSortEvents', function(){
             sortEvents();
         });
 

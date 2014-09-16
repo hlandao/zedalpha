@@ -11,7 +11,6 @@ zedAlphaControllers
         // check if ID is available
         // get business data from business holder
         $scope.business = BusinessHolder.business;
-        debugger;
         console.log('$scope.business',$scope.business);
 
         $scope.msg = new Alert(4000);

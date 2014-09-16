@@ -43,6 +43,7 @@ zedAlphaControllers
 
         Localizer.init();
 
+        $scope.DEBUG = true;
     }).controller('HomeCtrl', function($scope, $stateParams,$state, $timeout,Localizer, loginService){
 
     });

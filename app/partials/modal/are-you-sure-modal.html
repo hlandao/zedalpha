@@ -11,6 +11,8 @@
         <p> {{'NAME' | translate }} : {{ extraDetails.event.data.name }} </p>
         <p> {{'START_TIME' | translate }} : {{ extraDetails.event.data.startTime | momentFilter : 'HH:mm' }} </p>
         <p> {{'END_TIME' | translate }} : {{ extraDetails.event.data.endTime | momentFilter : 'HH:mm' }} </p>
+        <p> {{'SEATS' | translate }} : {{ extraDetails.event.data.seats  | seats }} </p>
+
     </div>
 </div>
 <div class="modal-footer">
