@@ -43,7 +43,7 @@ zedAlphaServices
         return function (ref) {
             return $firebase(ref, {arrayFactory : EventsFactory}).$asArray();
         }
-    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase,DateHelpers,$timeout) {
+    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase,DateHelpers,$timeout,areYouSureModalFactory) {
         var self = this,
             lastSubName = null,
             lastBusinessId = null;
@@ -60,7 +60,7 @@ zedAlphaServices
             return date.format('YYYY-MM-DD');
         };
 
-        var    getCollectionForDate = function(businessId, _date, event){
+        var  getCollectionForDate = function(businessId, _date, event){
             var subName;
             var date = DateHelpers.isMomentValid(_date) ? _date.clone() : null;
 
@@ -76,6 +76,7 @@ zedAlphaServices
             }
             businessId = businessId || BusinessHolder.business.$id;
 
+
             if(subName == lastSubName && lastBusinessId == businessId){
                 return $timeout(function(){
                     return self.collection;
@@ -86,7 +87,7 @@ zedAlphaServices
             var $EventCollection = EventsCollectionGenerator(ref);
 
             return $EventCollection.$loaded().then(function(collection){
-                collection.$setSubName(subName);
+                    collection.$setSubName(subName);
                 return collection;
             });
         };
@@ -327,27 +328,30 @@ zedAlphaServices
 
 
         this.saveAfterValidation = function (event) {
-            if (event.$isNew()) {
-                return self.collection.$add(event.toObject()).then(function(){
-                    sortEvents();
-                });
-            } else {
-                return getCollectionForDate(null, null, event).then(function(collection){
-                    if(event.changedBaseDate){
-                        var eventDataCloned = event.toObject();
-                        return self.collection.$remove(event).then(function(){
-                            return collection.$add(eventDataCloned).then(function(){
-                                sortEvents();
-                            });
+
+            return getCollectionForDate(null, null, event).then(function(collection){
+                if(event.changedBaseDate){
+                    var eventDataCloned = event.toObject();
+                    return self.collection.$remove(event).then(function(){
+                        return collection.$add(eventDataCloned).then(function(){
+                            sortEvents();
                         });
-                    }else{
+                    });
+                }else{
+                    if (event.$isNew()) {
+                        return collection.$add(event.toObject()).then(function(){
+                            sortEvents();
+                        });
+                    } else {
                         return collection.$save(event).then(function(){
                             sortEvents();
                         });
-                    }
 
-                });
-            }
+                    }
+                }
+
+            });
+
         };
 
         this.remove = function(event){
@@ -407,6 +411,19 @@ zedAlphaServices
 
         }
 
+
+        this.resetEventsForBusiness = function(){
+            var defer = $q.defer();
+            areYouSureModalFactory(null, 'Are you sure you want to remove all the events from ' + BusinessHolder.business.name + ' ?').result.then(function(){
+                var ref = firebaseRef('events/' + BusinessHolder.business.$id);
+                ref.remove(function(){
+                    $rootScope.$apply(function(){
+                        defer.resolve();
+                    });
+                });
+            }, defer.reject);
+            return defer.promise;
+        }
 
         $rootScope.$on('$businessHolderChanged', function(){
             updateEvents();
