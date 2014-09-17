@@ -1,0 +1,51 @@
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2> Migrate Events from Zed Alpha</h2>
+            <table class="table table-bordered table-hover table-striped">
+                <tr>
+                    <td colspan="2">
+                        <form class="form-inline" role="form">
+                            <div class="form-group">
+                                <select ng-options="user.email for user in oldUsersCollection" ng-model="selectedUser" ng-change="selectUser()"></select>
+                                <select ng-options="business as business.name for (k, business)  in selectedUser.businesses" ng-model="selectedBusiness"></select>
+                            </div>
+                            <button class="btn btn-default" ng-click="copy()" type="button" ng-disabled="isWorking || !selectedBusiness"> Copy Events </button>
+                            <button class="btn btn-default" ng-click="reset()" type="button"> Reset New Business Events</button>
+                        </form>
+
+                    </td>
+                </tr>
+            </table>
+
+            <table class="table table-bordered table-hover table-striped" ng-if="isWorking || done">
+                <tr>
+                    <td colspan="2">
+                        Migration Results
+                    </td>
+                </tr>
+                <tr ng-if="isWorking">
+                    <td colspan="2">
+                        Proccessing {{nowInWork}}/{{isWorking}}
+                    </td>
+                </tr>
+                <tr ng-if="done">
+                    <td colspan="2">Ok : {{summary.ok}}, Error : {{summary.error}}</td>
+                </tr>
+
+                <tr>
+                    <td> Event </td>
+                    <td> Result </td>
+                </tr>
+                <tr ng-repeat="event in log">
+                    <td>{{event.eventString}}</td>
+                    <td>{{ event.result }}</td>
+                </tr>
+            </table>
+
+
+        </div>
+    </div>
+
+
+</div>
