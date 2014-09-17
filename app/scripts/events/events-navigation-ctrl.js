@@ -12,7 +12,7 @@ zedAlphaControllers
 //        }
 
         var countAll = function(){
-            if(!EventsCollection.collection || !EventsCollection.collection.length) return;
+            if(!EventsCollection.collection || !EventsCollection.collection.length || !ShiftsDayHolder.currentDay) return;
             var totalOrdersCount = 0, totalGuestsCount = 0, guestsLeftCount = 0, totalWalkinsCount= 0;
             var currentEvent, eventGuests, key;
             for (var i = 0; i < EventsCollection.collection.length; ++i){
