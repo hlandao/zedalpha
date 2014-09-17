@@ -129,6 +129,14 @@ angular.module('zedalpha.routes', [])
                 businessResolver : businessResolver
             }
 
+        }).state('business.eventsMigration',{
+            url : '/:businessId/eventsMigration',
+            templateUrl: '/partials/admin/business/events-migration-business.html',
+            controller: 'EventsMigrationCtrl',
+            resolve : {
+                businessResolver : businessResolver
+            }
+
         }).state('events', {
             abstract : true,
             authRequired: true,
