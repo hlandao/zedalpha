@@ -5,11 +5,13 @@ zedAlphaServices
     .value('NotCollidingEventStatuses', ['NO_SHOW', 'FINISHED', 'CANCELED'])
     .factory('Event', function ($q, DateHolder, DateHelpers, $injector, $filter, BusinessHolder, ShiftsDayHolder, NotCollidingEventStatuses,DateFormatFirebase) {
 
-        function Event(snapshot, newEventData) {
+        function Event(snapshot, newEventData, eventData) {
             if (snapshot) {
                 return this.$initWithFirebaseSnapshot(snapshot);
             } else if (newEventData) {
                 return this.$initNewEvent(newEventData);
+            }else if(eventData){
+                return this.$initWithEventData(eventData);
             } else {
                 return this;
             }
@@ -65,6 +67,11 @@ zedAlphaServices
                 return this;
             },
 
+            $initWithEventData : function(eventData){
+                this.data = {};
+                angular.extend(this.data,eventData);
+                return this;
+            },
             $update: function (snapshot) {
                 angular.extend(this.data, snapshot.val());
                 this.data.startTime = moment(this.data.startTime);
