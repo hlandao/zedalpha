@@ -118,7 +118,7 @@ zedAlphaDirectives
             }
         };
     })
-    .directive('eventPhoneValidator', function(){
+    .directive('eventPhoneValidator', function(CustomersHolder){
         return {
             priority : 0,
             require : ['ngModel'],
@@ -134,6 +134,70 @@ zedAlphaDirectives
                         return true;
                     }
                 }
+
+                scope.getSuggestions = function(val){
+                    return CustomersHolder.collection.$getSuggestions(val);
+                }
+
+                scope.formatTypeaheadResult = function(){
+                    console.log('formatTypeaheadResult',arguments);
+                }
+
+                scope.phoneTypeaheadSelected = function($item, $model, $label){
+                    console.log('phoneTypeaheadSelected',arguments);
+
+                }
+
+                scope.typeaheadLabel = function(item){
+                    if(item){
+                        return "0" + item.$id + " - " + item.name;
+                    }
+                }
+            }
+        }
+    }).directive('eventPhoneTypeahead', function(CustomersHolder){
+        return {
+            scope : {
+                event : "=eventPhoneTypeahead"
+            },
+            replace : true,
+            template : '<div ng-class="{open : isOpened}" style="width:100%;position:relative;">' +
+                '<ul class="dropdown-menu" ng-show="isOpened">' +
+                            '<li class="" ng-repeat="item in suggestions">' +
+                                '<a href="#" ng-click="select(item,$event)">{{item.$getPhoneNumber()}} - {{item.name}}</a>' +
+                            '</li>' +
+                         '</ul></div>',
+            link : function(scope, element, attrs){
+               var updatedByMe, initalized;
+               scope.isOpened = false;
+               scope.select = function(item, e){
+                   scope.isOpened = false;
+                   updatedByMe = true;
+                   e.preventDefault();
+                   e.stopPropagation();
+                   scope.event.phone = item.$getPhoneNumber();
+                   if(item.name) scope.event.name = item.name;
+                   if(item.contactComment) scope.event.contactComment=  item.contactComment;
+               }
+
+               scope.$watch('event.phone', function(newVal){
+
+                   if(!initalized){
+                       return initalized = true;
+                   }
+
+                    if(updatedByMe){
+                        return updatedByMe = false;
+                    }
+                   if(!newVal) return;
+                   scope.suggestions =  CustomersHolder.collection.$getSuggestions(newVal);
+                   if(scope.suggestions && scope.suggestions.length){
+                       scope.isOpened = true;
+                   }else{
+                       scope.isOpened = false;
+                   }
+
+               });
             }
         }
     }).directive('eventNameValidator', function(){

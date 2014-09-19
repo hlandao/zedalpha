@@ -43,7 +43,7 @@ zedAlphaServices
         return function (ref) {
             return $firebase(ref, {arrayFactory : EventsFactory}).$asArray();
         }
-    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase,DateHelpers,$timeout,areYouSureModalFactory) {
+    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase,DateHelpers,$timeout,areYouSureModalFactory, CustomerIdFromPhone, CustomerGenerator) {
         var self = this,
             lastSubName = null,
             lastBusinessId = null;
@@ -333,18 +333,23 @@ zedAlphaServices
                 if(event.changedBaseDate){
                     var eventDataCloned = event.toObject();
                     return self.collection.$remove(event).then(function(){
-                        return collection.$add(eventDataCloned).then(function(){
+                        return collection.$add(eventDataCloned).then(function(snap){
                             sortEvents();
+                            var addedEvent=self.collection.$getRecord(snap.name())
+                            updateCustomerForEvent(addedEvent);
                         });
                     });
                 }else{
                     if (event.$isNew()) {
-                        return collection.$add(event.toObject()).then(function(){
+                        return collection.$add(event.toObject()).then(function(snap){
                             sortEvents();
+                            var addedEvent=self.collection.$getRecord(snap.name())
+                            updateCustomerForEvent(addedEvent);
                         });
                     } else {
                         return collection.$save(event).then(function(){
                             sortEvents();
+                            updateCustomerForEvent(event);
                         });
 
                     }
@@ -424,6 +429,27 @@ zedAlphaServices
             }, defer.reject);
             return defer.promise;
         }
+
+        // Customers
+        var updateCustomerForEvent = function(event){
+            debugger;
+            console.log('updateCustomerForEvent', event);
+            if(!event.$id) return;
+            var customerId = CustomerIdFromPhone(event.data.phone);
+            if(!customerId) return;
+            CustomerGenerator(customerId).$loaded().then(function(customer){
+                if(customer){
+                    customer.name = event.data.name;
+                    customer.contactComment = event.data.contactComment;
+                    customer.events = customer.events || {};
+                    customer.events[event.$id] = true;
+                }
+                return customer.$save();
+            });
+        }
+
+
+        // Watchers
 
         $rootScope.$on('$businessHolderChanged', function(){
             updateEvents();

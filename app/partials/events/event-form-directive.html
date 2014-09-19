@@ -31,8 +31,11 @@
         <div class="form-group" ng-show="!event.isOccasional">
             <label class="col-sm-4 control-label">{{ 'PHONE' | translate }}</label>
             <div class="col-sm-8">
-                <input event-phone-validator name="phone" type="phone" class="form-control phone-input" ng-class="{'ng-required' : (requiredInputs.phone)}" ng-model="event.phone" placeholder="{{ 'PHONE' | translate }}" hl-event-phone-validator is-occasional="event.isOccasional">
+                <input event-phone-validator name="phone" type="phone" class="form-control phone-input" ng-class="{'ng-required' : (requiredInputs.phone)}" ng-model="event.phone" placeholder="{{ 'PHONE' | translate }}" hl-event-phone-validator is-occasional="event.isOccasional"">
+                <div style="width:100%;position:relative;"  event-phone-typeahead="event"></div>
+
             </div>
+
         </div>
 
         <div class="form-group">
