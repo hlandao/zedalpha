@@ -332,13 +332,12 @@ zedAlphaServices
             return getCollectionForDate(null, null, event).then(function(collection){
                 if(event.changedBaseDate){
                     var eventDataCloned = event.toObject();
-                    return self.collection.$remove(event).then(function(){
-                        return collection.$add(eventDataCloned).then(function(snap){
-                            sortEvents();
-                            var addedEvent=self.collection.$getRecord(snap.name())
-                            updateCustomerForEvent(addedEvent);
-                        });
+                    return collection.$add(eventDataCloned).then(function(snap){
+                        sortEvents();
+                        var addedEvent=self.collection.$getRecord(snap.name())
+                        updateCustomerForEvent(addedEvent);
                     });
+
                 }else{
                     if (event.$isNew()) {
                         return collection.$add(event.toObject()).then(function(snap){
@@ -387,9 +386,14 @@ zedAlphaServices
                     event.$changeBaseDate(oldBaseDate);
                     return $q.reject({error : 'ERROR_MSG_COLLISION', withEvent : collision});
                 }else{
-                    event.myNewCollection = collection;
-                    event.changedBaseDate = true;
-                    return true;
+                    self.collection.$remove(event).then(function(){
+                        event.myNewCollection = collection;
+                        event.changedBaseDate = true;
+                        return true;
+                    }, function(){
+                        event.$changeBaseDate(oldBaseDate);
+                        return $q.reject({error : 'ERROR_MSG_COLLISION', withEvent : collision});
+                    });
                 }
             });
         };
@@ -432,9 +436,8 @@ zedAlphaServices
 
         // Customers
         var updateCustomerForEvent = function(event){
-            debugger;
             console.log('updateCustomerForEvent', event);
-            if(!event.$id) return;
+            if(event && event.$id) return;
             var customerId = CustomerIdFromPhone(event.data.phone);
             if(!customerId) return;
             CustomerGenerator(customerId).$loaded().then(function(customer){

@@ -327,7 +327,7 @@ zedAlphaDirectives
 
             }
         }
-    }).directive('eventFormBaseDatePicker', function(DateFormatFirebase, EventsCollection, areYouSureModalFactory, $filter){
+    }).directive('eventFormBaseDatePicker', function(DateFormatFirebase, EventsCollection, areYouSureModalFactory, $filter,DateHolder){
         return {
             replace : false,
             require : ['ngModel'],
@@ -346,7 +346,7 @@ zedAlphaDirectives
 
                 scope.dateChanged = function(){
                     EventsCollection.changeBaseDateForEvent(scope.eventObj, scope.date).then(function(){
-
+                        DateHolder.goToEvent(scope.eventObj);
                     }).catch(function(error){
                         if(error && error.error){
                             var localizedError = $filter('translate')(error.error);

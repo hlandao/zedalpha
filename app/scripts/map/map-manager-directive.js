@@ -285,6 +285,12 @@ zedAlphaDirectives
                         nowEvents.push(scope.$parent.newEvent);
                     }
 
+                    if(scope.$parent.editedEvent){
+                        nowEvents = nowEvents || [];
+                        nowEvents.push(scope.$parent.editedEvent);
+                    }
+
+
                     setAllShapesToNormal();
                     scope.highlightedShapes = [];
 
