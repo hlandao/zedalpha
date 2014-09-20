@@ -436,14 +436,13 @@ zedAlphaServices
 
         // Customers
         var updateCustomerForEvent = function(event){
-            console.log('updateCustomerForEvent', event);
-            if(event && event.$id) return;
+            if(!event || !event.$id) return;
             var customerId = CustomerIdFromPhone(event.data.phone);
             if(!customerId) return;
             CustomerGenerator(customerId).$loaded().then(function(customer){
                 if(customer){
-                    customer.name = event.data.name;
-                    customer.contactComment = event.data.contactComment;
+                    if(event.data.name) customer.name = event.data.name;
+                    if(event.data.contactComment) customer.contactComment = event.data.contactComment;
                     customer.events = customer.events || {};
                     customer.events[event.$id] = true;
                 }
