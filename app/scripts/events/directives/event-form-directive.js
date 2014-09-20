@@ -47,7 +47,30 @@ zedAlphaDirectives
                   angular.extend($scope.eventObj.data,eventClone);
                }
 
-               $scope.$isNew = function(){
+
+                var validateSeatingOptions = function(){
+                    var result = true;
+                    for(var i in $scope.seatingOptions){
+                        if(!$scope.event.seatingOptions || !$scope.event.seatingOptions[i]){
+                            result=false;
+                            break;
+                        }
+                    }
+                    if(!result){
+                        list = _.map($scope.seatingOptions, function(item){
+                           return item.option;
+                        });
+                        return areYouSureModalFactory(null, "WARNING_EVENT_SEATING_OPTIONS", null, {list : list}).result;
+                    }else{
+                        var defer = $q.defer();
+                        defer.resolve();
+                        return defer.promise;
+                    }
+                }
+
+
+
+                $scope.$isNew = function(){
                    return $scope.eventObj.$isNew();
                }
 
@@ -55,30 +78,33 @@ zedAlphaDirectives
                     if(isSaving){
                         return;
                     }
-                    isSaving = true;
-                    EventsCollection.saveWithValidation($scope.eventObj).then(function(output){
-                        if(output && output.warnings && output.warnings.length){
-                            var promises = [];
-                            for (var i = 0; i < output.warnings.length; ++i){
-                                promises.push(areYouSureModalFactory(null, output.warnings[i].warning).result);
-                            }
 
-                            $q.all(promises).then(function(){
-                                EventsCollection.saveWithValidation($scope.eventObj, true);
+                    validateSeatingOptions().then(function(){
+                        EventsCollection.saveWithValidation($scope.eventObj).then(function(output){
+                            if(output && output.warnings && output.warnings.length){
+                                var promises = [];
+                                for (var i = 0; i < output.warnings.length; ++i){
+                                    promises.push(areYouSureModalFactory(null, output.warnings[i].warning).result);
+                                }
+
+                                $q.all(promises).then(function(){
+                                    EventsCollection.saveWithValidation($scope.eventObj, true);
+                                    $scope.closeLinkFN(true);
+                                }, function(){
+                                    isSaving = false;
+                                });
+                            }else{
                                 $scope.closeLinkFN(true);
-                            }, function(){
-                                isSaving = false;
-                            });
-                        }else{
-                            $scope.closeLinkFN(true);
-                        }
-                    }).catch(function(error){
-                        isSaving = false;
-                        if(error && error.error){
-                            var localizedError = $filter('translate')(error.error);
-                            $log.info('[EventForm] error saving event',error);
-                            areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
-                        }
+                            }
+                        }).catch(function(error){
+                            isSaving = false;
+                            if(error && error.error){
+                                var localizedError = $filter('translate')(error.error);
+                                $log.info('[EventForm] error saving event',error);
+                                areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
+                            }
+                        });
+
                     });
                };
 
@@ -119,6 +145,21 @@ zedAlphaDirectives
             }
         };
     })
+    .directive('eventSeatingOptionsValidator', function(SeatsHolder, BusinessHolder){
+        return function(scope, element, attrs){
+
+            var updateSeatingOptions = function(newVal){
+                var seatingOptionsForSeats = SeatsHolder.seatingOptionsForSeats(newVal);
+                var seatingOptions = {};
+                for(var i in seatingOptionsForSeats){
+                    seatingOptions[i] = BusinessHolder.business.seatingOptions[i];
+                }
+                scope.seatingOptions = seatingOptions;
+            };
+
+            scope.$watch('event.seats', updateSeatingOptions);
+        }
+    })
     .directive('eventPhoneValidator', function(CustomersHolder){
         return {
             priority : 0,
@@ -136,24 +177,6 @@ zedAlphaDirectives
                     }
                 }
 
-                scope.getSuggestions = function(val){
-                    return CustomersHolder.collection.$getSuggestions(val);
-                }
-
-                scope.formatTypeaheadResult = function(){
-                    console.log('formatTypeaheadResult',arguments);
-                }
-
-                scope.phoneTypeaheadSelected = function($item, $model, $label){
-                    console.log('phoneTypeaheadSelected',arguments);
-
-                }
-
-                scope.typeaheadLabel = function(item){
-                    if(item){
-                        return "0" + item.$id + " - " + item.name;
-                    }
-                }
             }
         }
     }).directive('eventPhoneTypeahead', function(CustomersHolder){

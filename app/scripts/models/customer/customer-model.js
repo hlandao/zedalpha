@@ -133,7 +133,6 @@ zedAlphaServices
 
             if(newVal){
                 CustomersCollectionGenerator(newVal).$loaded().then(function(collection){
-                    console.log('collection',collection);
                     self.collection = collection
                 })
             }

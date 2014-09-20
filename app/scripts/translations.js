@@ -126,7 +126,7 @@ zedAlphaConfigModule
         "REMOVE_EVENT_WARNING" : "Removing event is irreversible. Are you sure you want to continue ?",
         "SWITCH_EVENT_WARNING" : "Please finish or cancel events switching before continue",
         "NEW_EVENT_WARNING" : "Please finish or cancel adding new event",
-
+        "WARNING_EVENT_SEATING_OPTIONS" : "You haven't checked the entire seating options. Do you want to save anyway ?",
 
         "LOADING_TEXT" : "Loading Zed...",
 
@@ -276,6 +276,9 @@ zedAlphaConfigModule
                 "SWITCH_EVENT_WARNING" : "יש לסיים החלפת שולחנות",
                 "EDIT_EVENT_WARNING" : "יש לסיים עריכת ארוע",
                 "NEW_EVENT_WARNING" : "יש לסיים הוספת ארוע",
+                "WARNING_EVENT_SEATING_OPTIONS" : "לא סימנת את כל אפשרויות ההושבה, האם ברצונך להמשיך בכל זאת ?",
+
+
                 "LOADING_TEXT" : "טוען...",
                 //MAP
                 "ADD_DESTINATION_BUTTON" : "הזמנה חדשה",

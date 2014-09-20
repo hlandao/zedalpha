@@ -62,9 +62,6 @@ zedAlphaServices
                 // set name
                 this.data.name = this.data.isOccasional ? $filter('translate')('OCCASIONAL') : '';
 
-                // seating options
-                this.data.seatingOptions = newEventData.seatingOptions || {};
-
                 // set createdAt date
                 this.data.createdAt = moment().toJSON();
                 return this;

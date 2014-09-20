@@ -12,8 +12,10 @@
         <p> {{'START_TIME' | translate }} : {{ extraDetails.event.data.startTime | momentFilter : 'HH:mm' }} </p>
         <p> {{'END_TIME' | translate }} : {{ extraDetails.event.data.endTime | momentFilter : 'HH:mm' }} </p>
         <p> {{'SEATS' | translate }} : {{ extraDetails.event.data.seats  | seats }} </p>
-
     </div>
+    <ul ng-if="extraDetails.list">
+        <li ng-repeat="item in extraDetails.list"> {{item}} </li>
+    </ul>
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" ng-click="ok()" ng-show="buttons.ok">OK</button>

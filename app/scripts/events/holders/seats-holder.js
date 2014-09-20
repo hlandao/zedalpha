@@ -4,14 +4,29 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory('EventsSeatsHolder', function($rootScope, BusinessHolder){
+    .service('SeatsHolder', function($rootScope, BusinessHolder){
 
-        var _seats = {};
+        var self = this;
+
+
+        self.seatingOptionsForSeats = function(seatsObject){
+            var output = {}
+            for(var i in seatsObject){
+                var seat = self.seats[i];
+                if(seat){
+                    angular.extend(output, seat.seatingOptions);
+                }
+
+            }
+
+            return output;
+        }
+
 
         var update = function(){
             var map = BusinessHolder.business.map;
                 if(map){
-                    _seats.seats = extractSeatsFromMap(map);
+                    self.seats = extractSeatsFromMap(map);
                 }
         };
 
@@ -20,19 +35,30 @@ zedAlphaServices
             angular.forEach(map, function(element){
                 var data = element.data;
                 if(data && data.seatId){
-                    output[data.seatNumber] = data.seatId;
+                    output[data.seatNumber] = output[data.seatNumber] || {};
+
+                    angular.extend(output[data.seatNumber], {
+                        seatId : data.seatId
+                    });
+
+
+                    if(data.seatingOptions){
+                        output[data.seatNumber].seatingOptions = data.seatingOptions
+                    }
                 }
             });
+
+            console.log('output',output);
 
             return output;
         };
 
-        if(BusinessHolder.business) update();
-
+        if(BusinessHolder.business){
+            update();
+        }
         $rootScope.$on('$businessHolderChanged', function(){
            update();
         });
 
-        return _seats;
     });
 

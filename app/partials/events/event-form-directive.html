@@ -106,10 +106,10 @@
         </div>
 
 
-        <div class="form-group">
+        <div class="form-group" event-seating-options-validator ng-show="seatingOptions">
             <label class="col-sm-4 control-label">{{ 'SEATING_OPTIONS' | translate }}</label>
             <div class="col-sm-8">
-                <div ng-repeat="(id,item) in business.seatingOptions"> <input type="checkbox" ng-model="event.seatingOptions[id]"> {{item.option}}</div>
+                <div ng-repeat="(id,item) in seatingOptions"> <input type="checkbox" ng-model="event.seatingOptions[id ]"> {{item.option}}</div>
             </div>
         </div>
 

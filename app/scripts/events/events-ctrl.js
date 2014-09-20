@@ -5,7 +5,7 @@ var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.contro
 
 zedAlphaControllers
     .value('StatusFilters', ['ALL','SEATED','ORDERED','OCCASIONAL'])
-    .controller('EventsCtrl', function($scope, $log, DateHolder, Event, $filter, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder, EventsCollection, StatusFilters, areYouSureModalFactory){
+    .controller('EventsCtrl', function($scope, $log, DateHolder, Event, $filter, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder, EventsCollection, StatusFilters, areYouSureModalFactory, SeatsHolder){
 
         $scope.DateHolder = DateHolder;
         $scope.ShiftsDayHolder = ShiftsDayHolder;
@@ -15,7 +15,7 @@ zedAlphaControllers
 
 
         // --------- New event ----------- //
-        $scope.newEventWithSeatsDic = function(occasionalOrDestination, seatsDic, startTime, seatingOptions){
+        $scope.newEventWithSeatsDic = function(occasionalOrDestination, seatsDic, startTime){
             if($scope.switchMode){
                 var localizedError = $filter('translate')('SWITCH_EVENT_WARNING');
                 alert(localizedError)
@@ -30,8 +30,7 @@ zedAlphaControllers
             $scope.newEvent = EventsCollection.createNewEvent({
                 occasionalOrDestination : occasionalOrDestination,
                 startTime : startTime,
-                seatsDic : seatsDic,
-                seatingOptions : seatingOptions
+                seatsDic : seatsDic
             });
         };
 
@@ -171,7 +170,6 @@ zedAlphaControllers
 
     }).directive('eventsListSearchBox', function($timeout){
         return function(scope, element, attrs){
-            console.log('!!');
             element.focus(function(){
                 scope.$apply(function(){
                     scope.searchActive = true;
