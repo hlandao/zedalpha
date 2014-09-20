@@ -42,7 +42,7 @@ zedAlphaControllers
                     "positionClass": "toast-bottom-right",
                     "timeOut": "3000"
                 };
-                return toastr.success("Error removing status!")
+                return toastr.success("Error adding new status!")
             });
 
 

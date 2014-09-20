@@ -1,7 +1,7 @@
 var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directives', []);
 
 zedAlphaDirectives
-        .directive('mapEditor', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope) {
+        .directive('mapEditor', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope, BusinessHolder) {
         return {
             restrict: 'E',
             replace : true,
@@ -88,6 +88,11 @@ zedAlphaDirectives
                     scope.save();
                 };
 
+                scope.seatingOptionsChanged = function(shape){
+                    shape.updateSeatingOptions();
+                    scope.save();
+                }
+
                 var container = $("#map");
                 var paper = Raphael('map', container.width(), container.height());
                 var panZoom = paper.panzoom({ initialZoom: 4, initialPosition: { x: 0, y: 0} });
@@ -127,7 +132,10 @@ zedAlphaDirectives
                             return el.data();
                         });
 
+
+
                         var arr = JSON.parse(jsonStr);
+
                         for (var i = 0; i < arr.length; ++i){
                             if(!arr[i].data || !arr[i].data.type){
                                 arr.splice(i--, 1);
@@ -225,10 +233,12 @@ zedAlphaDirectives
                         }
                         var seatId = el.data('seatId');
                         var seatNumber = el.data('seatNumber');
+                        var seatingOptions = el.data('seatingOptions');
 
                         if(seatId && seatNumber){
                             sortedSeats[seatId] = sortedSeats[seatId] || [];
                             sortedSeats[seatId].push(el);
+
                         }else if (seatId){
                             decorativeShapes[seatId] = decorativeShapes[seatId] || [];
                             decorativeShapes[seatId].push(el);

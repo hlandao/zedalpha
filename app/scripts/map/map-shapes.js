@@ -257,21 +257,24 @@ SeatShape.prototype.initFromObjectAndSeatNumber = function(paper, shapeObject, s
 }
 
 SeatShape.prototype.initFromShapesArr = function(){
-    var seatNumber, seatId;
+    var seatNumber, seatId, seatingOptions;
     this.shapesSet = this.paper.set();
     var arr = this.shapesArr;
     for (var i = 0 ; i  <  arr.length; ++i){
         seatNumber = this.seatNumber || seatNumber || arr[i].data('seatNumber');
         seatId = seatId || arr[i].data('seatId');
+        seatingOptions = seatingOptions || arr[i].data('seatingOptions');
         this.shapesSet.push(arr[i]);
     }
     this.shape = this.shapesSet[0];
     this.text = this.shapesSet[1];
     this.id = seatId;
     this.seatNumber = seatNumber;
+    this.seatingOptions = seatingOptions;
     this.shapesSet.data('seatId', seatId);
     this.shapesSet.data('type','SeatShape');
     this.shapesSet.data('seatNumber',seatNumber);
+    this.shapesSet.data('seatingOptions',seatingOptions);
     this.cancelHighlight();
 };
 
@@ -313,6 +316,13 @@ SeatShape.prototype.updateSeatNumber = function(){
     this.shapesSet[1].data('seatNumber', this.seatNumber);
     this.shapesSet[1].attr({text : "" + this.seatNumber + ""});
 }
+
+SeatShape.prototype.updateSeatingOptions = function(){
+    this.shapesSet.data('seatingOptions', this.seatingOptions);
+    this.shapesSet[0].data('seatingOptions', this.seatingOptions);
+    this.shapesSet[1].data('seatingOptions', this.seatingOptions);
+}
+
 
 SeatShape.prototype.removeFromPaper = function(){
     this.ft.unplug();

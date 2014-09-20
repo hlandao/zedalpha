@@ -237,7 +237,7 @@ zedAlphaDirectives
 
                 scope.newEventForSelectedShaped = function(occasionalOrDestination,e){
                     e.preventDefault();
-                    scope.$parent.newEventWithSeatsDic(occasionalOrDestination, shapesArrToSeatsDic());
+                    scope.$parent.newEventWithSeatsDic(occasionalOrDestination, shapesArrToSeatsDic(), null, shapesArrToSeatingOptions());
                     hideSeatMenu();
                     $timeout(renderMapWithEvents,10);
                 };
@@ -248,6 +248,16 @@ zedAlphaDirectives
                         output[shape.seatString()] = true;
                     });
                     return output;
+                }
+
+
+                var shapesArrToSeatingOptions = function(){
+                    var output = {}
+                    angular.forEach(scope.highlightedShapes, function(shape){
+                        angular.extend(output, shape.seatingOptions);
+                    });
+                    return output;
+
                 }
 
 

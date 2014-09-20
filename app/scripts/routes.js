@@ -136,7 +136,13 @@ angular.module('zedalpha.routes', [])
             resolve : {
                 businessResolver : businessResolver
             }
-
+        }).state('business.seatingOptions',{
+            url : '/:businessId/seatingOptions',
+            templateUrl: '/partials/admin/business/seating-options.business.html',
+            controller: 'SeatingOptionsCtrl',
+            resolve : {
+                businessResolver : businessResolver
+            }
         }).state('events', {
             abstract : true,
             authRequired: true,

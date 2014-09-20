@@ -28,6 +28,7 @@ zedAlphaConfigModule
         EDIT_EVENTS_STATUSES: 'Edit Events Statuses',
         EVENTS_MANAGEMENT: 'Events',
         EDIT_EVENTS_DURATION: 'Events Durations',
+        EDIT_EVENTS_STATUSES: 'Edit Seating Options',
         // MAP
         NO_RECENT_EVENTS_FOR_SEAT : 'No recent events for seat',
 
@@ -35,6 +36,8 @@ zedAlphaConfigModule
         CREATE: 'Create',
         // EVENTS
         STATUS: 'Status',
+        "SEATING_OPTIONS" : "Seating Options",
+
         NAME: 'Name',
         GUESTS_AMOUNT: 'Guests',
         GUESTS_AMOUNT_SHORT: '#',
@@ -173,12 +176,14 @@ zedAlphaConfigModule
                 "EDIT_EVENTS_STATUSES": "סטטוסים",
                 "EVENTS_MANAGEMENT": 'ניהול הזמנות',
                 "EDIT_EVENTS_DURATION": 'שעות וסועדים',
+                "EDIT_SEATING_OPTIONS": 'אפשרויות הושבה',
                 "NO_RECENT_EVENTS_FOR_SEAT" : 'לא נמצאו הזמנות אחרונות לשולחן זה',
 
                 "CREATE": "צור",
                 "SWITCH_TABLES" : "החלף",
                 "SWITCH_MODE_TITLE" : "מצב החלפה - בחר 2 הזמנות",
                 "STATUS": "מצב",
+                "SEATING_OPTIONS" : "אפשרויות הושבה",
                 "NAME": "שם מלא",
                 "GUESTS_AMOUNT": "מספר אורחים",
                 "GUESTS_AMOUNT_SHORT": '#',

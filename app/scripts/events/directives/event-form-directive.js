@@ -2,7 +2,7 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 
 
 zedAlphaDirectives
-    .directive('hlEventForm', function(EventsCollection,areYouSureModalFactory, $filter, FullDateFormat, $q, $log, ShiftsDayHolder) {
+    .directive('hlEventForm', function(EventsCollection,areYouSureModalFactory, $filter, FullDateFormat, $q, $log, ShiftsDayHolder, BusinessHolder) {
         return {
             restrict: 'A',
             replace : true,
@@ -14,6 +14,7 @@ zedAlphaDirectives
             templateUrl : '/partials/events/event-form-directive.html',
             controller : function($scope){
                var eventClone;
+                $scope.business = BusinessHolder.business;
                 var requiredInputsForDest = {
                         name : true,
                         phone : true,

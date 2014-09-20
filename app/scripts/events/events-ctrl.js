@@ -14,9 +14,8 @@ zedAlphaControllers
         $scope.filters = EventsCollection.filters;
 
 
-
         // --------- New event ----------- //
-        $scope.newEventWithSeatsDic = function(occasionalOrDestination, seatsDic, startTime){
+        $scope.newEventWithSeatsDic = function(occasionalOrDestination, seatsDic, startTime, seatingOptions){
             if($scope.switchMode){
                 var localizedError = $filter('translate')('SWITCH_EVENT_WARNING');
                 alert(localizedError)
@@ -31,7 +30,8 @@ zedAlphaControllers
             $scope.newEvent = EventsCollection.createNewEvent({
                 occasionalOrDestination : occasionalOrDestination,
                 startTime : startTime,
-                seatsDic : seatsDic
+                seatsDic : seatsDic,
+                seatingOptions : seatingOptions
             });
         };
 

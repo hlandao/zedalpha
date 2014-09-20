@@ -36,6 +36,9 @@
                         <form class="form-inline" role="form">
                             <div class="form-group" ng-show="selectedShape.id">
                                 <input type="text" class="form-control" id="" placeholder="Seat Number" ng-model="selectedShape.seatNumber" ng-change="seatNumberChanged(selectedShape)" ng-show="selectedShape.seatNumber || selectedShape.seatNumber == 0">
+                                <div ng-repeat="(id, item) in business.seatingOptions">
+                                    <input type="checkbox" ng-model="selectedShape.seatingOptions[id]" ng-change="seatingOptionsChanged(selectedShape)"> {{item.option}}
+                                </div>
                             </div>
                             <!--<button class="btn btn-default" ng-click="cloneShape(selectedShape)" ng-show="selectedShape.id">Clone</button>-->
                             <button class="btn btn-danger" ng-click="removeShape(selectedShape)" ng-show="selectedShape">Remove</button>
