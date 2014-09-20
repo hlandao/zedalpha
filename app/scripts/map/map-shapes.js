@@ -13,7 +13,7 @@ function ShapeGroup(paper, options){
     this.changeCallback = options.changeCallback;
     this.dragStartCallback = options.dragStartCallback;
     this.dragEndCallback = options.dragEndCallback;
-
+    this.kind = "ShapeGroup";
 
     if(options.shapesArr){
         this.shapesArr = options.shapesArr;
@@ -317,7 +317,8 @@ SeatShape.prototype.updateSeatNumber = function(){
     this.shapesSet[1].attr({text : "" + this.seatNumber + ""});
 }
 
-SeatShape.prototype.updateSeatingOptions = function(){
+SeatShape.prototype.updateSeatingOptions = function(newSeatingOptions){
+    this.seatingOptions = newSeatingOptions ? $.extend({},newSeatingOptions) :  this.seatingOptions;
     this.shapesSet.data('seatingOptions', this.seatingOptions);
     this.shapesSet[0].data('seatingOptions', this.seatingOptions);
     this.shapesSet[1].data('seatingOptions', this.seatingOptions);

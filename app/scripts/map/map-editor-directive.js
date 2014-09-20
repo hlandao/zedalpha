@@ -88,9 +88,30 @@ zedAlphaDirectives
                     scope.save();
                 };
 
-                scope.seatingOptionsChanged = function(shape){
-                    shape.updateSeatingOptions();
-                    scope.save();
+                scope.seatingOptionsChanged = function(){
+                    var shapes;
+                    if(scope.selectedShape.kind == 'ShapeGroup'){
+                        shapes = scope.selectedShape.shapesArr;
+                    }else{
+                        shapes = [scope.selectedShape];
+                    }
+
+                    var changed = false;
+                    angular.forEach(shapes, function(shape){
+                        debugger;
+                        if(shape.seatNumber || shape.seatNumber == 0){
+                            changed = true;
+                            shape.updateSeatingOptions(scope.newSeatingOptions);
+                        }
+                    });
+
+                    if(changed){
+                        scope.save();
+                    }
+                }
+
+                scope.clickOnCheckbox = function(e){
+                    e.stopPropagation();
                 }
 
                 var container = $("#map");
@@ -172,13 +193,29 @@ zedAlphaDirectives
                             }else{
                                 scope.selectedShape = new ShapeGroup(paper, {shapesArr : [scope.selectedShape, shape], changeCallback : changeCallback, dragStartCallback : dragStartCallback,dragEndCallback : dragEndCallback});
                             }
-
+                            updateNewSeatingOptions(scope.selectedShape.shapesArr);
                         }else{
                             scope.selectedShape = shape;
+                            updateNewSeatingOptions([shape]);
+
                         }
                     });
                 };
 
+                var updateNewSeatingOptions = function(shapes){
+                    var arr, result = {};
+
+                    angular.forEach(shapes, function(item){
+                        if(item.seatingOptions){
+                            for (var i in item.seatingOptions){
+                                if(item.seatingOptions[i]) result[i] = true;
+                            }
+                        }
+                    });
+
+                    scope.newSeatingOptions = result;
+
+                }
 
                 var deselectCallback = function(){
                     scope.$apply(function(){
