@@ -152,7 +152,7 @@ zedAlphaDirectives
                 var seatingOptionsForSeats = SeatsHolder.seatingOptionsForSeats(newVal);
                 var seatingOptions = {};
                 for(var i in seatingOptionsForSeats){
-                    seatingOptions[i] = BusinessHolder.business.seatingOptions[i];
+                    if(seatingOptionsForSeats[i]) seatingOptions[i] = BusinessHolder.business.seatingOptions[i];
                 }
                 scope.seatingOptions = seatingOptions;
             };
