@@ -22,4 +22,17 @@ zedAlphaDirectives
                 elem.off('click');
             })
         }
+    }).directive('stopPropagation', function(){
+        return function(scope, element, attrs){
+
+            element.click(function(e){
+                alert(1);
+                e.stopPropagation();
+                e.preventDefault();
+            })
+
+            scope.$on('$destroy', function(){
+                element.off('click');
+            });
+        }
     });
