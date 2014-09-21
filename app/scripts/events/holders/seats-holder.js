@@ -18,7 +18,6 @@ zedAlphaServices
                 }
 
             }
-
             return output;
         }
 
@@ -48,7 +47,6 @@ zedAlphaServices
                 }
             });
 
-            console.log('output',output);
 
             return output;
         };

@@ -436,7 +436,7 @@ zedAlphaServices
 
         // Customers
         var updateCustomerForEvent = function(event){
-            if(!event || !event.$id) return;
+            if(!event || !event.$id || !event.data.phone) return;
             var customerId = CustomerIdFromPhone(event.data.phone);
             if(!customerId) return;
             CustomerGenerator(customerId).$loaded().then(function(customer){

@@ -8,7 +8,8 @@ var angularDependencies = [
     'pascalprecht.translate',
     'ui.router',
     'firebase',
-    'ngLoggly'
+    'ngLoggly',
+    'ngTouch'
 ];
 
 var myModules = [

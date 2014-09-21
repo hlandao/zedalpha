@@ -50,6 +50,8 @@ zedAlphaDirectives
 
                 var validateSeatingOptions = function(){
                     var result = true;
+                    var defer = $q.defer();
+
                     for(var i in $scope.seatingOptions){
                         if(!$scope.event.seatingOptions || !$scope.event.seatingOptions[i]){
                             result=false;
@@ -60,12 +62,13 @@ zedAlphaDirectives
                         list = _.map($scope.seatingOptions, function(item){
                            return item.option;
                         });
-                        return areYouSureModalFactory(null, "WARNING_EVENT_SEATING_OPTIONS", null, {list : list}).result;
+                        defer.resolve({warnings : [{warning : "WARNING_EVENT_SEATING_OPTIONS", extra : {list : list}}]});
                     }else{
-                        var defer = $q.defer();
                         defer.resolve();
-                        return defer.promise;
                     }
+
+                    return defer.promise;
+
                 }
 
 
@@ -79,12 +82,22 @@ zedAlphaDirectives
                         return;
                     }
 
-                    validateSeatingOptions().then(function(){
-                        EventsCollection.saveWithValidation($scope.eventObj).then(function(output){
-                            if(output && output.warnings && output.warnings.length){
-                                var promises = [];
-                                for (var i = 0; i < output.warnings.length; ++i){
-                                    promises.push(areYouSureModalFactory(null, output.warnings[i].warning).result);
+
+                    EventsCollection.saveWithValidation($scope.eventObj).then(function(output){
+                        validateSeatingOptions().then(function(seatingOptionsOutput){
+                            if((output && output.warnings && output.warnings.length) || (seatingOptionsOutput && seatingOptionsOutput.warnings && seatingOptionsOutput.warnings.length)){
+                                var promises = [], i;
+
+                                if(output && output.warnings && output.warnings.length){
+                                    for (i = 0; i < output.warnings.length; ++i){
+                                        promises.push(areYouSureModalFactory(null, output.warnings[i].warning).result);
+                                    }
+                                }
+
+                                if(seatingOptionsOutput && seatingOptionsOutput.warnings && seatingOptionsOutput.warnings.length){
+                                    for (i = 0; i < seatingOptionsOutput.warnings.length; ++i){
+                                        promises.push(areYouSureModalFactory(null, seatingOptionsOutput.warnings[i].warning, null, seatingOptionsOutput.warnings[i].extra).result);
+                                    }
                                 }
 
                                 $q.all(promises).then(function(){
@@ -96,17 +109,19 @@ zedAlphaDirectives
                             }else{
                                 $scope.closeLinkFN(true);
                             }
-                        }).catch(function(error){
-                            isSaving = false;
-                            if(error && error.error){
-                                var localizedError = $filter('translate')(error.error);
-                                $log.info('[EventForm] error saving event',error);
-                                areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
-                            }
+
                         });
 
+                    }).catch(function(error){
+                        isSaving = false;
+                        if(error && error.error){
+                            var localizedError = $filter('translate')(error.error);
+                            $log.info('[EventForm] error saving event',error);
+                            areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
+                        }
                     });
-               };
+
+                };
 
                 $scope.close = function(event){
                     if($scope.eventObj.$id) revertEventToOriginal();
@@ -152,7 +167,7 @@ zedAlphaDirectives
                 var seatingOptionsForSeats = SeatsHolder.seatingOptionsForSeats(newVal);
                 var seatingOptions = {};
                 for(var i in seatingOptionsForSeats){
-                    if(seatingOptionsForSeats[i]) seatingOptions[i] = BusinessHolder.business.seatingOptions[i];
+                    if(seatingOptionsForSeats[i] && BusinessHolder.business.seatingOptions[i]) seatingOptions[i] = BusinessHolder.business.seatingOptions[i];
                 }
                 scope.seatingOptions = seatingOptions;
             };
