@@ -1,4 +1,4 @@
-<header class="clearfix" ng-controller="EventsNavigationCtrl">
+<header class="clearfix">
 
     <!-- Logo -->
     <div class="logo dropdown">
@@ -67,7 +67,8 @@
 
             <li class="timepicker-col">
                 <!--<input hl-timepicker ng-model="DateHolder.currentClock" settings="{min : ShiftsDayHolder.selectedShift.startTime, range : ShiftsDayHolder.selectedShift.duration}">-->
-                <hl-header-timepicker></hl-header-timepicker>
+                <hl-header-timepicker ng-if="selectedFilter != 'ENTIRE_SHIFT'"></hl-header-timepicker>
+                <div ng-if="selectedFilter == 'ENTIRE_SHIFT'" class="entire-shift" ng-click="toggleEntireShift()" entire-shift-button></div>
             </li>
 
 

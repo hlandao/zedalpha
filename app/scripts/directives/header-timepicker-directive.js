@@ -28,4 +28,20 @@ zedAlphaDirectives
                 },calcRange);
             }
         }
+    }).directive('entireShiftButton', function($filter){
+        return function(scope, element, attrs){
+            var regularText = 'ENTIRE_SHIFT', hoveredText = 'BACK';
+            element.text($filter('translate')(regularText));
+            element.on('mouseover', function(){
+                $(this).text($filter('translate')(hoveredText));
+            });
+
+            element.on('mouseout', function(){
+                $(this).text($filter('translate')(regularText));
+            })
+
+            scope.$on('$destroy', function(){
+                element.off('mouseout mouseover');
+            })
+        }
     });

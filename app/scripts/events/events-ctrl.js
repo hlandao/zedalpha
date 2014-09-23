@@ -90,6 +90,7 @@ zedAlphaControllers
         $scope.StatusFilters = StatusFilters;
 
         $scope.selectFilter = function(filter){
+            $scope.selectedFilter = filter;
             EventsCollection.filters.status = filter;
         };
 
@@ -103,6 +104,13 @@ zedAlphaControllers
             $scope.$emit('$requestSortEvents');
         };
 
+        $scope.toggleEntireShift = function(){
+            if(EventsCollection.filters.status === 'ENTIRE_SHIFT'){
+                $scope.selectFilter('ALL');
+            }else{
+                $scope.selectFilter('ENTIRE_SHIFT');
+            }
+        }
 
         $scope.goToNow = function(e){
             if(e) e.preventDefault();
