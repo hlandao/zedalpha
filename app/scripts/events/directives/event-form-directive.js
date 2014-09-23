@@ -77,6 +77,19 @@ zedAlphaDirectives
                    return $scope.eventObj.$isNew();
                }
 
+
+                var showSaveSuccess = function(){
+                    toastr.options = {
+                        "closeButton": true,
+                        "positionClass": "toast-bottom-right",
+                        "timeOut": "3000"
+                    };
+                    var localizedMessage = $filter('translate')('SUCCESS_SAVE_EVENT');
+
+                    toastr.success(localizedMessage);
+                }
+
+
                 $scope.save = function(){
                     if(isSaving){
                         return;
@@ -101,12 +114,21 @@ zedAlphaDirectives
                                 }
 
                                 $q.all(promises).then(function(){
-                                    EventsCollection.saveWithValidation($scope.eventObj, true);
-                                    $scope.closeLinkFN(true);
+                                    EventsCollection.saveWithValidation($scope.eventObj, true).then(function(){
+                                        showSaveSuccess();
+                                        $scope.closeLinkFN(true);
+                                    }, function(error){
+                                        var localizedError = $filter('translate')('ERROR_EVENT_SAVING');
+                                        $log.info('[EventForm] error saving event',error);
+                                        areYouSureModalFactory(null, localizedError, {ok : true, cancel : false});
+                                    });
+
+
                                 }, function(){
                                     isSaving = false;
                                 });
                             }else{
+                                showSaveSuccess();
                                 $scope.closeLinkFN(true);
                             }
 

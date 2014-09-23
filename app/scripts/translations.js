@@ -116,9 +116,12 @@ zedAlphaConfigModule
         "ERROR_EVENT_MSG_PHONE": "Please enter phone number",
         "ERROR_EVENT_MSG_STARTTIME": "Start time is invalid",
         "ERROR_EVENT_MSG_ENDTIME": "End time is invalid",
+        "ERROR_EVENT_MSG_BASE_DATE": "Error with date",
         "ERROR_EVENT_MSG_COLLISION": "A Collision with another event was detected",
         "ERROR_EVENT_MSG_HOST" : "Please enter host name",
         "ERROR_EVENT_SWITCH_COLLISION" : "Cannot perform this action because one of the events collide with another event. Please try again",
+        "ERROR_EVENT_SAVING" : "Saving reservation was failed!",
+        "SUCCESS_SAVE_EVENT" : "Reservation saved!",
 
         // WARNINGS
         "ARE_YOU_SURE" : "Are You Sure ? ",
@@ -265,9 +268,12 @@ zedAlphaConfigModule
                 "ERROR_EVENT_MSG_PHONE": "חובה למלא מספר טלפון",
                 "ERROR_EVENT_MSG_STARTTIME": "זמן התחלת הארוע לא קיים או לא תקין",
                 "ERROR_EVENT_MSG_ENDTIME": "זמן סיום הארוע לא קיים או לא תקין",
+                "ERROR_EVENT_MSG_BASE_DATE": "תאריך אינו תקין",
                 "ERROR_EVENT_MSG_COLLISION": "אותרה התנגשות עם ארוע נוסף, נא נסה שנית",
                 "ERROR_EVENT_MSG_HOST" : "חובה למלא את שם המארחת",
                 "ERROR_EVENT_SWITCH_COLLISION" : "לא ניתן לבצע את ההחלפה, אחת מההזמנות מתנגשת עם הזמנה נוספת. נא נסה שנית.",
+                "ERROR_EVENT_SAVING" : "תקלה בשמירת ארוע, נסה שנית",
+                "SUCCESS_SAVE_EVENT" : "ההזמנה נשמרה בהצלחה",
                 // WARNING
                 "ARE_YOU_SURE" : "בעיה",
                 "INVALID_GUESTS_PER_15_WARNING" : "הגבלת מספר סועדים לרבע שעה נחצתה.",
