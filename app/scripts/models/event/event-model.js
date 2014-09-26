@@ -180,7 +180,6 @@ zedAlphaServices
                 }else{
                     startDate = this.data.startTime.format(DateFormatFirebase);
                 }
-                debugger;
                 if (value != startDate) {
                     return {error: "ERROR_EVENT_MSG_BASE_DATE"};
                 }

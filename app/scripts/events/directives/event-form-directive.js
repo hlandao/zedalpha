@@ -435,6 +435,7 @@ zedAlphaDirectives
                                     DateHolder.goToEvent(scope.eventObj);
                                     return true;
                                 }else{
+                                    scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore, value);
                                     DateHolder.goToEvent(scope.eventObj);
                                     return true;
                                 }
