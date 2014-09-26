@@ -175,7 +175,7 @@ zedAlphaServices
             $validateBaseDate: function (value) {
                 value = value  === undefined ? this.data.baseDate : value;
                 var startDate;
-                if(this.data.startTime < 6){
+                if(this.data.startTime <= 6){
                     startDate = this.data.startTime.clone().subtract(1,'days').format(DateFormatFirebase);
                 }else{
                     startDate = this.data.startTime.format(DateFormatFirebase);
