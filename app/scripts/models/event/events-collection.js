@@ -43,7 +43,7 @@ zedAlphaServices
         return function (ref) {
             return $firebase(ref, {arrayFactory : EventsFactory}).$asArray();
         }
-    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase,DateHelpers,$timeout,areYouSureModalFactory, CustomerIdFromPhone, CustomerGenerator) {
+    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase,DateHelpers,$timeout,areYouSureModalFactory, CustomerIdFromPhone, CustomerGenerator, EventsNotificationsHolder) {
         var self = this,
             lastSubName = null,
             lastBusinessId = null;
@@ -111,6 +111,7 @@ zedAlphaServices
                     lastBusinessId = BusinessHolder.business.$id;
 
                     self.collection = collection;
+                    self.collection.$watch(watchSelfCollection)
                     findLatestEvent();
                     sortEvents();
                     resetFilters();
@@ -118,6 +119,44 @@ zedAlphaServices
             }
         };
 
+
+        /**
+         * watcher for self.collection, invoked each time a change occurres in Firebase
+         * @param watchDetails
+         */
+        var watchSelfCollection = function(watchDetails){
+//            console.log('watchSelfCollection',watchDetails);
+            if(!watchDetails) return;
+
+            switch(watchDetails.event){
+                case 'child_added':
+                    var record = self.collection.$getRecord(watchDetails.key);
+                    if(record){
+                        var msg = $filter('translate')('EVENT_ADDED') + '\n' + record.data.name + ' - ' + record.data.startTime.format('HH:mm');
+                        EventsNotificationsHolder.alert.setMsg(msg);
+                    }
+                    break;
+                case 'child_moved':
+                    break;
+                case 'child_removed':
+                    break;
+                case 'child_changed':
+                    var record = self.collection.$getRecord(watchDetails.key);
+                    if(record){
+                        var msg = $filter('translate')('EVENT_CHANGED') + '\n' + record.data.name + ' - ' + record.data.startTime.format('HH:mm');
+                        EventsNotificationsHolder.alert.setMsg(msg);
+                    }
+                    break;
+            }
+            findLatestEvent();
+            sortEvents();
+
+        }
+
+
+        /**
+         * find the latest event(by start time) from self.collection
+         */
         var findLatestEvent = function(){
             var currentEvent, key, output = null;
             if(self.collection && self.collection.length){

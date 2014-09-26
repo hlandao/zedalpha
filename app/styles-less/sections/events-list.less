@@ -258,3 +258,42 @@
   }
 }
 
+
+#events-notifications{
+  position: absolute;
+  top:-50px;
+  left:0;
+  width:100%;
+  z-index:24;
+  -webkit-transition: all 0.3s;
+  .inner{
+    width:400px;
+    margin:0 auto;
+    padding:6px;
+    border-radius: 0 0 5px 5px;
+    .message{
+      text-align: center;
+      color:white;
+    }
+  }
+
+
+  &.open{
+    top:0;
+  }
+  &.error{
+    .inner{
+      background: fade(@brand-danger, 80%);
+    }
+  }
+  &.success{
+    .inner{
+      background: fade(@brand-success, 80%);
+    }
+  }
+  &.info{
+    .inner{
+      background: fade(@brand-warning, 80%);
+    }
+  }
+}

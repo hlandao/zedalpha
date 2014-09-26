@@ -130,6 +130,7 @@ zedAlphaConfigModule
         "SWITCH_EVENT_WARNING" : "Please finish or cancel events switching before continue",
         "NEW_EVENT_WARNING" : "Please finish or cancel adding new event",
         "WARNING_EVENT_SEATING_OPTIONS" : "You haven't checked the entire seating options. Do you want to save anyway ?",
+        "START_TIME_CHANGE_WILL_CHANGE_EVENT_DURATION" : "The change in time will require a change in the reservation duration to {{duration}} minutes. Are you sure you  want to continue ?",
 
         "LOADING_TEXT" : "Loading Zed...",
 
@@ -152,7 +153,11 @@ zedAlphaConfigModule
         "WEDNESDAY" :"Wednesday",
         "THURSDAY" :"Thursday",
         "FRIDAY" : "Friday",
-        "SATURDAY" :"Saturday"
+        "SATURDAY" :"Saturday",
+        // Updates
+        "EVENT_ADDED_IN_TIME" : "A new reservation was added :",
+        "EVENT_CHANGED" : "A Reservation was updated : "
+
 
 
     });
@@ -284,7 +289,7 @@ zedAlphaConfigModule
                 "EDIT_EVENT_WARNING" : "יש לסיים עריכת ארוע",
                 "NEW_EVENT_WARNING" : "יש לסיים הוספת ארוע",
                 "WARNING_EVENT_SEATING_OPTIONS" : "לא סימנת את כל אפשרויות ההושבה, האם ברצונך להמשיך בכל זאת ?",
-
+                "START_TIME_CHANGE_WILL_CHANGE_EVENT_DURATION" : "השינוי בזמן, מצריך שינוי במשך ההזמנה ל{{duration}} דקות. האם ברצונך להמשיך ?",
 
                 "LOADING_TEXT" : "טוען...",
                 //MAP
@@ -306,7 +311,11 @@ zedAlphaConfigModule
                 "WEDNESDAY" :"רביעי",
                 "THURSDAY" :"חמישי",
                 "FRIDAY" : "שישי",
-                "SATURDAY" :"שבת"
+                "SATURDAY" :"שבת",
+                // Updates
+                "EVENT_ADDED" : "התווספה הזמנה חדשה : ",
+                "EVENT_CHANGED" : "הזמנה עודכנה : "
+
 
 
 

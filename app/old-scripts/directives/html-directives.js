@@ -26,7 +26,6 @@ zedAlphaDirectives
         return function(scope, element, attrs){
 
             element.click(function(e){
-                alert(1);
                 e.stopPropagation();
                 e.preventDefault();
             })

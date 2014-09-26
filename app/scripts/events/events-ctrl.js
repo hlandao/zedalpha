@@ -5,13 +5,14 @@ var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.contro
 
 zedAlphaControllers
     .value('StatusFilters', ['ALL','SEATED','ORDERED','OCCASIONAL'])
-    .controller('EventsCtrl', function($scope, $log, DateHolder, Event, $filter, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder, EventsCollection, StatusFilters, areYouSureModalFactory, SeatsHolder){
+    .controller('EventsCtrl', function($scope, $log, DateHolder, Event, $filter, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder, EventsCollection, StatusFilters, areYouSureModalFactory, SeatsHolder, EventsNotificationsHolder){
 
         $scope.DateHolder = DateHolder;
         $scope.ShiftsDayHolder = ShiftsDayHolder;
         $scope.business = BusinessHolder.business;
         $scope.sortedEvents = EventsCollection.sorted;
         $scope.filters = EventsCollection.filters;
+        $scope.eventsNotifications = EventsNotificationsHolder.alert;
 
 
         // --------- New event ----------- //
@@ -189,6 +190,7 @@ zedAlphaControllers
         $scope.searchController = { active : false};
 
 
+
     }).directive('eventsListSearchBox', function($timeout){
         return function(scope, element, attrs){
             element.focus(function(){
@@ -197,16 +199,18 @@ zedAlphaControllers
                 });
             });
 
-            element.blur(function(){
-                scope.$apply(function(){
-                    scope.searchController.active = false;
-                    scope.filters.query = "";
-                });
-            });
+//            element.blur(function(){
+//                scope.$apply(function(){
+//                    scope.searchController.active = false;
+//                    scope.filters.query = "";
+//                });
+//            });
 
             scope.$on('$destroy', function(){
                 element.off('blur');
                 element.off('focus');
             });
         }
+    }).service('EventsNotificationsHolder', function(Alert){
+        this.alert = new Alert(3000);
     });

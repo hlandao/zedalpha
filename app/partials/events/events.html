@@ -1,4 +1,10 @@
 <div ng-controller="EventsCtrl" id="event-ctrl">
+    <div id="events-notifications" events-notifications class="info" ng-class="{'open' : eventsNotifications.val}">
+        <div class="inner">
+            <div class="message">{{eventsNotifications.val}}</div>
+        </div>
+
+    </div>
     <div ui-view="header" class="top-events-header"></div>
     <aside ui-view="events-list" id="events-list-container"></aside>
 
