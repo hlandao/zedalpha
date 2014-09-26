@@ -297,9 +297,9 @@ zedAlphaServices
          * check all the available warnings for the event
          * @returns {Promise|*}
          */
-        this.checkAllWarnings = function (event) {
+        this.checkAllWarnings = function (event, seatingOptionsToValidate) {
             var warnings = {warnings: []};
-            var promises = [self.checkGuestsPer15Minutes(event), event.$checkIfEventFitsShifts()];
+            var promises = [self.checkGuestsPer15Minutes(event), event.$checkIfEventFitsShifts(), validateSeatingOptions(seatingOptionsToValidate, event)];
 
             return $q.all(promises).then(function (result) {
                 for (var i = 0; i < result.length; ++i) {
@@ -309,14 +309,41 @@ zedAlphaServices
            });
         };
 
-        this.beforeSave = function (event) {
+        this.beforeSave = function (event, seatingOptionsToValidate) {
             return self.validateCollision(event).
                 then(angular.bind(event, event.$runAllSyncValidatorsWithPromise)).
-                then(angular.bind(self,self.checkAllWarnings, event));
+                then(angular.bind(self,self.checkAllWarnings, event, seatingOptionsToValidate));
         };
 
-        this.saveWithValidation = function (event, approveAllWarnings) {
-            return self.beforeSave(event).then(function (result) {
+        var validateSeatingOptions = function(seatingOptionsToValidate, event){
+            var result = true;
+            var defer = $q.defer();
+            if(!seatingOptionsToValidate){
+                defer.resolve();
+                return defer.promise;
+            }
+            for(var i in seatingOptionsToValidate){
+                if(!event.data.seatingOptions || !event.data.seatingOptions[i]){
+                    result=false;
+                    break;
+                }
+            }
+            if(!result){
+                list = _.map(seatingOptionsToValidate, function(item){
+                    return item.option;
+                });
+                defer.resolve({warning : "WARNING_EVENT_SEATING_OPTIONS", extra : {list : list}});
+            }else{
+                defer.resolve();
+            }
+
+            return defer.promise;
+
+        }
+
+
+        this.saveWithValidation = function (event, approveAllWarnings, seatingOptionsToValidate) {
+            return self.beforeSave(event, seatingOptionsToValidate).then(function (result) {
                 if (!approveAllWarnings && (result && result.warnings && result.warnings.length)) {
                     return result;
                 } else {
@@ -328,7 +355,6 @@ zedAlphaServices
 
 
         this.saveAfterValidation = function (event) {
-
             return getCollectionForDate(null, null, event).then(function(collection){
                 if(event.changedBaseDate){
                     var eventDataCloned = event.toObject();
@@ -386,14 +412,20 @@ zedAlphaServices
                     event.$changeBaseDate(oldBaseDate);
                     return $q.reject({error : 'ERROR_MSG_COLLISION', withEvent : collision});
                 }else{
-                    self.collection.$remove(event).then(function(){
-                        event.myNewCollection = collection;
+                    if(self.collection.$keyAt(event)){
+                        return  self.collection.$remove(event).then(function(){
+                            event.changedBaseDate = true;
+                            event.$id = null;
+                            return true;
+                        }, function(){
+                            event.$changeBaseDate(oldBaseDate);
+                            return $q.reject({error : 'ERROR_CANNOT_CHANGE_BASE_DATE'});
+                        });
+                    }else{
                         event.changedBaseDate = true;
+                        event.$id = null;
                         return true;
-                    }, function(){
-                        event.$changeBaseDate(oldBaseDate);
-                        return $q.reject({error : 'ERROR_MSG_COLLISION', withEvent : collision});
-                    });
+                    }
                 }
             });
         };

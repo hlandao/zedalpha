@@ -1,7 +1,7 @@
 var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directives', []);
 
 zedAlphaDirectives
-    .directive('hlTimepicker', function ($timeout, DateHelpers, FullDateFormat, $rootScope, $parse, $filter) {
+    .directive('hlTimepicker', function ($timeout, DateHelpers, FullDateFormat, $rootScope, $parse, $filter, $compile) {
         return{
             restrict: 'A',
             replace: true,
@@ -214,9 +214,33 @@ zedAlphaDirectives
                     $window = $(window),
                     $pickerHolder = element.find('.picker__holder').eq(0);
 
-                var init = function(){
+
+                var template = '<div class="picker picker--time picker--focused picker--opened" ng-show="opened">' +
+                    '<div class="picker__holder" ng-click="close()">'+
+                    '<div class="picker__frame">'+
+                    '<div class="picker__wrap">'+
+                    '<div class="picker__box">'+
+                    '<ul class="picker__list">'+
+                    '<li class="picker__list-item" ng-repeat="time in times" ng-click="setNewTime(time, $event)" ng-class="{\'picker__list-item--selected picker__list-item--highlighted picker__list-item--viewset\' : (time === selected)}">{{time.label}}</li>'+
+                    '</ul>'+
+                    '</div>'+
+                    '</div>'+
+                    '</div>'+
+                    '</div>'+
+                    '</div>';
+
+                var $clonedElement;
+                var init = function() {
                     ctrl.init(ngModel, this, attrs);
+
+                    $clonedElement = $compile(template)(scope, function (clonedElement, scope) {
+
+                    });
+
+                    angular.element('body').append($clonedElement);
                 }
+
+
 
                 init();
 
@@ -225,7 +249,7 @@ zedAlphaDirectives
                     e.stopPropagation();
                     ctrl.open();
                     setTimeout(function(){
-                        var $ul = element.find('ul').eq(0);
+                        var $ul = $clonedElement.find('ul').eq(0);
                         $html.
                             css( 'overflow', 'hidden' ).
                             css( 'padding-right', '+=' + getScrollbarWidth() )
@@ -269,7 +293,7 @@ zedAlphaDirectives
                     var widthWithScroll = $inner[0].offsetWidth;
 
                     // Remove the divs.
-                    $outer.remove()
+                    $outer.remove();
 
                     // Return the difference between the widths.
                     return widthWithoutScroll - widthWithScroll

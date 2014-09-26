@@ -17,12 +17,18 @@ zedAlphaDirectives
                     FORMAT_MOMENT = 'DD/MM/YYYY';
 
                 element.pickadate({
+                    container : 'body',
                     onSet: function (context) {
                         if(updatedModel){
                             updatedModel = false;
                             updatedByUser = false;
                             return;
                         }
+
+                        if(!context.select){
+                            return;
+                        }
+
                         $timeout(function(){
                             var newDate = new Date(context.select),
                                 newMoment = moment(newDate);

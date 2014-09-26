@@ -48,31 +48,6 @@ zedAlphaDirectives
                }
 
 
-                var validateSeatingOptions = function(){
-                    var result = true;
-                    var defer = $q.defer();
-
-                    for(var i in $scope.seatingOptions){
-                        if(!$scope.event.seatingOptions || !$scope.event.seatingOptions[i]){
-                            result=false;
-                            break;
-                        }
-                    }
-                    if(!result){
-                        list = _.map($scope.seatingOptions, function(item){
-                           return item.option;
-                        });
-                        defer.resolve({warnings : [{warning : "WARNING_EVENT_SEATING_OPTIONS", extra : {list : list}}]});
-                    }else{
-                        defer.resolve();
-                    }
-
-                    return defer.promise;
-
-                }
-
-
-
                 $scope.$isNew = function(){
                    return $scope.eventObj.$isNew();
                }
@@ -96,43 +71,33 @@ zedAlphaDirectives
                     }
 
 
-                    EventsCollection.saveWithValidation($scope.eventObj).then(function(output){
-                        validateSeatingOptions().then(function(seatingOptionsOutput){
-                            if((output && output.warnings && output.warnings.length) || (seatingOptionsOutput && seatingOptionsOutput.warnings && seatingOptionsOutput.warnings.length)){
-                                var promises = [], i;
+                    EventsCollection.saveWithValidation($scope.eventObj, false, $scope.seatingOptions).then(function(output){
+                        if((output && output.warnings && output.warnings.length)){
+                            var promises = [], i;
 
-                                if(output && output.warnings && output.warnings.length){
-                                    for (i = 0; i < output.warnings.length; ++i){
-                                        promises.push(areYouSureModalFactory(null, output.warnings[i].warning).result);
-                                    }
+                            if(output && output.warnings && output.warnings.length){
+                                for (i = 0; i < output.warnings.length; ++i){
+                                    promises.push(areYouSureModalFactory(null, output.warnings[i].warning, null, output.warnings[i].extra).result);
                                 }
-
-                                if(seatingOptionsOutput && seatingOptionsOutput.warnings && seatingOptionsOutput.warnings.length){
-                                    for (i = 0; i < seatingOptionsOutput.warnings.length; ++i){
-                                        promises.push(areYouSureModalFactory(null, seatingOptionsOutput.warnings[i].warning, null, seatingOptionsOutput.warnings[i].extra).result);
-                                    }
-                                }
-
-                                $q.all(promises).then(function(){
-                                    EventsCollection.saveWithValidation($scope.eventObj, true).then(function(){
-                                        showSaveSuccess();
-                                        $scope.closeLinkFN(true);
-                                    }, function(error){
-                                        var localizedError = $filter('translate')('ERROR_EVENT_SAVING');
-                                        $log.info('[EventForm] error saving event',error);
-                                        areYouSureModalFactory(null, localizedError, {ok : true, cancel : false});
-                                    });
-
-
-                                }, function(){
-                                    isSaving = false;
-                                });
-                            }else{
-                                showSaveSuccess();
-                                $scope.closeLinkFN(true);
                             }
 
-                        });
+                            return $q.all(promises).then(function(){
+                                return EventsCollection.saveWithValidation($scope.eventObj, true).then(function(){
+                                    showSaveSuccess();
+                                    $scope.closeLinkFN(true);
+                                }, function(error){
+                                    return $q.reject('ERROR_EVENT_SAVING');
+                                });
+
+
+                            }, function(){
+                                isSaving = false;
+                            });
+                        }else{
+                            showSaveSuccess();
+                            $scope.closeLinkFN(true);
+                        }
+
 
                     }).catch(function(error){
                         isSaving = false;

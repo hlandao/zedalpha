@@ -112,8 +112,13 @@ zedAlphaControllers
             }
         }
 
+        var cancelEntireShift = function(){
+            $scope.selectFilter('ALL');
+        }
+
         $scope.goToNow = function(e){
             if(e) e.preventDefault();
+            cancelEntireShift();
             DateHolder.goToNow();
         };
 
@@ -175,18 +180,27 @@ zedAlphaControllers
         }
 
 
+        $scope.hideSearch = function(){
+            console.log('hideSearch');
+            $scope.searchController.active = false;
+            $scope.filters.query = "";
+        }
+
+        $scope.searchController = { active : false};
+
 
     }).directive('eventsListSearchBox', function($timeout){
         return function(scope, element, attrs){
             element.focus(function(){
                 scope.$apply(function(){
-                    scope.searchActive = true;
+                    scope.searchController.active = true;
                 });
             });
 
             element.blur(function(){
                 scope.$apply(function(){
-                    scope.searchActive = false;
+                    scope.searchController.active = false;
+                    scope.filters.query = "";
                 });
             });
 

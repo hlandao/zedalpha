@@ -12,11 +12,11 @@
                     <li ng-click="selectFilter('ENTIRE_SHIFT')"> <span> {{'ENTIRE_SHIFT' | translate }}</span></li>
                 </ul>
             </div>
-            <div class="pull-left filter-events"  ng-hide="searchActive">
+            <div class="pull-left filter-events"  ng-hide="searchController.active">
                 <a href="#" ng-click="goToNow($event)"><i class="glyphicon glyphicon-time"></i> {{'GO_TO_NOW' | translate }}</a>
             </div>
 
-            <div class="dropdown pull-left filter-events"  ng-hide="searchActive">
+            <div class="dropdown pull-left filter-events"  ng-hide="searchController.active">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-plus-sign"></i> {{'ADD_BUTTON_LABEL' | translate }}</a>
                 <ul class="dropdown-menu" role="menu">
                     <li  ng-click="newEventWithSeatsDic('destination')"> <span>{{'DESTINATION' | translate}}</span></li>
@@ -25,7 +25,7 @@
                 </ul>
             </div>
 
-            <div class="pull-left filter-events switch-button" ng-class="{active : (switchMode)}" ng-hide="searchActive">
+            <div class="pull-left filter-events switch-button" ng-class="{active : (switchMode)}" ng-hide="searchController.active">
                 <a href="#" ng-click="toggleSwitchMode($event)"><i class="glyphicon glyphicon-refresh"></i> {{'REPLACE_BUTTON_LABEL' | translate}}</a>
             </div>
 
@@ -34,12 +34,12 @@
 
 
 
-            <div class="pull-right search-events" ng-class="{'active' : searchActive}">
+            <div class="pull-right search-events" ng-class="{'active' : searchController.active}">
                 <i class="glyphicon glyphicon-search"></i>
                 <input type="text" placeholder="{{'SEARCH' | translate }}" ng-model="filters.query" events-list-search-box>
-                <button type="button" class="btn btn-primary btn-xs" ng-show="searchActive"><i class="glyphicon glyphicon-remove"></i></button>
-
+                <button type="button" class="btn btn-primary btn-xs" ng-show="searchController.active" ng-click="hideSearch()"><i class="glyphicon glyphicon-remove"></i></button>
             </div>
+
             <div class="pull-right" >
             </div>
 

@@ -143,6 +143,7 @@ zedAlphaConfigModule
         // SHIFTS
         "END_TIME" : "End",
         "START_TIME" : "Start",
+        "DATE" : "Date",
         "DEFAULT_TIME" : "Default",
         //DAYS
         "SUNDAY" :"Sunday",
@@ -296,6 +297,7 @@ zedAlphaConfigModule
                 //SHIFTS
                 "END_TIME" : "סיום",
                 "START_TIME" : "התחלה",
+                "DATE" : "תאריך",
                 "DEFAULT_TIME" : "ברירת מחדל",
                 //DAYS
                 "SUNDAY" :"ראשון",
