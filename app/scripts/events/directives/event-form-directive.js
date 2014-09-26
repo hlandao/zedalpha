@@ -419,8 +419,20 @@ zedAlphaDirectives
                         var valueDurationBefore = scope.eventObj.$getDuration();
 
                             EventsCollection.maxDurationForStartTime(value, scope.eventObj.data.seats, scope.eventObj).then(function(maxDurationForEvent){
-                                scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore, value);
-                                DateHolder.goToEvent(scope.eventObj);
+                                if(maxDurationForEvent > 0 && maxDurationForEvent < valueDurationBefore) {
+                                    var localizedError = $filter('translate')('START_TIME_CHANGE_WILL_CHANGE_EVENT_DURATION', {duration: maxDurationForEvent});
+                                    areYouSureModalFactory(null, localizedError, null).result.then(function () {
+                                        scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore, value);
+                                        DateHolder.goToEvent(scope.eventObj);
+                                    }, function () {
+                                        return $q.reject('user refuses to change end time');
+                                    });
+                                }else if(maxDurationForEvent == -1 || maxDurationForEvent == valueDurationBefore){
+                                    scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore, value);
+                                    DateHolder.goToEvent(scope.eventObj);
+                                }else{
+                                    DateHolder.goToEvent(scope.eventObj);
+                                }
                             });
 
                         return true;
