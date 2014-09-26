@@ -2,27 +2,43 @@
     <div class="panel panel-default" id="seat-menu">
         <div class="panel-heading">
             <span> {{highlightedShapes | highlightedShapesSeats}} </span>
-            <small ng-show="nextEventInXMinutes && !highlightedNowEvents.length"> ({{'NEXT_EVENT' | translate }} {{nextEventInXMinutes | duration : 'second' : 'minute'}}) </small>
+            <small ng-show="nextEventInXMinutes && !highlightedEvents.nowEvents.length"> ({{'NEXT_EVENT' | translate }} {{nextEventInXMinutes | duration : 'second' : 'minute'}}) </small>
         </div>
         <table class="table">
             <tbody>
-            <!--<tr ng-show="highlightedNowEvents.length" class="highlighted-events-title-row text-danger">-->
-                <!--<td colspan="3"> {{'NOW_EVENTS' | translate }} </td>-->
-            <!--</tr>-->
-            <tr ng-repeat="event in highlightedNowEvents">
+            <tr ng-show="highlightedEvents.pastEvents.length" class="highlighted-events-title-row">
+                <td colspan="3"> {{'PAST_EVENTS' | translate }} </td>
+            </tr>
+            <tr ng-repeat="event in highlightedEvents.pastEvents | orderBy : event.data.startTime">
                 <td class="one-liner-text"><span class="label label-info" style="background: {{event.data.status | colorForStatus}}"> {{event.data.status | translate}} </span></td>
                 <td class="one-liner-text">{{event.data.name}}</td>
                 <td class="one-liner-text">{{event.data.startTime | momentFilter : 'HH:mm'}}</td>
             </tr>
 
-            <tr ng-repeat="event in highlightedFutureEvents">
+
+            <tr ng-show="highlightedEvents.nowEvents.length" class="highlighted-events-title-row">
+                <td colspan="3"> {{'NOW_EVENTS' | translate }} </td>
+            </tr>
+
+            <tr ng-repeat="event in highlightedEvents.nowEvents | orderBy : event.data.startTime">
+                <td class="one-liner-text"><span class="label label-info" style="background: {{event.data.status | colorForStatus}}"> {{event.data.status | translate}} </span></td>
+                <td class="one-liner-text">{{event.data.name}}</td>
+                <td class="one-liner-text">{{event.data.startTime | momentFilter : 'HH:mm'}}</td>
+            </tr>
+
+            <tr ng-show="highlightedEvents.upcomingEvents.length" class="highlighted-events-title-row">
+                <td colspan="3"> {{'FUTURE_EVENTS' | translate }} </td>
+            </tr>
+
+
+            <tr ng-repeat="event in highlightedEvents.upcomingEvents | orderBy : event.data.startTime">
 
                 <td class="one-liner-text"><span class="label label-info" style="background: {{event.data.tatus | colorForStatus}}"> {{event.data.status | translate}} </span></td>
                 <td class="one-liner-text">{{event.data.name}}</td>
                 <td class="one-liner-text">{{event.data.startTime | momentFilter : 'HH:mm'}}</td>
             </tr>
 
-            <tr ng-show="!highlightedPastEvents.length && !highlightedNowEvents.length && !highlightedFutureEvents.length">
+            <tr ng-show="!highlightedEvents.nowEvents.length && !highlightedEvents.upcomingEvents.length">
                 <td colspan="3"> {{'NO_RECENT_EVENTS_FOR_SEAT' | translate }} </td>
             </tr>
             </tbody>

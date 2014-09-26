@@ -137,27 +137,19 @@ zedAlphaDirectives
                 var eventsForHighlightedShapes = function(){
                     if(scope.highlightedShapes.length == 1){
 
-                        var nowEvents, futureEvents,
+                        var highlightedShapesEvents,
                             seats = scope.highlightedShapes[0].seatObject();
 
-                        nowEvents = _.filter(EventsCollection.sorted.nowEvents, function(event){
+
+                        highlightedShapesEvents = _.filter(EventsCollection.collection, function(event){
                             return event.$sharingTheSameSeatsWithAnotherEvent(null, seats);
                         });
 
-                        futureEvents = _.filter(EventsCollection.sorted.upcomingEvents, function(event){
-                            return event.$sharingTheSameSeatsWithAnotherEvent(null, seats);
-                        });
 
-                        scope.highlightedNowEvents = _.sortBy(nowEvents, function(event){
-                            return event.data.startTime;
-                        });
+                        scope.highlightedEvents = $filter('sortDayEvents')(highlightedShapesEvents, DateHolder.currentClock, null, null, true, true);
 
-                        scope.highlightedFutureEvents = _.sortBy(futureEvents, function(event){
-                            return event.data.startTime;
-                        });
-
-                        if(!scope.highlightedNowEvents.length && scope.highlightedFutureEvents.length){
-                            scope.nextEventInXMinutes = scope.highlightedFutureEvents[0].data.startTime.diff(DateHolder.currentClock, 'seconds');
+                        if(!scope.highlightedEvents.nowEvents.length && scope.highlightedEvents.upcomingEvents.length){
+                            scope.nextEventInXMinutes = scope.highlightedEvents.upcomingEvents[0].data.startTime.diff(DateHolder.currentClock, 'seconds');
                             if(scope.nextEventInXMinutes >  3600 * 6){
                                 scope.nextEventInXMinutes = null;
                             }else if(scope.nextEventInXMinutes <= 0){
@@ -173,9 +165,7 @@ zedAlphaDirectives
                 }
 
                 var emptyEventsForHighlightedShapes = function(){
-                    scope.highlightedPastEvents = null;
-                    scope.highlightedNowEvents = null;
-                    scope.highlightedFutureEvents = null;
+                    scope.highlightedEvents = null;
                     scope.nextEventInXMinutes = null;
                 }
 

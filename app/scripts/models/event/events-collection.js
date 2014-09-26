@@ -32,6 +32,7 @@ zedAlphaServices
                     if(eventToCheck === event) continue;
                     if(eventToCheck.$shouldCollide() && eventToCheck.$sharingTheSameSeatsWithAnotherEvent(event, extraSeats)){
                         if(eventToCheck.$collideWithAnotherEvent(event, newStartTime, newEndTime)){
+                            debugger;
                             return eventToCheck;
                         }
                     }

@@ -11,51 +11,53 @@ zedAlphaFilters
         OCCASIONAL : ['OCCASIONAL']
     })
     .filter('sortDayEvents', function ($filter, EVENT_TIME_FRAME_IN_MINUTES, DEAD_EVENTS_STATUSES, DateHelpers, STATUS_FILTERS_TO_FILTER, ShiftsDayHolder) {
-        return function (eventsCollection, dateMoment, statusFilter, nameQuery) {
+        return function (eventsCollection, dateMoment, statusFilter, nameQuery, includePastEvents, includeAllUpcomingEvents) {
             var _dateMoment = DateHelpers.isMomentValid(dateMoment) ? dateMoment.clone() : null;
-            var upcomingEvents = [], nowEvents = [], deadEvents = [];
-            var currentEvent,key, status, isStartTimeSameAsCurrent, isStartingBefore, startTimeDiffInMinutes, isEndingAfterCurrentDate, isNowEvent, isUpcomingEvent, isDeadEvent;
+            var pastEvents = [],upcomingEvents = [], nowEvents = [], deadEvents = [];
 
-            for (var i = 0; i < eventsCollection.length; ++i) {
-                key = eventsCollection.$keyAt(i);
-                currentEvent = eventsCollection.$getRecord(key);
-                status = currentEvent.data.status;
+            angular.forEach(eventsCollection, function(currentEvent){
+                var status = currentEvent.data.status;
 
                 if(nameQuery && (currentEvent.data.name.indexOf(nameQuery) === -1)){
-                    continue;
+                    return;
                 }
 
-                isStartTimeSameAsCurrent = currentEvent.data.startTime.isSame(_dateMoment, 'minute');
-                isStartingBefore = currentEvent.data.startTime.isBefore(_dateMoment, 'minute');
-                startTimeDiffInMinutes = currentEvent.data.startTime.diff(_dateMoment, 'minutes');
-                isEndingAfterCurrentDate = currentEvent.data.endTime.isAfter(_dateMoment, 'minute');
+                var isStartTimeSameAsCurrent = currentEvent.data.startTime.isSame(_dateMoment, 'minute');
+                var isStartingBefore = currentEvent.data.startTime.isBefore(_dateMoment, 'minute');
+                var startTimeDiffInMinutes = currentEvent.data.startTime.diff(_dateMoment, 'minutes');
+                var isEndingAfterCurrentDate = currentEvent.data.endTime.isAfter(_dateMoment, 'minute');
 
-                isNowEvent = !!(isStartTimeSameAsCurrent || (isStartingBefore && isEndingAfterCurrentDate));
-                isUpcomingEvent = !!((startTimeDiffInMinutes > 0 && startTimeDiffInMinutes <= EVENT_TIME_FRAME_IN_MINUTES));
-                isDeadEvent = !!(DEAD_EVENTS_STATUSES.indexOf(status) >= 0);
+                if(includePastEvents){
+                    var isEndingBefore = currentEvent.data.endTime.isBefore(_dateMoment, 'minute');
+                    var isEndingAt = currentEvent.data.endTime.isSame(_dateMoment, 'minute');
+                    var isPastEvent = !!(isStartingBefore && (isEndingBefore || isEndingAt));
+                }
+                var isNowEvent = !!(isStartTimeSameAsCurrent || (isStartingBefore && isEndingAfterCurrentDate));
+                var isUpcomingEvent = !!((startTimeDiffInMinutes > 0 && (includeAllUpcomingEvents || startTimeDiffInMinutes <= EVENT_TIME_FRAME_IN_MINUTES)));
+                var isDeadEvent = !!(DEAD_EVENTS_STATUSES.indexOf(status) >= 0);
 
                 if(statusFilter == 'ENTIRE_SHIFT'){
                     var shift = ShiftsDayHolder.selectedShift;
                     if(ShiftsDayHolder.currentDay.isEventWithinShift(shift, currentEvent)){
                         if(isDeadEvent){
                             deadEvents.push(currentEvent);
-                            continue;
+                            return;
                         }else{
                             nowEvents.push(currentEvent);
-                            continue;
+                            return;
                         }
                     }
 
                 }else{
                     if(isDeadEvent){
                         deadEvents.push(currentEvent);
-                        continue;
+                        return;
                     }
 
                     if(statusFilter && statusFilter != 'ALL'){
                         var filter = STATUS_FILTERS_TO_FILTER[statusFilter];
                         if(filter.indexOf(status) == -1){
-                            continue;
+                            return;
                         }
                     }
 
@@ -63,12 +65,16 @@ zedAlphaFilters
                         nowEvents.push(currentEvent);
                     } else if (isUpcomingEvent) {
                         upcomingEvents.push(currentEvent);
+                    }else if(isPastEvent){
+                        pastEvents.push(currentEvent);
                     }
                 }
-            }
+
+            });
 
             return {
                 deadEvents : deadEvents,
+                pastEvents : pastEvents,
                 nowEvents: nowEvents,
                 upcomingEvents: upcomingEvents
             }
