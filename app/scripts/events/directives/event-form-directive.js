@@ -418,24 +418,28 @@ zedAlphaDirectives
                         rejectedPreviousValue = null;
                         var valueDurationBefore = scope.eventObj.$getDuration();
 
-                            EventsCollection.maxDurationForStartTime(value, scope.eventObj.data.seats, scope.eventObj).then(function(maxDurationForEvent){
+                            return EventsCollection.maxDurationForStartTime(value, scope.eventObj.data.seats, scope.eventObj).then(function(maxDurationForEvent){
                                 if(maxDurationForEvent > 0 && maxDurationForEvent < valueDurationBefore) {
                                     var localizedError = $filter('translate')('START_TIME_CHANGE_WILL_CHANGE_EVENT_DURATION', {duration: maxDurationForEvent});
-                                    areYouSureModalFactory(null, localizedError, null).result.then(function () {
+                                    return areYouSureModalFactory(null, localizedError, null).result.then(function () {
                                         scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore, value);
                                         DateHolder.goToEvent(scope.eventObj);
+                                        return true;
                                     }, function () {
+                                        console.log('user refuses to change end time');
+                                        rejectedPreviousValue = valueBeforeClone;
                                         return $q.reject('user refuses to change end time');
                                     });
                                 }else if(maxDurationForEvent == -1 || maxDurationForEvent == valueDurationBefore){
                                     scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore, value);
                                     DateHolder.goToEvent(scope.eventObj);
+                                    return true;
                                 }else{
                                     DateHolder.goToEvent(scope.eventObj);
+                                    return true;
                                 }
                             });
 
-                        return true;
                     }, function(error){
                         if(error && error.error){
                             var localizedError = $filter('translate')(error.error);
@@ -449,6 +453,7 @@ zedAlphaDirectives
                 ngModel.$viewChangeListeners.push(function(){
                     if(rejectedPreviousValue){
                         $timeout(function(){
+                            console.log('starttime rejectedPreviousValue');
                             scope.eventObj.data.startTime = rejectedPreviousValue;
                             rejectedPreviousValue = null;
                         });
