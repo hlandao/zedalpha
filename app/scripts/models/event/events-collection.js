@@ -333,7 +333,7 @@ zedAlphaServices
 
 
         /**
-         * check all the available warnings for the event
+         * check all the available warnings for the event before save
          * @returns {Promise|*}
          */
         this.checkAllWarnings = function (event, seatingOptionsToValidate) {
@@ -357,7 +357,7 @@ zedAlphaServices
         var validateSeatingOptions = function(seatingOptionsToValidate, event){
             var result = true;
             var defer = $q.defer();
-            if(!seatingOptionsToValidate){
+            if(!seatingOptionsToValidate || event.data.isOccasional){
                 defer.resolve();
                 return defer.promise;
             }
