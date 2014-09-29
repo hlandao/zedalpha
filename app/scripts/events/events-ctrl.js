@@ -56,7 +56,7 @@ zedAlphaControllers
         $scope.clickOnEvent = function(event){
             if($scope.switchMode){
                 addEventToSwitchMode(event);
-            }else{
+            }else {
                 $scope.openEditedEvent(event);
             }
         }
@@ -68,8 +68,7 @@ zedAlphaControllers
             if($scope.editedEvent === event){
                 return;
             }else if($scope.editedEvent){
-                $scope.editedEvent.$exitEditingMode();
-                $scope.editedEvent = null;
+                alert('Cannot edit reservatin while another reservation is opened');
             }
             event.$enterEditingMode();
             $scope.editedEvent = event;
