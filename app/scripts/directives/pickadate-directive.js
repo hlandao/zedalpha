@@ -16,8 +16,10 @@ zedAlphaDirectives
                     FORMAT_PICKADATE = 'dd/mm/yyyy',
                     FORMAT_MOMENT = 'DD/MM/YYYY';
 
+
                 element.pickadate({
                     container : 'body',
+                    editable : false,
                     onSet: function (context) {
                         if(updatedModel){
                             updatedModel = false;
@@ -58,6 +60,7 @@ zedAlphaDirectives
                         update.apply(this,arguments);
                     }
                 }, true);
+
             }
         };
     });
