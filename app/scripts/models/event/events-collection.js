@@ -208,7 +208,8 @@ zedAlphaServices
 
         this.maxDurationForStartTime = function (startTime, seats, event) {
             seats = seats || event.data.seats;
-            startTime = startTime || event.startTime;
+            startTime = startTime || event.data.startTime;
+
             return getCollectionForDate(null, null, event).then(function(collection){
                 var maxDuration = -1, tempMaxDuration, currentEvent, key;
 
@@ -235,10 +236,11 @@ zedAlphaServices
         this.createNewEvent = function(data){
             // find the duration for the event and set the end time
             var tempEvent = new Event(null, data);
-            var maxDurationForEvent = self.maxDurationForStartTime(null, null, tempEvent);
-            if (maxDurationForEvent === 0) throw new TypeError("cannot create new event with the current startTime due to possible collisions");
-            else if(maxDurationForEvent > 0) tempEvent.$setEndTimeWithDuration(maxDurationForEvent);
-            return tempEvent;
+            return self.maxDurationForStartTime(null, null, tempEvent).then(function(maxDurationForEvent){
+                if (maxDurationForEvent === 0) return $q.reject({error : 'ERROR_CREATE_NEW_EVENT'})
+                else if(maxDurationForEvent > 0) tempEvent.$setEndTimeWithDuration(maxDurationForEvent);
+                return tempEvent;
+            });
         };
 
 
@@ -477,13 +479,15 @@ zedAlphaServices
             e1.data.seats = e2OriginalSeats;
             e2.data.seats = e1OriginalSeats;
 
+
             checkPromises.push(self.validateCollision(e1));
             checkPromises.push(self.validateCollision(e2));
 
+
             return $q.all(checkPromises).then(function(){
-                var savePromises = [self.saveWithValidation(e1, true), self.saveWithValidation(e1, true)];
+                var savePromises = [self.saveWithValidation(e1, true), self.saveWithValidation(e2, true)];
                 return $q.all(savePromises);
-            }, function(error){
+            }).catch(function(error){
                 e1.data.seats = e1OriginalSeats;
                 e2.data.seats = e2OriginalSeats;
                 return $q.reject(error);

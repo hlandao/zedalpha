@@ -28,10 +28,19 @@ zedAlphaControllers
             }
             CloseOpenControls();
             if(occasionalOrDestination == 'occasional') $scope.goToNow();
-            $scope.newEvent = EventsCollection.createNewEvent({
+            EventsCollection.createNewEvent({
                 occasionalOrDestination : occasionalOrDestination,
                 startTime : startTime,
                 seatsDic : seatsDic
+            }).then(function(_newEvent){
+
+                 $scope.newEvent = _newEvent;
+            }).catch(function(error){
+
+                if(error && error.error){
+                    var localizedError = $filter('translate')(error.error);
+                    areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, error.extra);
+                }
             });
         };
 
@@ -170,7 +179,7 @@ zedAlphaControllers
             }
         }
 
-        $scope.showDeadEvents = true;
+        $scope.showDeadEvents = false;
         $scope.toggleDeadEvents = function(e){
             e.preventDefault();
             if($scope.showDeadEvents){
