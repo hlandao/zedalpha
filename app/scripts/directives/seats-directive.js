@@ -33,6 +33,7 @@ zedAlphaDirectives
                 ngModel.$parsers.unshift(function(viewValue){
                     if(!viewValue) return {};
                     var output = {};
+                    viewValue = viewValue.replace(/\s+/g, '');
                     var arr = viewValue.split(',');
                     for(var i = 0; i <arr.length; ++i){
                         if (arr[i] == "" || arr[i] == " ") continue;
