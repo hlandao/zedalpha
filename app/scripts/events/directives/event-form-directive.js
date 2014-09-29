@@ -138,7 +138,7 @@ zedAlphaDirectives
 
             },
             link : function(scope, element, attrs){
-                element.find('input').eq(0).focus();
+                element.find('.phone-input').eq(0).focus();
 
                 scope.closeLinkFN =  function(result){
                     scope.onClose({$result : result})
@@ -360,6 +360,8 @@ zedAlphaDirectives
             restrict : 'E',
             template : '<input type="text" class="datepicker-input" pick-a-date="date" on-change="dateChanged()"/>',
             link : function(scope, element, attrs, ctrls){
+
+
                 var ngModel = ctrls[0];
 
                 ngModel.$render = function(){
@@ -375,6 +377,7 @@ zedAlphaDirectives
                         DateHolder.goToEvent(scope.eventObj);
                     }).catch(function(error){
                         if(error && error.error){
+                            console.error('[eventFormBaseDatePicker] Error : ',error);
                             var localizedError = $filter('translate')(error.error);
                             areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
                         }
@@ -383,6 +386,7 @@ zedAlphaDirectives
 //                    ngModel.$setViewValue(scope.date);
 //                    scope.eventObj.$baseDateWasChangedByUser(oldVal);
                 }
+
             }
         }
     }).directive('eventStartTimeValidator', function(EventsCollection, areYouSureModalFactory, $filter, $q, $timeout, DateHolder){
@@ -420,6 +424,7 @@ zedAlphaDirectives
 
                             return EventsCollection.maxDurationForStartTime(value, scope.eventObj.data.seats, scope.eventObj).then(function(maxDurationForEvent){
                                 if(maxDurationForEvent > 0 && maxDurationForEvent < valueDurationBefore) {
+                                    console.error('[eventStartTimeValidator] Warning : START_TIME_CHANGE_WILL_CHANGE_EVENT_DURATION');
                                     var localizedError = $filter('translate')('START_TIME_CHANGE_WILL_CHANGE_EVENT_DURATION', {duration: maxDurationForEvent});
                                     return areYouSureModalFactory(null, localizedError, null).result.then(function () {
                                         scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore, value);
