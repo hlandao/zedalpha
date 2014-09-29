@@ -34,6 +34,7 @@ zedAlphaServices
         }
 
         this.goToClock = function(clock){
+            clock = clock.clone();
             if(DateHelpers.isMomentValid(clock)){
                 if(!DateHelpers.isMomentSameDate(clock, self.currentDate)){
                     self.currentDate = clock.clone().hour(0).minute(0);
@@ -47,7 +48,9 @@ zedAlphaServices
             if(DateHelpers.isMomentValid(date)){
                 var newClock = date.clone().hour(self.currentClock.hour()).minute(self.currentClock.minute()).seconds(0);
                 self.currentClock = newClock;
-                self.currentDate = date.hour(0).minute(0);
+                if(date.format(DateFormatFirebase) != self.currentDate.format(DateFormatFirebase)){
+                    self.currentDate = date.clone().hour(0).minute(0);
+                }
             }
             self.changedByUser = true;
         }
@@ -55,7 +58,9 @@ zedAlphaServices
         this.goToEvent = function(event){
             if(!event) return;
             self.changedByUser = true;
-            self.currentDate = moment(event.data.baseDate, DateFormatFirebase);
+            if(event.data.baseDate != self.currentDate.format(DateFormatFirebase)){
+                self.currentDate = moment(event.data.baseDate, DateFormatFirebase);
+            }
             self.currentClock = event.data.startTime.clone();
         }
 
