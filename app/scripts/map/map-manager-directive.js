@@ -142,22 +142,21 @@ zedAlphaDirectives
                             seats = scope.highlightedShapes[0].seatObject();
 
 
-                        highlightedShapesEvents = _.filter(EventsCollection.collection, function(event){
-                            return event.$sharingTheSameSeatsWithAnotherEvent(null, seats);
-                        });
+
+                        highlightedShapesEvents = $filter('eventsBySeats')(EventsCollection.collection, seats);
+
+                        highlightedShapesEvents = $filter('eventsByShift')(highlightedShapesEvents);
 
 
                         scope.highlightedEvents = $filter('sortDayEvents')(highlightedShapesEvents, DateHolder.currentClock, null, null, true, true);
 
                         if(!scope.highlightedEvents.nowEvents.length && scope.highlightedEvents.upcomingEvents.length){
                             scope.nextEventInXMinutes = scope.highlightedEvents.upcomingEvents[0].data.startTime.diff(DateHolder.currentClock, 'seconds');
-
                             if(scope.nextEventInXMinutes >  3600 * 6){
                                 scope.nextEventInXMinutes = null;
                             }else if(scope.nextEventInXMinutes <= 0){
                                 scope.nextEventInXMinutes = null;
                             }
-
                         }
 
 

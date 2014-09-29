@@ -19,10 +19,4 @@ zedAlphaFilters
             }
             return arr.join(',');
         }
-    }).filter('colorForStatus', function(BusinessHolder){
-        return function(status){
-            if(!status) return false;
-            var output = _.findWhere(BusinessHolder.business.eventsStatuses, {status : status});
-            if(output) return output.color;
-        }
     });

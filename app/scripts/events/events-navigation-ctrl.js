@@ -4,7 +4,7 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('EventsNavigationCtrl', function($scope, DateHolder, EventsCollection, ShiftsDayHolder){
+    .controller('EventsNavigationCtrl', function($scope, DateHolder, EventsCollection, ShiftsDayHolder, DeadEventsStatuses){
 //        $scope.openDatePicker = function(e){
 //            e.preventDefault();
 //            e.stopPropagation();
@@ -24,13 +24,13 @@ zedAlphaControllers
                 }
                 eventGuests = currentEvent.data.guests ? parseInt(currentEvent.data.guests) : 0;
                 // Total orders count
-                if(!currentEvent.data.isOccasional && currentEvent.data.status != 'NO_SHOW' && currentEvent.data.status != 'CANCELED'){
+                if(!currentEvent.data.isOccasional && !currentEvent.$isDeadEvent()){
                     ++totalOrdersCount;
                     totalGuestsCount += eventGuests;
 //                    if(event.status && (event.status.ORDERED || event.status.CONFIRMED)){
 //                        guestsLeftCount += eventGuests
 //                    }
-                }else{
+                }else if(currentEvent.data.isOccasional){
                     // Total walkins count
                     totalWalkinsCount += eventGuests;
                 }

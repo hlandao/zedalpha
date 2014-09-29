@@ -105,6 +105,10 @@ zedAlphaDirectives
                             var localizedError = $filter('translate')(error.error);
                             $log.info('[EventForm] error saving event',error);
                             areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
+                        }else{
+                            var localizedError = $filter('translate')('ERROR_EVENT_SAVING');
+                            $log.info('[EventForm] error saving event');
+                            areYouSureModalFactory(null, localizedError, {ok : true, cancel : false});
                         }
                     });
 
@@ -120,8 +124,10 @@ zedAlphaDirectives
                     modal.result.then(function () {
                         EventsCollection.remove($scope.eventObj).then(function(){
                             $scope.closeLinkFN();
-                        }, function(){
-
+                        }).catch(function(error){
+                            var localizedError = $filter('translate')('ERROR_EVENT_REMOVE');
+                            $log.info('[EventForm] error remove event');
+                            areYouSureModalFactory(null, localizedError, {ok : true, cancel : false});
                         });
                     });
 

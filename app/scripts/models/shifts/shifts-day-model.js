@@ -73,7 +73,19 @@ zedAlphaServices
             }
         }
     })
-    .factory('ShiftsDayPrototypeHelpers', function(){
+    .factory('isEventWithinShift', function(){
+        return function(shift, event){
+            if(!shift || !event){
+                throw new Error('[isEventWithinShift] Please provide a valid shift and event');
+            }
+            var endTime = shift.startTime.clone().add(shift.duration, 'minutes');
+            var isOverlappingShift = event.data.startTime.isBefore(shift.startTime, 'minutes') && event.data.startTime.isAfter(shift.startTime, 'minutes'),
+                isStartingWithinShift = event.data.startTime.isSame(shift.startTime, 'minutes') || (event.data.startTime.isAfter(shift.startTime, 'minutes') && (event.data.startTime.isBefore(endTime, 'minutes') || event.data.startTime.isSame(endTime, 'minutes')));
+
+            return isOverlappingShift || isStartingWithinShift;
+        }
+    })
+    .factory('ShiftsDayPrototypeHelpers', function(isEventWithinShift){
         return {
             isContainingEvent : function(event){
                 for (var i = 0 ; i < this.shifts.length; ++i){
@@ -83,13 +95,7 @@ zedAlphaServices
                 }
                 return false;
             },
-            isEventWithinShift : function(shift, event){
-                var endTime = shift.startTime.clone().add(shift.duration, 'minutes');
-                var isOverlappingShift = event.data.startTime.isBefore(shift.startTime, 'minutes') && event.data.startTime.isAfter(shift.startTime, 'minutes'),
-                    isStartingWithinShift = event.data.startTime.isSame(shift.startTime, 'minutes') || (event.data.startTime.isAfter(shift.startTime, 'minutes') && (event.data.startTime.isBefore(endTime, 'minutes') || event.data.startTime.isSame(endTime, 'minutes')));
-
-                return isOverlappingShift || isStartingWithinShift;
-            }
+            isEventWithinShift : isEventWithinShift
         }
     })
     .factory('ShiftsDay', function($FirebaseObject, ShiftsDayPrototypeHelpers, $q){

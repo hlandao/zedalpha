@@ -11,5 +11,14 @@ zedAlphaServices
         ORDERED : ['ORDERED', 'CONFIRMED'],
         OCCASIONAL : ['OCCASIONAL']
     })
-    .value('REMOVED_STATUS', {status : 'REMOVED', color : '#f00'});
+    .value('REMOVED_STATUS', {status : 'REMOVED', color : '#f00'})
+    .filter('colorForStatus', function(BusinessHolder){
+        return function(status){
+            if(!status) return false;
+            var output = _.findWhere(BusinessHolder.business.eventsStatuses, {status : status});
+            if(output) return output.color;
+        }
+    });
+
+
 

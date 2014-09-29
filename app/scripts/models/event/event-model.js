@@ -2,7 +2,7 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory('Event', function ($q, DateHolder, DateHelpers, $injector, $filter, BusinessHolder, ShiftsDayHolder, NotCollidingEventStatuses,DateFormatFirebase) {
+    .factory('Event', function ($q, DateHolder, DateHelpers, $injector, $filter, BusinessHolder, ShiftsDayHolder, NotCollidingEventStatuses,DateFormatFirebase,DeadEventsStatuses) {
 
         function Event(snapshot, newEventData, eventData) {
             if (snapshot) {
@@ -382,6 +382,9 @@ zedAlphaServices
                 this.data.startTime.add(daysDiff, 'days');
                 this.data.endTime.add(daysDiff, 'days');
                 this.data.baseDate = moment(newVal).format(DateFormatFirebase);
+            },
+            $isDeadEvent : function(){
+              return !!(DeadEventsStatuses.indexOf(this.data.status) > -1);
             },
             getCollectionAsync : function(){
                 var defer = $q.defer();
