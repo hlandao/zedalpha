@@ -121,6 +121,7 @@ zedAlphaConfigModule
         "ERROR_EVENT_MSG_HOST" : "Please enter host name",
         "ERROR_EVENT_SWITCH_COLLISION" : "Cannot perform this action because one of the events collide with another event. Please try again",
         "ERROR_EVENT_SAVING" : "Saving reservation was failed!",
+        "ERROR_CREATE_NEW_EVENT" : "Cannot create new reservation at this time.",
         "SUCCESS_SAVE_EVENT" : "Reservation saved!",
 
         // WARNINGS
@@ -279,6 +280,7 @@ zedAlphaConfigModule
                 "ERROR_EVENT_MSG_HOST" : "חובה למלא את שם המארחת",
                 "ERROR_EVENT_SWITCH_COLLISION" : "לא ניתן לבצע את ההחלפה, אחת מההזמנות מתנגשת עם הזמנה נוספת. נא נסה שנית.",
                 "ERROR_EVENT_SAVING" : "תקלה בשמירת ארוע, נסה שנית",
+                "ERROR_CREATE_NEW_EVENT" : "לא ניתן לייצר המנה חדשה בזמן זה.",
                 "SUCCESS_SAVE_EVENT" : "ההזמנה נשמרה בהצלחה",
                 // WARNING
                 "ARE_YOU_SURE" : "בעיה",
