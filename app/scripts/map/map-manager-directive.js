@@ -135,6 +135,7 @@ zedAlphaDirectives
 
 
                 var eventsForHighlightedShapes = function(){
+                    scope.nextEventInXMinutes = null;
                     if(scope.highlightedShapes.length == 1){
 
                         var highlightedShapesEvents,
@@ -150,6 +151,7 @@ zedAlphaDirectives
 
                         if(!scope.highlightedEvents.nowEvents.length && scope.highlightedEvents.upcomingEvents.length){
                             scope.nextEventInXMinutes = scope.highlightedEvents.upcomingEvents[0].data.startTime.diff(DateHolder.currentClock, 'seconds');
+
                             if(scope.nextEventInXMinutes >  3600 * 6){
                                 scope.nextEventInXMinutes = null;
                             }else if(scope.nextEventInXMinutes <= 0){
