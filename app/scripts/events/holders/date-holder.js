@@ -55,8 +55,8 @@ zedAlphaServices
         this.goToEvent = function(event){
             if(!event) return;
             self.changedByUser = true;
-            self.currentClock = event.data.startTime.clone();
             self.currentDate = moment(event.data.baseDate, DateFormatFirebase);
+            self.currentClock = event.data.startTime.clone();
         }
 
         $rootScope.$watch(function(){

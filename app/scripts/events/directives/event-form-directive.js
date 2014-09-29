@@ -423,7 +423,6 @@ zedAlphaDirectives
                                     var localizedError = $filter('translate')('START_TIME_CHANGE_WILL_CHANGE_EVENT_DURATION', {duration: maxDurationForEvent});
                                     return areYouSureModalFactory(null, localizedError, null).result.then(function () {
                                         scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore, value);
-                                        DateHolder.goToEvent(scope.eventObj);
                                         return true;
                                     }, function () {
                                         console.log('user refuses to change end time');
@@ -457,6 +456,10 @@ zedAlphaDirectives
                             console.log('starttime rejectedPreviousValue');
                             scope.eventObj.data.startTime = rejectedPreviousValue;
                             rejectedPreviousValue = null;
+                        });
+                    }else{
+                        $timeout(function(){
+                            DateHolder.goToEvent(scope.eventObj);
                         });
                     }
                 });
