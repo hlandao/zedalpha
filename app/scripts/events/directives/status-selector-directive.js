@@ -3,7 +3,7 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 
 zedAlphaDirectives
 
-    .controller('HlStatusSelectorCtrl', function ($scope, DateHelpers, BusinessHolder, $timeout){
+    .controller('HlStatusSelectorCtrl', function ($scope, DateHelpers, BusinessHolder, $timeout, REMOVED_STATUS){
         var EventsStatusesHolder = BusinessHolder.business.eventsStatuses;
 
         var ngModel;
@@ -32,6 +32,9 @@ zedAlphaDirectives
 
 
         var findStatusByStatus = function(status){
+            if(status == 'REMOVED'){
+                return REMOVED_STATUS;
+            }
             return _.findWhere(EventsStatusesHolder, {status : status});
         }
 

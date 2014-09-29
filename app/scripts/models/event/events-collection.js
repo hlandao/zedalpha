@@ -425,15 +425,33 @@ zedAlphaServices
 
         };
 
-        this.remove = function(event){
+
+        /**
+         * Remove from collection
+         * @param event
+         * @returns {*}
+         * @private
+         */
+        this.__remove = function(event){
             return getCollectionForDate(null, null, event).then(function(collection){
                 collection.$remove(event).then(function(){
                     sortEvents();
                 });
 
             });
-
         };
+
+
+        /**
+         * change status to 'REMOVED'
+         * @param event
+         * @returns {*}
+         */
+        this.remove = function(event){
+            event.data.status = 'REMOVED';
+            return self.saveAfterValidation(event);
+        };
+
 
 
         this.changeBaseDateForEvent = function(event, newBaseDateMoment){

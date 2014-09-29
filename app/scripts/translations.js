@@ -63,6 +63,7 @@ zedAlphaConfigModule
         FINISHED: "Finished",
         NO_SHOW: "No Show",
         CANCELED : "Canceled",
+        REMOVED : "Removed",
         DASHBOARD : "Dashboard",
         LOGOUT : "Logout",
         SELECT_SHIFT : 'Select Shift',
@@ -221,6 +222,7 @@ zedAlphaConfigModule
                 "FINISHED": "הסתיים",
                 "NO_SHOW": "הבריז",
                 "CANCELED" : "בוטל",
+                "REMOVED" : "הוסר",
                 "ERROR_MSG_COLLISION": "תקלה: אירוע זה מתנגש עם אירוע אחר",
                 "TOTAL_ORDERS": "מספר הזמנות",
                 "TOTAL_GUESTS": "מספר אורחים ",
@@ -270,9 +272,9 @@ zedAlphaConfigModule
                 "MIN" : 'דקות',
 
                 // ERRORS
-                "ERROR_EVENT_MSG_NAME": "חובה למלא את שם הארוע",
-                "ERROR_EVENT_MSG_SEATS": "חובה לבחור לפחות שולחן אחד",
-                "ERROR_EVENT_MSG_PHONE": "חובה למלא מספר טלפון",
+                "ERROR_EVENT_MSG_NAME": "נא למלא את שם ההזמנה",
+                "ERROR_EVENT_MSG_SEATS": "נא לבחור לפחות שולחן אחד להזמנה",
+                "ERROR_EVENT_MSG_PHONE": "נא למלא מספר טלפון",
                 "ERROR_EVENT_MSG_STARTTIME": "זמן התחלת הארוע לא קיים או לא תקין",
                 "ERROR_EVENT_MSG_ENDTIME": "זמן סיום הארוע לא קיים או לא תקין",
                 "ERROR_EVENT_MSG_BASE_DATE": "תאריך אינו תקין",

@@ -3,14 +3,7 @@ var zedAlphaFilters = zedAlphaFilters || angular.module('zedalpha.filters', []);
 
 zedAlphaFilters
     .value('EVENT_TIME_FRAME_IN_MINUTES', 120)
-    .value('DEAD_EVENTS_STATUSES', ["FINISHED", "NO_SHOW","CANCELED"])
-    .value('STATUS_FILTERS_TO_FILTER', {
-        ALL : ['ALL'],
-        SEATED : ['SEATED', 'CHEQUE', ''],
-        ORDERED : ['ORDERED', 'CONFIRMED'],
-        OCCASIONAL : ['OCCASIONAL']
-    })
-    .filter('sortDayEvents', function ($filter, EVENT_TIME_FRAME_IN_MINUTES, DEAD_EVENTS_STATUSES, DateHelpers, STATUS_FILTERS_TO_FILTER, ShiftsDayHolder) {
+    .filter('sortDayEvents', function ($filter, EVENT_TIME_FRAME_IN_MINUTES, DeadEventsStatuses, DateHelpers, STATUS_FILTERS_TO_FILTER, ShiftsDayHolder) {
         return function (eventsCollection, dateMoment, statusFilter, nameQuery, includePastEvents, includeAllUpcomingEvents) {
             var _dateMoment = DateHelpers.isMomentValid(dateMoment) ? dateMoment.clone() : null;
             var pastEvents = [],upcomingEvents = [], nowEvents = [], deadEvents = [];
@@ -34,7 +27,7 @@ zedAlphaFilters
                 }
                 var isNowEvent = !!(isStartTimeSameAsCurrent || (isStartingBefore && isEndingAfterCurrentDate));
                 var isUpcomingEvent = !!((startTimeDiffInMinutes > 0 && (includeAllUpcomingEvents || startTimeDiffInMinutes <= EVENT_TIME_FRAME_IN_MINUTES)));
-                var isDeadEvent = !!(DEAD_EVENTS_STATUSES.indexOf(status) >= 0);
+                var isDeadEvent = !!(DeadEventsStatuses.indexOf(status) >= 0);
 
                 if(statusFilter == 'ENTIRE_SHIFT'){
                     var shift = ShiftsDayHolder.selectedShift;

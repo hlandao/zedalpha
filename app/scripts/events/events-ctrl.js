@@ -4,7 +4,6 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .value('StatusFilters', ['ALL','SEATED','ORDERED','OCCASIONAL'])
     .controller('EventsCtrl', function($scope, $log, DateHolder, Event, $filter, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder, EventsCollection, StatusFilters, areYouSureModalFactory, SeatsHolder, EventsNotificationsHolder){
 
         $scope.DateHolder = DateHolder;
