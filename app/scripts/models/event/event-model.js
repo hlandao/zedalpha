@@ -24,8 +24,8 @@ zedAlphaServices
                 this.initialized = true;
                 this.$id = snapshot.name();
                 this.data = angular.extend({}, snapshot.val());
-                this.data.startTime = moment(this.data.startTime);
-                this.data.endTime = moment(this.data.endTime);
+                this.data.startTime = moment(this.data.startTime).seconds(0);
+                this.data.endTime = moment(this.data.endTime).seconds(0);
                 this.data.guests = this.data.guests || 0;
 
                 return this;
@@ -239,7 +239,7 @@ zedAlphaServices
             $setEndTimeWithDuration: function (minutes, startTime) {
                 var newEndTime = this.$getEndTimeWithDuration(minutes, startTime);
                 if(newEndTime){
-                    this.data.endTime = newEndTime;
+                    this.data.endTime = newEndTime.seconds(0);
                     return newEndTime;
                 }else{
                     return false;
