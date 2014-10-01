@@ -145,6 +145,7 @@ zedAlphaDirectives
 
                         highlightedShapesEvents = $filter('eventsBySeats')(EventsCollection.collection, seats);
 
+
                         highlightedShapesEvents = $filter('eventsByShift')(highlightedShapesEvents);
 
 
