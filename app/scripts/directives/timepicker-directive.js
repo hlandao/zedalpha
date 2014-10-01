@@ -212,7 +212,8 @@ zedAlphaDirectives
                     ctrl = ctrls[1],
                     $html = $('html'),
                     $window = $(window),
-                    $pickerHolder = element.find('.picker__holder').eq(0);
+                    $clonedElement,
+                    $pickerHolder;
 
 
                 var template = '<div class="picker picker--time picker--focused picker--opened" ng-show="opened">' +
@@ -229,7 +230,6 @@ zedAlphaDirectives
                     '</div>'+
                     '</div>';
 
-                var $clonedElement;
                 var init = function() {
                     ctrl.init(ngModel, this, attrs);
 
@@ -238,6 +238,7 @@ zedAlphaDirectives
                     });
 
                     angular.element('body').append($clonedElement);
+                    $pickerHolder = $clonedElement.find('.picker__holder').eq(0);
                 }
 
 
