@@ -82,7 +82,6 @@ zedAlphaServices
 
         var selectDefaultTime = function(){
             var defaultTime = self.selectedShift && self.selectedShift.defaultTime;
-            if(!defaultTime) defaultTime = self.selectedShift && self.selectedShift.startTime;
             if(DateHelpers.isMomentValid(defaultTime)){
                 DateHolder.currentClock = defaultTime.clone();
             }
