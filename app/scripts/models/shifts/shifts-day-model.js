@@ -79,7 +79,7 @@ zedAlphaServices
                 throw new Error('[isEventWithinShift] Please provide a valid shift and event');
             }
             var endTime = shift.startTime.clone().add(shift.duration, 'minutes');
-            var isOverlappingShift = event.data.startTime.isBefore(shift.startTime, 'minutes') && event.data.startTime.isAfter(shift.startTime, 'minutes'),
+            var isOverlappingShift = event.data.startTime.isBefore(shift.startTime, 'minutes') && event.data.endTime.isAfter(shift.startTime, 'minutes'),
                 isStartingWithinShift = event.data.startTime.isSame(shift.startTime, 'minutes') || (event.data.startTime.isAfter(shift.startTime, 'minutes') && (event.data.startTime.isBefore(endTime, 'minutes') || event.data.startTime.isSame(endTime, 'minutes')));
 
             return isOverlappingShift || isStartingWithinShift;
