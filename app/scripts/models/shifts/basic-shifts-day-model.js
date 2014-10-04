@@ -45,7 +45,7 @@ zedAlphaServices
         }
 
         BasicShift.prototype.$validate = function(){
-            if (DateHelpers.isMomentValid(this.startTime)){
+            if (!DateHelpers.isMomentValid(this.startTime)){
                 throw new BasicShiftException("Basic shift validation failed. 'startTime' should be moment object");
             }else if(!this.name){
                 throw new BasicShiftException("Basic shift validation failed. 'name' is missing.");
@@ -124,9 +124,9 @@ zedAlphaServices
             var self = this;
             return self.$beforeSave().then(function(){
                 self.$save();
-            }, function(){
             }).catch(function(error){
-                throw new BasicShiftDayException('Cannot save shift. Error : ' + error);
+                console.error('Cannot save shift. Error : ', error);
+                if(error && error.error) throw error.error;
             });
         };
 
