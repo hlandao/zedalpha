@@ -18,13 +18,10 @@ zedAlphaServices
             },
             $checkCollisionsForEvent : function(event, extra){
                 var eventToCheck,
-                    key,
                     extraSeats = extra && extra.seats ? extra.seats : null,
                     newStartTime = extra && extra.startTime ? extra.startTime : null,
                     newEndTime = extra && extra.endTime ? extra.endTime : null,
                     self = this;
-
-
 
 
                 for (var i = 0; i < self.$list.length; ++i) {
@@ -278,17 +275,6 @@ zedAlphaServices
 
 
         //------- COLLISIONS & DURATIONS --------//
-        /**
-         * return TRUE if the @event collides with another event
-         * @param event
-         * @returns {boolean}
-         */
-        this.checkCollisionsForEvent = function(event, extra, collection){
-            collection = collection || self.collection;
-            return collection.$checkCollisionsForEvent(event,extra);
-        };
-
-
         /**
          * checks the guests per 15 minutes limitation on the event
          * @returns {promise}

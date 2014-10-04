@@ -5,40 +5,33 @@ zedAlphaServices
             return $firebase(ref).$asObject();
         }
     })
-    .service("BusinessesCollection",function ($firebase, UserHolder, $q, $rootScope) {
-        var self = this;
-        this.init = function(){
-
-            return UserHolder.readyPromise().then(function(){
-                if(!UserHolder.userProfileRef) return $q.reject('No user');
-                var ref = UserHolder.userProfileRef.child('businesses');
-                self.collection = $firebase(ref).$asArray();
-                return self.collection.$loaded();
-            });
-        }
-
-        $rootScope.$on('$firebaseSimpleLogin:logout', function(){
-            self.collection = null;
-        });
-
-        $rootScope.$on('$firebaseSimpleLogin:login', function(){
-            self.collection = null;
-        });
-
-
+    .factory("BusinessesCollectionGenerator",function ($firebase, UserHolder) {
+           return function(){
+               var ref = UserHolder.userProfileRef.child('businesses');
+               return $firebase(ref).$asArray();
+           }
     })
     .service("BusinessHolder", function (UserHolder, BusinessObject, $rootScope) {
+
+        function BusinessHolderException(message) {
+            this.name = 'BusinessHolderException';
+            this.message= message;
+        }
+        BusinessHolderException.prototype = new Error();
+        BusinessHolderException.prototype.constructor = BusinessHolderException;
+
+
         var self = this;
         self.init = function (businessId) {
             if (businessId) {
+                if(self.business && self.business.$destroy){
+                    self.business.$destroy();
+                }
                 var ref = UserHolder.userProfileRef.child('businesses').child(businessId);
                 self.business = BusinessObject(ref)
                 return self.business.$loaded();
             }else{
-                return self.business && self.business.$loaded().then(function(business){
-                    $rootScope.$emit('$businessHolderChanged');
-                    return business;
-                })
+                throw new BusinessHolderException('No business is provided');
             }
         };
 

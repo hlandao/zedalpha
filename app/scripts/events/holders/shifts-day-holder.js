@@ -3,22 +3,25 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 zedAlphaServices
 
-    .service('ShiftsDayHolder', function (ShiftsDayGenerator, ReadOnlyShiftsDayGenerator, $q, $rootScope, DateHolder, AllDayShift, DateHelpers) {
+    .service('ShiftsDayHolder', function (ShiftsDayGenerator, $q, $rootScope, DateHolder, AllDayShift, DateHelpers) {
         var self = this;
+
+        function ShiftsDayHolderException(message) {
+            this.name = 'ShiftsDayHolderException';
+            this.message= message;
+        }
+        ShiftsDayHolderException.prototype = new Error();
+        ShiftsDayHolderException.prototype.constructor = ShiftsDayHolderException;
+
+
         this.$checkIfEventFitsShifts = function (event) {
-            var theDateShifts = ReadOnlyShiftsDayGenerator.byDate(event.data.startTime, {
-                    tryBasicShifts : true,
-                    extendProto : true
-                }),
+            var theDateShifts = ShiftsDayGenerator(event.data.startTime),
                 defer = $q.defer();
             if (theDateShifts.isContainingEvent(event)) {
                 defer.resolve(true);
             } else {
                 var theDayBefore = event.data.startTime.clone().subtract(1, 'days');
-                theDateShifts = ReadOnlyShiftsDayGenerator.byDate(theDayBefore, {
-                    tryBasicShifts : true,
-                    extendProto : true
-                });
+                theDateShifts = ShiftsDayGenerator(theDayBefore);
                 if (theDateShifts.isContainingEvent(event)) {
                     defer.resolve(true);
                 } else {
@@ -36,20 +39,21 @@ zedAlphaServices
 
 
         var loadShiftWithDate = function(date, initByDateChange){
-            if(!date) return null;
-            var wasInitialized = !!self.currentDay;
-            if(!wasInitialized) initByDateChange = false;
-            var _shiftDay = ReadOnlyShiftsDayGenerator.byDate(date, {
-                tryBasicShifts : true,
-                extendProto : true
-            });
-            validateShiftsWithDate(_shiftDay, date);
-            self.currentDay = _shiftDay;
-            self.selectedShift = getDefaultShiftForDay(_shiftDay, initByDateChange);
-            if(!wasInitialized){
-                selectDefaultTime();
+            if(!DateHelpers.isMomentValid(date)){
+                throw new ShiftsDayHolderException('Load shift with date was failed. Please provide a valid moment object');
             }
 
+            var wasInitialized = !!self.currentDay;
+            if(!wasInitialized) initByDateChange = false;
+            var _shiftDay = ShiftsDayGenerator(date);
+            validateShiftsWithDate(_shiftDay, date);
+            self.currentDay = _shiftDay;
+            if(initByDateChange && DateHolder.currentClock){
+                self.selectedShift = getDefaultShiftForClock(_shiftDay);
+            }else{
+                self.selectedShift = getDefaultShiftForDay(_shiftDay);
+                selectDefaultTime();
+            }
         };
 
 
@@ -61,7 +65,7 @@ zedAlphaServices
             }
         }
 
-        var getDefaultShiftForDay = function(_shiftDay, initByDateChange){
+        var getDefaultShiftForDay = function(_shiftDay){
             var currentShift, endTime;
             for (var i = 0; i < _shiftDay.shifts.length - 1; ++i){
                 currentShift = _shiftDay.shifts[i];
@@ -73,11 +77,21 @@ zedAlphaServices
                 }
             }
 
-            if(initByDateChange){
-                return AllDayShift();
-            }else{
-                return _shiftDay.shifts[_shiftDay.shifts.length-1];
+            return _shiftDay.shifts[0];
+        };
+
+        var getDefaultShiftForClock = function(_shiftDay){
+            var currentShift, endTime;
+            for (var i = 0; i < _shiftDay.shifts.length - 1; ++i){
+                currentShift = _shiftDay.shifts[i];
+                endTime =  currentShift.startTime.clone().add(currentShift.duration, 'minutes');
+                var startTimeCheck = DateHolder.currentClock.diff(currentShift.startTime, 'minutes');
+                var endTimeCheck = DateHolder.currentClock.diff(endTime, 'minutes');
+                if(startTimeCheck >= 0 && endTimeCheck <= 0){
+                    return currentShift;
+                }
             }
+            return AllDayShift();
         };
 
         var selectDefaultTime = function(){

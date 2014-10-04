@@ -5,11 +5,6 @@ var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.contro
 
 zedAlphaControllers
     .controller('EventsNavigationCtrl', function($scope, DateHolder, EventsCollection, ShiftsDayHolder, DeadEventsStatuses){
-//        $scope.openDatePicker = function(e){
-//            e.preventDefault();
-//            e.stopPropagation();
-//            $scope.datePickerOpened = true;
-//        }
 
         var countAll = function(){
             if(!EventsCollection.collection || !EventsCollection.collection.length || !ShiftsDayHolder.currentDay) return;
@@ -19,7 +14,7 @@ zedAlphaControllers
                 key = EventsCollection.collection.$keyAt(i);
                 currentEvent = EventsCollection.collection.$getRecord(key);
 
-                if(!ShiftsDayHolder.currentDay.isEventWithinShift.call(ShiftsDayHolder.currentDay, ShiftsDayHolder.selectedShift, currentEvent)){
+                if(!ShiftsDayHolder.selectedShift.call(ShiftsDayHolder.selectedShift,currentEvent)){
                   continue;
                 }
                 eventGuests = currentEvent.data.guests ? parseInt(currentEvent.data.guests) : 0;

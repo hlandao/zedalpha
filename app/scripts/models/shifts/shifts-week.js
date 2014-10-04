@@ -15,7 +15,7 @@ zedAlphaServices
 
             } else {
                 for (var i = 0; i < 7; ++i) {
-                    BasicShiftsDayGenerator.byDate(i).then(function(_day){
+                    BasicShiftsDayGenerator.byDayOfWeek(i).then(function(_day){
                         self.days.push(_day);
                     });
 

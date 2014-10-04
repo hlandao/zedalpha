@@ -12,7 +12,9 @@ zedAlphaControllers
         $scope.sortedEvents = EventsCollection.sorted;
         $scope.filters = EventsCollection.filters;
         $scope.eventsNotifications = EventsNotificationsHolder.alert;
-
+        $scope.showDeadEvents = false;
+        $scope.StatusFilters = StatusFilters;
+        $scope.searchController = { active : false};
 
         // --------- New event ----------- //
         $scope.newEventWithSeatsDic = function(occasionalOrDestination, seatsDic, startTime){
@@ -61,6 +63,7 @@ zedAlphaControllers
             }
         }
 
+
         // --------- Edit event ----------- //
         $scope.openEditedEvent = function (event){
             CloseOpenControls();
@@ -82,21 +85,19 @@ zedAlphaControllers
         }
 
 
+        // --------- Event Status  ----------- //
         $scope.eventStatusChanged = function(event){
-            var previous
             EventsCollection.saveWithValidation(event, true).then(function(){
             }, function(error){
                 if(error && error.error){
                     var localizedError = $filter('translate')(error.error);
                     areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
                 }
-//                alert('Error!');
             });
         };
 
 
-        $scope.StatusFilters = StatusFilters;
-
+        // --------- Filters/entire shift  ----------- //
         $scope.selectFilter = function(filter){
             $scope.selectedFilter = filter;
             EventsCollection.filters.status = filter;
@@ -131,7 +132,7 @@ zedAlphaControllers
         };
 
 
-        // --------- switch mode -------//
+        // --------- Switch mode -------//
         $scope.toggleSwitchMode = function(e){
             e.preventDefault();
             e.stopPropagation();
@@ -177,7 +178,6 @@ zedAlphaControllers
             }
         }
 
-        $scope.showDeadEvents = false;
         $scope.toggleDeadEvents = function(e){
             e.preventDefault();
             if($scope.showDeadEvents){
@@ -193,11 +193,6 @@ zedAlphaControllers
             $scope.searchController.active = false;
             $scope.filters.query = "";
         }
-
-        $scope.searchController = { active : false};
-
-
-
     }).directive('eventsListSearchBox', function($timeout){
         return function(scope, element, attrs){
             element.focus(function(){
@@ -206,15 +201,7 @@ zedAlphaControllers
                 });
             });
 
-//            element.blur(function(){
-//                scope.$apply(function(){
-//                    scope.searchController.active = false;
-//                    scope.filters.query = "";
-//                });
-//            });
-
             scope.$on('$destroy', function(){
-                element.off('blur');
                 element.off('focus');
             });
         }

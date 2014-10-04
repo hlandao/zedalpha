@@ -31,7 +31,7 @@ zedAlphaFilters
 
                 if(statusFilter == 'ENTIRE_SHIFT'){
                     var shift = ShiftsDayHolder.selectedShift;
-                    if(ShiftsDayHolder.currentDay.isEventWithinShift(shift, currentEvent)){
+                    if(shift.isEventWithin(currentEvent)){
                         if(isDeadEvent){
                             deadEvents.push(currentEvent);
                             return;
@@ -72,12 +72,12 @@ zedAlphaFilters
                 upcomingEvents: upcomingEvents
             }
         }
-    }).filter('eventsByShift', function(ShiftsDayHolder, isEventWithinShift){
+    }).filter('eventsByShift', function(ShiftsDayHolder){
         return function(events, shift){
             if(!events) return [];
             shift = shift || ShiftsDayHolder.selectedShift;
             return _.filter(events, function(event){
-                return isEventWithinShift(shift, event);
+                return shift.isEventWithin(event);
             });
         }
     }).filter('eventsBySeats', function(){

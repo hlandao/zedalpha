@@ -4,14 +4,17 @@ angular.module('zedalpha.routes', [])
     .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
 
         var userHolderResolver = function(UserHolder){
-
             return UserHolder.readyPromise();
         };
 
         var businessResolver = function(UserHolder, BusinessHolder, $stateParams){
 
             return UserHolder.readyPromise().then(function(){
-                return BusinessHolder.init($stateParams.businessId);
+                if(!$stateParams.businessId){
+                }else{
+                    return BusinessHolder.init($stateParams.businessId);
+                }
+
             });
         };
 
@@ -67,7 +70,7 @@ angular.module('zedalpha.routes', [])
                 },
                 resolve : {
                     userHolder : userHolderResolver
-                },
+                }
 
         }).state('business',{
                 authRequired: true,
@@ -152,7 +155,8 @@ angular.module('zedalpha.routes', [])
                     template : ""
                 },
                 "main" : {
-                    templateUrl : "/partials/events/events.html"
+                    templateUrl : "/partials/events/events.html",
+                    controller : "EventsCtrl"
                 }
             },
             resolve : {
@@ -160,6 +164,7 @@ angular.module('zedalpha.routes', [])
             }
         }).state('events.show',{
                 isSpecificPage : true,
+                authRequired: true,
                 url : '/events/:businessId',
                 views: {
                     'header@events' : {

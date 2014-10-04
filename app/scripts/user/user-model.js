@@ -2,46 +2,44 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory('UserHolder', ['$rootScope', '$q','$firebase','firebaseRef','$log', function($rootScope, $q,$firebase,firebaseRef,$log){
-        var initting = $q.defer();
-        var initialized = false;
+    .service('UserHolder', ['$rootScope', '$q','$firebase','firebaseRef','$log', function($rootScope, $q,$firebase,firebaseRef,$log){
+        var initting = $q.defer(),
+            initialized = false,
+            self = this;
 
-        var _userHolder = {
-            readyPromise : function(){
-                return initting.promise
-            }
-        };
+
+        this.readyPromise = function(){
+            return initting.promise.then(function(){
+                return self.auth;
+            });
+        }
 
 
         $rootScope.$on('$firebaseSimpleLogin:login', function(e, user){
             $log.debug('[UserHolder] : user is logged in');
 
-            _userHolder.userProfileRef =  firebaseRef('users/' + user.uid);
-            _userHolder.userProfileRef.once('value', function(snap){
-                _userHolder.userProfile = snap.val();
+            self.userProfileRef =  firebaseRef('users/' + user.uid);
+            self.userProfileRef.once('value', function(snap){
+                self.userProfile = snap.val();
             });
-//            _userHolder.$userProfile =  $firebase(_userHolder.userProfileRef);
-            _userHolder.auth = user;
-
+            self.auth = user;
 
             if(!initialized){
                 initialized = true;
-                initting.resolve(_userHolder);
+                initting.resolve();
             }
         });
 
         $rootScope.$on('$firebaseSimpleLogin:logout', function(){
             $log.debug('[UserHolder] : user is logged out');
-            _userHolder.auth = null;
-            _userHolder.userProfileRef = null;
-            _userHolder.$userProfile = null;
+            self.auth = null;
+            self.userProfileRef = null;
+            self.userProfile = null;
 
             if(!initialized){
                 initialized = true;
-                initting.resolve(_userHolder);
+                initting.resolve();
             }
         });
 
-
-        return _userHolder;
     }]);
