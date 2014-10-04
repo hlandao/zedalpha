@@ -14,7 +14,7 @@ zedAlphaControllers
                 key = EventsCollection.collection.$keyAt(i);
                 currentEvent = EventsCollection.collection.$getRecord(key);
 
-                if(!ShiftsDayHolder.selectedShift.call(ShiftsDayHolder.selectedShift,currentEvent)){
+                if(!ShiftsDayHolder.selectedShift.isEventWithin.call(ShiftsDayHolder.selectedShift,currentEvent)){
                   continue;
                 }
                 eventGuests = currentEvent.data.guests ? parseInt(currentEvent.data.guests) : 0;

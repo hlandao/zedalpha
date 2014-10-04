@@ -41,7 +41,6 @@
       },
 
       _login: function() {
-
          this._authenticated = true;
          if( this._redirectTo ) {
             this._redirect(this._redirectTo);
@@ -63,8 +62,9 @@
          this._checkCurrent();
       },
 
-      _redirect: function(newState) {
-          this._state.go(newState,null,{reload:true});
+      _redirect: function(newState, newParams) {
+          newParams = newParams || this._redirectToParams;
+          this._state.go(newState,newParams,{reload:true});
       },
 
       // A function to check whether the current path requires authentication,
@@ -76,6 +76,7 @@
                this._redirectTo = 'main';
             } else {
                this._redirectTo = toState.name;
+                this._redirectToParams = toParams;
             }
              if(e) e.preventDefault();
              return this._redirect(_loginPath);

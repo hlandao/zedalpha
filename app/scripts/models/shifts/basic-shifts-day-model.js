@@ -3,10 +3,10 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 zedAlphaServices
 
-    .factory('BasicShift', function(HourRegex, HourFormatFirebase){
+    .factory('BasicShift', function(HourRegex, HourFormatFirebase, DateHelpers){
 
         function BasicShiftException(message) {
-            this.name = 'ShiftException';
+            this.name = 'BasicShiftException';
             this.message= message;
         }
         BasicShiftException.prototype = new Error();
@@ -15,15 +15,15 @@ zedAlphaServices
 
         function BasicShift(data){
             if(!data){
-                throw new BasicShiftException('Cannot init new shift without data.');
+                throw new BasicShiftException('Cannot init new basic shift without data.');
             }else if(!data.startTime) {
-                throw new BasicShiftException('Cannot init new shift. Please provide startTime value');
-            } else if (HourRegex.pattern.test(data.startTime)){
-                throw new BasicShiftException('Cannot init new shift. Please provide a valid startTime (xx:xx)');
+                throw new BasicShiftException('Cannot init new basic shift. Please provide startTime value');
+            } else if (!HourRegex.pattern.test(data.startTime)){
+                throw new BasicShiftException('Cannot init new basic shift. Please provide a valid startTime (xx:xx)');
             }else if(!data.name){
-                throw new BasicShiftException('Cannot init new shift. Please provide shift name value');
+                throw new BasicShiftException('Cannot init new basic shift. Please provide shift name value');
             }else if(!data.duration){
-                throw new BasicShiftException('Cannot init new shift. Please provide duration value ');
+                throw new BasicShiftException('Cannot init new basic shift. Please provide duration value ');
             }
 
             data.duration = parseInt(data.duration);
@@ -31,12 +31,16 @@ zedAlphaServices
                 throw new BasicShiftException('Cannot init new shift. Please provide valid duration ( > 0 )');
             }
 
-            data.defaultTime = moment(data.defaultTime, HourFormatFirebase);
+
+            if(data.defaultTime){
+                data.defaultTime = moment(data.defaultTime, HourFormatFirebase);
+            }
+
 
             this.name = data.name;
             this.duration = data.duration;
             this.startTime = moment(data.startTime, HourFormatFirebase);
-            this.defaultTime = (DateHelpers.isMomentValid(data.defaultTime)) ? data.defaultTime : data.startTime.clone();
+            this.defaultTime = (DateHelpers.isMomentValid(data.defaultTime)) ? data.defaultTime : this.startTime.clone();
             this.active = data.active;
         }
 
@@ -67,8 +71,15 @@ zedAlphaServices
         return BasicShift;
 
     })
-    .factory('BasicShiftsDay', function($FirebaseObject, ShiftsDayPrototypeHelpers, $q, $log, DateHelpers, HourFormatFirebase, BasicShift, ShiftsDayPrototype, DefaultBasicShiftsGenerator){
+    .factory('BasicShiftsDay', function($FirebaseObject,ShiftsDayPrototype, $q, $log, DateHelpers, HourFormatFirebase, BasicShift, ShiftsDayPrototype, DefaultBasicShiftsGenerator, asyncThrow){
 
+
+        function BasicShiftDayException(message) {
+            this.name = 'BasicShiftDayException';
+            this.message= message;
+        }
+        BasicShiftDayException.prototype = new Error();
+        BasicShiftDayException.prototype.constructor = BasicShiftDayException;
 
 
         function BasicShiftsDay(firebase, destroyFunction, readyPromise){
@@ -112,7 +123,7 @@ zedAlphaServices
                 self.$save();
             }, function(){
             }).catch(function(error){
-                $log.error('Cannot save shift ', error);
+                throw new BasicShiftDayException('Cannot save shift. Error : ' + error);
             });
         };
 

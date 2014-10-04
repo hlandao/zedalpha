@@ -30,8 +30,8 @@ zedAlphaServices
                 var ref = UserHolder.userProfileRef.child('businesses').child(businessId);
                 self.business = BusinessObject(ref)
                 return self.business.$loaded();
-            }else{
-                throw new BusinessHolderException('No business is provided');
+            }else if(self.business){
+                return self.business.$loaded();
             }
         };
 

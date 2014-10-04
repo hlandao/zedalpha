@@ -34,7 +34,8 @@ zedAlphaServices
 
         this.$selectNewShift = function(shift){
             self.selectedShift = shift;
-            DateHolder.currentClock = DateHelpers.isMomentValid(shift.defaultTime) ? shift.defaultTime.clone : (DateHelpers.isMomentValid(shift.startTime) ? shift.startTime.clone() : null)
+            console.log('$selectNewShift',shift);
+            DateHolder.currentClock = DateHelpers.isMomentValid(shift.defaultTime) ? shift.defaultTime.clone() : (DateHelpers.isMomentValid(shift.startTime) ? shift.startTime.clone() : null)
         }
 
 
@@ -42,7 +43,6 @@ zedAlphaServices
             if(!DateHelpers.isMomentValid(date)){
                 throw new ShiftsDayHolderException('Load shift with date was failed. Please provide a valid moment object');
             }
-
             var wasInitialized = !!self.currentDay;
             if(!wasInitialized) initByDateChange = false;
             var _shiftDay = ShiftsDayGenerator(date);

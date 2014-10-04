@@ -38,12 +38,6 @@ zedAlphaControllers.controller('ModalInstanceCtrl', function ($scope, $modalInst
             });
 
             return modalInstance;
-//            modalInstance.result.then(function (selectedItem) {
-//                $scope.selected = selectedItem;
-//            }, function () {
-//                $log.info('Modal dismissed at: ' + new Date());
-//            });
-
         }
 
         return factory;

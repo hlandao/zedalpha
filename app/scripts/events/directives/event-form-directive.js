@@ -103,11 +103,11 @@ zedAlphaDirectives
                         isSaving = false;
                         if(error && error.error){
                             var localizedError = $filter('translate')(error.error);
-                            $log.info('[EventForm] error saving event',error);
+                            $log.error('[EventForm] error saving event',error);
                             areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
                         }else{
                             var localizedError = $filter('translate')('ERROR_EVENT_SAVING');
-                            $log.info('[EventForm] error saving event');
+                            $log.error('[EventForm] error saving event');
                             areYouSureModalFactory(null, localizedError, {ok : true, cancel : false});
                         }
                     });

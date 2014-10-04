@@ -399,7 +399,6 @@ zedAlphaServices
                             updateCustomerForEvent(addedEvent);
                         });
                     } else {
-                        debugger;
                         return collection.$save(event).then(function(){
                             sortEvents();
                             updateCustomerForEvent(event);

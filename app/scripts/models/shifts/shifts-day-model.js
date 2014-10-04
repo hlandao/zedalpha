@@ -75,16 +75,24 @@ zedAlphaServices
             }
 
             var startTime = basicShift.startTime.clone();
-            if (!startTime.isValid()) {
+            if (!DateHelpers.isMomentValid(startTime)) {
                 throw new ShiftException('Cannot init new shift from basic shift. Cannot parse startTime');
             }
+
+
+            var defaultTime = basicShift.defaultTime.clone();
+            if (!DateHelpers.isMomentValid(defaultTime)) {
+                defaultTime = startTime.clone();
+            }
+
 
             startTime.date(date.date()).year(date.year()).month(date.month());
             var data = {
                 name: basicShift.name,
                 active: basicShift.active,
                 duration: basicShift.duration,
-                startTime: startTime
+                startTime: startTime,
+                defaultTime: defaultTime
             }
 
             return new Shift(data);
@@ -155,7 +163,7 @@ zedAlphaServices
 
         return ShiftsDayPrototype;
     })
-    .factory('ShiftsDay', function($FirebaseObject, $q, Shift, ShiftsDayPrototype, DefaultShiftsGenerator, BusinessHolder){
+    .factory('ShiftsDay', function($FirebaseObject, $q, Shift, ShiftsDayPrototype, DefaultShiftsGenerator, BusinessHolder, BasicShift){
 
 
         function ShiftsDay(firebase, destroyFunction, readyPromise){
@@ -196,8 +204,8 @@ zedAlphaServices
             this.date = date;
             if(!this.shifts){
                 var myDayOfWeek = this.date.day();
-                if(BusinessHolder.business.shifts.basic[myDayOfWeek]){
-                    this.$initShiftsWithBasicShifts(BusinessHolder.business.shifts.basic[myDayOfWeek]);
+                if(BusinessHolder.business.shifts.basic[myDayOfWeek] && BusinessHolder.business.shifts.basic[myDayOfWeek].shifts){
+                    this.$initShiftsWithBasicShifts(BusinessHolder.business.shifts.basic[myDayOfWeek].shifts);
                 }else{
                     this.$initDefaultShifts();
                 }
@@ -206,11 +214,12 @@ zedAlphaServices
 
 
         ShiftsDay.prototype.$initShiftsWithBasicShifts = function(basicShifts){
+            var self = this;
             this.shifts = [];
 
             angular.forEach(basicShifts, function(shift){
                 var basicShift = new BasicShift(shift);
-                this.shifts.push(new Shift.initFromBasicShiftAndDate(basicShift,shiftsDay.date));
+                self.shifts.push(new Shift.initFromBasicShiftAndDate(basicShift,self.date));
             });
         };
 
@@ -308,6 +317,7 @@ zedAlphaServices
     }).factory("ShiftsDayGenerator", function(BusinessHolder, ShiftsDayObject,ShiftsDay, DateFormatFirebase){
         return function(date){
             var formattedDate = date.format(DateFormatFirebase);
+
             var ref = BusinessHolder.business.$inst().$ref().child('shifts').child(formattedDate);
             var shiftDay = ShiftsDayObject(ref);
             shiftDay.$requireDefaults(date);
@@ -339,4 +349,34 @@ zedAlphaServices
             return shifts;
         }
 
-    })
+    }).factory('AllDayShift', function(DateHolder,FullDateFormat){
+        var defaults = {
+            active : true,
+            name : "ENTIRE_DAY"
+        }
+
+        return function(){
+            var dateMoment;
+
+            if(DateHolder.currentDate){
+                dateMoment = DateHolder.currentDate.clone()
+            }else{
+                dateMoment = moment();
+            }
+
+            var defaultTime = dateMoment.clone();
+            var startTime = dateMoment.clone().hour(0).minutes(0).seconds(0);
+            var duration = 24*60;
+
+
+            return angular.extend(defaults, {
+                startTime : startTime,
+                duration : duration,
+                defaultTime : defaultTime
+            },{});
+        }
+    });
+
+
+
+

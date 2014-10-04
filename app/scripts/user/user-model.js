@@ -16,7 +16,7 @@ zedAlphaServices
 
 
         $rootScope.$on('$firebaseSimpleLogin:login', function(e, user){
-            $log.debug('[UserHolder] : user is logged in');
+            console.log('[UserHolder] : user is logged in');
 
             self.userProfileRef =  firebaseRef('users/' + user.uid);
             self.userProfileRef.once('value', function(snap){
@@ -31,7 +31,7 @@ zedAlphaServices
         });
 
         $rootScope.$on('$firebaseSimpleLogin:logout', function(){
-            $log.debug('[UserHolder] : user is logged out');
+            console.log('[UserHolder] : user is logged out');
             self.auth = null;
             self.userProfileRef = null;
             self.userProfile = null;

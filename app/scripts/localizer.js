@@ -12,7 +12,7 @@ zedAlphaServices
 
         this.init = function(){
             var lang = localStorage.getItem(localStorageKey) || defaultLanguage;
-            $log.debug('[Localizer] init the localizer with ' + lang + ' language');
+            console.log('[Localizer] init the localizer with ' + lang + ' language');
             self.setLocale(lang);
             $timeout(function(){
                 defer.resolve();
@@ -29,7 +29,7 @@ zedAlphaServices
                 $('body').removeClass('rtl');
             }
 
-            $log.debug('[Localizer] change to ' + langKey + ', is it RTL?' +  isRTL);
+            console.log('[Localizer] change to ' + langKey + ', is it RTL ? ' +  isRTL);
 
             localStorage.setItem(localStorageKey, langKey);
 

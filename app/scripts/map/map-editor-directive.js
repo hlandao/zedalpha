@@ -98,7 +98,6 @@ zedAlphaDirectives
 
                     var changed = false;
                     angular.forEach(shapes, function(shape){
-                        debugger;
                         if(shape.seatNumber || shape.seatNumber == 0){
                             changed = true;
                             shape.updateSeatingOptions(scope.newSeatingOptions);

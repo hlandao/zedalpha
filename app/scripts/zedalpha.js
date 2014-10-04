@@ -43,7 +43,23 @@ angular.module('zedalpha',zedalphaModules)
     }])
     .config( function( LogglyLoggerProvider, LOGGLY_KEY) {
         LogglyLoggerProvider.inputToken(LOGGLY_KEY );
-    } );
+    }).factory('asyncThrow', function(){
+        return function(err){
+
+            if (!(err instanceof Error)) {
+                err =  new Error(err);
+            }
+            setTimeout(function () { throw err; }, 0);
+        }
+    }).config(function($provide) {
+        $provide.decorator('$exceptionHandler', ['$log', '$delegate',
+            function ($log, $delegate) {
+                return function (exception, cause) {
+                    $delegate(exception, cause);
+                };
+            }
+        ]);
+    });
 
 
 Function.prototype.inheritsFrom = function( parentClassOrObject ){

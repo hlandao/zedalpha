@@ -66,9 +66,7 @@ zedAlphaServices
         $rootScope.$watch(function(){
             return self.currentClock;
         }, function(newVal, oldVal){
-            if(!clockInitialized || !newVal){
-                clockInitialized = true;
-            }else{
+            if(newVal){
                 newVal.seconds(0);
                 $rootScope.$emit('$clockWasChanged');
             }
@@ -78,10 +76,10 @@ zedAlphaServices
         $rootScope.$watch(function(){
             return self.currentDate;
         }, function(newVal, oldVal){
-            if(!dateInitialized || !newVal){
-                dateInitialized = true;
-                return;
-            }
+//            if(!dateInitialized || !newVal){
+//                dateInitialized = true;
+//                return;
+//            }
 
             newVal.seconds(0);
 
