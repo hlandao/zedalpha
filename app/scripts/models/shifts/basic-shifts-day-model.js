@@ -86,7 +86,7 @@ zedAlphaServices
             $FirebaseObject.call(this, firebase, destroyFunction, readyPromise);
         };
 
-        angular.extend(ShiftsDay.prototype, ShiftsDayPrototype.prototype);
+        angular.extend(BasicShiftsDay.prototype, ShiftsDayPrototype.prototype);
 
 
         BasicShiftsDay.prototype.$$updated = function(snap){
@@ -103,9 +103,12 @@ zedAlphaServices
             if(val){
                 angular.extend(this,val);
             }
+
             if(this.shifts){
                 for (var  i = 0 ; i < this.shifts.length; ++i){
-                    if(!this.shifts[i] instanceof BasicShift){
+                    if(this.shifts[i] instanceof BasicShift){
+
+                    }else{
                         this.shifts[i] = new BasicShift(this.shifts[i]);
                     }
                 }

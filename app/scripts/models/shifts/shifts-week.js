@@ -2,7 +2,7 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory('ShiftsWeek', function (EditableShiftsDay, BasicShiftsDayGenerator) {
+    .factory('ShiftsWeek', function (BasicShiftsDayGenerator) {
         function ShiftsWeek(weekNumber) {
             var self = this;
             this.days = [];
