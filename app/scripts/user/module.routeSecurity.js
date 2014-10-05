@@ -1,26 +1,31 @@
 (function(angular) {
    angular.module('zedalpha.routeSecurity', [])
-      .run(['$injector', '$location', '$rootScope', 'loginRedirectPath','$urlRouter', function($injector, $location, $rootScope, loginRedirectPath, $urlRouter) {
+      .run(['$injector', '$location', '$rootScope', 'loginRedirectPath','$urlRouter','UserHolder', function($injector, $location, $rootScope, loginRedirectPath, $urlRouter, UserHolder) {
          if( $injector.has('$state') ) {
-            new RouteSecurityManager($location, $rootScope, $injector.get('$state'), loginRedirectPath, $urlRouter);
+            new RouteSecurityManager($location, $rootScope, $injector.get('$state'), loginRedirectPath, $urlRouter, UserHolder);
          }
       }]);
 
-   function RouteSecurityManager($location, $rootScope, $state, loginPath, $urlRouter) {
+   function RouteSecurityManager($location, $rootScope, $state, loginPath, $urlRouter, UserHolder) {
+       var self = this;
       this._state = $state;
       this._urlRouter = $urlRouter;
       this._location = $location;
       this._rootScope = $rootScope;
       this._loginPath = loginPath;
       this._redirectTo = null;
-      this._authenticated = !!($rootScope.auth && $rootScope.auth.user);
-      this._init();
+
+       UserHolder.readyPromise().then(function(){
+           self._init.call(self);
+       });
+
    }
 
    RouteSecurityManager.prototype = {
       _init: function() {
          var self = this;
-         this._checkCurrent();
+          this._authenticated = !!(self._rootScope.auth && self._rootScope.auth.user);
+          this._checkCurrent();
 
          // Set up a handler for all future route changes, so we can check
          // if authentication is required.
