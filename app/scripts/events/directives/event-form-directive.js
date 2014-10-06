@@ -436,7 +436,7 @@ zedAlphaDirectives
                                         scope.eventObj.$setEndTimeByMaxDuartion(maxDurationForEvent, valueDurationBefore, value);
                                         return true;
                                     }, function () {
-                                        console.log('user refuses to change end time');
+                                        $log.info('[EventStartTimeValidator] User refuses to change end time');
                                         rejectedPreviousValue = valueBeforeClone;
                                         return $q.reject('user refuses to change end time');
                                     });
@@ -464,7 +464,7 @@ zedAlphaDirectives
                 ngModel.$viewChangeListeners.push(function(){
                     if(rejectedPreviousValue){
                         $timeout(function(){
-                            console.log('starttime rejectedPreviousValue');
+                            $log.info('[EventStartTimeValidator] viewChangeListneres : change after rejectedPreviousValue');
                             scope.eventObj.data.startTime = rejectedPreviousValue;
                             rejectedPreviousValue = null;
                         });

@@ -122,7 +122,6 @@ zedAlphaServices
          * @param watchDetails
          */
         var watchSelfCollection = function(watchDetails){
-//            console.log('watchSelfCollection',watchDetails);
             if(!watchDetails) return;
 
             switch(watchDetails.event){

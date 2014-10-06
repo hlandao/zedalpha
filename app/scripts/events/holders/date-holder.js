@@ -2,7 +2,7 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .service('DateHolder', function($rootScope, DateHelpers, DateFormatFirebase){
+    .service('DateHolder', function($rootScope, DateHelpers, DateFormatFirebase, $log){
 
         function DateHolderException(message) {
             this.name = 'DateHolderException';
@@ -51,6 +51,9 @@ zedAlphaServices
         }
 
         var areClockAndDateSameDate = function(){
+            if(!DateHelpers.isMomentValid(self.currentClock)){
+                return false;
+            }
             if(isClockBelongToPreviousDay()){
                 return (self.currentClock.diff(self.currentDate, 'day') == 1);
             }else{
@@ -60,12 +63,16 @@ zedAlphaServices
 
         var isClockBelongToPreviousDay = function(clock){
             clock = clock || self.currentClock;
-            return (clock.hour < 6 && clock >= 0);
+            if(!DateHelpers.isMomentValid(clock)){
+                return false;
+            }
+            return (clock.hour() < 6 && clock.hour() >= 0);
         }
 
         $rootScope.$watch(function(){
             return self.currentClock;
         }, function(newVal, oldVal){
+            $log.info('[DateHolder] currentClock has been changed');
             if(newVal){
                 newVal.seconds(0);
                 $rootScope.$emit('$clockWasChanged');
@@ -76,6 +83,7 @@ zedAlphaServices
         $rootScope.$watch(function(){
             return self.currentDate;
         }, function(newVal, oldVal){
+            $log.info('[DateHolder] currentDate has been changed');
 //            if(!dateInitialized || !newVal){
 //                dateInitialized = true;
 //                return;
@@ -83,7 +91,7 @@ zedAlphaServices
 
             newVal.seconds(0);
 
-            if(!areClockAndDateSameDate()){
+            if(DateHelpers.isMomentValid(self.currentClock) && !areClockAndDateSameDate()){
                 var hour = self.currentClock.hour();
                 var minute = self.currentClock.minute();
                 if(isClockBelongToPreviousDay()){

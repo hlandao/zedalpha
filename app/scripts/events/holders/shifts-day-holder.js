@@ -3,7 +3,7 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 zedAlphaServices
 
-    .service('ShiftsDayHolder', function (ShiftsDayGenerator, $q, $rootScope, DateHolder, AllDayShift, DateHelpers) {
+    .service('ShiftsDayHolder', function (ShiftsDayGenerator, $q, $rootScope, DateHolder, AllDayShift, DateHelpers,DateFormatFirebase, $log) {
         var self = this;
 
         function ShiftsDayHolderException(message) {
@@ -34,7 +34,7 @@ zedAlphaServices
 
         this.$selectNewShift = function(shift){
             self.selectedShift = shift;
-            console.log('$selectNewShift',shift);
+            $log.info('[ShiftsDayHolder] User selected new shift : ', shift.name);
             DateHolder.currentClock = DateHelpers.isMomentValid(shift.defaultTime) ? shift.defaultTime.clone() : (DateHelpers.isMomentValid(shift.startTime) ? shift.startTime.clone() : null)
         }
 
@@ -43,13 +43,21 @@ zedAlphaServices
             if(!DateHelpers.isMomentValid(date)){
                 throw new ShiftsDayHolderException('Load shift with date was failed. Please provide a valid moment object');
             }
+
+            $log.info('[ShiftsDayHolder] load with date : ', date.format(DateFormatFirebase) +
+                ' , init with a date change : ' + initByDateChange);
+
             var wasInitialized = !!self.currentDay;
-            if(!wasInitialized) initByDateChange = false;
+
             var _shiftDay = ShiftsDayGenerator(date);
             validateShiftsWithDate(_shiftDay, date);
             self.currentDay = _shiftDay;
-            if(initByDateChange && DateHolder.currentClock){
+
+            if(initByDateChange && DateHolder.currentClock && wasInitialized) {
                 self.selectedShift = getDefaultShiftForClock(_shiftDay);
+            } else if (initByDateChange && DateHolder.currentClock && !wasInitialized){
+                self.selectedShift = getDefaultShiftForClock(_shiftDay);
+                selectDefaultTime();
             }else{
                 self.selectedShift = getDefaultShiftForDay(_shiftDay);
                 selectDefaultTime();
@@ -87,6 +95,7 @@ zedAlphaServices
                 endTime =  currentShift.startTime.clone().add(currentShift.duration, 'minutes');
                 var startTimeCheck = DateHolder.currentClock.diff(currentShift.startTime, 'minutes');
                 var endTimeCheck = DateHolder.currentClock.diff(endTime, 'minutes');
+
                 if(startTimeCheck >= 0 && endTimeCheck <= 0){
                     return currentShift;
                 }
