@@ -50,6 +50,7 @@ zedAlphaServices
             var wasInitialized = !!self.currentDay;
 
             var _shiftDay = ShiftsDayGenerator(date);
+
             validateShiftsWithDate(_shiftDay, date);
             self.currentDay = _shiftDay;
 
@@ -57,7 +58,10 @@ zedAlphaServices
                 self.selectedShift = getDefaultShiftForClock(_shiftDay);
             } else if (initByDateChange && DateHolder.currentClock && !wasInitialized){
                 self.selectedShift = getDefaultShiftForClock(_shiftDay);
-                selectDefaultTime();
+                if(self.selectedShift !== AllDayShift()){
+                    selectDefaultTime();
+                }
+                
             }else{
                 self.selectedShift = getDefaultShiftForDay(_shiftDay);
                 selectDefaultTime();
@@ -75,8 +79,9 @@ zedAlphaServices
 
         var getDefaultShiftForDay = function(_shiftDay){
             var currentShift, endTime;
-            for (var i = 0; i < _shiftDay.shifts.length - 1; ++i){
-                currentShift = _shiftDay.shifts[i];
+            var shifts = _shiftDay.activeShifts();
+            for (var i = 0; i < shifts.length - 1; ++i){
+                currentShift = shifts[i];
                 endTime =  currentShift.startTime.clone().add(currentShift.duration, 'minutes');
                 var startTimeCheck = DateHolder.currentClock.diff(currentShift.startTime, 'minutes');
                 var endTimeCheck = DateHolder.currentClock.diff(endTime, 'minutes');
@@ -90,8 +95,9 @@ zedAlphaServices
 
         var getDefaultShiftForClock = function(_shiftDay){
             var currentShift, endTime;
-            for (var i = 0; i < _shiftDay.shifts.length - 1; ++i){
-                currentShift = _shiftDay.shifts[i];
+            var shifts = _shiftDay.activeShifts();
+            for (var i = 0; i < shifts.length - 1; ++i){
+                currentShift = shifts[i];
                 endTime =  currentShift.startTime.clone().add(currentShift.duration, 'minutes');
                 var startTimeCheck = DateHolder.currentClock.diff(currentShift.startTime, 'minutes');
                 var endTimeCheck = DateHolder.currentClock.diff(endTime, 'minutes');

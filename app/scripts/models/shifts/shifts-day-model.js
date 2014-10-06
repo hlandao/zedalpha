@@ -307,6 +307,12 @@ zedAlphaServices
             return output;
         }
 
+        ShiftsDay.prototype.activeShifts = function(){
+            return _.filter(this.shifts, function(shift){
+               return shift.active;
+            });
+        }
+
         return ShiftsDay;
     }).factory("ShiftsDayFactory",function ($FirebaseObject, ShiftsDay) {
         return $FirebaseObject.$extendFactory(ShiftsDay);
