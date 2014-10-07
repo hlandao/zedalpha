@@ -163,7 +163,7 @@ zedAlphaServices
 
         return ShiftsDayPrototype;
     })
-    .factory('ShiftsDay', function($FirebaseObject, $q, Shift, ShiftsDayPrototype, DefaultShiftsGenerator, BusinessHolder, BasicShift){
+    .factory('ShiftsDay', function($FirebaseObject, $q, Shift, ShiftsDayPrototype, DefaultShiftsGenerator, BusinessHolder, BasicShift, DateHolder){
 
 
         function ShiftsDay(firebase, destroyFunction, readyPromise){
@@ -218,7 +218,7 @@ zedAlphaServices
             this.shifts = [];
 
             angular.forEach(basicShifts, function(shift){
-                var basicShift = new BasicShift(shift);
+                var basicShift = new BasicShift(shift, DateHolder.currentDate);
                 self.shifts.push(new Shift.initFromBasicShiftAndDate(basicShift,self.date));
             });
         };
@@ -355,7 +355,7 @@ zedAlphaServices
             return shifts;
         }
 
-    }).factory('AllDayShift', function(DateHolder,FullDateFormat){
+    }).factory('AllDayShift', function(DateHolder,FullDateFormat, Shift){
         var defaults = {
             active : true,
             name : "ENTIRE_DAY"
@@ -375,11 +375,11 @@ zedAlphaServices
             var duration = 24*60;
 
 
-            return angular.extend(defaults, {
+            return new Shift(angular.extend(defaults, {
                 startTime : startTime,
                 duration : duration,
                 defaultTime : defaultTime
-            },{});
+            },{}));
         }
     });
 
