@@ -16,8 +16,7 @@ zedAlphaServices
             }
         };
 
-
-        Event.prototype = {
+        angular.extend(Event.prototype, {
 
             $initWithFirebaseSnapshot: function (snapshot) {
                 if (this.initialized) throw new TypeError("init methods can be called only once");
@@ -392,7 +391,7 @@ zedAlphaServices
                 return defer.promise;
             }
 
-        };
+        });
 
         return Event;
     });
