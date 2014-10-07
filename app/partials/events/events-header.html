@@ -47,17 +47,17 @@
                 </a>
                 <div class="dropdown-menu pull-right with-arrow ">
                     <ul class="list-group">
-                        <li class="list-group-item"  ng-click="selectAllDayShift()">
-                            <a href="javascript:;" class="media">
-                                <div class="media-body">
-                                    <span class="block">{{'ENTIRE_DAY' | translate | capitalize}}</span>
-                                </div>
-                            </a>
-                        </li>
                         <li class="list-group-item" ng-repeat="shift in ShiftsDayHolder.currentDay.shifts | activeShift" ng-click="selectNewShift(shift)">
                             <a href="javascript:;" class="media">
                                 <div class="media-body">
                                     <span class="block">{{shift.name | translate | capitalize}}</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="list-group-item"  ng-click="selectAllDayShift()">
+                            <a href="javascript:;" class="media">
+                                <div class="media-body">
+                                    <span class="block">{{'ENTIRE_DAY' | translate | capitalize}}</span>
                                 </div>
                             </a>
                         </li>
@@ -90,7 +90,7 @@
                 Date :
                 {{DateHolder.currentDate | momentFilter : 'YYYY-MM-DD'}}
             </li>
-            <li ng-show="DEBUG">
+            <li ng-show="1">
                 Clock :
                 {{DateHolder.currentClock | momentFilter : 'YYYY-MM-DD HH:mm'}}
             </li>
