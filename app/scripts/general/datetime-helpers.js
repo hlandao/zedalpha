@@ -79,6 +79,14 @@ zedAlphaServices
             return false;
         }
 
+        var setMomentDateWithAnotherMoment = function(m1, m2){
+            if(isMomentValid(m1) && isMomentValid(m2)){
+                m1.date(m2.date()).month(m2.month()).year(m2.year());
+                return true;
+            }else{
+                return false;
+            }
+        }
 
 
         return {
@@ -87,7 +95,8 @@ zedAlphaServices
             findClosestIntervalToDate : findClosestIntervalToDate,
             resetDateSeconds : resetDateSeconds,
             isMomentValid : isMomentValid,
-            isMomentSameDate : isMomentSameDate
+            isMomentSameDate : isMomentSameDate,
+            setMomentDateWithAnotherMoment : setMomentDateWithAnotherMoment
         };
     })
     .filter('numberFixedLen', function () {
