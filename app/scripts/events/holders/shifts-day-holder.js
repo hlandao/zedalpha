@@ -35,6 +35,7 @@ zedAlphaServices
         this.$selectNewShift = function(shift){
             self.selectedShift = shift;
             $log.info('[ShiftsDayHolder] User selected new shift : ', shift.name);
+            debugger;
             DateHolder.currentClock = DateHelpers.isMomentValid(shift.defaultTime) ? shift.defaultTime.clone() : (DateHelpers.isMomentValid(shift.startTime) ? shift.startTime.clone() : null)
         }
 
@@ -58,10 +59,10 @@ zedAlphaServices
                 self.selectedShift = getDefaultShiftForClock(_shiftDay);
             } else if (initByDateChange && DateHolder.currentClock && !wasInitialized){
                 self.selectedShift = getDefaultShiftForClock(_shiftDay);
-                if(self.selectedShift !== AllDayShift()){
+                if(self.selectedShift.name !== 'ENTIRE_DAY'){
                     selectDefaultTime();
                 }
-                
+
             }else{
                 self.selectedShift = getDefaultShiftForDay(_shiftDay);
                 selectDefaultTime();
