@@ -13,7 +13,7 @@ zedAlphaServices
         BasicShiftException.prototype.constructor = BasicShiftException;
 
 
-        function BasicShift(data){
+        function BasicShift(data, baseDate){
             if(!data){
                 throw new BasicShiftException('Cannot init new basic shift without data.');
             }else if(!data.startTime) {
@@ -41,6 +41,10 @@ zedAlphaServices
             this.duration = data.duration;
             this.startTime = moment(data.startTime, HourFormatFirebase);
             this.defaultTime = (DateHelpers.isMomentValid(data.defaultTime)) ? data.defaultTime : this.startTime.clone();
+            if(DateHelpers.isMomentValid(baseDate)){
+                DateHelpers.setMomentDateWithAnotherMoment(this.startTime,baseDate)
+                DateHelpers.setMomentDateWithAnotherMoment(this.defaultTime,baseDate)
+            }
             this.active = data.active;
         }
 
