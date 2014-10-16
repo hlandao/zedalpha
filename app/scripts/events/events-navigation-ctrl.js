@@ -19,7 +19,7 @@ zedAlphaControllers
                 }
                 eventGuests = currentEvent.data.guests ? parseInt(currentEvent.data.guests) : 0;
                 // Total orders count
-                if(!currentEvent.data.isOccasional && !currentEvent.$isDeadEvent()){
+                if(!currentEvent.data.isOccasional && (currentEvent.status == 'FINISHED' || !currentEvent.$isDeadEvent())){
                     ++totalOrdersCount;
                     totalGuestsCount += eventGuests;
 //                    if(event.status && (event.status.ORDERED || event.status.CONFIRMED)){

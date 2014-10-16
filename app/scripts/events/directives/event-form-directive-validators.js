@@ -57,13 +57,13 @@ zedAlphaDirectives
                     updatedByMe = true;
                     e.preventDefault();
                     e.stopPropagation();
-                    hlEventFormCtrl.event.phone = item.$getPhoneNumber();
-                    if(item.name) hlEventFormCtrl.event.name = item.name;
-                    if(item.contactComment) hlEventFormCtrl.event.contactComment=  item.contactComment;
+                    hlEventFormCtrl.event.data.phone = item.$getPhoneNumber();
+                    if(item.name) hlEventFormCtrl.event.data.name = item.name;
+                    if(item.contactComment) hlEventFormCtrl.event.data.contactComment=  item.contactComment;
                 }
 
                 scope.$watch(function(){
-                    return hlEventFormCtrl.event.phone;
+                    return hlEventFormCtrl.event.data.phone;
                 }, function(newVal){
 
                     if(!initalized){
@@ -74,6 +74,7 @@ zedAlphaDirectives
                         return updatedByMe = false;
                     }
                     if(!newVal) return;
+
                     scope.suggestions =  CustomersHolder.collection.$getSuggestions(newVal);
                     if(scope.suggestions && scope.suggestions.length){
                         scope.isOpened = true;
