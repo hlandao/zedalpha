@@ -43,6 +43,9 @@ zedAlphaServices
             if(!event || event.constructor.name != "Event"){
                 throw new DateHolderException("'goToEvent failed'. Please provide a valid Event object");
             }else{
+                if(DateHelpers.isMomentValid(self.currentClock) && (self.currentClock.isSame(event.data.startTime,'minutes'))){
+                    return;
+                }
                 if(event.data.baseDate != self.currentDate.format(DateFormatFirebase)){
                     self.currentDate = moment(event.data.baseDate, DateFormatFirebase).seconds(0);
                 }

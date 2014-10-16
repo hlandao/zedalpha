@@ -54,7 +54,7 @@ zedAlphaDirectives
                             if(!seatNumer || seatNumer == 'undefined') return;
                             output[seatNumer] = output[seatNumer] || [];
                             angular.forEach(EventsCollection.sorted.nowEvents, function(event){
-                                if(event.data.seats[seatNumer]){
+                                if(event.data.seats && event.data.seats[seatNumer]){
                                     output[seatNumer].push(event);
                                 }
                             });
@@ -69,9 +69,7 @@ zedAlphaDirectives
                 }, renderEventsSeats, true);
 
 
-                $scope.$watch(function(){
-                    return EventsCollection.sorted;
-                }, renderEventsSeats, true);
+                $scope.$on('$EventsCollectionUpdated', renderEventsSeats);
 
             },
             link : function(scope, elem, attrs) {
