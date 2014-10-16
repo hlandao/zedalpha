@@ -18,7 +18,7 @@ zedAlphaFilters
 
             var isNowEvent = !!(isStartTimeSameAsCurrent || (isStartingBefore && isEndingAfterCurrentDate));
             var isUpcomingEvent = !!((startTimeDiffInMinutes > 0 && (includeAllUpcomingEvents || startTimeDiffInMinutes <= EVENT_TIME_FRAME_IN_MINUTES)));
-            var isDeadEvent = !!(DeadEventsStatuses.indexOf(status) >= 0);
+            var isDeadEvent = !!(DeadEventsStatuses.indexOf(currentEvent.data.status) >= 0);
 
             return {
                 isPastEvent : isPastEvent,

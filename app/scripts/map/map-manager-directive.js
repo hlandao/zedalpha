@@ -279,9 +279,6 @@ zedAlphaDirectives
 
 
 
-                var isNowEvent = function(event){
-
-                }
 
                 var renderMapWithEvents = _.throttle(function(newVal){
                     var nowEvents = angular.copy(EventsCollection.sorted.nowEvents),
