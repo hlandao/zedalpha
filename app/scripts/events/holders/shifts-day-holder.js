@@ -85,7 +85,7 @@ zedAlphaServices
 
 
         /**
-         * Select the default shift by finding the shift for the current clock of the system.
+         * Select the default shift by finding the shift that contains the current clock of the system.
          * @param _shiftDay
          * @returns {*}
          */
