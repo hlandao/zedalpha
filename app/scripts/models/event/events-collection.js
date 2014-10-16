@@ -195,6 +195,8 @@ zedAlphaServices
                 self.sorted.nowEvents = null;
                 self.sorted.upcomingEvents = null;
             }
+
+            $rootScope.$broadcast('$EventsCollectionUpdated');
         };
 
 

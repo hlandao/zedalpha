@@ -39,14 +39,7 @@ zedAlphaControllers
 
         };
 
-        $scope.$watch(function(){
-            return EventsCollection.collection;
-        },countAll);
-
-        $scope.$watch(function(){
-            return EventsCollection.collection && EventsCollection.collection.length;
-        },countAll);
-
+        $scope.$on('$EventsCollectionUpdated', countAll);
 
         $scope.$watch(function(){
             return ShiftsDayHolder.selectedShift;
