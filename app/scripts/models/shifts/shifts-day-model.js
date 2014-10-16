@@ -183,6 +183,23 @@ zedAlphaServices
             this.$init(data);
         }
 
+        ShiftsDay.prototype.$findStartEndTimesOfDay = function(){
+            var startTime, endTime, currentShiftEndTime, currentShift;
+            for (var i = 0; i < this.shifts.length ;++i){
+                currentShift = this.shifts[i];
+                currentShiftEndTime = currentShift.startTime.clone().add(currentShift.duration, 'minutes');
+                if(!startTime || startTime.isAfter(currentShift.startTime)){
+                    startTime = currentShift.startTime.clone();
+                }
+                if(!endTime || endTime.isBefore(currentShiftEndTime)){
+                    endTime = currentShiftEndTime;
+                }
+            }
+            return {
+                startTime : startTime,
+                endTime  :endTime
+            }
+        }
 
 
         ShiftsDay.prototype.$init = function(val){
@@ -361,19 +378,38 @@ zedAlphaServices
             name : "ENTIRE_DAY"
         }
 
-        return function(){
-            var dateMoment;
+        function AllDayShiftException(message) {
+            this.name = 'AllDayShiftException';
+            this.message= message;
+        }
+        AllDayShiftException.prototype = new Error();
+        AllDayShiftException.prototype.constructor = AllDayShiftException;
 
-            if(DateHolder.currentDate){
-                dateMoment = DateHolder.currentDate.clone()
+
+        return function(shiftsDay){
+            var dateMoment, startTime, defaultTime, duration;
+
+
+            if(shiftsDay){
+                debugger;
+                var startAndEndTimes = shiftsDay.$findStartEndTimesOfDay();
+                if(startAndEndTimes && startAndEndTimes.startTime && startAndEndTimes.endTime){
+                    defaultTime = startAndEndTimes.startTime.clone();
+                    startTime = startAndEndTimes.startTime.clone();
+                    duration = startAndEndTimes.endTime.diff(startTime, 'minutes');
+                }else{
+                    throw new AllDayShiftException('Cannot get shifts day start and end times');
+                }
             }else{
-                dateMoment = moment();
+                if(DateHolder.currentDate){
+                    dateMoment = DateHolder.currentDate.clone()
+                }else{
+                    dateMoment = moment();
+                }
+                defaultTime = dateMoment.clone();
+                startTime = dateMoment.clone().hour(0).minutes(0).seconds(0);
+                duration = 24*60;
             }
-
-            var defaultTime = dateMoment.clone();
-            var startTime = dateMoment.clone().hour(0).minutes(0).seconds(0);
-            var duration = 24*60;
-
 
             return new Shift(angular.extend(defaults, {
                 startTime : startTime,
