@@ -258,9 +258,10 @@ zedAlphaDirectives
 
             }
         }
-    }).directive('eventStartTimeValidator', function(EventsCollection, areYouSureModalFactory, $filter, $q, $timeout, DateHolder,$log){
+    }).directive('eventStartTimeValidator', function(EventsCollection, areYouSureModalFactory, $filter, $q, $timeout, DateHolder,$log, ShiftsDayHolder){
         return {
             require : ['ngModel','^hlEventForm'],
+            priority : 0,
             link : function(scope, elem, attrs, ctrls){
                 var ngModel = ctrls[0],
                     hlEventFormCtrl = ctrls[1];
@@ -325,6 +326,25 @@ zedAlphaDirectives
                         hlEventFormCtrl.event.data.startTime = prevValue;
                     }
                 };
+
+
+                var getSettingsForTimepicker = function(shift){
+                    return {min : shift.startTime, range : shift.duration};
+                }
+                scope.startTimeSettings = getSettingsForTimepicker(ShiftsDayHolder.selectedShift);
+
+                scope.$watch(function(){
+                    return ShiftsDayHolder.selectedShift;
+                }, function(newVal){
+                    var newSettings = getSettingsForTimepicker(newVal);
+                    if(newSettings.min.isAfter(hlEventFormCtrl.event.data.startTime, 'minutes')){
+                        newSettings.min = event.data.startTime.clone();
+                    }
+                    if(newSettings.min.clone().add(newSettings.range, 'minutes').isBefore(hlEventFormCtrl.event.data.endTime, 'minutes')){
+                        newSettings.range = hlEventFormCtrl.event.data.endTime.diff(newSettings.min, 'minutes');
+                    }
+                    scope.startTimeSettings = newSettings;
+                });
             }
         }
     }).directive('eventEndTimeValidator', function(EventsCollection, areYouSureModalFactory, $filter, $q, $timeout ){

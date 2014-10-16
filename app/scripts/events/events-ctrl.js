@@ -109,6 +109,8 @@ zedAlphaControllers
 
         $scope.selectNewShift = function(shift, e){
             ShiftsDayHolder.$selectNewShift(shift)
+            $scope.$emit('$requestSortEvents');
+
         };
 
         $scope.selectAllDayShift = function(){

@@ -41,7 +41,7 @@ zedAlphaServices
         return function (ref) {
             return $firebase(ref, {arrayFactory : EventsFactory}).$asArray();
         }
-    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase,DateHelpers,$timeout,areYouSureModalFactory, CustomerIdFromPhone, CustomerGenerator, EventsNotificationsHolder, REMOVED_STATUS) {
+    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase,DateHelpers,$timeout,areYouSureModalFactory, CustomerIdFromPhone, CustomerGenerator, EventsNotificationsHolder, REMOVED_STATUS, ShiftsDayHolder) {
 
         var isJustChangedBaseDateForEvent;
 
@@ -197,12 +197,12 @@ zedAlphaServices
             self.filters.status = StatusFilters[0];
         }
 
-        var lastSortedStatusFilter, lastSortedQueryFilter;
+        var lastSortedStatusFilter, lastSortedQueryFilter, lastShiftName;
         var sortEvents = function(statusFilter, query){
             statusFilter = statusFilter || self.filters.status;
             query = query || self.filters.query;
 
-            if(lastSortedStatusFilter == 'ENTIRE_SHIFT' && statusFilter == 'ENTIRE_SHIFT' && lastSortedQueryFilter == query){
+            if(lastSortedStatusFilter == 'ENTIRE_SHIFT' && statusFilter == 'ENTIRE_SHIFT' && ShiftsDayHolder.selectedShift && ShiftsDayHolder.selectedShift.name == lastShiftName &&  lastSortedQueryFilter == query){
                 return;
             }
 
@@ -211,6 +211,11 @@ zedAlphaServices
                 angular.extend(self.sorted, sorted);
                 lastSortedStatusFilter = statusFilter;
                 lastSortedQueryFilter = query;
+                if(statusFilter == 'ENTIRE_SHIFT'){
+                    lastShiftName = ShiftsDayHolder.selectedShift.name;
+                }else{
+                    lastShiftName = null;
+                }
             }else{
                 self.sorted.deadEvents = null;
                 self.sorted.nowEvents = null;

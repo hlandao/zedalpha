@@ -15,7 +15,7 @@
                             <event-form-base-date-picker ng-model="event.data.baseDate"></event-form-base-date-picker>
                         </td>
                         <td class="start-time">
-                            <input event-start-time-validator hl-timepicker ng-model="event.data.startTime" settings="{baseDate : event.data.baseDate}">
+                            <input event-start-time-validator hl-timepicker ng-model="event.data.startTime" settings="startTimeSettings">
                         </td>
                         <td class="to-text">
                             <span> {{ 'TO' | translate }} </span>

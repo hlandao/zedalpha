@@ -10,9 +10,6 @@ zedAlphaDirectives
                 shift : "="
             },
             controller : function($scope){
-                $scope.$watch('shift', function(newVal){
-                    $scope.hours = extractHoursFromShift(newVal);
-                });
 
 
                 var extractHoursFromShift = function(shift){
@@ -69,10 +66,14 @@ zedAlphaDirectives
                 }, renderEventsSeats, true);
 
 
-                $scope.$on('$EventsCollectionUpdated', function(){
-                    console.log('$EventsCollectionUpdated');
+                $rootScope.$on('$EventsCollectionUpdated', function(){
                     renderEventsSeats();
                 });
+
+                $scope.$watch('shift', function(newVal){
+                    $scope.hours = extractHoursFromShift(newVal);
+                });
+
 
             },
             link : function(scope, elem, attrs) {
