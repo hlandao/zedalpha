@@ -41,6 +41,16 @@ zedAlphaServices
             return $firebase(ref, {arrayFactory : EventsFactory}).$asArray();
         }
     }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase,DateHelpers,$timeout,areYouSureModalFactory, CustomerIdFromPhone, CustomerGenerator, EventsNotificationsHolder) {
+
+        function EventsCollectionException(message) {
+            this.name = 'EventsCollectionException';
+            this.message= message;
+        }
+        EventsCollectionException.prototype = new Error();
+        EventsCollectionException.prototype.constructor = EventsCollectionException;
+
+
+
         var self = this,
             lastSubName = null,
             lastBusinessId = null;
@@ -63,13 +73,15 @@ zedAlphaServices
 
             if(date){
                 subName = subNameByDate(date);
-            }else if(event){
+            }else if(event && event instanceof Event){
                 subName = event.data.baseDate;
                 if(event.myCollection && event.myCollection.subName == subName){
                     var defer = $q.defer;
                     defer.resolve(event.myCollection);
                     return defer.promise;
                 }
+            }else{
+                throw new EventsCollectionException('getCollectionForDate was failed. Please provide a valid date or a valid event');
             }
             businessId = businessId || BusinessHolder.business.$id;
 
@@ -86,6 +98,8 @@ zedAlphaServices
             return $EventCollection.$loaded().then(function(collection){
                     collection.$setSubName(subName);
                 return collection;
+            }).catch(function(){
+                throw new EventsCollectionException('Cannot get events with subName = ' + subName);
             });
         };
 

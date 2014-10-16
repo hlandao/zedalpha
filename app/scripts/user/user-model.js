@@ -31,7 +31,7 @@ zedAlphaServices
         });
 
         $rootScope.$on('$firebaseSimpleLogin:logout', function(){
-            console.log('[UserHolder] : user is logged out');
+            $log.debug('[UserHolder] : user is logged out');
             self.auth = null;
             self.userProfileRef = null;
             self.userProfile = null;

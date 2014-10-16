@@ -39,12 +39,13 @@ zedAlphaDirectives
                     settings = angular.extend(defaultSettings, $scope.settings);
 
                     ngModel.$render = function(){
-                        setDefaultModelValue();
-                        generateTimesArray();
+                        if(ngModel.$modelValue){
+                            setDefaultModelValue();
+                            generateTimesArray();
+                        }
                     };
 
                     ngModel.$parsers.unshift(function(viewValue){
-
                         if(viewValue){
                             return moment(viewValue);
                         }else{
