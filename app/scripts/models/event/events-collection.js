@@ -35,12 +35,15 @@ zedAlphaServices
                 }
                 return false;
             }
+
         });
     }).factory("EventsCollectionGenerator",function ($firebase, $log, EventsFactory) {
         return function (ref) {
             return $firebase(ref, {arrayFactory : EventsFactory}).$asArray();
         }
-    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase,DateHelpers,$timeout,areYouSureModalFactory, CustomerIdFromPhone, CustomerGenerator, EventsNotificationsHolder) {
+    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase,DateHelpers,$timeout,areYouSureModalFactory, CustomerIdFromPhone, CustomerGenerator, EventsNotificationsHolder, REMOVED_STATUS) {
+
+        var isJustChangedBaseDateForEvent;
 
         function EventsCollectionException(message) {
             this.name = 'EventsCollectionException';
@@ -107,19 +110,21 @@ zedAlphaServices
         var updateEvents = this.updateEvents = function () {
             if (BusinessHolder.business) {
                 var newSubName = subNameByDate(DateHolder.currentDate);
-                if(newSubName == lastSubName && lastBusinessId == BusinessHolder.business.$id){
+                if(self.collection && newSubName == lastSubName && lastBusinessId == BusinessHolder.business.$id){
                     return;
                 }
 
-                self.collection && self.collection.$destroy && self.collection.$destroy();
-                self.latestEvent = null;
-                self.collection = null;
+
 
 
                 return getCollectionForDate(BusinessHolder.business.$id, DateHolder.currentDate).then(function(collection){
 
                     lastSubName = newSubName;
                     lastBusinessId = BusinessHolder.business.$id;
+
+                    self.collection && self.collection.$destroy && self.collection.$destroy();
+                    self.latestEvent = null;
+                    self.collection = null;
 
                     self.collection = collection;
                     self.collection.$watch(watchSelfCollection)
@@ -137,13 +142,21 @@ zedAlphaServices
          */
         var watchSelfCollection = function(watchDetails){
             if(!watchDetails) return;
-
             switch(watchDetails.event){
                 case 'child_added':
-                    var record = self.collection.$getRecord(watchDetails.key);
-                    if(record){
-                        var msg = $filter('translate')('EVENT_ADDED') + '\n' + record.data.name + ' - ' + record.data.startTime.format('HH:mm');
-                        EventsNotificationsHolder.alert.setMsg(msg);
+                    if(isJustChangedBaseDateForEvent){
+                        isJustChangedBaseDateForEvent = false;
+                        var record = self.collection.$getRecord(watchDetails.key);
+                        if(record){
+                            var msg = $filter('translate')('EVENT_CHANGED') + '\n' + record.data.name + ' - ' + record.data.startTime.format('HH:mm');
+                            EventsNotificationsHolder.alert.setMsg(msg);
+                        }
+                    }else{
+                        var record = self.collection.$getRecord(watchDetails.key);
+                        if(record){
+                            var msg = $filter('translate')('EVENT_ADDED') + '\n' + record.data.name + ' - ' + record.data.startTime.format('HH:mm');
+                            EventsNotificationsHolder.alert.setMsg(msg);
+                        }
                     }
                     break;
                 case 'child_moved':
@@ -408,11 +421,19 @@ zedAlphaServices
         this.saveAfterValidation = function (event) {
             return getCollectionForDate(null, null, event).then(function(collection){
                 if(event.changedBaseDate){
-                    var eventDataCloned = event.toObject();
-                    return collection.$add(eventDataCloned).then(function(snap){
-                        sortEvents();
-                        var addedEvent=self.collection.$getRecord(snap.name())
-                        updateCustomerForEvent(addedEvent);
+                    return getCollectionForDate(BusinessHolder.business.$id, event.changedBaseDate).then(function(oldCollection){
+                        var eventDataCloned = event.toObject();
+                        isJustChangedBaseDateForEvent = true;
+                        return collection.$add(eventDataCloned).then(function(snap){
+                            sortEvents();
+                            var addedEvent=collection.$getRecord(snap.name())
+                            updateCustomerForEvent(addedEvent);
+                            var oldEventRecord = oldCollection.$getRecord(event.$id);
+                            return oldCollection.$remove(oldEventRecord).then(function(){
+                                return true;
+                            });
+                        });
+
                     });
 
                 }else{
@@ -458,15 +479,15 @@ zedAlphaServices
          * @returns {*}
          */
         this.remove = function(event){
-            event.data.status = 'REMOVED';
+            event.data.status = REMOVED_STATUS.status;
             return self.saveAfterValidation(event);
         };
 
 
 
         this.changeBaseDateForEvent = function(event, newBaseDateMoment){
-            var oldBaseDate = moment(event.data.baseDate, DateFormatFirebase);
-            if(DateHelpers.isMomentSameDate(oldBaseDate, newBaseDateMoment) ){
+            var oldBaseDateMoment = moment(event.data.baseDate, DateFormatFirebase);
+            if(DateHelpers.isMomentSameDate(oldBaseDateMoment, newBaseDateMoment) ){
                 var defer = $q.defer();
                 defer.resolve();
                 return defer.promise;
@@ -475,26 +496,13 @@ zedAlphaServices
             event.$changeBaseDate(newBaseDateMoment);
 
 
-            return getCollectionForDate(BusinessHolder.business.$id, newBaseDateMoment).then(function(collection){
-                var collision = collection.$checkCollisionsForEvent(event, null);
+            return getCollectionForDate(BusinessHolder.business.$id, newBaseDateMoment).then(function(newCollection){
+                var collision = newCollection.$checkCollisionsForEvent(event, null);
                 if(collision){
-                    event.$changeBaseDate(oldBaseDate);
+                    event.$changeBaseDate(oldBaseDateMoment);
                     return $q.reject({error : 'ERROR_MSG_COLLISION', withEvent : collision});
                 }else{
-                    if(self.collection.$keyAt(event)){
-                        return  self.collection.$remove(event).then(function(){
-                            event.changedBaseDate = true;
-                            event.$id = null;
-                            return true;
-                        }, function(){
-                            event.$changeBaseDate(oldBaseDate);
-                            return $q.reject({error : 'ERROR_CANNOT_CHANGE_BASE_DATE'});
-                        });
-                    }else{
-                        event.changedBaseDate = true;
-                        event.$id = null;
-                        return true;
-                    }
+                    if(!event.changedBaseDate) event.changedBaseDate = oldBaseDateMoment;
                 }
             });
         };
@@ -596,7 +604,6 @@ zedAlphaServices
                 query : null
             };
         });
-//        self.updateEvents();
     });
 
 

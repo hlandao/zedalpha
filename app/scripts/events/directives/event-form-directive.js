@@ -46,6 +46,7 @@ zedAlphaDirectives
 
 
                var revertEventToOriginal = function(){
+                   $scope.event.changedBaseDate = false;
                   angular.extend($scope.event.data,eventDataClone);
                }
 
@@ -71,8 +72,6 @@ zedAlphaDirectives
                     if(isSaving){
                         return;
                     }
-
-
                     EventsCollection.saveWithValidation($scope.event, false, $scope.seatingOptions).then(function(output){
                         if((output && output.warnings && output.warnings.length)){
                             var promises = [], i;
@@ -109,7 +108,7 @@ zedAlphaDirectives
                             areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
                         }else{
                             var localizedError = $filter('translate')('ERROR_EVENT_SAVING');
-                            $log.error('[EventForm] error saving event');
+                            $log.error('[EventForm] error saving event',error);
                             areYouSureModalFactory(null, localizedError, {ok : true, cancel : false});
                         }
                     });
@@ -117,21 +116,21 @@ zedAlphaDirectives
                 };
 
                 $scope.close = function(){
-                    var wasChanged;
-                    if(JSON.stringify(eventDataClone) != JSON.stringify($scope.event.data)){
-                        wasChanged=true;
-                    }
-                    if(wasChanged){
-                        var localizedWarning = $filter('translate')('WARNING_DISCARD_EVENT_CHANGES');
-                        areYouSureModalFactory(null, localizedWarning, {ok : true, cancel : true}).result.then(function(){
+                        var wasChanged;
+                        if(JSON.stringify(eventDataClone) != JSON.stringify($scope.event.data)){
+                            wasChanged=true;
+                        }
+                        if(wasChanged){
+                            var localizedWarning = $filter('translate')('WARNING_DISCARD_EVENT_CHANGES');
+                            areYouSureModalFactory(null, localizedWarning, {ok : true, cancel : true}).result.then(function(){
+                                if($scope.event.$id) revertEventToOriginal();
+                                $scope.closeLinkFN();
+                            });
+                        }else{
                             if($scope.event.$id) revertEventToOriginal();
                             $scope.closeLinkFN();
-                        });
-                    }else{
-                        if($scope.event.$id) revertEventToOriginal();
-                        $scope.closeLinkFN();
 
-                    }
+                        }
 
                 };
 

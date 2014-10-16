@@ -372,14 +372,9 @@ zedAlphaServices
 
             $enterEditingMode: function(){
                 this.editing = true;
-//                this.clonedData = angular.extend({}, this.data);
             },
-            $exitEditingMode: function(restoreData){
+            $exitEditingMode: function(){
                 this.editing = false;
-                if(restoreData && this.clonedData){
-                    this.data = angular.extend({}, this.clonedData);
-                }
-                this.clonedData = null;
             },
             $isEditing : function(){
                 return this.editing;
