@@ -33,6 +33,7 @@ zedAlphaDirectives
                     isSaving = false;
 
                 this.event = $scope.event;
+
                 this.init = function(){
                     eventDataClone = angular.copy($scope.event.data);
                     if($scope.event.data.isOccasional){
@@ -115,12 +116,22 @@ zedAlphaDirectives
 
                 };
 
-                $scope.close = function(event){
-                    var localizedWarning = $filter('translate')('WARNING_DISCARD_EVENT_CHANGES');
-                    areYouSureModalFactory(null, localizedWarning, {ok : true, cancel : true}).result.then(function(){
+                $scope.close = function(){
+                    var wasChanged;
+                    if(JSON.stringify(eventDataClone) != JSON.stringify($scope.event.data)){
+                        wasChanged=true;
+                    }
+                    if(wasChanged){
+                        var localizedWarning = $filter('translate')('WARNING_DISCARD_EVENT_CHANGES');
+                        areYouSureModalFactory(null, localizedWarning, {ok : true, cancel : true}).result.then(function(){
+                            if($scope.event.$id) revertEventToOriginal();
+                            $scope.closeLinkFN();
+                        });
+                    }else{
                         if($scope.event.$id) revertEventToOriginal();
                         $scope.closeLinkFN();
-                    });
+
+                    }
 
                 };
 

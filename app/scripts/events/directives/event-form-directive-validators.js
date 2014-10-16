@@ -103,7 +103,7 @@ zedAlphaDirectives
                 }
             }
         }
-    }).directive('eventGuestsValidator', function(EventsCollection, BusinessHolder){
+    }).directive('eventGuestsValidator', function(EventsCollection, BusinessHolder, $q){
         return {
             priority : 0,
             require : ['ngModel','^hlEventForm'],
@@ -113,6 +113,11 @@ zedAlphaDirectives
 
                 ngModel.$asyncValidators.gusetsPer15 = function(modelValue, viewValue){
                     value = modelValue || viewValue;
+                    if(!ngModel.$dirty){
+                        var defer = $q.defer();
+                        defer.resolve();
+                        return defer.promise;
+                    }
                     return EventsCollection.checkGuestsPer15Minutes(hlEventFormCtrl.event, value).then(function(){
                         updateEventDurationWithValue(value);
                     });
@@ -153,6 +158,12 @@ zedAlphaDirectives
 
                 ngModel.$asyncValidators.validateCollision = function(modelValue, viewValue){
                     var value = modelValue || viewValue;
+
+                    if(!ngModel.$dirty){
+                        var defer = $q.defer();
+                        defer.resolve();
+                        return defer.promise;
+                    }
 
                     return EventsCollection.validateCollision(hlEventFormCtrl.event, {seats : value}).then(function(){
                         return true;
@@ -266,8 +277,9 @@ zedAlphaDirectives
 
 
                 ngModel.$asyncValidators.validateCollisions = function(modelValue, viewValue) {
+
                     var value = modelValue || viewValue;
-                    if(!value){
+                    if(!value || !ngModel.$dirty){
                         var defer = $q.defer();
                         defer.resolve(true);
                         return defer.promise;
@@ -337,11 +349,12 @@ zedAlphaDirectives
 
                 ngModel.$asyncValidators.validateCollisions = function(modelValue, viewValue) {
                     var value = modelValue || viewValue;
-                    if(!value){
+                    if(!value || !ngModel.$dirty){
                         var defer = $q.defer();
                         defer.resolve(true);
                         return defer.promise;
                     }
+
 
                     return EventsCollection.validateCollision(hlEventFormCtrl.event, {endTime : value}).then(function(){
                         return true;
