@@ -14,7 +14,7 @@ zedAlphaDirectives
             scope.seatingOptions = seatingOptions;
         };
 
-        scope.$watch('event.seats', updateSeatingOptions);
+        scope.$watch('event.data.seats', updateSeatingOptions);
     }
 })
     .directive('eventPhoneValidator', function(CustomersHolder){
