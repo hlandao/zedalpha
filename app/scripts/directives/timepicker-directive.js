@@ -1,7 +1,7 @@
 var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directives', []);
 
 zedAlphaDirectives
-    .directive('hlTimepicker', function ($timeout, DateHelpers, FullDateFormat, $rootScope, $parse, $filter, $compile) {
+    .directive('hlTimepicker', function ($timeout, DateHelpers, FullDateFormat, $rootScope, $parse, $filter, $compile, DateFormatFirebase) {
         return{
             restrict: 'A',
             replace: true,
@@ -104,17 +104,21 @@ zedAlphaDirectives
                     }
                     var currentMoment,
                         interval = settings.intervalInMinutes,
-                        min,// = (settings.min && settings.min.isValid && settings.min.isValid()) ?  : (settings.baseDate ? settings.baseDate.clone().hour(0).minute(0).seconds(0) : ngModel.$modelValue.clone().hour(0).minute(0).seconds(0)),
-                        max,// = settings.max ? settings.max.clone() : (ngModel.$modelValue) ? (ngModel.$modelValue.clone().hour(23).minute(59).seconds(0)) : min.clone().hour(23).minute(59).seconds(0),
-                        currentMoment,// = min.clone(),
-//                        v = min,
-                        rangeInMinutes;// = settings.range || max.diff(min, 'minutes');
+                        min,
+                        max,
+                        currentMoment,
+                        rangeInMinutes,
+                        baseDate;
 
+
+                    if(settings.baseDate){
+                        baseDate = DateHelpers.isMomentValid(settings.baseDate) ? settings.baseDate : moment(settings.baseDate, DateFormatFirebase) ;
+                    }
 
                     if(settings.min && DateHelpers.isMomentValid(settings.min)){
                         min = settings.min.clone();
-                    }else if(settings.baseDate && DateHelpers.isMomentValid(settings.baseDate)){
-                        min = settings.baseDate.clone().hour(0).minute(0).seconds(0);
+                    }else if(baseDate && DateHelpers.isMomentValid(baseDate)){
+                        min = baseDate.clone().hour(0).minute(0).seconds(0);
                     }else if(ngModel.$modelValue && DateHelpers.isMomentValid(ngModel.$modelValue)){
                         min = ngModel.$modelValue.clone().hour(0).minute(0).seconds(0);
                     }else{

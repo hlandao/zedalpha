@@ -35,7 +35,6 @@ zedAlphaServices
         this.$selectNewShift = function(shift){
             self.selectedShift = shift;
             $log.info('[ShiftsDayHolder] User selected new shift : ', shift.name);
-            debugger;
             DateHolder.currentClock = DateHelpers.isMomentValid(shift.defaultTime) ? shift.defaultTime.clone() : (DateHelpers.isMomentValid(shift.startTime) ? shift.startTime.clone() : null)
         }
 

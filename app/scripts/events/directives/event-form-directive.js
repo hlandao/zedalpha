@@ -33,6 +33,7 @@ zedAlphaDirectives
                     isSaving = false;
 
                 this.event = $scope.event;
+                console.log('this.event',this.event);
                 this.init = function(){
                     eventDataClone = angular.copy($scope.event.data);
                     if($scope.event.data.isOccasional){
