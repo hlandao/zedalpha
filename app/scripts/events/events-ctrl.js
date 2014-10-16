@@ -109,6 +109,7 @@ zedAlphaControllers
         $scope.selectAllDayShift = function(){
             ShiftsDayHolder.selectedShift = AllDayShift(ShiftsDayHolder.currentDay);
             $scope.selectFilter('ENTIRE_SHIFT');
+            $scope.showShiftOrganizer = true;
             $scope.$emit('$requestSortEvents');
         };
 
