@@ -248,9 +248,11 @@ zedAlphaServices
         this.createNewEvent = function(data){
             // find the duration for the event and set the end time
             var tempEvent = new Event(null, data);
+            var tempEventDuration = tempEvent.$getDuration();
+
             return self.maxDurationForStartTime(null, null, tempEvent).then(function(maxDurationForEvent){
                 if (maxDurationForEvent === 0) return $q.reject({error : 'ERROR_CREATE_NEW_EVENT'})
-                else if(maxDurationForEvent > 0) tempEvent.$setEndTimeWithDuration(maxDurationForEvent);
+                else if(maxDurationForEvent > 0 && tempEventDuration > maxDurationForEvent) tempEvent.$setEndTimeWithDuration(maxDurationForEvent);
                 return tempEvent;
             });
         };

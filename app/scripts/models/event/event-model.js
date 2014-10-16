@@ -4,6 +4,14 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 zedAlphaServices
     .factory('Event', function ($q, DateHolder, DateHelpers, $injector, $filter, BusinessHolder, ShiftsDayHolder, NotCollidingEventStatuses,DateFormatFirebase,DeadEventsStatuses) {
 
+        function EventModelException(message) {
+            this.name = 'EventModelException';
+            this.message= message;
+        }
+        EventModelException.prototype = new Error();
+        EventModelException.prototype.constructor = EventModelException;
+
+
         function Event(snapshot, newEventData, eventData) {
             if (snapshot) {
                 return this.$initWithFirebaseSnapshot(snapshot);
@@ -236,20 +244,20 @@ zedAlphaServices
              * @returns {*}
              */
             $setEndTimeWithDuration: function (minutes, startTime) {
-                var newEndTime = this.$getEndTimeWithDuration(minutes, startTime);
-                if(newEndTime){
+                var newEndTime = this.$getAnEndTimeWithDuration(minutes, startTime);
+                if(DateHelpers.isMomentValid(newEndTime)){
                     this.data.endTime = newEndTime.seconds(0);
                     return newEndTime;
                 }else{
-                    return false;
+                    throw new EventModelException('Failed setting new end time with duration for reservation');
                 }
 
 
             },
-            $getEndTimeWithDuration: function (minutes, startTime) {
-                startTime = startTime || this.data.startTime;
-                if (!minutes || minutes == 0) return false;
-                if (!startTime) return false;
+            $getAnEndTimeWithDuration: function (minutes, startTime) {
+                startTime = DateHelpers.isMomentValid(startTime) ? startTime : this.data.startTime;
+                if (!minutes || minutes == 0) throw new EventModelException('Cannot set end time without valid minutes duration');
+                if (!DateHelpers.isMomentValid(startTime)) throw new EventModelException('Cannot set end time without a valid start time moment');
                 return startTime.clone().add(minutes, 'minutes');
             },
 

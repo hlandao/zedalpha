@@ -34,7 +34,6 @@ zedAlphaControllers
                 startTime : startTime,
                 seatsDic : seatsDic
             }).then(function(_newEvent){
-
                  $scope.newEvent = _newEvent;
             }).catch(function(error){
 

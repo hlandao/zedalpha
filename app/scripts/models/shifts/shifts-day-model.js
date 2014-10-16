@@ -391,7 +391,6 @@ zedAlphaServices
 
 
             if(shiftsDay){
-                debugger;
                 var startAndEndTimes = shiftsDay.$findStartEndTimesOfDay();
                 if(startAndEndTimes && startAndEndTimes.startTime && startAndEndTimes.endTime){
                     defaultTime = startAndEndTimes.startTime.clone();
