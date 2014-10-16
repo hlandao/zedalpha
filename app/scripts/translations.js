@@ -135,7 +135,7 @@ zedAlphaConfigModule
         "NEW_EVENT_WARNING" : "Please finish or cancel adding new event",
         "WARNING_EVENT_SEATING_OPTIONS" : "You haven't checked the entire seating options. Do you want to save anyway ?",
         "START_TIME_CHANGE_WILL_CHANGE_EVENT_DURATION" : "The change in time will require a change in the reservation duration to {{duration}} minutes. Are you sure you  want to continue ?",
-
+        "WARNING_DISCARD_EVENT_CHANGES" : "Your changes will be discard. Are you sure you want to continue ?",
         "LOADING_TEXT" : "Loading Zed...",
 
         //MAP
@@ -296,6 +296,7 @@ zedAlphaConfigModule
                 "EDIT_EVENT_WARNING" : "יש לסיים עריכת ארוע",
                 "NEW_EVENT_WARNING" : "יש לסיים הוספת ארוע",
                 "WARNING_EVENT_SEATING_OPTIONS" : "לא סימנת את כל אפשרויות ההושבה, האם ברצונך להמשיך בכל זאת ?",
+                "WARNING_DISCARD_EVENT_CHANGES" : "השינויים שביצעת לא יישמרו. האם ברצונך להמשיך בכל זאת ?",
                 "START_TIME_CHANGE_WILL_CHANGE_EVENT_DURATION" : "השינוי בזמן, מצריך שינוי במשך ההזמנה ל{{duration}} דקות. האם ברצונך להמשיך ?",
 
                 "LOADING_TEXT" : "טוען...",

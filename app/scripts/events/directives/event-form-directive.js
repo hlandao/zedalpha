@@ -117,8 +117,12 @@ zedAlphaDirectives
                 };
 
                 $scope.close = function(event){
-                    if($scope.event.$id) revertEventToOriginal();
-                    $scope.closeLinkFN();
+                    var localizedWarning = $filter('translate')('WARNING_DISCARD_EVENT_CHANGES');
+                    areYouSureModalFactory(null, localizedWarning, {ok : true, cancel : true}).result.then(function(){
+                        if($scope.event.$id) revertEventToOriginal();
+                        $scope.closeLinkFN();
+                    });
+
                 };
 
                 $scope.remove = function(event){
