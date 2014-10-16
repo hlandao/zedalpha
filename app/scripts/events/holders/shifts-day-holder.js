@@ -55,9 +55,15 @@ zedAlphaServices
             self.currentDay = _shiftDay;
 
             if(initByDateChange && DateHolder.currentClock && wasInitialized) {
-                self.selectedShift = getDefaultShiftForClock(_shiftDay);
+                self.selectedShift = getDefaultShiftForDay(_shiftDay);
+                if(!self.selectedShift){
+                    self.selectedShift = AllDayShift(_shiftDay);
+                }
             } else if (initByDateChange && DateHolder.currentClock && !wasInitialized){
-                self.selectedShift = getDefaultShiftForClock(_shiftDay);
+                self.selectedShift = getDefaultShiftForDay(_shiftDay);
+                if(!self.selectedShift){
+                    self.selectedShift = AllDayShift(_shiftDay);
+                }
                 if(self.selectedShift.name !== 'ENTIRE_DAY'){
                     selectDefaultTime();
                 }
@@ -77,10 +83,16 @@ zedAlphaServices
             }
         }
 
+
+        /**
+         * Select the default shift by finding the shift for the current clock of the system.
+         * @param _shiftDay
+         * @returns {*}
+         */
         var getDefaultShiftForDay = function(_shiftDay){
             var currentShift, endTime;
             var shifts = _shiftDay.activeShifts();
-            for (var i = 0; i < shifts.length - 1; ++i){
+            for (var i = 0; i < shifts.length; ++i){
                 currentShift = shifts[i];
                 endTime =  currentShift.startTime.clone().add(currentShift.duration, 'minutes');
                 var startTimeCheck = DateHolder.currentClock.diff(currentShift.startTime, 'minutes');
@@ -90,24 +102,10 @@ zedAlphaServices
                 }
             }
 
-            return _shiftDay.shifts[0];
+            return null;
         };
 
-        var getDefaultShiftForClock = function(_shiftDay){
-            var currentShift, endTime;
-            var shifts = _shiftDay.activeShifts();
-            for (var i = 0; i < shifts.length - 1; ++i){
-                currentShift = shifts[i];
-                endTime =  currentShift.startTime.clone().add(currentShift.duration, 'minutes');
-                var startTimeCheck = DateHolder.currentClock.diff(currentShift.startTime, 'minutes');
-                var endTimeCheck = DateHolder.currentClock.diff(endTime, 'minutes');
 
-                if(startTimeCheck >= 0 && endTimeCheck <= 0){
-                    return currentShift;
-                }
-            }
-            return AllDayShift();
-        };
 
         var selectDefaultTime = function(){
             var defaultTime = self.selectedShift && self.selectedShift.defaultTime;

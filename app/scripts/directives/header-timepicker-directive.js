@@ -8,7 +8,6 @@ zedAlphaDirectives
             replace : false,
             template : '<input hl-timepicker ng-model="DateHolder.currentClock" settings="{min : ShiftsDayHolder.selectedShift.startTime, range : calculatedRange}">',
             link : function(scope, element, attrs){
-
                 var calcRange = function(){
                     scope.calculatedRange = ShiftsDayHolder.selectedShift.duration;
                 }
