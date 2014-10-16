@@ -10,23 +10,14 @@ zedAlphaDirectives
             link : function(scope, element, attrs){
 
                 var calcRange = function(){
-                    var latest = EventsCollection.latestEvent, latestDiff, clockDiff;
-                    if(latest && ShiftsDayHolder.selectedShift){
-                        latestDiff = EventsCollection.latestEvent.data.startTime.diff(ShiftsDayHolder.selectedShift.startTime, 'minutes');
-                        clockDiff = DateHolder.currentClock.diff(ShiftsDayHolder.selectedShift.startTime, 'minutes');
-                        scope.calculatedRange = Math.max(ShiftsDayHolder.selectedShift.duration, latestDiff);
-                        if(clockDiff > 0 && clockDiff > scope.calculatedRange){
-                            scope.calculatedRange = clockDiff + (2 * 60);
-                        }
-
-                            }else if(ShiftsDayHolder.selectedShift){
-                        scope.calculatedRange = ShiftsDayHolder.selectedShift.duration;
-                    }
+                    scope.calculatedRange = ShiftsDayHolder.selectedShift.duration;
                 }
 
+                $rootScope.$on('$EventsCollectionUpdated', calcRange);
+
                 $rootScope.$watch(function(){
-                    return EventsCollection.latestEvent && ShiftsDayHolder.selectedShift;
-                },calcRange);
+                    return  ShiftsDayHolder.selectedShift;
+                },calcRange, true);
             }
         }
     }).directive('entireShiftButton', function($filter){
