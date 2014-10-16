@@ -338,7 +338,7 @@ zedAlphaDirectives
                 }, function(newVal){
                     var newSettings = getSettingsForTimepicker(newVal);
                     if(newSettings.min.isAfter(hlEventFormCtrl.event.data.startTime, 'minutes')){
-                        newSettings.min = event.data.startTime.clone();
+                        newSettings.min = hlEventFormCtrl.event.data.startTime.clone();
                     }
                     if(newSettings.min.clone().add(newSettings.range, 'minutes').isBefore(hlEventFormCtrl.event.data.endTime, 'minutes')){
                         newSettings.range = hlEventFormCtrl.event.data.endTime.diff(newSettings.min, 'minutes');
