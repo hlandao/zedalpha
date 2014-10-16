@@ -197,12 +197,12 @@ zedAlphaServices
             self.filters.status = StatusFilters[0];
         }
 
-        var lastSortedStatusFilter;
+        var lastSortedStatusFilter, lastSortedQueryFilter;
         var sortEvents = function(statusFilter, query){
             statusFilter = statusFilter || self.filters.status;
             query = query || self.filters.query;
 
-            if(lastSortedStatusFilter == 'ENTIRE_SHIFT' && statusFilter == 'ENTIRE_SHIFT' && !query){
+            if(lastSortedStatusFilter == 'ENTIRE_SHIFT' && statusFilter == 'ENTIRE_SHIFT' && lastSortedQueryFilter == query){
                 return;
             }
 
@@ -210,6 +210,7 @@ zedAlphaServices
                 var sorted = $filter('sortDayEvents')(self.collection, DateHolder.currentClock, statusFilter, query);
                 angular.extend(self.sorted, sorted);
                 lastSortedStatusFilter = statusFilter;
+                lastSortedQueryFilter = query;
             }else{
                 self.sorted.deadEvents = null;
                 self.sorted.nowEvents = null;
