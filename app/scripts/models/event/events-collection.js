@@ -173,7 +173,7 @@ zedAlphaServices
                 for (var i = 0; i< self.collection.length; ++i) {
                     key = self.collection.$keyAt(i);
                     currentEvent = self.collection.$getRecord(key);
-                    output = output ? (currentEvent.data.startTime.isAfter(output,'minutes') ? currentEvent : output) : currentEvent ;
+                    output = output ? (currentEvent.data.startTime.isAfter(output.data.startTime,'minutes') ? currentEvent : output) : currentEvent ;
                 }
             }
            self.latestEvent = output;
