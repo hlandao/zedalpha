@@ -3,7 +3,7 @@ var zedAlphaDirectives = zedAlphaDirectives || angular.module('zedalpha.directiv
 
 
 zedAlphaDirectives
-    .directive('mapManager', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope, $filter, DateHolder, ShiftsDayHolder, EventsCollection) {
+    .directive('mapManager', function(firebaseRef, UserHolder, $timeout, BusinessHolder, $rootScope, $filter, DateHolder, ShiftsDayHolder, EventsCollection, EventTimesCheck) {
         return {
             restrict: 'E',
             replace : true,
@@ -278,18 +278,30 @@ zedAlphaDirectives
                 }
 
 
+
+                var isNowEvent = function(event){
+
+                }
+
                 var renderMapWithEvents = _.throttle(function(newVal){
                     var nowEvents = angular.copy(EventsCollection.sorted.nowEvents),
                         upcomingEvents = EventsCollection.sorted.upcomingEvents;
 
+
                     if(scope.$parent.newEvent){
-                        nowEvents = nowEvents || [];
-                        nowEvents.push(scope.$parent.newEvent);
+                        var newEventTimeCheck = EventTimesCheck(scope.$parent.newEvent, DateHolder.currentClock);
+                        if(newEventTimeCheck.isNowEvent){
+                            nowEvents = nowEvents || [];
+                            nowEvents.push(scope.$parent.newEvent);
+                        }
                     }
 
                     if(scope.$parent.editedEvent){
-                        nowEvents = nowEvents || [];
-                        nowEvents.push(scope.$parent.editedEvent);
+                        var editedEventTimeCheck = EventTimesCheck(scope.$parent.editedEvent, DateHolder.currentClock);
+                        if(editedEventTimeCheck.isNowEvent){
+                            nowEvents = nowEvents || [];
+                            nowEvents.push(scope.$parent.editedEvent);
+                        }
                     }
 
 
