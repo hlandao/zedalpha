@@ -522,7 +522,10 @@ zedAlphaServices
 
             return $q.all(checkPromises).then(function(){
                 var savePromises = [self.saveWithValidation(e1, true), self.saveWithValidation(e2, true)];
-                return $q.all(savePromises);
+                return $q.all(savePromises).then(function(){
+                    $rootScope.$broadcast('$EventsCollectionUpdated');
+                    return true;
+                });
             }).catch(function(error){
                 e1.data.seats = e1OriginalSeats;
                 e2.data.seats = e2OriginalSeats;

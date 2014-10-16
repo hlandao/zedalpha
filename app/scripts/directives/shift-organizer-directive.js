@@ -69,7 +69,10 @@ zedAlphaDirectives
                 }, renderEventsSeats, true);
 
 
-                $scope.$on('$EventsCollectionUpdated', renderEventsSeats);
+                $scope.$on('$EventsCollectionUpdated', function(){
+                    console.log('$EventsCollectionUpdated');
+                    renderEventsSeats();
+                });
 
             },
             link : function(scope, elem, attrs) {
