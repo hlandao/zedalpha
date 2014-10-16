@@ -82,7 +82,7 @@ zedAlphaDirectives
         return {
             restrict: 'A',
             replace : true,
-            link :function(scope, element, attrs){
+            link :function(scope, element, attrs, ctrls){
                 var cellWidth,
                     shiftStartTimeMoment,
                     shiftEndTimeMoment,
@@ -110,6 +110,9 @@ zedAlphaDirectives
                     element.css({backgroundColor : status.color});
                 }
 
+                var setDrag = function(){
+                }
+
                 var findStatusByStatus = function(status){
                     return _.findWhere(BusinessHolder.business.eventsStatuses, {status : status});
                 }
@@ -125,6 +128,15 @@ zedAlphaDirectives
                     setLeft();
                     setWidth();
                     setColor();
+                    setDrag();
+                });
+
+                scope.clickOnEvent = function(event, e){
+                    scope.$emit('$clickOnEvent', event);
+                }
+
+                scope.$on('$destory', function(){
+                    element.off('mousedown','mouseup').parents().on('mousemove');
                 });
 
             }

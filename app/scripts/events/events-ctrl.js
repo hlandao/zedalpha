@@ -70,11 +70,16 @@ zedAlphaControllers
             if($scope.editedEvent === event){
                 return;
             }else if($scope.editedEvent){
-                alert('Cannot edit reservatin while another reservation is opened');
+                alert('Cannot edit reservation while another reservation is opened');
             }
             event.$enterEditingMode();
             $scope.editedEvent = event;
         };
+
+        $scope.$on('$clickOnEvent', function(data,event){
+            $scope.clickOnEvent(event);
+        });
+
 
         $scope.closeEditedEvent = function(success){
             if(success){

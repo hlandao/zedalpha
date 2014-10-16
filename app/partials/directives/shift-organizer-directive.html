@@ -11,12 +11,10 @@
                 <tr ng-repeat="(seatNumber, events) in eventsBySeats">
                     <td > <span class=""> {{seatNumber}} </span> </td>
                     <td colspan="{{hours.length}}">
-                        <div shift-organizer-event class="one-liner-text shift-organizer-event" ng-repeat="event in events"><span class="guests">{{event.data.guests}}</span>{{event.data.name}} {{event.data.startTime | momentFilter : 'HH:mm'}}</div>
+                        <div shift-organizer-event class="one-liner-text shift-organizer-event" ng-repeat="event in events" ng-click="clickOnEvent(event, e)"><span class="guests">{{event.data.guests}}</span>{{event.data.name}} {{event.data.startTime | momentFilter : 'HH:mm'}}</div>
                     </td>
                 </tr>
             </tbody>
         </table>
-
-
     </div>
 </div>
