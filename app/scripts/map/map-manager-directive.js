@@ -149,7 +149,7 @@ zedAlphaDirectives
                         highlightedShapesEvents = $filter('eventsByShift')(highlightedShapesEvents);
 
 
-                        scope.highlightedEvents = $filter('sortDayEvents')(highlightedShapesEvents, DateHolder.currentClock, null, null, true, true);
+                        scope.highlightedEvents = $filter('sortDayEvents')(highlightedShapesEvents, {clock : DateHolder.currentClock}, {includePastEvents : true, includeAllUpcomingEvents : true});
 
                         if(!scope.highlightedEvents.nowEvents.length && scope.highlightedEvents.upcomingEvents.length){
                             scope.nextEventInXMinutes = scope.highlightedEvents.upcomingEvents[0].data.startTime.diff(DateHolder.currentClock, 'seconds');
@@ -286,7 +286,7 @@ zedAlphaDirectives
 
 
                     if(scope.$parent.newEvent){
-                        var newEventTimeCheck = EventTimesCheck(scope.$parent.newEvent, DateHolder.currentClock);
+                        var newEventTimeCheck = EventTimesCheck(scope.$parent.newEvent, {clock : DateHolder.currentClock});
                         if(newEventTimeCheck.isNowEvent){
                             nowEvents = nowEvents || [];
                             nowEvents.push(scope.$parent.newEvent);
@@ -294,7 +294,7 @@ zedAlphaDirectives
                     }
 
                     if(scope.$parent.editedEvent){
-                        var editedEventTimeCheck = EventTimesCheck(scope.$parent.editedEvent, DateHolder.currentClock);
+                        var editedEventTimeCheck = EventTimesCheck(scope.$parent.editedEvent, {clock : DateHolder.currentClock});
                         if(editedEventTimeCheck.isNowEvent){
                             nowEvents = nowEvents || [];
                             nowEvents.push(scope.$parent.editedEvent);

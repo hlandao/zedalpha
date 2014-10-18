@@ -5,7 +5,7 @@ zedAlphaServices
     .value('StatusFilters', ['ALL','SEATED','ORDERED','OCCASIONAL'])
     .value('NotCollidingEventStatuses', ['NO_SHOW', 'FINISHED', 'CANCELED','REMOVED'])
     .value('DeadEventsStatuses',['FINISHED','NO_SHOW','CANCELED','REMOVED'])
-    .value('STATUS_FILTERS_TO_FILTER', {
+    .value('STATUS_FILTERS_TO_STATUSES_ARRAY', {
         ALL : ['ALL'],
         SEATED : ['SEATED', 'CHEQUE', ''],
         ORDERED : ['ORDERED', 'CONFIRMED'],

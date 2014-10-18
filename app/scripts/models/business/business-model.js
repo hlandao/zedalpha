@@ -30,8 +30,6 @@ zedAlphaServices
                 var ref = UserHolder.userProfileRef.child('businesses').child(businessId);
                 self.business = BusinessObject(ref)
                 return self.business.$loaded();
-            }else if(self.business){
-                return self.business.$loaded();
             }
         };
 

@@ -224,7 +224,7 @@ zedAlphaDirectives
 
             }
         }
-    }).directive('eventFormBaseDatePicker', function(DateFormatFirebase, EventsCollection, areYouSureModalFactory, $filter,DateHolder){
+    }).directive('eventFormBaseDatePicker', function(EventsHelpers, DateFormatFirebase, EventsCollection, areYouSureModalFactory, $filter){
         return {
             replace : false,
             require : ['ngModel','^hlEventForm'],
@@ -246,7 +246,7 @@ zedAlphaDirectives
 
                 scope.dateChanged = function(){
                     EventsCollection.changeBaseDateForEvent(hlEventFormCtrl.event, scope.date).then(function(){
-                        DateHolder.goToEvent(hlEventFormCtrl.event);
+                        EventsHelpers.userChooseClock(hlEventFormCtrl.event.data.startTime);
                     }).catch(function(error){
                         if(error && error.error){
                             console.error('[eventFormBaseDatePicker] Error : ',error);
@@ -258,7 +258,7 @@ zedAlphaDirectives
 
             }
         }
-    }).directive('eventStartTimeValidator', function(EventsCollection, areYouSureModalFactory, $filter, $q, $timeout, DateHolder,$log, ShiftsDayHolder){
+    }).directive('eventStartTimeValidator', function(EventsHelpers, EventsCollection, areYouSureModalFactory, $filter, $q, $timeout,$log, ShiftsDayHolder){
         return {
             require : ['ngModel','^hlEventForm'],
             priority : 0,
@@ -303,11 +303,11 @@ zedAlphaDirectives
                                 });
                             }else if(maxDurationForEvent == -1 || maxDurationForEvent == durationValueBefore){
                                 hlEventFormCtrl.event.$setEndTimeByMaxDuartion(maxDurationForEvent, durationValueBefore, value);
-                                DateHolder.goToEvent(hlEventFormCtrl.event);
+                                EventsHelpers.userChooseClock(value);
                                 return true;
                             }else{
                                 hlEventFormCtrl.event.$setEndTimeByMaxDuartion(maxDurationForEvent, durationValueBefore, value);
-                                DateHolder.goToEvent(hlEventFormCtrl.event);
+                                EventsHelpers.userChooseClock(value);
                                 return true;
                             }
                         });

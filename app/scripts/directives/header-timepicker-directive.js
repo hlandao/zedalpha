@@ -6,7 +6,7 @@ zedAlphaDirectives
         return {
             restrict : 'E',
             replace : false,
-            template : '<input hl-timepicker ng-model="DateHolder.currentClock" settings="{min : ShiftsDayHolder.selectedShift.startTime, range : calculatedRange}">',
+            template : '<input hl-timepicker ng-model="DateHolder.currentClock" settings="{min : ShiftsDayHolder.selectedShift.startTime, range : calculatedRange}" on-change="clockChanged()">',
             link : function(scope, element, attrs){
                 var calcRange = function(){
                     scope.calculatedRange = ShiftsDayHolder.selectedShift.duration;

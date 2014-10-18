@@ -16,7 +16,7 @@ zedAlphaServices
 
 
         $rootScope.$on('$firebaseSimpleLogin:login', function(e, user){
-            $log.info('[UserHolder] : user is logged in');
+            $log.debug('[UserHolder] : user is logged in');
 
             self.userProfileRef =  firebaseRef('users/' + user.uid);
             self.userProfileRef.once('value', function(snap){

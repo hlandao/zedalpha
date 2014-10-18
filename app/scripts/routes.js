@@ -3,11 +3,12 @@ angular.module('zedalpha.routes', [])
 
     .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
 
+
         var userHolderResolver = function(UserHolder){
             return UserHolder.readyPromise();
         };
 
-        var businessResolver = function(UserHolder, BusinessHolder, $stateParams, $state, $urlRouter){
+        var businessResolver = function(UserHolder, BusinessHolder, $stateParams, $state, $urlRouter, $q){
             return UserHolder.readyPromise().then(function(){
                 return BusinessHolder.init($stateParams.businessId);
             });

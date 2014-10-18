@@ -2,7 +2,7 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .service('DateHolder', function($rootScope, DateHelpers, DateFormatFirebase, $log){
+    .service('DateHolder', function($rootScope, DateHelpers, DateFormatFirebase,FullDateFormat, $log){
 
         function DateHolderException(message) {
             this.name = 'DateHolderException';
@@ -12,101 +12,95 @@ zedAlphaServices
         DateHolderException.prototype.constructor = DateHolderException;
 
 
-        var self = this,
-            clockInitialized = false,
-            dateInitialized = false;
+        var self = this;
 
-        this.goToNow = function(init){
-            var now = moment().seconds(0), newClockMoment, newDateMoment;
 
-            if(init && isClockBelongToPreviousDay(now)){
-                newClockMoment = now.subtract('days',1).hour(23).minute(0);
-                newDateMoment = newClockMoment.clone().hour(0).minute(0);
-            }else if(!init && isClockBelongToPreviousDay(now)){
-                newClockMoment = now;
-                newDateMoment = newClockMoment.clone().hour(0).minute(0).subtract('days',1);
-            }else{
-                newClockMoment = now;
-                newDateMoment = newClockMoment.clone().hour(0).minute(0);
+        /**
+         * Go to a certain date and update clock accordingly
+         * @param date - a Moment object
+         */
+        this.goToDate  = function(date){
+            if(!DateHelpers.isMomentValid(date)){
+                throw new DateHolderException('Go to date failed. Please provide a valid Moment object.');
             }
 
-            newClockMoment.minute(DateHelpers.findClosestIntervalToDate(newClockMoment)).seconds(0);
-
-            self.currentClock = newClockMoment;
-            if(!DateHelpers.isMomentSameDate(newDateMoment,self.currentDate)){
-                self.currentDate = newDateMoment;
+            if(date !== self.currentDate){
+                self.currentDate = date.clone().seconds(0);
             }
-        }
+            $log.info('[DateHolder] go to date : ',self.currentDate.format(DateFormatFirebase));
+            self.updateClockAfterDateChange();
+
+        };
 
 
-        this.goToEvent = function(event){
-            if(!event || event.constructor.name != "Event"){
-                throw new DateHolderException("'goToEvent failed'. Please provide a valid Event object");
-            }else{
-                if(DateHelpers.isMomentValid(self.currentClock) && (self.currentClock.isSame(event.data.startTime,'minutes'))){
-                    return;
+        /**
+         * Update the clock after changing the date
+         */
+        this.updateClockAfterDateChange = function(){
+            var newClock = self.currentDate.clone();
+
+            if(DateHelpers.isMomentValid(self.currentClock)){
+                newClock.hour(self.currentClock.hour()).minutes(self.currentClock.minutes());
+            }
+
+            self.currentClock = newClock.seconds(0);
+            $log.debug('[DateHolder] clock update after date change : ',self.currentClock.format(FullDateFormat));
+        };
+
+
+        /**
+         * Change the clock and update the date right after
+         * @param clock
+         */
+        this.goToClock = function(clock){
+            if(!DateHelpers.isMomentValid(clock)){
+                throw new DateHolderException('Go to clock failed. Please provide a valid Moment object.');
+            }
+
+            var newMinutesAtInterval = DateHelpers.findClosestIntervalToDate(clock);
+            if(clock !== self.currentClock){
+                self.currentClock = clock.clone().seconds(0);
+                if(newMinutesAtInterval){
+                    self.currentClock.minutes(newMinutesAtInterval);
                 }
-                if(event.data.baseDate != self.currentDate.format(DateFormatFirebase)){
-                    self.currentDate = moment(event.data.baseDate, DateFormatFirebase).seconds(0);
-                }
-                self.currentClock = event.data.startTime.clone().seconds(0);
-            }
-        }
 
-        var areClockAndDateSameDate = function(){
-            if(!DateHelpers.isMomentValid(self.currentClock)){
-                return false;
             }
-            if(isClockBelongToPreviousDay()){
-                return (self.currentClock.diff(self.currentDate, 'day') == 1);
+            $log.debug('[DateHolder] go to clock : ',self.currentClock.format(FullDateFormat));
+            self.updateDateAfterClockChange();
+        };
+
+
+        /**
+         * Update the date after a clock change
+         */
+        this.updateDateAfterClockChange = function(){
+            var newDate = self.currentClock.clone();
+            if(isClockBelongToPreviousDay(self.currentClock)){
+                newDate.hour(0).minute(0).subtract('days',1);
             }else{
-                return self.currentClock.isSame(self.currentDate, 'day');
+                newDate.hour(0).minute(0);
+            }
+
+            if(!self.currentDate || DateHelpers.isMomentValid(self.currentDate) && !DateHelpers.areMomentsHaveSameDates(self.currentDate, newDate)){
+                self.currentDate = newDate.seconds(0);
+                $log.debug('[DateHolder] date update after clock change : ',self.currentDate.format(DateFormatFirebase));
+
+            }else{
+                $log.debug('[DateHolder] date  was cancelled because of same dates ',self.currentDate.format(DateFormatFirebase));
             }
         }
 
+
+        /**
+         * Helpers method to check if clock is belong to previous day
+         * @param clock
+         * @returns {boolean}
+         */
         var isClockBelongToPreviousDay = function(clock){
-            clock = clock || self.currentClock;
             if(!DateHelpers.isMomentValid(clock)){
                 return false;
             }
             return (clock.hour() < 6 && clock.hour() >= 0);
         }
-
-        $rootScope.$watch(function(){
-            return self.currentClock;
-        }, function(newVal, oldVal){
-            $log.info('[DateHolder] currentClock has been changed');
-            if(newVal){
-                newVal.seconds(0);
-                $rootScope.$emit('$clockWasChanged');
-            }
-        });
-
-
-        $rootScope.$watch(function(){
-            return self.currentDate;
-        }, function(newVal, oldVal){
-            $log.info('[DateHolder] currentDate has been changed');
-//            if(!dateInitialized || !newVal){
-//                dateInitialized = true;
-//                return;
-//            }
-
-            newVal.seconds(0);
-
-            if(DateHelpers.isMomentValid(self.currentClock) && !areClockAndDateSameDate()){
-                var hour = self.currentClock.hour();
-                var minute = self.currentClock.minute();
-                if(isClockBelongToPreviousDay()){
-                    self.currentClock = self.currentDate.clone().add(1,'days').minute(minute).hour(hour);
-                }else{
-                    self.currentClock = self.currentDate.clone().minute(minute).hour(hour);
-                }
-            }
-
-            $rootScope.$emit('$dateWasChanged');
-        }, true);
-
-        this.goToNow(true);
     });
 

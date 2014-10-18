@@ -4,19 +4,25 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('EventsCtrl', function($scope, $log, DateHolder, Event, $filter, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder, EventsCollection, StatusFilters, areYouSureModalFactory, SeatsHolder, EventsNotificationsHolder){
+    .controller('EventsCtrl', function($scope, $log, DateHolder, Event, $filter, ShiftsDayHolder, Localizer, $filter, DateHelpers, AllDayShift, CloseOpenControls, BusinessHolder, EventsCollection, StatusFilters, areYouSureModalFactory, SeatsHolder, EventsNotificationsHolder, EventsHelpers){
+
+        EventsHelpers.init();
 
         $scope.DateHolder = DateHolder;
         $scope.ShiftsDayHolder = ShiftsDayHolder;
         $scope.business = BusinessHolder.business;
         $scope.sortedEvents = EventsCollection.sorted;
-        $scope.filters = EventsCollection.filters;
         $scope.eventsNotifications = EventsNotificationsHolder.alert;
         $scope.showDeadEvents = false;
         $scope.StatusFilters = StatusFilters;
         $scope.searchController = { active : false};
 
-        // --------- New event ----------- //
+        /**
+         * Create new event
+         * @param occasionalOrDestination
+         * @param seatsDic
+         * @param startTime
+         */
         $scope.newEventWithSeatsDic = function(occasionalOrDestination, seatsDic, startTime){
             if($scope.switchMode){
                 var localizedError = $filter('translate')('SWITCH_EVENT_WARNING');
@@ -44,16 +50,31 @@ zedAlphaControllers
             });
         };
 
+
+        /**
+         * Close new event
+         * @param success
+         */
         $scope.closeNewEvent = function(success){
             if(success){
-                DateHolder.goToEvent($scope.newEvent);
+                EventsHelpers.userChooseClock($scope.newEvent.data.startTime);
             }
             $scope.newEvent = null;
         }
 
 
+        /**
+         * Listen to click on events (from shift-organizer)
+         */
+        $scope.$on('$clickOnEvent', function(data,event){
+            $scope.clickOnEvent(event);
+        });
 
-        // ----------Click on event ----------//
+
+        /**
+         * Click on event in event list OR in shift-organizer
+         * @param event
+         */
         $scope.clickOnEvent = function(event){
             if($scope.switchMode){
                 addEventToSwitchMode(event);
@@ -63,7 +84,10 @@ zedAlphaControllers
         }
 
 
-        // --------- Edit event ----------- //
+        /**
+         * Open event for editing
+         * @param event
+         */
         $scope.openEditedEvent = function (event){
             CloseOpenControls();
             $scope.newEvent = null;
@@ -76,20 +100,23 @@ zedAlphaControllers
             $scope.editedEvent = event;
         };
 
-        $scope.$on('$clickOnEvent', function(data,event){
-            $scope.clickOnEvent(event);
-        });
 
-
+        /**
+         * Close current edited event
+         * @param success
+         */
         $scope.closeEditedEvent = function(success){
             if(success){
-                DateHolder.goToEvent($scope.editedEvent);
+                EventsHelpers.userChooseClock($scope.editedEvent.data.startTime);
             }
             $scope.editedEvent = null;
         }
 
 
-        // --------- Event Status  ----------- //
+        /**
+         * Event status has been changed, update and save in DB
+         * @param event
+         */
         $scope.eventStatusChanged = function(event){
             EventsCollection.saveWithValidation(event, true).then(function(){
             }, function(error){
@@ -101,44 +128,73 @@ zedAlphaControllers
         };
 
 
-        // --------- Filters/entire shift  ----------- //
-        $scope.selectFilter = function(filter){
-            $scope.selectedFilter = filter;
-            EventsCollection.filters.status = filter;
+        /**
+         * User selected a filter
+         * @param filter
+         */
+        $scope.selectStatusFilter = function(filter){
+            $scope.selectedStatusFilter = filter;
+            EventsHelpers.userChooseFilters({
+                status : filter,
+                query  : $scope.query
+            });
         };
 
+
+        /**
+         * User selected new shift
+         * @param shift
+         * @param e is the click DOM event
+         */
         $scope.selectNewShift = function(shift, e){
-            ShiftsDayHolder.$selectNewShift(shift)
-            $scope.$emit('$requestSortEvents');
-
+            EventsHelpers.userChooseShift(shift)
         };
 
+
+        /**
+         * Select All Day Shift
+         */
         $scope.selectAllDayShift = function(){
             ShiftsDayHolder.selectedShift = AllDayShift(ShiftsDayHolder.currentDay);
-            $scope.selectFilter('ENTIRE_SHIFT');
+            $scope.selectStatusFilter('ENTIRE_SHIFT');
             $scope.$emit('$requestSortEvents');
         };
 
+        /**
+         * Toogle entire shift on/off
+         */
         $scope.toggleEntireShift = function(){
-            if(EventsCollection.filters.status === 'ENTIRE_SHIFT'){
+            if(EventsCollection.recentFilters && EventsCollection.recentFilters.status === 'ENTIRE_SHIFT'){
                 $scope.selectFilter('ALL');
             }else{
                 $scope.selectFilter('ENTIRE_SHIFT');
             }
         }
 
+
+        /**
+         * Cancel ENTIRE_SHIFT selection (reset)
+         */
         var cancelEntireShift = function(){
-            $scope.selectFilter('ALL');
+            $scope.selectStatusFilter('ALL');
         }
 
+
+        /**
+         * Go to now
+         * @param e
+         */
         $scope.goToNow = function(e){
             if(e) e.preventDefault();
             cancelEntireShift();
-            DateHolder.goToNow();
+            EventsHelpers.userChooseClock(moment());
         };
 
 
-        // --------- Switch mode -------//
+        /**
+         * Toggle switch events mode
+         * @param e
+         */
         $scope.toggleSwitchMode = function(e){
             e.preventDefault();
             e.stopPropagation();
@@ -161,6 +217,11 @@ zedAlphaControllers
 
         }
 
+
+        /**
+         * Add event to switch mode selection
+         * @param event
+         */
         var addEventToSwitchMode = function(event){
             if($scope.eventToSwitch){
                 if ($scope.eventToSwitch === event){
@@ -172,8 +233,6 @@ zedAlphaControllers
                         $scope.eventToSwitch = null;
                         $scope.switchMode = false;
                     }, function(error){
-//                        $scope.eventToSwitch = null;
-//                        $scope.switchMode = false;
                         if(error && error.error){
                             var localizedError = $filter('translate')(error.error);
                             areYouSureModalFactory(null, localizedError, {ok : true, cancel : false}, {event : error.withEvent});
@@ -184,6 +243,11 @@ zedAlphaControllers
             }
         }
 
+
+        /**
+         * Toggle dead events display
+         * @param e
+         */
         $scope.toggleDeadEvents = function(e){
             e.preventDefault();
             if($scope.showDeadEvents){
@@ -191,13 +255,26 @@ zedAlphaControllers
             }else{
                 $scope.showDeadEvents = true;
             }
-        }
+        };
 
 
+        /**
+         * Hide search box
+         */
         $scope.hideSearch = function(){
             $scope.searchController.active = false;
             $scope.filters.query = "";
-        }
+        };
+
+
+        $scope.dateChanged = function(){
+           EventsHelpers.userChooseDate(DateHolder.currentDate);
+        };
+
+        $scope.clockChanged = function(){
+            EventsHelpers.userChooseClock(DateHolder.currentClock);
+        };
+
     }).directive('eventsListSearchBox', function($timeout){
         return function(scope, element, attrs){
             element.focus(function(){

@@ -4,7 +4,7 @@
 var zedAlphaControllers = zedAlphaControllers || angular.module('zedalpha.controllers', []);
 
 zedAlphaControllers
-    .controller('EventsNavigationCtrl', function($scope, DateHolder, EventsCollection, ShiftsDayHolder, DeadEventsStatuses){
+    .controller('EventsNavigationCtrl', function($scope, EventsCollection, ShiftsDayHolder, DeadEventsStatuses){
 
         var countAll = function(){
             if(!EventsCollection.collection || !EventsCollection.collection.length || !ShiftsDayHolder.currentDay) return;

@@ -2,48 +2,8 @@ var zedAlphaServices = zedAlphaServices || angular.module('zedalpha.services', [
 
 
 zedAlphaServices
-    .factory("EventsFactory",function ($FirebaseArray, Event) {
-        return $FirebaseArray.$extendFactory({
-            $$added : function(snap){
-                var newEvent = new Event(snap);
-                this._process('child_added', newEvent);
-            },
-            // override the $$updated behavior to call a method on the Message
-            $$updated: function (snap) {
-                this.$getRecord(snap.name()).$update(snap);
-            },
+   .service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase,DateHelpers,$timeout,areYouSureModalFactory, CustomerIdFromPhone, CustomerGenerator, EventsNotificationsHolder, REMOVED_STATUS, ShiftsDayHolder, DateFormatFirebase) {
 
-            $setSubName : function(subName){
-                this.$list.subName = subName;
-            },
-            $checkCollisionsForEvent : function(event, extra){
-                var eventToCheck,
-                    extraSeats = extra && extra.seats ? extra.seats : null,
-                    newStartTime = extra && extra.startTime ? extra.startTime : null,
-                    newEndTime = extra && extra.endTime ? extra.endTime : null,
-                    self = this;
-
-
-                for (var i = 0; i < self.$list.length; ++i) {
-                    eventToCheck = self.$list[i];
-                    if(eventToCheck === event) continue;
-                    if(eventToCheck.$shouldCollide() && eventToCheck.$sharingTheSameSeatsWithAnotherEvent(event, extraSeats)){
-                        if(eventToCheck.$collideWithAnotherEvent(event, newStartTime, newEndTime)){
-                            return eventToCheck;
-                        }
-                    }
-                }
-                return false;
-            }
-
-        });
-    }).factory("EventsCollectionGenerator",function ($firebase, $log, EventsFactory) {
-        return function (ref) {
-            return $firebase(ref, {arrayFactory : EventsFactory}).$asArray();
-        }
-    }).service("EventsCollection", function (BusinessHolder, EventsCollectionGenerator, firebaseRef, $rootScope, $log, $filter, DateHolder, Event, $q, StatusFilters, DateFormatFirebase,DateHelpers,$timeout,areYouSureModalFactory, CustomerIdFromPhone, CustomerGenerator, EventsNotificationsHolder, REMOVED_STATUS, ShiftsDayHolder) {
-
-        var isJustChangedBaseDateForEvent;
 
         function EventsCollectionException(message) {
             this.name = 'EventsCollectionException';
@@ -54,86 +14,114 @@ zedAlphaServices
 
 
 
-        var self = this,
-            lastSubName = null,
-            lastBusinessId = null;
+
+        var self = this;
+
 
         this.sorted = {};
-        this.filters = {
-            status : null,
-            query : null
+        this.recentFilters = {};
 
-        };
-
-
+        /**
+         * Return events collection subname by date
+         * @param date
+         * @returns a string in the DateFormatFirebase format
+         */
         var subNameByDate = function(date){
-            return date.format('YYYY-MM-DD');
+            if(!DateHelpers.isMomentValid(date)){
+                throw new EventsCollectionException('subNameByDate requires a valid Moment object as (date)');
+            }
+            return date.format(DateFormatFirebase);
         };
 
-        var  getCollectionForDate = function(businessId, _date, event){
-            var subName;
-            var date = DateHelpers.isMomentValid(_date) ? _date.clone() : null;
 
-            if(date){
-                subName = subNameByDate(date);
-            }else if(event && event instanceof Event){
-                subName = event.data.baseDate;
-                if(event.myCollection && event.myCollection.subName == subName){
-                    var defer = $q.defer;
-                    defer.resolve(event.myCollection);
-                    return defer.promise;
-                }
-            }else{
-                throw new EventsCollectionException('getCollectionForDate was failed. Please provide a valid date or a valid event');
+        /**
+         * Fetch events collection for a certain date
+         * @param businessId
+         * @param date
+         * @param event
+         * @returns {*}
+         */
+        var  fetchCollectionForDate = function(businessId, date, event){
+            if(!businessId){
+                throw new EventsCollectionException('fetchCollectionForDate requires a (businessId). businessID : ' + businessId + '. date :' + date + '. event : ' + event);
             }
-            businessId = businessId || BusinessHolder.business.$id;
 
+            if((!date || !DateHelpers.isMomentValid(date)) && (!event || !event instanceof Event)){
+                throw new EventsCollectionException('fetchCollectionForDate requires either a valid Moment object as (date) or a Event object as (event). businessID : ' + businessId + '. date :' + date + '. event : ' + event);
+            }
 
-            if(subName == lastSubName && lastBusinessId == businessId){
+            date = DateHelpers.isMomentValid(date) ? date.clone() : event.data.startTime.clone();
+            var subName = subNameByDate(date);
+
+            if(isSameAsSelfCollection(businessId, subName)){
                 return $timeout(function(){
                     return self.collection;
                 });
             }
 
+            $log.debug('[EventsCollection] fetching colleciton for businessId : ' + businessId + ' and date : ' + subName);
             var ref = firebaseRef('events/').child(businessId).child(subName);
             var $EventCollection = EventsCollectionGenerator(ref);
 
             return $EventCollection.$loaded().then(function(collection){
-                    collection.$setSubName(subName);
+                collection.$setSubName(subName);
+                collection.$setBusinessId(businessId);
+
                 return collection;
-            }).catch(function(){
-                throw new EventsCollectionException('Cannot get events with subName = ' + subName);
+            }).catch(function(error){
+                throw new EventsCollectionException('Cannot get events with subName : %s. Error : %s', subName, error);
             });
         };
 
 
-        var updateEvents = this.updateEvents = function () {
-            if (BusinessHolder.business) {
-                var newSubName = subNameByDate(DateHolder.currentDate);
-                if(self.collection && newSubName == lastSubName && lastBusinessId == BusinessHolder.business.$id){
-                    return;
-                }
+        /**
+         * Load events to self.collections(usually when changing date)
+         * @param businessId
+         * @param date
+         * @param clock
+         */
+        this.loadEventsForDate = function (businessId, date, clock) {
+            businessId = businessId || BusinessHolder.business.$id;
+            if(!DateHelpers.isMomentValid(date)){
+                throw new EventsCollectionException('Cannot load current events without a Moment object (date)');
+            }
 
+            $log.debug('[EventsCollection] load events  for businessId : ' + businessId + ' and date : ' + date);
 
+            fetchCollectionForDate(businessId, date).then(function(collection){
 
-
-                return getCollectionForDate(BusinessHolder.business.$id, DateHolder.currentDate).then(function(collection){
-
-                    lastSubName = newSubName;
-                    lastBusinessId = BusinessHolder.business.$id;
-
+                if(collection !== self.collection){
                     self.collection && self.collection.$destroy && self.collection.$destroy();
                     self.latestEvent = null;
                     self.collection = null;
 
                     self.collection = collection;
                     self.collection.$watch(watchSelfCollection)
-                    findLatestEvent();
-                    sortEvents();
-                    resetFilters();
-                });
-            }
+                }
+                setLatestEvent();
+                sortEvents({clock : clock});
+            });
+
         };
+
+
+        /**
+         * Check if self.collection has the same subName & businessId as the current request
+         * @param businessId
+         * @param subName
+         * @param date
+         * @returns {exports.collection|*|model.collection|null|Package.collection|collection}
+         */
+        var isSameAsSelfCollection = function(businessId, subName, date){
+            if(!businessId){
+                throw new EventsCollectionException('isSameAsSelfCollection requires provide a businessId');
+            }
+            if(!subName && !DateHelpers.isMomentValid(date)){
+                throw new EventsCollectionException('isSameAsSelfCollection requires either a valid subName or a valid Moment');
+            }
+            if(!subName) subName = subNameByDate(date);
+            return (self.collection && self.collection.businessId == businessId && self.collection.subName == subName);
+        }
 
 
         /**
@@ -144,19 +132,10 @@ zedAlphaServices
             if(!watchDetails) return;
             switch(watchDetails.event){
                 case 'child_added':
-                    if(isJustChangedBaseDateForEvent){
-                        isJustChangedBaseDateForEvent = false;
-                        var record = self.collection.$getRecord(watchDetails.key);
-                        if(record){
-                            var msg = $filter('translate')('EVENT_CHANGED') + '\n' + record.data.name + ' - ' + record.data.startTime.format('HH:mm');
-                            EventsNotificationsHolder.alert.setMsg(msg);
-                        }
-                    }else{
-                        var record = self.collection.$getRecord(watchDetails.key);
-                        if(record){
-                            var msg = $filter('translate')('EVENT_ADDED') + '\n' + record.data.name + ' - ' + record.data.startTime.format('HH:mm');
-                            EventsNotificationsHolder.alert.setMsg(msg);
-                        }
+                    var record = self.collection.$getRecord(watchDetails.key);
+                    if(record){
+                        var msg = $filter('translate')('EVENT_ADDED') + '\n' + record.data.name + ' - ' + record.data.startTime.format('HH:mm');
+                        EventsNotificationsHolder.alert.setMsg(msg);
                     }
                     break;
                 case 'child_moved':
@@ -171,51 +150,61 @@ zedAlphaServices
                     }
                     break;
             }
-            findLatestEvent();
+            setLatestEvent();
             sortEvents();
-
         }
+
 
 
         /**
          * find the latest event(by start time) from self.collection
          */
-        var findLatestEvent = function(){
-            var currentEvent, key, output = null;
+        var setLatestEvent = function(){
+            var currentEvent, key, result = null;
             if(self.collection && self.collection.length){
                 for (var i = 0; i< self.collection.length; ++i) {
                     key = self.collection.$keyAt(i);
                     currentEvent = self.collection.$getRecord(key);
-                    output = output ? (currentEvent.data.startTime.isAfter(output.data.startTime,'minutes') ? currentEvent : output) : currentEvent ;
+                    result = result ? (currentEvent.data.startTime.isAfter(result.data.startTime,'minutes') ? currentEvent : result) : currentEvent ;
                 }
             }
-           self.latestEvent = output;
+           self.latestEvent = result;
         }
 
-        var resetFilters = function(){
-            self.filters.name = null;
-            self.filters.status = StatusFilters[0];
-        }
 
-        var lastSortedStatusFilter, lastSortedQueryFilter, lastShiftName;
-        var sortEvents = function(statusFilter, query){
-            statusFilter = statusFilter || self.filters.status;
-            query = query || self.filters.query;
+        /***
+         * Sort events, save sorted results in self.sorted = {pastEvents : [], nowEvents : [], upcomingEvents : [], deadEvents : []}
+         * @param filters dictionary with filter : query, status, shift, clock
+         * @param options dictionary with options : includePastEvents, includeAllUpcomingEvents
+         */
+        var sortEvents = this.sortEvents = function(filters, options){
 
-            if(lastSortedStatusFilter == 'ENTIRE_SHIFT' && statusFilter == 'ENTIRE_SHIFT' && ShiftsDayHolder.selectedShift && ShiftsDayHolder.selectedShift.name == lastShiftName &&  lastSortedQueryFilter == query){
+            $log.debug('[EventsCollection] soet event with filters and options : ',filters, options);
+
+            filters = angular.extend({
+                query : null,
+                status:'ALL',
+                shift:null,
+                clock:null
+            },self.recentFilters,filters);
+
+
+            options = angular.extend({},
+                {
+                includePastEvents : true,
+                includeAllUpcomingEvents : false
+                },
+                self.recentOptions, options);
+
+            if(filters === self.recentFilters && options === self.recentOptions){
                 return;
             }
 
             if(self.collection && self.collection.length){
-                var sorted = $filter('sortDayEvents')(self.collection, DateHolder.currentClock, statusFilter, query);
+                var sorted = $filter('sortDayEvents')(self.collection, filters, options);
                 angular.extend(self.sorted, sorted);
-                lastSortedStatusFilter = statusFilter;
-                lastSortedQueryFilter = query;
-                if(statusFilter == 'ENTIRE_SHIFT'){
-                    lastShiftName = ShiftsDayHolder.selectedShift.name;
-                }else{
-                    lastShiftName = null;
-                }
+                self.recentFilters = filters;
+                self.recentOptions = options;
             }else{
                 self.sorted.deadEvents = null;
                 self.sorted.nowEvents = null;
@@ -226,29 +215,28 @@ zedAlphaServices
         };
 
 
-//        this.maxDurationForEvent = function (event) {
-//            var maxDuration = -1, tempMaxDuration, currentEvent, key;
-//            for (var i = 0; i< this.collection.length; ++i) {
-//                key = this.collection.$keyAt(i);
-//                currentEvent = this.collection.$getRecord(key);
-//                if (currentEvent.$shouldCollide() && currentEvent.$sharingTheSameSeatsWithAnotherEvent(event)) {
-//                    tempMaxDuration = currentEvent.$maxDurationInRegardToAnotherEvent(event);
-//
-//                    if (tempMaxDuration === 0) {
-//                        return 0;
-//                    } else if (tempMaxDuration > 0) {
-//                        maxDuration = (maxDuration == -1) ? tempMaxDuration : Math.min(tempMaxDuration, maxDuration);
-//                    }
-//                }
-//            }
-//            return maxDuration;
-//        };
-
+        /**
+         * Get the max time for a cobination of startTime and seats or for an event
+         * @param startTime Moment object
+         * @param seats dictionary with the seats to check
+         * @param event - Event
+         * @returns {*}
+         */
         this.maxDurationForStartTime = function (startTime, seats, event) {
+            if(startTime && seats){
+                if(!DateHelpers.isMomentValid(startTime)){
+                    throw new EventsCollectionException('maxDurationForStartTime requires a valid Moment object as (startTime)');
+                }
+            }else if(event && event instanceof Event){
+
+            }else{
+                throw new EventsCollectionException('maxDurationForStartTime requires either a valid Event object or startTime and seats');
+            }
+
             seats = seats || event.data.seats;
             startTime = startTime || event.data.startTime;
 
-            return getCollectionForDate(null, null, event).then(function(collection){
+            return fetchCollectionForDate(BusinessHolder.business.$id, null, event).then(function(collection){
                 var maxDuration = -1, tempMaxDuration, currentEvent, key;
 
                 for (var i = 0; i< collection.length; ++i) {
@@ -270,7 +258,11 @@ zedAlphaServices
         };
 
 
-
+        /**
+         * Create new event
+         * @param data
+         * @returns {*}
+         */
         this.createNewEvent = function(data){
             // find the duration for the event and set the end time
             var tempEvent = new Event(null, data);
@@ -290,7 +282,7 @@ zedAlphaServices
          * @returns {promise}
          */
         this.validateCollision = function (event, extra) {
-            return getCollectionForDate(null, null, event).then(function(collection){
+            return fetchCollectionForDate(BusinessHolder.business.$id, null, event).then(function(collection){
 
                 var extraSeats = extra && extra.seats ? extra.seats : event.data.seats,
                     extraStartTime = extra&&extra.startTime ? extra.startTime : event.data.startTime;
@@ -344,7 +336,7 @@ zedAlphaServices
                 defer.resolve(true);
                 return defer.promise;
             }
-            return getCollectionForDate(null,null,event).then(function(collection){
+            return fetchCollectionForDate(BusinessHolder.business.$id,null,event).then(function(collection){
                 var count = parseInt(event.data.guests),
                     currentEvent,
                     key;
@@ -425,9 +417,9 @@ zedAlphaServices
 
 
         this.saveAfterValidation = function (event) {
-            return getCollectionForDate(null, null, event).then(function(collection){
+            return fetchCollectionForDate(BusinessHolder.business.$id, null, event).then(function(collection){
                 if(event.changedBaseDate){
-                    return getCollectionForDate(BusinessHolder.business.$id, event.changedBaseDate).then(function(oldCollection){
+                    return fetchCollectionForDate(BusinessHolder.business.$id, event.changedBaseDate).then(function(oldCollection){
                         var eventDataCloned = event.toObject();
                         isJustChangedBaseDateForEvent = true;
                         return collection.$add(eventDataCloned).then(function(snap){
@@ -470,7 +462,7 @@ zedAlphaServices
          * @private
          */
         this.__remove = function(event){
-            return getCollectionForDate(null, null, event).then(function(collection){
+            return fetchCollectionForDate(BusinessHolder.business.$id, null, event).then(function(collection){
                 collection.$remove(event).then(function(){
                     sortEvents();
                 });
@@ -493,7 +485,7 @@ zedAlphaServices
 
         this.changeBaseDateForEvent = function(event, newBaseDateMoment){
             var oldBaseDateMoment = moment(event.data.baseDate, DateFormatFirebase);
-            if(DateHelpers.isMomentSameDate(oldBaseDateMoment, newBaseDateMoment) ){
+            if(DateHelpers.areMomentsHaveSameDates(oldBaseDateMoment, newBaseDateMoment) ){
                 var defer = $q.defer();
                 defer.resolve();
                 return defer.promise;
@@ -502,7 +494,7 @@ zedAlphaServices
             event.$changeBaseDate(newBaseDateMoment);
 
 
-            return getCollectionForDate(BusinessHolder.business.$id, newBaseDateMoment).then(function(newCollection){
+            return fetchCollectionForDate(BusinessHolder.business.$id, newBaseDateMoment).then(function(newCollection){
                 var collision = newCollection.$checkCollisionsForEvent(event, null);
                 if(collision){
                     event.$changeBaseDate(oldBaseDateMoment);
@@ -554,6 +546,7 @@ zedAlphaServices
             return defer.promise;
         }
 
+
         // Customers
         var updateCustomerForEvent = function(event){
             if(!event || !event.$id || !event.data.phone) return;
@@ -574,45 +567,44 @@ zedAlphaServices
         // Watchers
 
         $rootScope.$on('$businessHolderChanged', function(){
-            updateEvents();
+            self.loadEventsForDate();
         });
 
-        $rootScope.$on('$dateWasChanged', function(){
-            updateEvents();
-        });
+        //TODO: get rid of them
+//        $rootScope.$on('$dateWasChanged', function(){
+//            loadCurrentEvents();
+//        });
+//
+//        $rootScope.$on('$clockWasChanged', function(){
+//            sortEvents();
+//        });
+//
+//        $rootScope.$on('$requestSortEvents', function(){
+//            sortEvents();
+//        });
+//
+//        $rootScope.$watch(function(){
+//            return self.filters.query;
+//        }, function(){
+//            sortEvents();
+//        });
+//
+//        $rootScope.$watch(function(){
+//            return self.filters.status;
+//        }, function(){
+//            sortEvents();
+//        });
 
-        $rootScope.$on('$clockWasChanged', function(){
-            sortEvents();
-        });
 
-        $rootScope.$on('$requestSortEvents', function(){
-            sortEvents();
-        });
-
-        $rootScope.$watch(function(){
-            return self.filters.query;
-        }, function(){
-            sortEvents();
-        });
-
-        $rootScope.$watch(function(){
-            return self.filters.status;
-        }, function(){
-            sortEvents();
-        });
-
-
-        $rootScope.$on('$firebaseSimpleLogin:logout', function(){
-            lastSubName = null,
-            lastBusinessId = null;
-
+        var reset = function(){
+            self.collection && self.collection.$destory && self.collection.$destory();
             self.collection = null;
             self.sorted = {};
-            self.filters = {
-                status : null,
-                query : null
-            };
-        });
+            self.recentFilters = {};
+            self.recentOptions  = {};
+        }
+
+        $rootScope.$on('$firebaseSimpleLogin:logout', reset);
     });
 
 

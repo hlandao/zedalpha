@@ -16,7 +16,7 @@ zedAlphaDirectives
                     var output = [],
                         startTime = shift.startTime.clone(),
                         latestEventByEndTime = findLatestEventByEndTime(),
-                        durationByLatestEvent = latestEventByEndTime.data.endTime.diff(startTime, 'minutes'),
+                        durationByLatestEvent = latestEventByEndTime ? latestEventByEndTime.data.endTime.diff(startTime, 'minutes') : 0,
                         durationInMinutes = Math.max(shift.duration,durationByLatestEvent),
                         durationInHours = durationInMinutes / 60;
 

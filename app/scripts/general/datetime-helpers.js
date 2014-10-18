@@ -56,7 +56,7 @@ zedAlphaServices
         };
 
         var findClosestIntervalToDate = function(date){
-            if(!date || !date.isValid || !date.isValid()) return date;
+            if(!isMomentValid(date)) return false;
             var minutes = date.minute();
             return parseInt(minutes/EventInterval) * EventInterval;
         }
@@ -72,7 +72,7 @@ zedAlphaServices
             return m && m.isValid && m.isValid();
         }
 
-        var isMomentSameDate = function(m1,m2){
+        var areMomentsHaveSameDates = function(m1,m2){
             if(isMomentValid(m1) && isMomentValid(m2)){
                 return (m1.year() == m2.year() && m1.month() == m2.month() && m1.date() == m2.date());
             }
@@ -95,7 +95,7 @@ zedAlphaServices
             findClosestIntervalToDate : findClosestIntervalToDate,
             resetDateSeconds : resetDateSeconds,
             isMomentValid : isMomentValid,
-            isMomentSameDate : isMomentSameDate,
+            areMomentsHaveSameDates : areMomentsHaveSameDates,
             setMomentDateWithAnotherMoment : setMomentDateWithAnotherMoment
         };
     })
