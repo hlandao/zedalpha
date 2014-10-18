@@ -89,6 +89,19 @@ zedAlphaServices
         }
 
 
+        var getRealDateWithOverlapingDays = function(_date){
+            if(!isMomentValid(_date)){
+                return _date;
+            }
+
+            var date = _date.clone();
+            var hour = date.hour();
+            if (hour < 6 && hour >= 0){
+                date.subtract(1,'days');
+            }
+            return date;
+        }
+
         return {
             changeDateHourAndMinutes : changeDateHourAndMinutes,
             hourAndMinutesArrFromString : hourAndMinutesArrFromString,
@@ -96,7 +109,8 @@ zedAlphaServices
             resetDateSeconds : resetDateSeconds,
             isMomentValid : isMomentValid,
             areMomentsHaveSameDates : areMomentsHaveSameDates,
-            setMomentDateWithAnotherMoment : setMomentDateWithAnotherMoment
+            setMomentDateWithAnotherMoment : setMomentDateWithAnotherMoment,
+            getRealDateWithOverlapingDays : getRealDateWithOverlapingDays
         };
     })
     .filter('numberFixedLen', function () {

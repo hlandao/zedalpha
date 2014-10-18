@@ -50,7 +50,7 @@ zedAlphaServices
                 throw new EventsCollectionException('fetchCollectionForDate requires either a valid Moment object as (date) or a Event object as (event). businessID : ' + businessId + '. date :' + date + '. event : ' + event);
             }
 
-            date = DateHelpers.isMomentValid(date) ? date.clone() : event.data.startTime.clone();
+            date = DateHelpers.isMomentValid(date) ? date.clone() : DateHelpers.getRealDateWithOverlapingDays(event.data.startTime);
             var subName = subNameByDate(date);
 
             if(isSameAsSelfCollection(businessId, subName)){
@@ -179,7 +179,7 @@ zedAlphaServices
          */
         var sortEvents = this.sortEvents = function(filters, options){
 
-            $log.debug('[EventsCollection] soet event with filters and options : ',filters, options);
+            $log.debug('[EventsCollection] sort event with filters and options : ',filters, options);
 
             filters = angular.extend({
                 query : null,
@@ -405,11 +405,12 @@ zedAlphaServices
 
 
         this.saveWithValidation = function (event, approveAllWarnings, seatingOptionsToValidate) {
+            $log.debug('[EventsCollection] saveWithValidation, event with name : ' + event.data.name);
             return self.beforeSave(event, seatingOptionsToValidate).then(function (result) {
+                $log.debug('[EventsCollection] saveWithValidation, before save passed with ' + (result.warnings ? result.warnings.length : 0) + ' warnings');
                 if (!approveAllWarnings && (result && result.warnings && result.warnings.length)) {
                     return result;
                 } else {
-
                     return self.saveAfterValidation(event);
                 }
             });
@@ -417,6 +418,8 @@ zedAlphaServices
 
 
         this.saveAfterValidation = function (event) {
+            $log.debug('[EventsCollection] saveAfterValidation, event with name : ' + event.data.name);
+
             return fetchCollectionForDate(BusinessHolder.business.$id, null, event).then(function(collection){
                 if(event.changedBaseDate){
                     return fetchCollectionForDate(BusinessHolder.business.$id, event.changedBaseDate).then(function(oldCollection){
@@ -437,12 +440,16 @@ zedAlphaServices
                 }else{
                     if (event.$isNew()) {
                         return collection.$add(event.toObject()).then(function(snap){
+                            $log.debug('[EventsCollection] saveAfterValidation success, saved as a new event with id : ' + snap.name());
+
                             sortEvents();
                             var addedEvent=self.collection.$getRecord(snap.name())
                             updateCustomerForEvent(addedEvent);
                         });
                     } else {
                         return collection.$save(event).then(function(){
+                            $log.debug('[EventsCollection] saveAfterValidation success, updated existing event with id : ' + event.$id);
+
                             sortEvents();
                             updateCustomerForEvent(event);
                         });

@@ -63,13 +63,13 @@ zedAlphaDirectives
                     if(!shape.seatNumber) return;
                     scope.$apply(function(){
                         if(isAddingNewEvent()){
-                            console.log('Clicked on event while adding new event');
+                            console.log('Clicked on shape ' + shape.seatNumber + ' while adding new event');
                             clickHandlerForAddingNewEventState(shape);
                         } else if(isEditingEvent()){
-                            console.log('Clicked on event while editing existing event');
+                            console.log('Clicked on shape ' + shape.seatNumber + ' while editing existing event');
                             clickHandlerForEditingEventState(shape);
                         }else{
-                            console.log('Clicked on event');
+                            console.log('Clicked on shape ' + shape.seatNumber);
                             clickHandlerForNormalState(shape);
                         }
                     });
@@ -107,6 +107,7 @@ zedAlphaDirectives
 
                 var clickHandlerForNormalState = function(shape){
                     var index = scope.highlightedShapes.indexOf(shape);
+
                     if(!shape.highlighted && index == -1){
                         if(!shapeSeatIsAvailable(shape)){
                             renderMapWithEvents();

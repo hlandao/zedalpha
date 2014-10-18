@@ -155,9 +155,9 @@ zedAlphaControllers
          * Select All Day Shift
          */
         $scope.selectAllDayShift = function(){
-            ShiftsDayHolder.selectedShift = AllDayShift(ShiftsDayHolder.currentDay);
+            EventsHelpers.userChooseShift(AllDayShift(ShiftsDayHolder.currentDay));
             $scope.selectStatusFilter('ENTIRE_SHIFT');
-            $scope.$emit('$requestSortEvents');
+            EventsHelpers.userChooseFilters({status : 'ENTIRE_SHIFT'});
         };
 
         /**
@@ -165,9 +165,9 @@ zedAlphaControllers
          */
         $scope.toggleEntireShift = function(){
             if(EventsCollection.recentFilters && EventsCollection.recentFilters.status === 'ENTIRE_SHIFT'){
-                $scope.selectFilter('ALL');
+                $scope.selectStatusFilter('ALL');
             }else{
-                $scope.selectFilter('ENTIRE_SHIFT');
+                $scope.selectStatusFilter('ENTIRE_SHIFT');
             }
         }
 

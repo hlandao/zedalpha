@@ -3,7 +3,7 @@ var zedAlphaFilters = zedAlphaFilters || angular.module('zedalpha.filters', []);
 
 zedAlphaFilters
     .value('EVENT_TIME_FRAME_IN_MINUTES', 120)
-    .factory('EventTimesCheck', function(EVENT_TIME_FRAME_IN_MINUTES, DeadEventsStatuses, DateHelpers){
+    .factory('EventTimesCheck', function(EVENT_TIME_FRAME_IN_MINUTES, DeadEventsStatuses, DateHelpers, ShiftsDayHolder){
         return function(currentEvent, filters, options){
             options = angular.extend({}, options);
             if(!DateHelpers.isMomentValid(filters.clock)){
@@ -32,7 +32,7 @@ zedAlphaFilters
             }
         }
     })
-    .filter('sortDayEvents', function ($filter, EVENT_TIME_FRAME_IN_MINUTES, DeadEventsStatuses, DateHelpers, STATUS_FILTERS_TO_STATUSES_ARRAY, EventTimesCheck) {
+    .filter('sortDayEvents', function ($filter, EVENT_TIME_FRAME_IN_MINUTES, DeadEventsStatuses, DateHelpers, STATUS_FILTERS_TO_STATUSES_ARRAY, EventTimesCheck, ShiftsDayHolder) {
 //        return function (eventsCollection, dateMoment, statusFilter, nameQuery, includePastEvents, includeAllUpcomingEvents) {
         return function (eventsCollection, filters, options) {
             var clock = filters.clock,
@@ -61,6 +61,7 @@ zedAlphaFilters
                             return;
                         }
                     }
+                    return;
 
                 }
 

@@ -42,6 +42,7 @@ zedAlphaServices
             EventsCollection.sortEvents({clock : DateHolder.currentClock});
         }
 
+
         this.userChooseFilters = function(filters){
             EventsCollection.sortEvents(angular.extend({
                 clock : DateHolder.currentClock
