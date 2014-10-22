@@ -51,6 +51,7 @@ zedAlphaFilters
 
                 // Check ENTIRE_SHIFT
                 if(isEntireShiftSorting){
+                    var isDeadEvent = !!(DeadEventsStatuses.indexOf(currentEvent.data.status) >= 0);
                     var shift = ShiftsDayHolder.selectedShift;
                     if(shift.isEventWithin(currentEvent)){
                         if(isDeadEvent){
