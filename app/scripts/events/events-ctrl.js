@@ -16,6 +16,10 @@ zedAlphaControllers
         $scope.showDeadEvents = false;
         $scope.StatusFilters = StatusFilters;
         $scope.searchController = { active : false};
+        $scope.filters = {
+            query : "",
+            status :  StatusFilters[0]
+        }
 
         /**
          * Create new event
@@ -130,16 +134,18 @@ zedAlphaControllers
 
         /**
          * User selected a filter
-         * @param filter
          */
         $scope.selectStatusFilter = function(filter){
-            $scope.selectedStatusFilter = filter;
-            EventsHelpers.userChooseFilters({
-                status : filter,
-                query  : $scope.query
-            });
+            $scope.filters.status = filter;
+            EventsHelpers.userChooseFilters($scope.filters);
         };
 
+        /**
+         * The user types in the search box
+         */
+        $scope.searchQueryWasChanged = function(){
+            EventsHelpers.userChooseFilters($scope.filters);
+        }
 
         /**
          * User selected new shift
@@ -263,7 +269,7 @@ zedAlphaControllers
          */
         $scope.hideSearch = function(){
             $scope.searchController.active = false;
-            $scope.filters.query = "";
+            $scope.query = "";
         };
 
 

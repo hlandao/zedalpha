@@ -1,62 +1,81 @@
 .shift-organizer{
   width:100%;
   height:100%;
-  .shift-organizer-inner{
-    width:100%;
-    height:100%;
-    overflow-x:scroll;
-    background: rgb(252, 252, 252);
-    > table{
-      border-bottom: 1px solid #ddd;
-      margin-bottom: 0;
-      thead{
-        tr{
-          td{
-            font-weight: bold;
-          }
+  overflow-y:scroll;
+  overflow-x: scroll;
+  table {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 0;
+    table-layout: fixed;
+
+    tr {
+      td {
+        font-weight: bold;
+        height: 30px;
+        width: 30px;
+        position: relative;
+        border-right: 1px solid #dfdfdf;
+        border-left: 1px solid #dfdfdf;
+        border-top: 1px solid #797979;
+        border-bottom: 1px solid #797979;
+        font-size: 10px;
+      }
+      &:hover {
+        td {
+          background: #ffeea8 !important;
         }
       }
 
-      tr{
-        &:hover{
-          td{
-            background: #ffeea8 !important;
-          }
-        }
-        td{
-          width: 20px;
-          border-right:1px solid #f9f9f9;
-          position: relative;
-        }
-      }
     }
+
   }
 
-  .shift-organizer-event{
+
+
+
+  .shift-organizer-table{
     position: absolute;
-    z-index:1000;
-    height: 20px;
-    line-height: 20px;
-    border-radius: 5px;
-    border:1px solid #ddd;
-    text-align: center;
-    overflow:hidden;
-    cursor: pointer;
-    color:#333;
-    font-size:11px;
-    span.guests{
-      background: #979797;
-      border-radius: 47px;
-      color: white;
-      font-size: 7px;
-      text-align: center;
-      margin-left: 4px;
-      width: 12px;
-      display: inline-block;
-      height: 12;
-      line-height: 13px;
-      vertical-align: text-bottom;
+    top:0;
+    right:0;
 
-    }
+    display: inline-block;
   }
+
+  .shift-organizer-events{
+    position: absolute;
+    top:0;
+    right:0;
+
+    display: inline-block;
+
+    .shift-organizer-event{
+      position: absolute;
+      z-index:1000;
+      height: 20px;
+      line-height: 20px;
+      border-radius: 5px;
+      border:1px solid #ddd;
+      text-align: center;
+      overflow:hidden;
+      cursor: pointer;
+      color:#333;
+      font-size:10px;
+      span.guests{
+        background: #979797;
+        border-radius: 47px;
+        color: white;
+        font-size: 7px;
+        text-align: center;
+        margin-left: 4px;
+        width: 12px;
+        display: inline-block;
+        height: 12;
+        line-height: 13px;
+        vertical-align: text-bottom;
+
+      }
+    }
+
+  }
+
 }

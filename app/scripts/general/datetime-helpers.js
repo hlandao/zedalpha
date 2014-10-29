@@ -102,6 +102,24 @@ zedAlphaServices
             return date;
         }
 
+
+        var addLeadingZeroToHour = function(hourNumberOrString){
+            var parsedInt = parseInt(hourNumberOrString),
+                toString;
+            if(parsedInt == 0){
+                return "00";
+            } else if(parsedInt < 10){
+                // add leading zero
+                toString = "" + hourNumberOrString;
+                if(toString[0] !== "0"){
+                    return "0" + hourNumberOrString;
+                }
+            }else{
+                return hourNumberOrString;
+            }
+        }
+
+
         return {
             changeDateHourAndMinutes : changeDateHourAndMinutes,
             hourAndMinutesArrFromString : hourAndMinutesArrFromString,
@@ -110,7 +128,8 @@ zedAlphaServices
             isMomentValid : isMomentValid,
             areMomentsHaveSameDates : areMomentsHaveSameDates,
             setMomentDateWithAnotherMoment : setMomentDateWithAnotherMoment,
-            getRealDateWithOverlapingDays : getRealDateWithOverlapingDays
+            getRealDateWithOverlapingDays : getRealDateWithOverlapingDays,
+            addLeadingZeroToHour : addLeadingZeroToHour
         };
     })
     .filter('numberFixedLen', function () {

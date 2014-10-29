@@ -1,3 +1,3 @@
-<map-manager business="business" business-id="businessId" ng-if="selectedStatusFilter != 'ENTIRE_SHIFT'"></map-manager>
-<shift-organizer ng-if="selectedStatusFilter == 'ENTIRE_SHIFT'" shift="ShiftsDayHolder.selectedShift"></shift-organizer>
+<map-manager business="business" business-id="businessId" ng-if="filters.status != 'ENTIRE_SHIFT'"></map-manager>
+<shift-organizer ng-if="filters.status == 'ENTIRE_SHIFT'" shift="ShiftsDayHolder.selectedShift"></shift-organizer>
 
