@@ -269,7 +269,8 @@ zedAlphaControllers
          */
         $scope.hideSearch = function(){
             $scope.searchController.active = false;
-            $scope.query = "";
+            $scope.filters.query = "";
+            $scope.searchQueryWasChanged();
         };
 
 

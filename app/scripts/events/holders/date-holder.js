@@ -24,11 +24,12 @@ zedAlphaServices
                 throw new DateHolderException('Go to date failed. Please provide a valid Moment object.');
             }
 
+            var oldDate = self.currentDate.clone();
             if(date !== self.currentDate){
                 self.currentDate = date.clone().seconds(0);
             }
             $log.info('[DateHolder] go to date : ',self.currentDate.format(DateFormatFirebase));
-            self.updateClockAfterDateChange();
+            self.updateClockAfterDateChange(oldDate);
 
         };
 
@@ -36,10 +37,16 @@ zedAlphaServices
         /**
          * Update the clock after changing the date
          */
-        this.updateClockAfterDateChange = function(){
+        this.updateClockAfterDateChange = function(oldDate){
             var newClock = self.currentDate.clone();
 
+            debugger;
             if(DateHelpers.isMomentValid(self.currentClock)){
+                if(DateHelpers.isMomentValid(oldDate)){
+                    if(self.currentClock.diff(oldDate,'day') == 1){
+                        newClock.add(1, 'days');
+                    }
+                }
                 newClock.hour(self.currentClock.hour()).minutes(self.currentClock.minutes());
             }
 

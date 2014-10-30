@@ -94,6 +94,7 @@ zedAlphaDirectives
 
                 $scope.$watch('shift', function(newVal){
                     $scope.hours = extractHoursFromShift(newVal);
+                    renderEventsSeats();
                 });
 
 
@@ -116,9 +117,8 @@ zedAlphaDirectives
                     shiftDurationInMinutes;
 
 
-                var $table =  $(element).parent().parent().find('table').eq(0),
-//                    $tdHead = $table.find('thead').find('td').eq(2),
-                    $tdBody = $table.find('tbody').find('td').eq(2);
+                var $table,
+                    $tdBody;
 
 
                 var setLeft = function(){
@@ -158,6 +158,10 @@ zedAlphaDirectives
                     return _.findWhere(BusinessHolder.business.eventsStatuses, {status : status});
                 }
                 var initVars = function(){
+                   $table =  $(element).parent().parent().find('table').eq(0);
+//                    $tdHead = $table.find('thead').find('td').eq(2),
+                   $tdBody = $table.find('tbody').find('td').eq(2);
+
                     cellWidth = $tdBody.outerWidth();
                     cellHegiht =  $tdBody.outerHeight();
                     topOffset = cellHegiht + -1 * (cellHegiht*0.75);
