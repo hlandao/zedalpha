@@ -27,11 +27,17 @@ zedAlphaServices
 
         this.userChooseClock = function(clock){
             $log.debug('[EventsHelpers] userChooseClock. Clock :',clock);
+            var dateBefore = DateHolder.currentDate;
             DateHolder.goToClock(clock);
             ShiftsDayHolder.loadWithDate(DateHolder.currentDate, {
                 selectShiftByClock : true,
                 clock : DateHolder.currentClock});
-            EventsCollection.sortEvents({clock : DateHolder.currentClock});
+            if(dateBefore == DateHolder.currentDate){
+                EventsCollection.sortEvents({clock : DateHolder.currentClock});
+            }else{
+                EventsCollection.loadEventsForDate(BusinessHolder.business.$id, DateHolder.currentDate, DateHolder.currentClock);
+            }
+
         }
 
         this.userChooseShift = function(shift){

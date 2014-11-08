@@ -132,9 +132,6 @@ zedAlphaDirectives
                 var setTop = function(){
                     var seatNumber = "" + scope.event.seatNumber;
                     var index = scope.seats.indexOf(seatNumber);
-                    if(index == -1){
-                        debugger;
-                    }
                     var top = topOffset + ((index+1) * cellHegiht);
                     element.css({top : top + 'px'});
                 }

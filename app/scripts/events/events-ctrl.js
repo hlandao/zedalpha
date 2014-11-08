@@ -177,6 +177,13 @@ zedAlphaControllers
             }
         }
 
+        /**
+         * Exit entire shift mode
+         */
+        $scope.exitEntireShiftMode = function(){
+            EventsHelpers.userChooseClock(moment());
+            $scope.selectStatusFilter('ALL');
+        }
 
         /**
          * Cancel ENTIRE_SHIFT selection (reset)

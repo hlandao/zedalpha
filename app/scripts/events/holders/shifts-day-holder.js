@@ -30,6 +30,7 @@ zedAlphaServices
                 throw new ShiftsDayHolderException('Load shift with date was failed. Please provide a valid moment object');
             }
 
+            debugger;
             $log.debug('[ShiftsDayHolder] load with date : ', date.format(DateFormatFirebase));
 
             tempShiftDay = ShiftsDayGenerator(date);

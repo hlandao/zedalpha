@@ -80,7 +80,7 @@ zedAlphaServices
          * @param date
          * @param clock
          */
-        this.loadEventsForDate = function (businessId, date, clock) {
+        var loadEventsForDate = this.loadEventsForDate = function (businessId, date, clock) {
             businessId = businessId || BusinessHolder.business.$id;
             if(!DateHelpers.isMomentValid(date)){
                 throw new EventsCollectionException('Cannot load current events without a Moment object (date)');
@@ -200,8 +200,15 @@ zedAlphaServices
                 return;
             }
 
+
+
             if(self.collection && self.collection.length){
-                var sorted = $filter('sortDayEvents')(self.collection, filters, options);
+                try{
+                    var sorted = $filter('sortDayEvents')(self.collection, filters, options);
+                }catch(e){
+                    $log.error('Error sorting events : ', e);
+                }
+
                 angular.extend(self.sorted, sorted);
                 self.recentFilters = filters;
                 self.recentOptions = options;
@@ -420,13 +427,14 @@ zedAlphaServices
         this.saveAfterValidation = function (event) {
             $log.debug('[EventsCollection] saveAfterValidation, event with name : ' + event.data.name);
 
+
             return fetchCollectionForDate(BusinessHolder.business.$id, null, event).then(function(collection){
                 if(event.changedBaseDate){
                     return fetchCollectionForDate(BusinessHolder.business.$id, event.changedBaseDate).then(function(oldCollection){
                         var eventDataCloned = event.toObject();
                         isJustChangedBaseDateForEvent = true;
                         return collection.$add(eventDataCloned).then(function(snap){
-                            sortEvents();
+                            loadEventsForDate(null, event.data.startTime,event.data.startTime);
                             var addedEvent=collection.$getRecord(snap.name())
                             updateCustomerForEvent(addedEvent);
                             var oldEventRecord = oldCollection.$getRecord(event.$id);

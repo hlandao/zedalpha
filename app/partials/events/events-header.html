@@ -68,7 +68,7 @@
             <li class="timepicker-col">
                 <!--<input hl-timepicker ng-model="DateHolder.currentClock" settings="{min : ShiftsDayHolder.selectedShift.startTime, range : ShiftsDayHolder.selectedShift.duration}">-->
                 <hl-header-timepicker ng-if="filters.status != 'ENTIRE_SHIFT'"></hl-header-timepicker>
-                <div ng-if="filters.status == 'ENTIRE_SHIFT'" class="entire-shift" ng-click="toggleEntireShift()" entire-shift-button></div>
+                <div ng-if="filters.status == 'ENTIRE_SHIFT'" class="entire-shift" ng-click="exitEntireShiftMode()" entire-shift-button></div>
             </li>
 
 
@@ -93,8 +93,6 @@
             <li ng-show="DEBUG">
                 Clock :
                 {{DateHolder.currentClock | momentFilter : 'YYYY-MM-DD HH:mm'}}
-                showShiftOrganizer :
-                {{showShiftOrganizer}}
             </li>
 
             <li class="dropdown">

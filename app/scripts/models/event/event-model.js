@@ -179,6 +179,7 @@ zedAlphaServices
              * @returns {promise}
              */
             $validateBaseDate: function (value) {
+                debugger;
                 value = value  === undefined ? this.data.baseDate : value;
                 var startDate;
                 if(this.data.startTime.hour() <= 6){

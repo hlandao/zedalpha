@@ -12,7 +12,8 @@ zedAlphaServices
         DateHolderException.prototype.constructor = DateHolderException;
 
 
-        var self = this;
+        var self = this, wasClockBelongToPreviousDay;
+
 
 
         /**
@@ -40,12 +41,9 @@ zedAlphaServices
         this.updateClockAfterDateChange = function(oldDate){
             var newClock = self.currentDate.clone();
 
-            debugger;
             if(DateHelpers.isMomentValid(self.currentClock)){
-                if(DateHelpers.isMomentValid(oldDate)){
-                    if(self.currentClock.diff(oldDate,'day') == 1){
-                        newClock.add(1, 'days');
-                    }
+                if(wasClockBelongToPreviousDay){
+                    newClock.add(1, 'day');
                 }
                 newClock.hour(self.currentClock.hour()).minutes(self.currentClock.minutes());
             }
@@ -84,7 +82,9 @@ zedAlphaServices
             var newDate = self.currentClock.clone();
             if(isClockBelongToPreviousDay(self.currentClock)){
                 newDate.hour(0).minute(0).subtract('days',1);
+                wasClockBelongToPreviousDay = true;
             }else{
+                wasClockBelongToPreviousDay = false;
                 newDate.hour(0).minute(0);
             }
 
