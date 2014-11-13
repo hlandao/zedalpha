@@ -101,6 +101,7 @@ zedAlphaControllers
                 alert('Cannot edit reservation while another reservation is opened');
             }
             event.$enterEditingMode();
+            EventsHelpers.userChooseClock(event.data.startTime);
             $scope.editedEvent = event;
         };
 
@@ -181,7 +182,7 @@ zedAlphaControllers
          * Exit entire shift mode
          */
         $scope.exitEntireShiftMode = function(){
-            EventsHelpers.userChooseClock(moment());
+            EventsHelpers.userChooseClock(DateHolder.currentClock);
             $scope.selectStatusFilter('ALL');
         }
 
