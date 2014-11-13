@@ -414,6 +414,7 @@ zedAlphaServices
         this.saveWithValidation = function (event, approveAllWarnings, seatingOptionsToValidate) {
             $log.debug('[EventsCollection] saveWithValidation, event with name : ' + event.data.name);
             return self.beforeSave(event, seatingOptionsToValidate).then(function (result) {
+
                 $log.debug('[EventsCollection] saveWithValidation, before save passed with ' + (result.warnings ? result.warnings.length : 0) + ' warnings');
                 if (!approveAllWarnings && (result && result.warnings && result.warnings.length)) {
                     return result;
@@ -429,7 +430,7 @@ zedAlphaServices
 
 
             return fetchCollectionForDate(BusinessHolder.business.$id, null, event).then(function(collection){
-                if(event.changedBaseDate){
+                if(event.changedBaseDate && event.$id){
                     return fetchCollectionForDate(BusinessHolder.business.$id, event.changedBaseDate).then(function(oldCollection){
                         var eventDataCloned = event.toObject();
                         isJustChangedBaseDateForEvent = true;
